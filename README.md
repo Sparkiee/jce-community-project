@@ -11,8 +11,8 @@ The project is being developed for [Association/Organization Name], an organizat
 ## Project Members
 
 ### Development Team:
-- Maxim Shteingard - Team Leader
 - Adam Shay - Scrum Master
+- Maxim Shteingard - Team Leader
 - Evyevy12 - Product Owner
 - Yosef Matatov - Ambassador of Russia in JCE
 

@@ -6,7 +6,7 @@ This repository contains the development project undertaken by students of Jerus
 
 ## Association
 
-The project is being developed for [Association/Organization Name], an organization dedicated to [brief description of the organization's mission or purpose]. 
+The project is being developed for David Yelin Student Council, an organization dedicated to handle and manage the needs of the students at the David Yelin Educational College. 
 
 ## Project Members
 

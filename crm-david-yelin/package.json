@@ -1,6 +1,7 @@
 {
   "name": "crm-david-yelin",
   "version": "0.1.0",
+<<<<<<< Updated upstream
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -36,4 +37,7 @@
       "last 1 safari version"
     ]
   }
+=======
+  "private": true
+>>>>>>> Stashed changes
 }

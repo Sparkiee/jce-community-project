@@ -15,7 +15,9 @@ import Register from './regTest';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <App />
-  <Register />
+  <React.StrictMode>
+    <Register />
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

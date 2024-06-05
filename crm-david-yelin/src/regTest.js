@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 
 // Firebase configuration
@@ -27,8 +27,9 @@ function Register() {
     event.preventDefault();
     // Handle form submission
     try {
-        await setDoc(doc(db, 'member', username), {
-          password: password, // Please note storing password as plain text is not secure
+        await setDoc(doc(db, 'members', username), {
+          username: username,
+          password: password, // TODO: figure out how to hash this
           email: "test@gmail.com",
           privileges: 0,
           department: "General"

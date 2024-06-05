@@ -1,23 +1,6 @@
-import React, { useState } from 'react';
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
-
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAo4Lu5WoZHpYfBWNziKIDWwaTdXGOWElY",
-  authDomain: "jce-community-project.firebaseapp.com",
-  projectId: "jce-community-project",
-  storageBucket: "jce-community-project.appspot.com",
-  messagingSenderId: "259479438956",
-  appId: "1:259479438956:web:2bdc03b272bbaf137e7a49",
-  measurementId: "G-TBZFFQJJY0"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-// const auth = getAuth(app);
-const db = getFirestore(app);
+import { useState } from 'react';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { db } from './firebase.js'; // Import Firestore instance from firebase.js
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -32,7 +15,8 @@ function Register() {
           password: password, // TODO: figure out how to hash this
           email: "test@gmail.com",
           privileges: 0,
-          department: "General"
+          department: "General",
+          createdOn: serverTimestamp()
         });
         console.log(`Document written with ID: ${username}`);
       } catch (e) {

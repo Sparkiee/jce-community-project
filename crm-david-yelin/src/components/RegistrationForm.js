@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { React, useState, useEffect } from "react";
 import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
@@ -150,19 +149,6 @@ function RegistrationForm() {
           <p style={{ color: "red" }}>אימייל לא מורשה להרשם למערכת</p>
         )}
         {accountExists && <p style={{ color: "green" }}>המשתמש נוצר בהצלחה</p>}
-=======
-import React from "react";
-
-function RegistrationForm() {
-  return (
-    <div className="RegistrationForm">
-      <form>
-        <label htmlFor="email">Email:</label>
-        <input type="email" id="email" name="email" />
-        <label htmlFor="password">Password:</label>
-        <input type="password" id="password" name="password" />
-        <button type="submit">Register</button>
->>>>>>> layout
       </form>
     </div>
   );

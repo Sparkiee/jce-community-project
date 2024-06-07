@@ -9,6 +9,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [wrongCredentials, setWrongCredentials] = useState(false);
+  const[isEmailVerified, setIsEmailVerified] = useState(true);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -18,6 +19,13 @@ function LoginForm() {
         email,
         password
       );
+
+      if (!userCredential.user.emailVerified) {
+        console.log("Email not verified");
+        setIsEmailVerified(false);
+        return;
+      }
+
       // Signed in
       const user = userCredential.user;
       console.log("User signed in: ", user);
@@ -64,6 +72,11 @@ function LoginForm() {
           {wrongCredentials && (
             <div className="incorrect-box">
               <p className="incorrect-message">פרטי ההתחברות שגויים</p>
+            </div>
+          )}
+          {!isEmailVerified && (
+            <div className="incorrect-box">
+              <p className="incorrect-message">אימייל לא מאומת</p>
             </div>
           )}
         </form>

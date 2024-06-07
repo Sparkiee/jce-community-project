@@ -1,7 +1,9 @@
 import { React, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { auth } from "../firebase.js";
 
 import "../styles/RegistrationForm.css";
 
@@ -22,6 +24,8 @@ function RegistrationForm() {
   const [pendingAccount, setPendingAccount] = useState(false);
   const [accountExists, setAccountExists] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     let timer;
     if (pendingAccount) {
@@ -40,7 +44,6 @@ function RegistrationForm() {
       );
       setPendingAccount(!isPendingRegistration);
       if (isPendingRegistration) {
-        const auth = getAuth();
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -48,6 +51,8 @@ function RegistrationForm() {
         );
         const user = userCredential.user;
         console.log(`User registered with UID: ${user.uid}`);
+        await sendEmailVerification(user);
+
         try {
           console.log("Writing document...");
           const docRef = doc(db, "members", email);
@@ -74,6 +79,10 @@ function RegistrationForm() {
           console.log(
             "Document successfully deleted from awaiting_registration!"
           );
+          // Navigate to login page
+          setTimeout(() => {
+            navigate('/');
+          }, 5000);
         } catch (e) {
           console.error("Error writing document: ", e);
           setAccountExists(false);
@@ -148,7 +157,7 @@ function RegistrationForm() {
         {pendingAccount && (
           <p style={{ color: "red" }}>אימייל לא מורשה להרשם למערכת</p>
         )}
-        {accountExists && <p style={{ color: "green" }}>המשתמש נוצר בהצלחה</p>}
+        {accountExists && <p style={{ color: "green" }}>משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</p>}
       </form>
     </div>
   );

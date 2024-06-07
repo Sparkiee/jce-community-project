@@ -1,22 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Register from './regTest';
-
-// const root = ReactDOM.createRoot(document.getElementById('root'));
-// root.render(
-//   <React.StrictMode>
-//     <App />
-//   </React.StrictMode>
-// );
+import RegistrationForm from './components/RegistrationForm';
+import UserCreationForm from './components/UserCreationForm';
+import LoginForm from './components/LoginForm';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <App />
   <React.StrictMode>
-    <Register />
+    <RegistrationForm />
+    <UserCreationForm />
+    <LoginForm />
   </React.StrictMode>
 );
 

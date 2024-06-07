@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import "../styles/LoginForm.css";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
   const [wrongCredentials, setWrongCredentials] = useState(false);
 
   async function handleSubmit(event) {
@@ -19,6 +21,8 @@ function LoginForm() {
       // Signed in
       const user = userCredential.user;
       console.log("User signed in: ", user);
+      setWrongCredentials(false);
+      navigate("/home");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -28,11 +32,12 @@ function LoginForm() {
   }
 
   return (
-    <div className="login">
-      <h2 className="title">התחברות</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="input-box">
-          <div className="email">
+    <div className="container">
+      <div className="login">
+        <h1 className="title">!שלום</h1>
+        <p className="subtitle">נא הכנס שם משתמש וסיסמה</p>
+        <form onSubmit={handleSubmit}>
+          <div className="input-container">
             <input
               type="email"
               placeholder="אימייל"
@@ -41,7 +46,7 @@ function LoginForm() {
               onChange={(event) => setEmail(event.target.value)}
             />
           </div>
-          <div className="password">
+          <div className="input-container">
             <input
               type="password"
               placeholder="סיסמה"
@@ -50,16 +55,22 @@ function LoginForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
-        </div>
-        <button type="submit" className="styled-button">
-          התחבר
-        </button>
-        {wrongCredentials && (
-          <p style={{ color: "red" }}>פרטי ההתחברות שגויים</p>
-        )}
-      </form>
+          <button type="submit" className="button">
+            התחבר
+          </button>
+          <div className="forgot-box">
+            <a href="#forgot-password" className="forgot-password">?שכחת את הסיסמא</a>
+          </div>
+          {wrongCredentials && (
+            <div className="incorrect-box">
+              <p className="incorrect-message">פרטי ההתחברות שגויים</p>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }
 
 export default LoginForm;
+

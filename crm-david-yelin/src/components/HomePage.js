@@ -15,6 +15,7 @@ function HomePage() {
         console.log("User is logged in");
       }
     });
+    return () => unsub();
   }, []);
 
   return (

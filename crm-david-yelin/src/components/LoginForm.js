@@ -22,7 +22,7 @@ function LoginForm() {
       const user = userCredential.user;
       console.log("User signed in: ", user);
       setWrongCredentials(false);
-      navigate("/home");
+      navigate("/profile");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;

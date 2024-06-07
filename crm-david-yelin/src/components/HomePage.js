@@ -1,14 +1,12 @@
 import React from "react";
-import Navbar from './Navbar';
-import '../styles/HomePage.css';
+import Navbar from "./Navbar";
+import "../styles/HomePage.css";
 
 function HomePage() {
   return (
     <div className="HomePage">
-        <Navbar />
-        <p>
-          Welcome to David Yelin CRM
-        </p>
+      <Navbar />
+      <p>Welcome to David Yelin CRM</p>
     </div>
   );
 }

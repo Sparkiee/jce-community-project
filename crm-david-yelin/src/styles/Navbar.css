@@ -40,4 +40,79 @@ button {
     font-size: x-large;
     margin-right: auto;
 }
+ */
 
+ header {
+    display: flex;
+    border: black 2px solid;
+    height: 100px;
+    align-items: center;
+    justify-content: end;
+    background-color: rgb(117, 165, 228);
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    height: 100%;
+    margin-right: 450px;
+}
+
+header img {
+    display: inline-block;
+    width: 20%;
+    height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+header ul {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    margin-right: 300px;
+    position: relative;
+}
+
+header ul li {
+    position: relative;
+}
+
+a {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: x-large;
+    cursor: pointer;
+}
+
+button {
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: x-large;
+    margin-right: auto;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+header ul li:hover .dropdown {
+    display: block;
+}
+
+.dropdown li {
+    padding: 8px 16px;
+}
+
+.dropdown li a {
+    white-space: nowrap;
+}

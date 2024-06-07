@@ -1,0 +1,44 @@
+.input {
+    width: 90%;
+    padding: 16px;
+    border: 1px solid #d4d4d4;
+    border-radius: 8px;
+    outline: none;
+  }
+  
+  .input::placeholder {
+    text-align: right;
+    direction: rtl;
+}
+
+  .button {
+    width: 100%;
+    background-color: #2563eb;
+    color: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    outline: none;
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #92b3f6;
+}
+  
+  .login-box {
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 448px;
+    width: 100%;
+  }
+  
+  .input-container {
+    margin-bottom: 16px;
+  }
+
+  

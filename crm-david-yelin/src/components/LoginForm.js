@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import "../styles/LoginForm.css";
 
@@ -11,7 +12,6 @@ function LoginForm() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const auth = getAuth();
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,

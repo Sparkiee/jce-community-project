@@ -60,6 +60,7 @@ function RegistrationForm() {
             email: email,
             firstName: firstName,
             lastName: lastName,
+            fullName: firstName + " " + lastName,
             id: id,
             phone: phone,
             privileges: 0,

@@ -14,7 +14,7 @@ function CreateEvent() {
 
     async function handleSearch(event) {
         setSearch(event.target.value);
-
+        // TODO: update to search by fullname field instead of firstName
         if (event.target.value.length >= 2) {
             const membersRef = collection(db, 'members');
             const q = query(membersRef, 

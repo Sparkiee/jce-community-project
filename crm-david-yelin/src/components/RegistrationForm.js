@@ -63,7 +63,7 @@ function RegistrationForm() {
             fullName: firstName + " " + lastName,
             id: id,
             phone: phone,
-            privileges: 0,
+            privileges: 1,
             department: "General",
             createdOn: serverTimestamp()
           });

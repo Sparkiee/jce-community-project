@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
 
 function LoginForm() {
@@ -9,7 +10,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [wrongCredentials, setWrongCredentials] = useState(false);
-  const[isEmailVerified, setIsEmailVerified] = useState(true);
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -28,13 +29,16 @@ function LoginForm() {
 
       // Signed in
       const user = userCredential.user;
-      console.log("User signed in: ", user);
+      const docRef = doc(db, "members", user.email); // Assuming user's uid is used as document id
+      const docSnap = await getDoc(docRef);
+
+      // You can now use docSnap to access the document data
+      if (docSnap.exists()) {
+        sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
+      }
       setWrongCredentials(false);
       navigate("/profile");
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log("Error: ", errorCode, errorMessage);
       setWrongCredentials(true);
     }
   }
@@ -67,7 +71,9 @@ function LoginForm() {
             התחבר
           </button>
           <div className="forgot-box">
-            <a href="#forgot-password" className="forgot-password">?שכחת את הסיסמא</a>
+            <a href="#forgot-password" className="forgot-password">
+              ?שכחת את הסיסמא
+            </a>
           </div>
           {wrongCredentials && (
             <div className="incorrect-box">
@@ -86,4 +92,3 @@ function LoginForm() {
 }
 
 export default LoginForm;
-

@@ -5,6 +5,7 @@ import HomePage from './components/HomePage';
 import LoginForm from './components/LoginForm';
 import UserCreationForm from './components/UserCreationForm';
 import RegistrationForm from './components/RegistrationForm';
+import CreateEvent from './components/CreateEvent';
 
 const App = () => {
   return (
@@ -13,7 +14,8 @@ const App = () => {
         <Route exact path="/" element={<LoginForm/>} />
         <Route path="/profile" element={<HomePage/>} />
         <Route path="/create" element={<UserCreationForm/>} />
-        <Route path="/reg" element={<RegistrationForm/>} />
+        <Route path="/register" element={<RegistrationForm/>} />
+        <Route path="/create-event" element={<CreateEvent/>} />
       </Routes>
     </Router>
   );

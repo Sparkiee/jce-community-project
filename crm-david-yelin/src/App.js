@@ -13,8 +13,7 @@ const App = () => {
       <Routes>
         <Route exact path="/" element={<LoginForm/>} />
         <Route path="/profile" element={<ProtectedRoute privilegeLevel={1} ><HomePage/></ProtectedRoute>} />
-        {/* <Route path="/profile" element={<HomePage/>} /> */}
-        <Route path="/create" element={<UserCreationForm/>} />
+        <Route path="/create" element={<ProtectedRoute privilegeLevel={3} ><UserCreationForm/></ProtectedRoute>} />
         <Route path="/reg" element={<RegistrationForm/>} />
       </Routes>
     </Router>

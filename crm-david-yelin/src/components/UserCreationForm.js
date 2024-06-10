@@ -18,6 +18,7 @@ function UserCreationForm() {
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [newDepartment, setNewDepartment] = useState("");
 
+  // TODO: add to firebase
   function addDepartment() {
     if (newDepartment && !departmentList.includes(newDepartment)) {
       setDepartmentList([...departmentList, newDepartment]);

@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
@@ -26,16 +26,6 @@ function RegistrationForm() {
   const [accountExists, setAccountExists] = useState(false);
 
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   let timer;
-  //   if (pendingAccount) {
-  //     timer = setTimeout(() => {
-  //       setPendingAccount(false);
-  //     }, 5000); // Change back to false after 5 seconds
-  //   }
-  //   return () => clearTimeout(timer); // This will clear the timeout if the component unmounts before the timeout finishes
-  // }, [pendingAccount]);
 
   async function handleSubmit(event) {
     event.preventDefault();

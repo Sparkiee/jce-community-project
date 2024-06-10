@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { getDoc, doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { getDoc, doc, serverTimestamp, setDoc, getDocs, collection } from "firebase/firestore";
 import "../styles/UserCreationForm.css";
 
 const checkPendingRegistration = async (email) => {
@@ -18,11 +18,19 @@ function UserCreationForm() {
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [newDepartment, setNewDepartment] = useState("");
 
-  // TODO: add to firebase
   function addDepartment() {
     if (newDepartment && !departmentList.includes(newDepartment)) {
       setDepartmentList([...departmentList, newDepartment]);
       setDepartment(newDepartment);
+      try {
+        const docRef = doc(db, "departments", newDepartment);
+        setDoc(docRef, {
+          name: newDepartment,
+        });
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+
     }
     setIsOtherSelected(false);
     setNewDepartment("");
@@ -37,6 +45,21 @@ function UserCreationForm() {
     }
     return () => clearTimeout(timer); // This will clear the timeout if the component unmounts before the timeout finishes
   }, [accountCreated]);
+
+  // grab departments from firebase
+  useEffect(() => {
+    async function fetchDepartments() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "departments"));
+        const departments = querySnapshot.docs.map(doc => doc.data().name);
+        setDepartmentList(departments);
+      } catch (e) {
+        console.error("Error fetching departments: ", e);
+      }
+    }
+  
+    fetchDepartments();
+  }, []); // Empty dependency array means this effect runs once on mount
 
   async function handleSubmit(event) {
     event.preventDefault();

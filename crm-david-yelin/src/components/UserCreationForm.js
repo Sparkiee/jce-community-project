@@ -9,6 +9,7 @@ const checkPendingRegistration = async (email) => {
   return docSnap.exists();
 };
 
+// Add current department as a field in pending_registration and later on connect to user
 function UserCreationForm() {
   const [email, setEmail] = useState("");
   const [emailExists, setEmailExists] = useState(false);
@@ -75,6 +76,7 @@ function UserCreationForm() {
         const docRef = doc(db, "awaiting_registration", email);
         await setDoc(docRef, {
           email: email,
+          department: department,
           timestamp: serverTimestamp(),
         });
         setAccountCreated(true);

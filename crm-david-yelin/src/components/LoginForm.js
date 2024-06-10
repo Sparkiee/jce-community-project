@@ -15,11 +15,7 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
       if (!userCredential.user.emailVerified) {
         console.log("Email not verified");
@@ -46,9 +42,21 @@ function LoginForm() {
   return (
     <div className="container">
       <div className="login">
-        <h1 className="title">!שלום</h1>
+        <h1 className="title">שלום!</h1>
         <p className="subtitle">נא הכנס שם משתמש וסיסמה</p>
-        <form onSubmit={handleSubmit}>
+        <div className="error-messages">
+          {wrongCredentials && (
+            <div className="incorrect-box">
+              <p className="incorrect-message">פרטי ההתחברות שגויים</p>
+            </div>
+          )}
+          {!isEmailVerified && (
+            <div className="incorrect-box">
+              <p className="incorrect-message">אימייל לא מאומת</p>
+            </div>
+          )}
+        </div>
+        <form className="login-form" onSubmit={handleSubmit}>
           <div className="input-container">
             <input
               type="email"
@@ -67,24 +75,17 @@ function LoginForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
-          <button type="submit" className="button">
-            התחבר
+          <button type="submit" className="login-button">
+            התחברות
+          </button>
+          <button type="submit" className="registration-button">
+            הרשמה
           </button>
           <div className="forgot-box">
             <a href="#forgot-password" className="forgot-password">
-              ?שכחת את הסיסמא
+              שכחתי סיסמה
             </a>
           </div>
-          {wrongCredentials && (
-            <div className="incorrect-box">
-              <p className="incorrect-message">פרטי ההתחברות שגויים</p>
-            </div>
-          )}
-          {!isEmailVerified && (
-            <div className="incorrect-box">
-              <p className="incorrect-message">אימייל לא מאומת</p>
-            </div>
-          )}
         </form>
       </div>
     </div>

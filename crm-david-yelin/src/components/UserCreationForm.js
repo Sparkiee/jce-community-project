@@ -131,13 +131,13 @@ function UserCreationForm() {
                     className="create-user-input"
                   />
                   <button type="button" onClick={addDepartment} className="create-button">
-                    הוסף
+                    הוסף מחלקה
                   </button>
                 </div>
               )}
             </div>
             <button type="submit" className="create-button">
-              יצירה
+              צור משתמש חדש
             </button>
             <div className="feedback">
               {emailExists && <p>אימייל כבר קיים במערכת</p>}

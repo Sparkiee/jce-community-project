@@ -1,9 +1,12 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoginForm from './components/LoginForm';
 import HomePage from './components/HomePage';
+import UserCreationForm from './components/UserCreationForm';
+import RegistrationForm from './components/RegistrationForm';
+import CreateEvent from './components/CreateEvent';
 
 const App = () => {
   return (

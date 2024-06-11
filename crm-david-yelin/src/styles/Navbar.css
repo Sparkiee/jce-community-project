@@ -1,3 +1,20 @@
+html {
+  font-size: 10px;
+  scroll-behavior: smooth;
+}
+
+@media only screen and (min-width: 1024px) and (max-width: 1399px) {
+  html {
+    font-size: 8px;
+  }
+}
+
+@media only screen and (min-width: 1400px) and (max-width: 1700px) {
+  html {
+    font-size: 9px;
+  }
+}
+
 header {
   background-color: rgb(2, 4, 79);
   padding-bottom: 1rem;
@@ -16,6 +33,10 @@ header .logo a {
   align-items: center;
   padding: 1rem 1rem 0 0rem;
   text-align: center;
+}
+
+.logo {
+  width: 15%;
 }
 
 .logo-img {
@@ -60,14 +81,22 @@ header .logo a {
 }
 
 .search-li-nav {
+  position: relative;
   margin-top: 0.45rem;
+}
+
+.search-li-nav svg {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  left: 5%;
 }
 
 .search-input-nav {
   border: 2px solid rgb(2, 4, 79);
   border-radius: 2rem;
   padding: 0.6rem 1rem;
-  width: 16rem;
+  width: 100%;
   font-size: 1.2rem;
 }
 
@@ -103,4 +132,3 @@ header .logo a {
   border: 2px solid #d90707;
   background-color: #d90707;
 }
-

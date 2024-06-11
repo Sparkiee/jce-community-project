@@ -10,7 +10,11 @@ function Navbar() {
         <div className="navbar">
           <div className="logo">
             <a to="#" onClick={() => navigate("#")}>
-              <img className="logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+              <img
+                className="logo-img"
+                src={require("../assets/aguda.png")}
+                alt="aguda icon"
+              />
               <p>
                 אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
               </p>
@@ -34,7 +38,51 @@ function Navbar() {
                 </a>
               </li>
               <li className="search-li-nav">
-                <input type="text" placeholder="חיפוש משתמש" className="search-input-nav" />
+                <svg
+                  viewBox="0 0 32 32"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#000000"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <title>search</title> <desc>Created with Sketch Beta.</desc>{" "}
+                    <defs> </defs>{" "}
+                    <g
+                      id="Page-1"
+                      stroke="none"
+                      stroke-width="1"
+                      fill="none"
+                      fill-rule="evenodd"
+                    >
+                      {" "}
+                      <g
+                        id="Icon-Set"
+                        transform="translate(-256.000000, -1139.000000)"
+                        fill="#000000"
+                      >
+                        {" "}
+                        <path
+                          d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
+                          id="search"
+                        >
+                          {" "}
+                        </path>{" "}
+                      </g>{" "}
+                    </g>{" "}
+                  </g>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="חיפוש משתמש"
+                  className="search-input-nav"
+                />
               </li>
             </ul>
             <div className="left-side-nav">
@@ -44,9 +92,14 @@ function Navbar() {
                 version="1.1"
                 baseProfile="full"
                 enable-background="new 0 0 76.00 76.00"
-                fill="#000000">
+                fill="#000000"
+              >
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
                 <g id="SVGRepo_iconCarrier">
                   {" "}
                   <path
@@ -54,16 +107,22 @@ function Navbar() {
                     fill-opacity="1"
                     stroke-width="0.2"
                     stroke-linejoin="round"
-                    d="M 18,26L 53.9999,26C 55.6568,26 56.9999,27.3432 56.9999,29L 56.9999,51C 56.9999,52.6568 55.6567,54 53.9999,54L 18,54C 16.3431,54 15,52.6569 15,51L 15,29C 15,27.3432 16.3432,26 18,26 Z M 20,32.9999L 20,34.9999L 49,34.9999L 49,32.9999L 20,32.9999 Z M 20,38.9999L 20,40.9999L 42,40.9999L 42,38.9999L 20,38.9999 Z M 20,44.9999L 20,46.9999L 49,46.9999L 49,44.9999L 20,44.9999 Z M 22,22L 57.9999,22C 59.6568,22 60.9999,23.3432 60.9999,25L 60.9999,47C 60.9999,48.6568 59.6567,50 57.9999,50L 57.9999,28C 57.9999,26.3431 56.6568,25 54.9999,25L 19,25C 19,23.3432 20.3432,22 22,22 Z "></path>{" "}
+                    d="M 18,26L 53.9999,26C 55.6568,26 56.9999,27.3432 56.9999,29L 56.9999,51C 56.9999,52.6568 55.6567,54 53.9999,54L 18,54C 16.3431,54 15,52.6569 15,51L 15,29C 15,27.3432 16.3432,26 18,26 Z M 20,32.9999L 20,34.9999L 49,34.9999L 49,32.9999L 20,32.9999 Z M 20,38.9999L 20,40.9999L 42,40.9999L 42,38.9999L 20,38.9999 Z M 20,44.9999L 20,46.9999L 49,46.9999L 49,44.9999L 20,44.9999 Z M 22,22L 57.9999,22C 59.6568,22 60.9999,23.3432 60.9999,25L 60.9999,47C 60.9999,48.6568 59.6567,50 57.9999,50L 57.9999,28C 57.9999,26.3431 56.6568,25 54.9999,25L 19,25C 19,23.3432 20.3432,22 22,22 Z "
+                  ></path>{" "}
                 </g>
               </svg>
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                stroke="#ffffff">
+                stroke="#ffffff"
+              >
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
                 <g id="SVGRepo_iconCarrier">
                   {" "}
                   <path
@@ -71,22 +130,29 @@ function Navbar() {
                     stroke="#ffffff"
                     stroke-width="1.5"
                     stroke-linecap="round"
-                    stroke-linejoin="round"></path>{" "}
+                    stroke-linejoin="round"
+                  ></path>{" "}
                   <path
                     d="M18.74 19.3801C16.96 21.0101 14.6 22.0001 12 22.0001C9.40001 22.0001 7.04001 21.0101 5.26001 19.3801C5.36001 18.4401 5.96001 17.5201 7.03001 16.8001C9.77001 14.9801 14.25 14.9801 16.97 16.8001C18.04 17.5201 18.64 18.4401 18.74 19.3801Z"
                     stroke="#ffffff"
                     stroke-width="1.5"
                     stroke-linecap="round"
-                    stroke-linejoin="round"></path>{" "}
+                    stroke-linejoin="round"
+                  ></path>{" "}
                   <path
                     d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
                     stroke="#ffffff"
                     stroke-width="1.5"
                     stroke-linecap="round"
-                    stroke-linejoin="round"></path>{" "}
+                    stroke-linejoin="round"
+                  ></path>{" "}
                 </g>
               </svg>
-              <a className="logout-button" to="/logout" onClick={() => navigate("/")}>
+              <a
+                className="logout-button"
+                to="/logout"
+                onClick={() => navigate("/")}
+              >
                 התנתק
               </a>
             </div>

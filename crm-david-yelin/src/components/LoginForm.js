@@ -75,7 +75,7 @@ function LoginForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
-          <button type="submit" className="login-button">
+          <button type="submit" className="primary-button">
             התחברות
           </button>
           <button type="submit" className="registration-button">

@@ -7,7 +7,7 @@ import {
   where,
   addDoc,
   doc,
-  serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 
@@ -19,26 +19,21 @@ function CreateEvent() {
     eventName: "",
     eventDate: "",
     eventLocation: "",
-    assignees: selectedMembers
+    assignees: selectedMembers,
   });
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const assigneeRefs = selectedMembers.map((member) =>
-      doc(db, "members", member.id)
-    );
+    const assigneeRefs = selectedMembers.map((member) => doc(db, "members", member.id));
     const updatedEventDetails = {
       eventName: eventDetails.eventName,
       eventDate: eventDetails.eventDate,
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
-      eventStatus: "בתהליך"
+      eventStatus: "בתהליך",
     };
     try {
-      const docRef = await addDoc(
-        collection(db, "events"),
-        updatedEventDetails
-      );
+      const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
       console.log("Event recorded with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
@@ -58,14 +53,12 @@ function CreateEvent() {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some(
-              (selectedMember) => selectedMember.fullName === member.fullName
-            )
+            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
         );
       setMembers(results);
     } else {
@@ -75,10 +68,7 @@ function CreateEvent() {
 
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
-    if (
-      selectedMember &&
-      !selectedMembers.some((member) => member.id === selectedMember.id)
-    ) {
+    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
       setSearch(""); // Clear the search input after selection
       setMembers([]); // Clear the dropdown options
@@ -100,17 +90,13 @@ function CreateEvent() {
               placeholder="שם האירוע"
               name="eventName"
               className="create-event-input"
-              onChange={(e) =>
-                setEventDetails({ ...eventDetails, eventName: e.target.value })
-              }
+              onChange={(e) => setEventDetails({ ...eventDetails, eventName: e.target.value })}
             />
             <input
               type="date"
               name="eventDate"
               className="create-event-input"
-              onChange={(e) =>
-                setEventDetails({ ...eventDetails, eventDate: e.target.value })
-              }
+              onChange={(e) => setEventDetails({ ...eventDetails, eventDate: e.target.value })}
             />
             <input
               type="text"
@@ -120,7 +106,7 @@ function CreateEvent() {
               onChange={(e) =>
                 setEventDetails({
                   ...eventDetails,
-                  eventLocation: e.target.value
+                  eventLocation: e.target.value,
                 })
               }
             />
@@ -142,7 +128,7 @@ function CreateEvent() {
           </div>
 
           <br />
-          <input type="submit" value="שלח" />
+          <input type="submit" value="שלח" className="primary-button extra-create-event" />
         </form>
         <h2>Selected Members:</h2>
         <ul>

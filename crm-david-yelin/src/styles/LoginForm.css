@@ -8,7 +8,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: rgb(56, 163, 165, 0.8);
+  background-color: rgb(2, 4, 79, 0.8);
 }
 
 .login {
@@ -61,49 +61,50 @@ body {
   outline: 0;
 }
 
-.login-button {
+.primary-button {
   width: 85%;
   font-size: 1.4rem;
-  background-color: #406aff;
+  background-color: blue;
   color: #ffffff;
   padding: 0.7rem;
   margin-bottom: 1.2rem;
-  border: 1px solid #e6ecf8;
+  border: 1px solid blue;
   border-radius: 0.3rem;
   cursor: pointer;
-  transition: background-color 0.2s linear;
+  transition: background-color 0.2s linear, border 0.2s linear;
 }
 
-.login-button:hover {
-  background-color: #2e4bd0;
+.primary-button:hover {
+  background-color: rgb(2, 4, 79);
+  border: 1px solid rgb(2, 4, 79);
 }
 
 .registration-button {
   width: 84.8%;
   font-size: 1.4rem;
   background-color: rgb(255, 255, 255, 0.7);
-  color: #406aff;
+  color: blue;
   padding: 0.7rem;
   margin-bottom: 0.4rem;
-  border: 2px solid #406aff;
+  border: 2px solid blue;
   border-radius: 0.3rem;
   cursor: pointer;
   transition: background-color 0.2s linear;
 }
 
 .registration-button:hover {
-  background-color: rgb(232, 232, 232);
+  background-color: rgb(223, 223, 223);
 }
 
 .forgot-password {
   text-decoration: none;
   font-size: 1.2rem;
-  color: #406aff;
+  color: blue;
   transition: color 0.2s linear;
 }
 
 .forgot-password:hover {
-  color: black;
+  color: rgb(2, 4, 79);
 }
 
 .error-messages {

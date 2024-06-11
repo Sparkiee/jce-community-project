@@ -32,7 +32,6 @@ function UserCreationForm() {
       } catch (e) {
         console.error("Error adding document: ", e);
       }
-
     }
     setIsOtherSelected(false);
     setNewDepartment("");
@@ -53,13 +52,13 @@ function UserCreationForm() {
     async function fetchDepartments() {
       try {
         const querySnapshot = await getDocs(collection(db, "departments"));
-        const departments = querySnapshot.docs.map(doc => doc.data().name);
+        const departments = querySnapshot.docs.map((doc) => doc.data().name);
         setDepartmentList(departments);
       } catch (e) {
         console.error("Error fetching departments: ", e);
       }
     }
-  
+
     fetchDepartments();
   }, []); // Empty dependency array means this effect runs once on mount
 
@@ -125,13 +124,6 @@ function UserCreationForm() {
                 ))}
                 <option value="other">הוסף מחלקה</option>
               </select>
-              <input
-                type="text"
-                value={role}
-                onChange={(event) => setRole(event.target.value)}
-                placeholder="תפקיד"
-                className="create-user-input"
-              ></input>
               {isOtherSelected && (
                 <div className="new-department">
                   <input
@@ -141,13 +133,22 @@ function UserCreationForm() {
                     onChange={(event) => setNewDepartment(event.target.value)}
                     className="create-user-input"
                   />
-                  <button type="button" onClick={addDepartment} className="create-button">
+                  <button
+                    type="button"
+                    onClick={addDepartment}
+                    className="primary-button extra-create-user-button">
                     הוסף מחלקה
                   </button>
                 </div>
               )}
+              <input
+                type="text"
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+                placeholder="תפקיד"
+                className="create-user-input"></input>
             </div>
-            <button type="submit" className="create-button">
+            <button type="submit" className="primary-button">
               צור משתמש חדש
             </button>
             <div className="feedback">

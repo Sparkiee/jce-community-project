@@ -1,17 +1,8 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  getDoc,
-  doc,
-  serverTimestamp,
-  setDoc,
-  deleteDoc
-} from "firebase/firestore";
+import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth } from "../firebase.js";
 import "../styles/RegistrationForm.css";
 import PhoneInput from "react-phone-number-input/input";
@@ -56,13 +47,10 @@ function RegistrationForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const isPendingRegistration = await checkPendingRegistration(
-        email.toLowerCase()
-      );
+      const isPendingRegistration = await checkPendingRegistration(email.toLowerCase());
       setPendingAccount(!isPendingRegistration);
       if (isPendingRegistration) {
-
-        await grabDepartment(email)
+        await grabDepartment(email);
 
         try {
           console.log("Writing document...");
@@ -76,29 +64,19 @@ function RegistrationForm() {
             privileges: 1,
             department: await grabDepartment(email),
             role: await grabRole(email),
-            createdOn: serverTimestamp()
+            createdOn: serverTimestamp(),
           });
           console.log("Document successfully written!");
           setAccountExists(true);
 
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
           console.log(`User registered with UID: ${user.uid}`);
           await sendEmailVerification(user);
           // Delete the document from the awaiting_registration collection
-          const awaitingRegistrationDocRef = doc(
-            db,
-            "awaiting_registration",
-            email
-          );
+          const awaitingRegistrationDocRef = doc(db, "awaiting_registration", email);
           await deleteDoc(awaitingRegistrationDocRef);
-          console.log(
-            "Document successfully deleted from awaiting_registration!"
-          );
+          console.log("Document successfully deleted from awaiting_registration!");
           // Navigate to login page
           setTimeout(() => {
             navigate("/");
@@ -163,15 +141,13 @@ function RegistrationForm() {
               onChange={(event) => setVerifyPassword(event.target.value)}
             />
           </div>
-          <button type="submit" className="registration-form-button">
+          <button type="submit" className="primary-button extra-reg">
             הירשם
           </button>
           <div className="feedback">
             {pendingAccount && <p>אימייל לא מורשה להרשם למערכת</p>}
             {accountExists && (
-              <p style={{ color: "green" }}>
-                משתמש נוצר, נא לאמת אימייל דרך התיבת דואר
-              </p>
+              <p style={{ color: "green" }}>משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</p>
             )}
             {!passwordsMatch && <p>הסיסמאות אינן תואמות</p>}
           </div>

@@ -12,6 +12,7 @@ const checkPendingRegistration = async (email) => {
 // Add current department as a field in pending_registration and later on connect to user
 function UserCreationForm() {
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
   const [emailExists, setEmailExists] = useState(false);
   const [accountCreated, setAccountCreated] = useState(false);
   const [department, setDepartment] = useState("");
@@ -77,6 +78,7 @@ function UserCreationForm() {
         await setDoc(docRef, {
           email: email,
           department: department,
+          role: role,
           timestamp: serverTimestamp(),
         });
         setAccountCreated(true);
@@ -123,6 +125,13 @@ function UserCreationForm() {
                 ))}
                 <option value="other">הוסף מחלקה</option>
               </select>
+              <input
+                type="text"
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+                placeholder="תפקיד"
+                className="create-user-input"
+              ></input>
               {isOtherSelected && (
                 <div className="new-department">
                   <input

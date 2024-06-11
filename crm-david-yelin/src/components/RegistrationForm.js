@@ -23,12 +23,19 @@ const checkPendingRegistration = async (email) => {
 };
 
 const grabDepartment = async (email) => {
-  console.log("im here");
   const docRef = doc(db, "awaiting_registration", email);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    console.log(docSnap.data().department);
     return docSnap.data().department;
+  }
+  return null;
+};
+
+const grabRole = async (email) => {
+  const docRef = doc(db, "awaiting_registration", email);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data().role;
   }
   return null;
 };
@@ -68,6 +75,7 @@ function RegistrationForm() {
             phone: phone,
             privileges: 1,
             department: await grabDepartment(email),
+            role: await grabRole(email),
             createdOn: serverTimestamp()
           });
           console.log("Document successfully written!");

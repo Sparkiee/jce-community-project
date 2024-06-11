@@ -36,7 +36,6 @@ const grabDepartment = async (email) => {
 function RegistrationForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [id, setId] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,7 +65,6 @@ function RegistrationForm() {
             firstName: firstName,
             lastName: lastName,
             fullName: firstName + " " + lastName,
-            id: id,
             phone: phone,
             privileges: 1,
             department: await grabDepartment(email),
@@ -126,13 +124,6 @@ function RegistrationForm() {
               className="registration-input"
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="תעודת זהות"
-              className="registration-input"
-              value={id}
-              onChange={(event) => setId(event.target.value)}
             />
             <PhoneInput
               defaultCountry="IL"

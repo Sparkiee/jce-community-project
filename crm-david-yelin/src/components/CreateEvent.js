@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { db } from "../firebase";
-import { collection, query, getDocs, where, addDoc, doc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  addDoc,
+  doc,
+  serverTimestamp
+} from "firebase/firestore";
+import "../styles/CreateEvent.css";
 
 function CreateEvent() {
   const [search, setSearch] = useState("");
@@ -15,17 +24,21 @@ function CreateEvent() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const assigneeRefs = selectedMembers.map(member => doc(db, 'members', member.id));
+    const assigneeRefs = selectedMembers.map((member) =>
+      doc(db, "members", member.id)
+    );
     const updatedEventDetails = {
       eventName: eventDetails.eventName,
       eventDate: eventDetails.eventDate,
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
-      eventStatus: "בתהליך",
-
+      eventStatus: "בתהליך"
     };
     try {
-      const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
+      const docRef = await addDoc(
+        collection(db, "events"),
+        updatedEventDetails
+      );
       console.log("Event recorded with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
@@ -77,72 +90,69 @@ function CreateEvent() {
   };
 
   return (
-    <div>
-      <h1>צור אירוע</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          שם האירוע:
-          <input
-            type="text"
-            name="eventName"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, eventName: e.target.value })
-            }
-          />
-        </div>
-        <br />
-        <div>
-          תאריך האירוע:
-          <input
-            type="date"
-            name="eventDate"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, eventDate: e.target.value })
-            }
-          />
-        </div>
-        <br />
-        <div>
-          מיקום האירוע:
-          <input
-            type="text"
-            name="eventLocation"
-            onChange={(e) =>
-              setEventDetails({
-                ...eventDetails,
-                eventLocation: e.target.value
-              })
-            }
-          />
-        </div>
-        <br />
-        <div>
-          <input
-            list="members"
-            value={search}
-            onChange={(e) => {
-              handleSearch(e);
-              handleSelectMember(e.target.value);
-            }}
-          />
-          <datalist id="members">
-            {members.map((member, index) => (
-              <option key={index} value={member.fullName} />
-            ))}
-          </datalist>
-        </div>
+    <div className="container">
+      <div className="create-event">
+        <h2 className="title">צור אירוע</h2>
+        <form className="create-event-form" onSubmit={handleSubmit}>
+          <div className="create-event-input-box">
+            <input
+              type="text"
+              placeholder="שם האירוע"
+              name="eventName"
+              className="create-event-input"
+              onChange={(e) =>
+                setEventDetails({ ...eventDetails, eventName: e.target.value })
+              }
+            />
+            <input
+              type="date"
+              name="eventDate"
+              className="create-event-input"
+              onChange={(e) =>
+                setEventDetails({ ...eventDetails, eventDate: e.target.value })
+              }
+            />
+            <input
+              type="text"
+              placeholder="מיקום האירוע"
+              name="eventLocation"
+              className="create-event-input"
+              onChange={(e) =>
+                setEventDetails({
+                  ...eventDetails,
+                  eventLocation: e.target.value
+                })
+              }
+            />
+            <input
+              list="members"
+              placeholder="חפש חבר וועדה להוספה"
+              value={search}
+              className="create-event-input"
+              onChange={(e) => {
+                handleSearch(e);
+                handleSelectMember(e.target.value);
+              }}
+            />
+            <datalist id="members">
+              {members.map((member, index) => (
+                <option key={index} value={member.fullName} />
+              ))}
+            </datalist>
+          </div>
 
-        <br />
-        <input type="submit" value="שלח" />
-      </form>
-      <h2>Selected Members:</h2>
-      <ul>
-        {selectedMembers.map((member) => (
-          <li key={member.id} onClick={() => handleRemoveMember(member.id)}>
-            {member.fullName}
-          </li>
-        ))}
-      </ul>
+          <br />
+          <input type="submit" value="שלח" />
+        </form>
+        <h2>Selected Members:</h2>
+        <ul>
+          {selectedMembers.map((member) => (
+            <li key={member.id} onClick={() => handleRemoveMember(member.id)}>
+              {member.fullName}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

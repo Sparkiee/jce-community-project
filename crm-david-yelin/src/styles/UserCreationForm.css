@@ -1,18 +1,4 @@
-body {
-  direction: rtl;
-  font-size: 10px;
-}
-
-.create-user {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(255, 255, 255, 0.7);
-  padding: 2.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-  max-width: 30rem;
+.extra-create-user-form {
   width: 100%;
 }
 
@@ -31,11 +17,11 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 .create-user-input-box select {
-  width: 106%;
+  width: 90%;
 }
 
 .new-department {
@@ -45,16 +31,6 @@ body {
   justify-content: center;
   width: 100%;
   gap: 1rem;
-}
-
-.create-user-input {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #e6ecf8;
-  border-radius: 0.3rem;
-  font-size: 1.4rem;
-  color: #141c3a;
-  outline: 0;
 }
 
 .extra-create-user-button {

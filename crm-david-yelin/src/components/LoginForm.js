@@ -41,7 +41,7 @@ function LoginForm() {
 
   return (
     <div className="container">
-      <div className="login">
+      <div className="forms-box">
         <h1 className="title">שלום!</h1>
         <p className="subtitle">נא הכנס שם משתמש וסיסמה</p>
         <div className="error-messages">
@@ -61,7 +61,7 @@ function LoginForm() {
             <input
               type="email"
               placeholder="אימייל"
-              className="styled-input"
+              className="forms-input"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
@@ -70,7 +70,7 @@ function LoginForm() {
             <input
               type="password"
               placeholder="סיסמה"
-              className="styled-input"
+              className="forms-input"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />

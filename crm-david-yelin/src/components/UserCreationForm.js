@@ -88,9 +88,9 @@ function UserCreationForm() {
   }
   return (
     <div className="container">
-      <div className="create-user">
+      <div className="forms-box">
         <h2 className="title">יצירת משתמש</h2>
-        <form onSubmit={handleSubmit}>
+        <form className="extra-create-user-form" onSubmit={handleSubmit}>
           <div className="create-user-form">
             <div className="create-user-input-box">
               <input
@@ -98,7 +98,7 @@ function UserCreationForm() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="אימייל"
-                className="create-user-input"
+                className="forms-input"
               />
               <select
                 name="department"
@@ -113,7 +113,7 @@ function UserCreationForm() {
                     setDepartment(value);
                   }
                 }}
-                className="create-user-input">
+                className="forms-input">
                 <option value="" disabled>
                   בחר מחלקה
                 </option>
@@ -131,7 +131,7 @@ function UserCreationForm() {
                     value={newDepartment}
                     placeholder="הוסף מחלקה"
                     onChange={(event) => setNewDepartment(event.target.value)}
-                    className="create-user-input"
+                    className="forms-input"
                   />
                   <button
                     type="button"
@@ -146,7 +146,7 @@ function UserCreationForm() {
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
                 placeholder="תפקיד"
-                className="create-user-input"></input>
+                className="forms-input"></input>
             </div>
             <button type="submit" className="primary-button">
               צור משתמש חדש

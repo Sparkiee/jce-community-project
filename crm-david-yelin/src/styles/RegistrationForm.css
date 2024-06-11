@@ -3,19 +3,6 @@ body {
   font-size: 10px;
 }
 
-.registration {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(255, 255, 255, 0.7);
-  padding: 2.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-  max-width: 30rem;
-  width: 100%;
-}
-
 .registration-form {
   display: flex;
   flex-direction: column;
@@ -30,26 +17,16 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  gap: 0.8rem;
-}
-
-.registration-input {
-  width: 80%;
-  padding: 0.6rem;
-  border: 1px solid #e6ecf8;
-  border-radius: 0.3rem;
-  font-size: 1.4rem;
-  color: #141c3a;
-  outline: 0;
+  gap: 1rem;
 }
 
 .extra-reg {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 .feedback p {
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: bold;
   color: #d04848;
 }

@@ -93,28 +93,28 @@ function RegistrationForm() {
 
   return (
     <div className="container">
-      <div className="registration">
+      <div className="forms-box">
         <h2 className="title">הרשמה</h2>
         <form className="registration-form" onSubmit={handleSubmit}>
           <div className="registration-input-box">
             <input
               type="text"
               placeholder="שם פרטי"
-              className="registration-input"
+              className="forms-input"
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
             />
             <input
               type="text"
               placeholder="שם משפחה"
-              className="registration-input"
+              className="forms-input"
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
             />
             <PhoneInput
               defaultCountry="IL"
               placeholder="טלפון"
-              className="registration-input"
+              className="forms-input"
               value={phone}
               onChange={setPhone}
               style={{ textAlign: "right" }}
@@ -122,21 +122,21 @@ function RegistrationForm() {
             <input
               type="email"
               placeholder="אימייל"
-              className="registration-input"
+              className="forms-input"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
             <input
               type="password"
               placeholder="סיסמה"
-              className="registration-input"
+              className="forms-input"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
             <input
               type="password"
               placeholder="אמת סיסמה"
-              className="registration-input"
+              className="forms-input"
               value={verifyPassword}
               onChange={(event) => setVerifyPassword(event.target.value)}
             />

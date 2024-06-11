@@ -1,0 +1,105 @@
+header {
+  background-color: rgb(2, 4, 79);
+  padding-bottom: 1rem;
+}
+
+header .logo a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1rem 0 0rem;
+  text-align: center;
+}
+
+.logo-img {
+  width: 5rem;
+}
+
+.logo a p {
+  text-align: center;
+  font-size: 1rem;
+  width: 9rem;
+  color: white;
+}
+
+.nav-items {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  padding: 0 3rem;
+}
+
+.nav-items ul {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-items li {
+  list-style: none;
+  font-size: 1.5rem;
+}
+
+.nav-items li a {
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+  transition: color 0.2s linear;
+}
+
+.nav-items li a:hover {
+  color: rgb(222, 222, 222);
+}
+
+.search-li-nav {
+  margin-top: 0.45rem;
+}
+
+.search-input-nav {
+  border: 2px solid rgb(2, 4, 79);
+  border-radius: 2rem;
+  padding: 0.6rem 1rem;
+  width: 16rem;
+  font-size: 1.2rem;
+}
+
+.left-side-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.left-side-nav svg {
+  width: 4rem;
+  cursor: pointer;
+  transition: transform 0.2s linear;
+}
+
+.left-side-nav svg:hover {
+  transform: scale(1.1);
+}
+
+.logout-button {
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.3rem 1.4rem 0.7rem;
+  border: 2px solid #d12626;
+  border-radius: 2rem;
+  background-color: #d12626;
+  transition: border 0.2s linear, background-color 0.2s linear;
+}
+
+.logout-button:hover {
+  border: 2px solid #d90707;
+  background-color: #d90707;
+}

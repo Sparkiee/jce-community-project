@@ -16,7 +16,6 @@ const checkPendingRegistration = async (email) => {
 function RegistrationForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [id, setId] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,11 +56,11 @@ function RegistrationForm() {
           console.log("Writing document...");
           const docRef = doc(db, "members", email);
           await setDoc(docRef, {
+            uid: user.uid,
             email: email,
             firstName: firstName,
             lastName: lastName,
             fullName: firstName + " " + lastName,
-            id: id,
             phone: phone,
             privileges: 0,
             department: "General",
@@ -113,15 +112,6 @@ function RegistrationForm() {
               className="styled-input"
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
-            />
-          </div>
-          <div className="id">
-            <input
-              type="text"
-              placeholder="תעודת זהות"
-              className="styled-input"
-              value={id}
-              onChange={(event) => setId(event.target.value)}
             />
           </div>
           <div className="phone">

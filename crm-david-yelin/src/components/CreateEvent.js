@@ -41,32 +41,37 @@ function CreateEvent() {
       assignees: assigneeRefs,
       eventStatus: "בתהליך"
     };
-  
+
     try {
-      const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
+      const docRef = await addDoc(
+        collection(db, "events"),
+        updatedEventDetails
+      );
       console.log("Event recorded with ID: ", docRef.id);
       setEventExists(true);
-  
+
       // Use forEach for side effects
-      await Promise.all(selectedMembers.map(async (member) => {
-        const memberRef = doc(db, "members", member.id);
-  
-        // Set the timestamp separately
-        await updateDoc(memberRef, {
-          Notifications: arrayUnion({
-            eventID: docRef,
-            notificationMessage: `הינך משובץ לאירוע חדש ${eventDetails.eventName}!`,
-          })
-        });
-      }));
-  
+      await Promise.all(
+        selectedMembers.map(async (member) => {
+          const memberRef = doc(db, "members", member.id);
+
+          // Set the timestamp separately
+          await updateDoc(memberRef, {
+            Notifications: arrayUnion({
+              eventID: docRef,
+              notificationMessage: `הינך משובץ לאירוע חדש ${eventDetails.eventName}!`
+            })
+          });
+        })
+      );
+
       console.log("Notifications updated for all members.");
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   }
 
-  async function handleSearch(event) {
+  async function handleSearchMember(event) {
     if (event.target.value.length >= 2) {
       const membersRef = collection(db, "members");
       const q = query(
@@ -133,10 +138,13 @@ function CreateEvent() {
               }
             />
             <input
-            type="time"
-            name="eventTime"
-            className="create-event-input"
-            onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value})} />
+              type="time"
+              name="eventTime"
+              className="create-event-input"
+              onChange={(e) =>
+                setEventDetails({ ...eventDetails, eventTime: e.target.value })
+              }
+            />
             <input
               type="text"
               placeholder="מיקום האירוע"
@@ -153,11 +161,10 @@ function CreateEvent() {
               placeholder="הוסף חבר וועדה"
               className="create-event-input"
               onInputChange={(inputValue) => {
-                handleSearch({ target: { value: inputValue } });
+                handleSearchMember({ target: { value: inputValue } });
               }}
               onChange={(e) => {
                 handleSelectMember(e.value);
-                // $("#create-event-input").val("");
               }}
               options={members.map((member) => ({
                 value: member.fullName,
@@ -195,10 +202,12 @@ function CreateEvent() {
           </div>
           <input
             type="submit"
-            value="שלח"
+            value="צור אירוע"
             className="primary-button extra-create-event"
           />
-          <div className="feedback">{eventExists && <p style={{color: "green"}}>אירוע נוצר בהצלחה</p>}</div>
+          <div className="feedback">
+            {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
+          </div>
         </form>
       </div>
     </div>

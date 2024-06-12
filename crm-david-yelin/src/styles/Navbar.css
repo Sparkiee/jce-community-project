@@ -93,6 +93,7 @@ header .logo a {
 
 .left-side-nav svg {
   width: 4rem;
+  height: 4rem;
   cursor: pointer;
   transition: transform 0.2s linear;
 }
@@ -115,4 +116,12 @@ header .logo a {
 .logout-button:hover {
   border: 2px solid red;
   background-color: red;
+}
+
+.notification-icon {
+  color: white;
+}
+
+.MuiBadge-badge {
+  font-size: 1.5rem !important;
 }

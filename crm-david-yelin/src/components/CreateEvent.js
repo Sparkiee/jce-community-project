@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import { db } from "../firebase";
 import {
   collection,
@@ -8,7 +8,6 @@ import {
   addDoc,
   doc,
   serverTimestamp,
-  setDoc,
   updateDoc,
   arrayUnion
 } from "firebase/firestore";
@@ -17,6 +16,7 @@ import Select from "react-select";
 
 function CreateEvent() {
   const [search, setSearch] = useState("");
+  const [eventExists, setEventExists] = useState(false);
   const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [eventDetails, setEventDetails] = useState({
@@ -27,42 +27,6 @@ function CreateEvent() {
     assignees: selectedMembers
   });
 
-  // async function handleSubmit(event) {
-  //   event.preventDefault();
-  //   const assigneeRefs = selectedMembers.map((member) =>
-  //     doc(db, "members", member.id)
-  //   );
-  //   const updatedEventDetails = {
-  //     eventName: eventDetails.eventName,
-  //     eventDate: eventDetails.eventDate,
-  //     eventLocation: eventDetails.eventLocation,
-  //     eventCreated: serverTimestamp(),
-  //     assignees: assigneeRefs,
-  //     eventStatus: "בתהליך"
-  //   };
-  //   try {
-  //     const docRef = await addDoc(
-  //       collection(db, "events"),
-  //       updatedEventDetails
-  //     );
-  //     console.log("Event recorded with ID: ", docRef.id);
-  //     await Promise.all(selectedMembers.map(async (member) => {
-  //       const memberRef = doc(db, "members", member.id);
-  //       const notification = {
-  //         eventID: docRef.id,
-  //         notificationTime: serverTimestamp(),
-  //         notificationMessage: "הינך משובץ לאירוע חדש!"
-  //       };
-  
-  //       // Assuming Notifications is an array, use arrayUnion to add a new notification
-  //       await updateDoc(memberRef, {
-  //         Notifications: arrayUnion(notification)
-  //       });
-  //     }));
-  //   } catch (e) {
-  //     console.error("Error adding document: ", e);
-  //   }
-  // }
   async function handleSubmit(event) {
     event.preventDefault();
     const assigneeRefs = selectedMembers.map((member) =>
@@ -81,6 +45,7 @@ function CreateEvent() {
     try {
       const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
       console.log("Event recorded with ID: ", docRef.id);
+      setEventExists(true);
   
       // Use forEach for side effects
       await Promise.all(selectedMembers.map(async (member) => {
@@ -184,15 +149,6 @@ function CreateEvent() {
                 })
               }
             />
-            {/* <select className="create-event-input" onChange={(e) => {
-              console.log("testtttttttttt");
-            }}>
-              {members.map((member, index) => (
-                <option key={index} value={member.fullName}>
-                  {member.fullName}
-                </option>
-              ))}
-            </select> */}
             <Select
               placeholder="הוסף חבר וועדה"
               className="create-event-input"
@@ -201,6 +157,7 @@ function CreateEvent() {
               }}
               onChange={(e) => {
                 handleSelectMember(e.value);
+                // $("#create-event-input").val("");
               }}
               options={members.map((member) => ({
                 value: member.fullName,
@@ -214,7 +171,6 @@ function CreateEvent() {
                   className="selected-member"
                   onClick={() => handleRemoveMember(member.id)}
                 >
-                  {/* <i className="icon-class-name">👤</i> */}
                   <svg
                     className="w-6 h-6 text-gray-800 dark:text-white"
                     aria-hidden="true"
@@ -242,6 +198,7 @@ function CreateEvent() {
             value="שלח"
             className="primary-button extra-create-event"
           />
+          <div className="feedback">{eventExists && <p style={{color: "green"}}>אירוע נוצר בהצלחה</p>}</div>
         </form>
       </div>
     </div>

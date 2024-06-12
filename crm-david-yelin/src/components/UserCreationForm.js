@@ -3,6 +3,7 @@ import { db } from "../firebase";
 import { getDoc, doc, serverTimestamp, setDoc, getDocs, collection } from "firebase/firestore";
 import "../styles/UserCreationForm.css";
 
+
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
   const docSnap = await getDoc(docRef);

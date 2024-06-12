@@ -33,7 +33,7 @@ function LoginForm() {
         sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
       }
       setWrongCredentials(false);
-      navigate("/profile");
+      navigate("/home");
     } catch (error) {
       setWrongCredentials(true);
     }

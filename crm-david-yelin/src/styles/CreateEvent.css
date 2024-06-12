@@ -49,10 +49,11 @@
 }
 
 .selected-member {
+  cursor: pointer;
   display: flex;
   flex-direction: row; /* This is default and usually doesn't need to be explicitly set */
   align-items: center;
-  transition: text-shadow 0.4s linear; 
+  transition: color 0.2s linear;
 }
 
 .create-event-selected-members svg {
@@ -60,7 +61,5 @@
 }
 
 .selected-member:hover {
-  cursor: pointer;
   color: rgb(2, 4, 79);
-  text-shadow: 1px 1px 0 rgb(2, 4, 79);
 }

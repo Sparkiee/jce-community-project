@@ -16,7 +16,10 @@ function Navbar() {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         const member = JSON.parse(sessionStorage.getItem("user"));
-        setNotifications(member.Notifications.length);
+        if(!member.Notifications)
+          setNotifications(0);
+        else
+          setNotifications(member.Notifications.length);
       }
     });
 

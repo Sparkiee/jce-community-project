@@ -41,3 +41,26 @@
 .extra-create-event {
   margin-top: 1.2rem;
 }
+
+.create-event-selected-members {
+  font-size: 1.4rem;
+  color: black;
+  transition: color 0.2s linear;
+}
+
+.selected-member {
+  display: flex;
+  flex-direction: row; /* This is default and usually doesn't need to be explicitly set */
+  align-items: center;
+  transition: text-shadow 0.4s linear; 
+}
+
+.create-event-selected-members svg {
+  margin-left: 0.5rem;
+}
+
+.selected-member:hover {
+  cursor: pointer;
+  color: rgb(2, 4, 79);
+  text-shadow: 1px 1px 0 rgb(2, 4, 79);
+}

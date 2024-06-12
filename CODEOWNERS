@@ -1,1 +1,4 @@
-@Sparkiee
+# Define code ownership for specific directories or files
+
+# Ownership for all files in the repository
+* @Sparkiee

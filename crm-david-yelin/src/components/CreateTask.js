@@ -15,6 +15,8 @@ import Select from "react-select";
 import "../styles/CreateTask.css";
 
 function CreateTask() {
+  const [taskExists, setTaskExists] = useState(false);
+
   const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
   const [events, setEvents] = useState([]);
@@ -28,7 +30,66 @@ function CreateTask() {
     relatedEvent: selectedEvent,
     assignees: selectedMembers
   });
-  async function handleSubmit(event) {}
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const assigneeRefs = selectedMembers.map((member) =>
+      doc(db, "members", member.id)
+    );
+    
+    let targetEvent
+    if (!selectedEvent || !selectedEvent.id) {
+      targetEvent = null;
+    } else {
+      targetEvent = doc(db, "events", selectedEvent.id);
+    }
+
+    let updatedTaskDetails = {
+      taskName: taskDetails.taskName,
+      taskDescription: taskDetails.taskDescription,
+      taskDate: taskDetails.taskDate,
+      taskTime: taskDetails.taskTime,
+      taskCreated: serverTimestamp(),
+      taskStatus: "בתהליך"
+    };
+  
+    // Conditionally add targetEvent if it exists and is not null
+    if (selectedEvent && selectedEvent.id) {
+      updatedTaskDetails.relatedEvent = targetEvent;
+    }
+  
+    // Conditionally add assignees if the array is not empty
+    if (assigneeRefs.length > 0) {
+      updatedTaskDetails.assignees = assigneeRefs;
+    }
+
+    try {
+      const docRef = await addDoc(
+        collection(db, "tasks"),
+        updatedTaskDetails
+      );
+      console.log("Task recorded with ID: ", docRef.id);
+      setTaskExists(true);
+
+      // Use forEach for side effects
+      await Promise.all(
+        selectedMembers.map(async (member) => {
+          const memberRef = doc(db, "members", member.id);
+
+          // Set the timestamp separately
+          await updateDoc(memberRef, {
+            Notifications: arrayUnion({
+              taskID: docRef,
+              message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
+            })
+          });
+        })
+      );
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  }
+
   async function handleSearchEvent(event) {
     if (event.target.value.length >= 2) {
       const eventRef = collection(db, "events");
@@ -246,6 +307,9 @@ function CreateTask() {
             value="צור משימה"
             className="primary-button extra-create-event"
           />
+          <div className="feedback">
+            {taskExists && <p style={{ color: "green" }}>משימה חדשה התווספה בהצלחה</p>}
+          </div>
         </form>
       </div>
     </div>

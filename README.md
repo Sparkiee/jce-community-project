@@ -1,4 +1,4 @@
-# JCE Community Project - [Project name]
+# JCE Community Project - CRM David Yelin
 
 ## Description
 
@@ -11,10 +11,10 @@ The project is being developed for David Yelin Student Council, an organization 
 ## Project Members
 
 ### Development Team:
-- Adam Shay - Scrum Master
-- Maxim Shteingard - Team Leader
-- Evyevy12 - Product Owner
-- Yosef Matatov - Ambassador of Russia in JCE
+- Adam Shay
+- Maxim Shteingard
+- Evyevy12
+- Yosef Matatov
 
 ### Advisor/Supervisor:
 - [Advisor/Supervisor's Name] - [Advisor/Supervisor's Role/Responsibilities]

@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 function Navbar() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(0);
+  
 
   useEffect(() => {
     // Listener for authentication state
@@ -26,6 +27,12 @@ function Navbar() {
     // Cleanup the listener on unmount
     return () => unsubscribeAuth();
   }, []);
+
+  const disconnect = () => {
+    navigate("/");
+    sessionStorage.removeItem("user");
+    auth.signOut();
+  }
 
   return (
     <header>
@@ -121,7 +128,7 @@ function Navbar() {
                     stroke-linejoin="round"></path>{" "}
                 </g>
               </svg>
-              <a className="logout-button" to="/logout" onClick={() => navigate("/")}>
+              <a className="logout-button" to="/logout" onClick={() => disconnect()}>
                 התנתק
               </a>
             </div>

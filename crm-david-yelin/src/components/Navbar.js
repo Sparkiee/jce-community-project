@@ -63,6 +63,11 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
+              <li>
+                <a to="/contact" onClick={() => navigate("/contact")}>
+                  תקשורת
+                </a>
+              </li>
               <li className="search-li-nav">
                 <svg
                   viewBox="0 0 32 32"

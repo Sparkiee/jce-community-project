@@ -15,7 +15,6 @@ import Event from "./Event";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
 
-const user = JSON.parse(sessionStorage.getItem("user"));
 
 function HomePage() {
   const [tasks, setTasks] = useState([]); // Initialize state with an empty array
@@ -24,6 +23,8 @@ function HomePage() {
   const [numEvents, setNumEvents] = useState(0);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     async function grabMyTasks() {
@@ -88,7 +89,7 @@ function HomePage() {
       <Navbar />
       <div className="home-content">
         <div className="display-create">
-          {showCreateTask && (
+          {user.privileges > 1 && showCreateTask && (
             <div>
               <div
                 className="action-close"
@@ -126,7 +127,7 @@ function HomePage() {
               <CreateTask />
             </div>
           )}
-          {showCreateEvent && (
+          {user.privileges > 1 && showCreateEvent && (
             <div>
               <div
                 className="action-close"

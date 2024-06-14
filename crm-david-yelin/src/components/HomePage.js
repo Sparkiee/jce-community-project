@@ -242,7 +242,7 @@ function HomePage() {
         ) : (
           <h2 className="pending-tasks">יש לך {numTasks} משימות פתוחות</h2>
         )}
-        <div className="display-pending-tasks">
+        {numTasks > 0 && <div className="display-pending-tasks">
           <Task key={0} task = {{taskName: "משימה", taskDescription: "תיאור", taskDate: "תאריך", taskTime: "שעה", taskStatus: "סטטוס", taskType: "title"}} />
           {tasks.map((task, index) => (
             // Assuming Task is a component that takes a task object as a prop
@@ -250,7 +250,7 @@ function HomePage() {
             // Or if you don't have a Task component, you can directly render the task details here
             // <div key={index}>Task Name: {task.name}</div>
           ))}
-        </div>
+        </div>}
         <hr className="divider" />
         {numEvents === 0 ? (
           <h2 className="title-home">אין אירועים קרובים!</h2>

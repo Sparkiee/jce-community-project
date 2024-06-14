@@ -44,8 +44,15 @@ function HomePage() {
               ) && task.status !== "הושלמה"
           );
 
-        setTasks(tasksArray); // Update state with fetched tasks
+        // setTasks(tasksArray); // Update state with fetched tasks
         setNumTasks(tasksArray.length); // Update task count
+
+        const indexedTasks = tasksArray.map((task, index) => ({
+          ...task,
+          id: index + 1
+        }));
+        
+        setTasks(indexedTasks);
       } catch (error) {
         // console.error("Failed to fetch tasks:", error);
       }
@@ -66,7 +73,13 @@ function HomePage() {
               ) && event.status !== "הושלמה"
           );
         setNumEvents(eventsArray.length); // Update event count
-        setEvents(eventsArray);
+
+        const indexedEvents = eventsArray.map((event, index) => ({
+          ...event,
+          id: index + 1
+        }));
+
+        setEvents(indexedEvents);
       } catch (error) {
         // console.error("Failed to fetch tasks:", error);
       }
@@ -83,6 +96,7 @@ function HomePage() {
   const handleShowCreateEvent = () => {
     setShowCreateEvent(true);
   };
+
 
   return (
     <div className="HomePage">
@@ -174,7 +188,6 @@ function HomePage() {
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                onClick={() => console.log("test")}
               >
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g
@@ -201,7 +214,6 @@ function HomePage() {
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                onClick={() => console.log("test")}
               >
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g
@@ -247,9 +259,9 @@ function HomePage() {
           <h2 className="title-home">יש {numEvents} אירועים בקרוב</h2>
         )}
         <div className="display-pending-tasks">
-          {events.map((task, index) => (
+          {events.map((event, index) => (
             // Assuming Task is a component that takes a task object as a prop
-            <Event key={index} task={task} />
+            <Event key={index} event={event} />
             // Or if you don't have a Task component, you can directly render the task details here
             // <div key={index}>Task Name: {task.name}</div>
           ))}

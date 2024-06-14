@@ -14,6 +14,7 @@
 
 .pending-actions {
   display: flex;
+  flex-direction: row-reverse;
   row-gap: 2rem;
   width: 80%;
 }
@@ -70,6 +71,10 @@
   color: rgb(18, 21, 116);
 }
 
-/* .display-pending-tasks {
+.display-pending-tasks {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 80%
-} */
+}

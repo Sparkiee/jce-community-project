@@ -22,7 +22,6 @@
   margin-left: 0.5rem;
   background-color: rgb(2, 4, 79);
   color: white;
-  transition: linear 0.2s background-color;
   display: flex;
   border: 2px solid rgb(2, 4, 79);
   border-radius: 2rem;
@@ -34,11 +33,13 @@
   min-width: 85px;
   align-self: flex-start; /* Changed from flex-end to flex-start */
   left: 0;
+  transition: linear 0.2s background-color, linear 0.1s transform;
 }
 
 .task-button:hover {
   cursor: pointer;
   background-color: rgb(18, 21, 116);
+  transform: scale(1.02);
 }
 
 .add-task svg {

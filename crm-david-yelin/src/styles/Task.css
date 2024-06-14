@@ -1,13 +1,33 @@
 .task-box {
     display: flex;
-    gap: 15rem;
-    align-items: center;
-    justify-content: center;
-    /* width: 80; */
+    width: 100%;
 }
 
 .task-field {
     width: 20%;
-    border: black 2px solid;
-    height: 2.5rem;
+    min-height: 2.5rem;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.253);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.task-id, .task-view {
+    width: 3%;
+    text-align: center;
+}
+
+.task-bold {
+    font-weight: bold;
+  }
+
+.task-view > svg {
+    transition: color 0.2s linear, transform 0.2s linear;
+}
+
+.task-view > svg:hover {
+    cursor: pointer;
+    transform: scale(1.2);
+    color: rgb(18, 21, 116);
 }

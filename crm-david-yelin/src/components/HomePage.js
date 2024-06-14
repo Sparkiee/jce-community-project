@@ -243,6 +243,7 @@ function HomePage() {
           <h2 className="pending-tasks">יש לך {numTasks} משימות פתוחות</h2>
         )}
         <div className="display-pending-tasks">
+          <Task key={0} task = {{taskName: "משימה", taskDescription: "תיאור", taskDate: "תאריך", taskTime: "שעה", taskStatus: "סטטוס", taskType: "title"}} />
           {tasks.map((task, index) => (
             // Assuming Task is a component that takes a task object as a prop
             <Task key={index} task={task} />

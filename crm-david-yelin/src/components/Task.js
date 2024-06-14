@@ -1,8 +1,6 @@
 import "../styles/Task.css";
 
 function Task(props) {
-  // console.log(props.task);
-  console.log(props.task.id);
   return (
     <div className="task-box">
       <div className="task-field task-id">{props.task.id}</div>

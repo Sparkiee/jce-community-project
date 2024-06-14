@@ -1,0 +1,13 @@
+.task-box {
+    display: flex;
+    /* gap: 15rem; */
+    align-items: center;
+    justify-content: center;
+    width: 80;
+}
+
+.task-field {
+    width: 20%;
+    border: black 2px solid;
+    height: 2.5rem;
+}

@@ -1,67 +1,76 @@
+.container {
+  background-color: transparent;
+}
+
 .create-task {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(255, 255, 255, 0.7);
-    padding: 2.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-    max-width: 30rem;
-    width: 100%;
-  }
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(255, 255, 255);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
+  max-width: 30rem;
+  width: 100%;
+}
 
-  .create-task-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
+.create-task-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 
-  .create-task-input-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    gap: 0.8rem;
-  }
+.create-task-input-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.8rem;
+}
 
-  .create-task-input {
-    font: inherit;
-    width: 80%;
-    padding: 0.6rem;
-    border: 1px solid #e6ecf8;
-    border-radius: 0.3rem;
-    font-size: 1.4rem;
-    color: #141c3a;
-    outline: 0;
-  }
+.create-task-input {
+  font: inherit;
+  width: 80%;
+  padding: 0.6rem;
+  border: 1px solid #e6ecf8;
+  border-radius: 0.3rem;
+  font-size: 1.4rem;
+  color: #141c3a;
+  outline: 0;
+}
 
-  .text-area {
-    height: 10rem;
-    resize: none;
-  }
+.text-area {
+  height: 10rem;
+  resize: none;
+}
 
-  .create-event-selected-event {
-    font-size: 1.4rem;
-    color: black;
-    transition: color 0.2s linear;
-  }
+.create-event-selected-event {
+  font-size: 1.4rem;
+  color: black;
+  transition: color 0.2s linear;
+}
 
-  .selected-event {
-    cursor: pointer;
-    display: flex;
-    flex-direction: row; /* This is default and usually doesn't need to be explicitly set */
-    align-items: center;
-    transition: color 0.2s linear;
-  }
+.selected-event {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row; /* This is default and usually doesn't need to be explicitly set */
+  align-items: center;
+  transition: color 0.2s linear;
+}
 
-  .create-event-selected-event svg {
-    margin-left: 0.5rem;
-  }
+.create-event-selected-event svg {
+  margin-left: 0.5rem;
+}
 
-  .selected-event:hover {
-    color: rgb(2, 4, 79);
-  }
+.selected-event:hover {
+  color: rgb(2, 4, 79);
+}
+
+.selected-member {
+  display: inline-block;
+}

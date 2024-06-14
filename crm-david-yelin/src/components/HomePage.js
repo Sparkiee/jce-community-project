@@ -11,17 +11,22 @@ import {
 } from "firebase/firestore";
 import "../styles/HomePage.css";
 import Task from "./Task";
+import Event from "./Event";
 import CreateTask from "./CreateTask";
+import CreateEvent from "./CreateEvent";
+
+const user = JSON.parse(sessionStorage.getItem("user"));
 
 function HomePage() {
   const [tasks, setTasks] = useState([]); // Initialize state with an empty array
+  const [events, setEvents] = useState([]); // Initialize state with an empty array
   const [numTasks, setNumTasks] = useState(0);
   const [numEvents, setNumEvents] = useState(0);
   const [showCreateTask, setShowCreateTask] = useState(false);
+  const [showCreateEvent, setShowCreateEvent] = useState(false);
 
   useEffect(() => {
     async function grabMyTasks() {
-      const user = JSON.parse(sessionStorage.getItem("user"));
       try {
         const tasksRef = collection(db, "tasks");
 
@@ -45,6 +50,28 @@ function HomePage() {
       }
     }
 
+    async function grabMyEvents() {
+      try {
+        const eventsRef = collection(db, "events");
+        const q = query(eventsRef, where("assignees", "!=", null));
+        const querySnapshot = await getDocs(q);
+        const memberDocRef = doc(db, "members", user.email);
+        const eventsArray = querySnapshot.docs
+          .map((doc) => doc.data()) // Transform each doc to its data
+          .filter(
+            (event) =>
+              event.assignees.some(
+                (assignee) => assignee.path === memberDocRef.path
+              ) && event.status !== "הושלמה"
+          );
+        setNumEvents(eventsArray.length); // Update event count
+        setEvents(eventsArray);
+      } catch (error) {
+        // console.error("Failed to fetch tasks:", error);
+      }
+    }
+
+    grabMyEvents();
     grabMyTasks();
   }, []);
 
@@ -52,13 +79,93 @@ function HomePage() {
     setShowCreateTask(true);
   };
 
+  const handleShowCreateEvent = () => {
+    setShowCreateEvent(true);
+  };
+
   return (
     <div className="HomePage">
       <Navbar />
-      {showCreateTask && <CreateTask />}
       <div className="home-content">
+        <div className="display-create">
+          {showCreateTask && (
+            <div>
+              <div
+                className="action-close"
+                onClick={() => {
+                  setShowCreateTask(false);
+                }}
+              >
+                <svg
+                  width="24px"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <line
+                    x1="17"
+                    y1="7"
+                    x2="7"
+                    y2="17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="7"
+                    y1="7"
+                    x2="17"
+                    y2="17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+              <CreateTask />
+            </div>
+          )}
+          {showCreateEvent && (
+            <div>
+              <div
+                className="action-close"
+                onClick={() => setShowCreateEvent(false)}
+              >
+                <svg
+                  width="24px"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <line
+                    x1="17"
+                    y1="7"
+                    x2="7"
+                    y2="17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="7"
+                    y1="7"
+                    x2="17"
+                    y2="17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+              <CreateEvent />
+            </div>
+          )}
+        </div>
         <h1 className="title-home">דף הבית</h1>
-        <div className="pending-tasks-actions">
+        {user.privileges > 1 && (
+          <div className="pending-actions">
             <div className="task-button" onClick={handleShowCreateTask}>
               <svg
                 width="24px"
@@ -66,6 +173,7 @@ function HomePage() {
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                onClick={() => console.log("test")}
               >
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g
@@ -85,7 +193,35 @@ function HomePage() {
               </svg>
               הוסף משימה
             </div>
+            <div className="task-button" onClick={handleShowCreateEvent}>
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                onClick={() => console.log("test")}
+              >
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                </g>
+              </svg>
+              הוסף אירוע
+            </div>
           </div>
+        )}
         {numTasks === 0 ? (
           <h2 className="pending-tasks">אין משימות פתוחות!</h2>
         ) : numTasks === 1 ? (
@@ -109,6 +245,14 @@ function HomePage() {
         ) : (
           <h2 className="title-home">יש {numEvents} אירועים בקרוב</h2>
         )}
+        <div className="display-pending-tasks">
+          {events.map((task, index) => (
+            // Assuming Task is a component that takes a task object as a prop
+            <Event key={index} task={task} />
+            // Or if you don't have a Task component, you can directly render the task details here
+            // <div key={index}>Task Name: {task.name}</div>
+          ))}
+        </div>
       </div>
     </div>
   );

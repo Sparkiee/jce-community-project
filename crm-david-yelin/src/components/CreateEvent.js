@@ -115,102 +115,196 @@ function CreateEvent() {
   };
 
   return (
-    <div className="container">
-      <div className="create-event">
-        <h2 className="title">צור אירוע</h2>
-        <form className="create-event-form" onSubmit={handleSubmit}>
-          <div className="create-event-input-box">
-            <input
-              type="text"
-              placeholder="שם האירוע"
-              name="eventName"
-              className="create-event-input"
-              onChange={(e) =>
-                setEventDetails({ ...eventDetails, eventName: e.target.value })
-              }
-            />
-            <input
-              type="date"
-              name="eventDate"
-              className="create-event-input"
-              onChange={(e) =>
-                setEventDetails({ ...eventDetails, eventDate: e.target.value })
-              }
-            />
-            <input
-              type="time"
-              name="eventTime"
-              className="create-event-input"
-              onChange={(e) =>
-                setEventDetails({ ...eventDetails, eventTime: e.target.value })
-              }
-            />
-            <input
-              type="text"
-              placeholder="מיקום האירוע"
-              name="eventLocation"
-              className="create-event-input"
-              onChange={(e) =>
-                setEventDetails({
-                  ...eventDetails,
-                  eventLocation: e.target.value
-                })
-              }
-            />
-            <Select
-              placeholder="הוסף חבר וועדה"
-              className="create-event-input"
-              onInputChange={(inputValue) => {
-                handleSearchMember({ target: { value: inputValue } });
-              }}
-              onChange={(e) => {
-                handleSelectMember(e.value);
-              }}
-              options={members.map((member) => ({
-                value: member.fullName,
-                label: member.fullName
-              }))}
-            />
-            <div className="create-event-selected-members">
-              {selectedMembers.map((member, index) => (
-                <div
-                  key={index}
-                  className="selected-member"
-                  onClick={() => handleRemoveMember(member.id)}
-                >
-                  <svg
-                    className="w-6 h-6 text-gray-800 dark:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                    />
-                  </svg>
-                  <div className="selected-member-text">{member.fullName}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+    <div className="create-event">
+      <h2 className="title">צור אירוע</h2>
+      <form className="create-event-form" onSubmit={handleSubmit}>
+        <div className="create-event-input-box">
           <input
-            type="submit"
-            value="צור אירוע"
-            className="primary-button extra-create-event"
+            type="text"
+            placeholder="שם האירוע"
+            name="eventName"
+            className="create-event-input"
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, eventName: e.target.value })
+            }
           />
-          <div className="feedback">
-            {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
+          <input
+            type="date"
+            name="eventDate"
+            className="create-event-input"
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, eventDate: e.target.value })
+            }
+          />
+          <input
+            type="time"
+            name="eventTime"
+            className="create-event-input"
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, eventTime: e.target.value })
+            }
+          />
+          <input
+            type="text"
+            placeholder="מיקום האירוע"
+            name="eventLocation"
+            className="create-event-input"
+            onChange={(e) =>
+              setEventDetails({
+                ...eventDetails,
+                eventLocation: e.target.value
+              })
+            }
+          />
+          <Select
+            placeholder="הוסף חבר וועדה"
+            className="create-event-input"
+            onInputChange={(inputValue) => {
+              handleSearchMember({ target: { value: inputValue } });
+            }}
+            onChange={(e) => {
+              handleSelectMember(e.value);
+            }}
+            options={members.map((member) => ({
+              value: member.fullName,
+              label: member.fullName
+            }))}
+          />
+          <div className="create-event-selected-members">
+            {selectedMembers.map((member, index) => (
+              <div
+                key={index}
+                className="selected-member"
+                onClick={() => handleRemoveMember(member.id)}
+              >
+                <svg
+                  className="w-6 h-6 text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+                <div className="selected-member-text">{member.fullName}</div>
+              </div>
+            ))}
           </div>
-        </form>
-      </div>
+        </div>
+        <input
+          type="submit"
+          value="צור אירוע"
+          className="primary-button extra-create-event"
+        />
+        <div className="feedback">
+          {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
+        </div>
+      </form>
     </div>
+    // <div className="container">
+    //   <div className="create-event">
+    //     <h2 className="title">צור אירוע</h2>
+    //     <form className="create-event-form" onSubmit={handleSubmit}>
+    //       <div className="create-event-input-box">
+    //         <input
+    //           type="text"
+    //           placeholder="שם האירוע"
+    //           name="eventName"
+    //           className="create-event-input"
+    //           onChange={(e) =>
+    //             setEventDetails({ ...eventDetails, eventName: e.target.value })
+    //           }
+    //         />
+    //         <input
+    //           type="date"
+    //           name="eventDate"
+    //           className="create-event-input"
+    //           onChange={(e) =>
+    //             setEventDetails({ ...eventDetails, eventDate: e.target.value })
+    //           }
+    //         />
+    //         <input
+    //           type="time"
+    //           name="eventTime"
+    //           className="create-event-input"
+    //           onChange={(e) =>
+    //             setEventDetails({ ...eventDetails, eventTime: e.target.value })
+    //           }
+    //         />
+    //         <input
+    //           type="text"
+    //           placeholder="מיקום האירוע"
+    //           name="eventLocation"
+    //           className="create-event-input"
+    //           onChange={(e) =>
+    //             setEventDetails({
+    //               ...eventDetails,
+    //               eventLocation: e.target.value
+    //             })
+    //           }
+    //         />
+    //         <Select
+    //           placeholder="הוסף חבר וועדה"
+    //           className="create-event-input"
+    //           onInputChange={(inputValue) => {
+    //             handleSearchMember({ target: { value: inputValue } });
+    //           }}
+    //           onChange={(e) => {
+    //             handleSelectMember(e.value);
+    //           }}
+    //           options={members.map((member) => ({
+    //             value: member.fullName,
+    //             label: member.fullName
+    //           }))}
+    //         />
+    //         <div className="create-event-selected-members">
+    //           {selectedMembers.map((member, index) => (
+    //             <div
+    //               key={index}
+    //               className="selected-member"
+    //               onClick={() => handleRemoveMember(member.id)}
+    //             >
+    //               <svg
+    //                 className="w-6 h-6 text-gray-800 dark:text-white"
+    //                 aria-hidden="true"
+    //                 xmlns="http://www.w3.org/2000/svg"
+    //                 width="24"
+    //                 height="24"
+    //                 fill="none"
+    //                 viewBox="0 0 24 24"
+    //               >
+    //                 <path
+    //                   stroke="currentColor"
+    //                   strokeLinecap="round"
+    //                   strokeLinejoin="round"
+    //                   strokeWidth="2"
+    //                   d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+    //                 />
+    //               </svg>
+    //               <div className="selected-member-text">{member.fullName}</div>
+    //             </div>
+    //           ))}
+    //         </div>
+    //       </div>
+    //       <input
+    //         type="submit"
+    //         value="צור אירוע"
+    //         className="primary-button extra-create-event"
+    //       />
+    //       <div className="feedback">
+    //         {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
+    //       </div>
+    //     </form>
+    //   </div>
+    // </div>
   );
 }
 

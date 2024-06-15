@@ -186,9 +186,11 @@ function CreateTask() {
             type="date"
             name="taskDate"
             className="create-task-input"
-            onChange={(e) =>
-              setTaskDetails({ ...taskDetails, taskDate: e.target.value })
-            }
+            onChange={(e) => {
+              const date = new Date(e.target.value);
+              const formattedDate = date.toLocaleDateString('en-GB').replaceAll('/', '-');
+              setTaskDetails({ ...taskDetails, taskDate: formattedDate });
+            }}
           />
           <input
             type="time"

@@ -154,9 +154,11 @@ function CreateEvent() {
             type="date"
             name="eventDate"
             className="create-event-input"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, eventDate: e.target.value })
-            }
+            onChange={(e) => {
+              const date = new Date(e.target.value);
+              const formattedDate = date.toLocaleDateString('en-GB').replaceAll('/', '-');
+              setEventDetails({ ...eventDetails, eventDate: formattedDate });
+            }}
           />
           <input
             type="time"

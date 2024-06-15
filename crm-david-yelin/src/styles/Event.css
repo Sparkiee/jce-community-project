@@ -1,0 +1,37 @@
+.event-bold {
+    font-weight: bold;
+  }
+
+  .event-box {
+    display: flex;
+    width: 100%;
+}
+
+.event-field {
+    width: 20%;
+    min-height: 2.5rem;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.253);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.event-id, .event-view {
+    width: 3%;
+    text-align: center;
+}
+
+.event-bold {
+    font-weight: bold;
+  }
+
+.event-view > svg {
+    transition: color 0.2s linear, transform 0.2s linear;
+}
+
+.event-view > svg:hover {
+    cursor: pointer;
+    transform: scale(1.2);
+    color: rgb(18, 21, 116);
+}

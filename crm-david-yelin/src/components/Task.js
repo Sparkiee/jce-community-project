@@ -25,7 +25,7 @@ function Task(props) {
         {props.task.taskStatus}
       </div>
       <div className={`task-field task-view ${isTitle ? "task-bold" : ""}`}>
-        {props.task.taskType != "title" && (
+        {props.task.taskType !== "title" && (
           <svg
             width="18px"
             height="18px"

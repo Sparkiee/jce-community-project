@@ -40,10 +40,9 @@ function HomePage() {
             (task) =>
               task.assignees.some(
                 (assignee) => assignee.path === memberDocRef.path
-              ) && task.status !== "הושלמה"
+              ) && task.taskStatus !== "הושלמה"
           );
 
-        // setTasks(tasksArray); // Update state with fetched tasks
         setNumTasks(tasksArray.length); // Update task count
 
         const indexedTasks = tasksArray.map((task, index) => ({

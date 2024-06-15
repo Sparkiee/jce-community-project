@@ -7,7 +7,6 @@ import {
   where,
   getDocs,
   doc,
-  getDoc
 } from "firebase/firestore";
 import "../styles/HomePage.css";
 import Task from "./Task";
@@ -62,14 +61,12 @@ function HomePage() {
         const q = query(eventsRef, where("assignees", "!=", null));
         const querySnapshot = await getDocs(q);
 
-        // console.log(querySnapshot.docs.);
-
         const memberDocRef = doc(db, "members", user.email);
         const eventsArray = querySnapshot.docs
           .map((doc) => ({
-            ...doc.data(), // Spread the document data
-            id: doc.id, // Save the document ID, assuming you want the Firestore document ID as a reference
-            docRef: doc.ref // Save the document reference
+            ...doc.data(), 
+            id: doc.id,
+            docRef: doc.ref 
           }))
           .filter(
             (event) =>
@@ -77,13 +74,6 @@ function HomePage() {
                 (assignee) => assignee.path === memberDocRef.path
               ) && event.status !== "הושלמה"
           );
-        //   .map((doc) => doc.data()) // Transform each doc to its data
-        //   .filter(
-        //     (event) =>
-        //       event.assignees.some(
-        //         (assignee) => assignee.path === memberDocRef.path
-        //       ) && event.status !== "הושלמה"
-        //   );
         setNumEvents(eventsArray.length); // Update event count
 
         const indexedEvents = eventsArray.map((event, index) => ({
@@ -93,7 +83,7 @@ function HomePage() {
 
         setEvents(indexedEvents);
       } catch (error) {
-        // console.error("Failed to fetch tasks:", error);
+        console.error("Failed to fetch tasks:", error);
       }
     }
 

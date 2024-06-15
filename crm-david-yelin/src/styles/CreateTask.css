@@ -1,7 +1,3 @@
-.container {
-  background-color: transparent;
-}
-
 .create-task {
   direction: rtl;
   display: flex;

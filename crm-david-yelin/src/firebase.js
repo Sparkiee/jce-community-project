@@ -22,7 +22,6 @@ async function updateUserData(email) {
   if (docSnap.exists()) {
     sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
   }
-  console.log(firebaseConfig);
 }
 
-export { db, app, auth, updateUserData };
+export { db, app, auth};

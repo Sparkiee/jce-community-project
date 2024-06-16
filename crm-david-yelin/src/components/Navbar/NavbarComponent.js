@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../styles/Navbar.css";
 import { auth, db } from "../../firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, onSnapshot } from "firebase/firestore";
 import Logo from "./LogoComponent.js";
 import NavItems from "./NavItemsComponent.js";
 import Search from "./SearchComponent.js";
@@ -15,10 +15,21 @@ const Navbar = () => {
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const member = JSON.parse(sessionStorage.getItem("user"));
-        setNotifications(member?.Notifications?.length || 0);
+        // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
+        // Set up the Firestore document listener within the auth state change handler
+        // const unsubscribeSnapshot = onSnapshot(doc(db, "members", user.email), (doc) => {
+        //   const data = doc.data();
+        //   sessionStorage.setItem("user", JSON.stringify(data));
+        //   // Directly update notifications from the document data
+        //   setNotifications(data?.Notifications?.length || 0);
+        // });
+
+        // // Return the unsubscribe function for the Firestore listener
+        // return () => unsubscribeSnapshot();
       }
     });
+
+    // Return the unsubscribe function for the auth listener
     return () => unsubscribeAuth();
   }, []);
 

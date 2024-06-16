@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar/NavbarComponent";
-import { db, updateUserData } from "../../firebase";
+import { db } from "../../firebase";
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import "../../styles/HomePage.css";
 import Task from "../Tasks/DisplayTask";
@@ -83,7 +83,6 @@ function HomePage() {
                 className="action-close"
                 onClick={() => {
                   setShowCreateTask(false);
-                  updateUserData(user.email);
                 }}>
                 <svg
                   width="24px"
@@ -120,7 +119,6 @@ function HomePage() {
                 className="action-close"
                 onClick={() => {
                   setShowCreateEvent(false);
-                  updateUserData(user.email);
                 }}>
                 <svg
                   width="24px"

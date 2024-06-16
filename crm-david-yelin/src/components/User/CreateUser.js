@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { getDoc, doc, serverTimestamp, setDoc, getDocs, collection } from "firebase/firestore";
-import "../styles/UserCreationForm.css";
-import DepartmentSelect from "./Selectors/DepartmentSelect";
+import "../../styles/CreateUser.css";
+import DepartmentSelect from "../Selectors/DepartmentSelect";
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -11,7 +11,7 @@ const checkPendingRegistration = async (email) => {
 };
 
 // Add current department as a field in pending_registration and later on connect to user
-function UserCreationForm() {
+function CreateUser() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [emailExists, setEmailExists] = useState(false);
@@ -78,4 +78,4 @@ function UserCreationForm() {
   );
 }
 
-export default UserCreationForm;
+export default CreateUser;

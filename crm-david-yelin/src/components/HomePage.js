@@ -276,7 +276,7 @@ function HomePage() {
         ) : (
           <h2 className="title-home">יש {numEvents} אירועים בקרוב</h2>
         )}
-        <div className="display-pending-tasks">
+        {numEvents > 0 && (<div className="display-pending-events">
           <Event
             key={0}
             event={{
@@ -291,7 +291,7 @@ function HomePage() {
           {events.map((event, index) => (
             <Event key={index} event={event} />
           ))}
-        </div>
+        </div>)}
       </div>
     </div>
   );

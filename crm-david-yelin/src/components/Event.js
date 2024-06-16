@@ -7,44 +7,44 @@ function Event(props) {
   const [completionPercentage, setCompletionPercentage] = useState(0);
   const [tasks, setTasks] = useState([]);
 
-  async function fetchTasks() {
-    try {
-      const tasksRef = collection(db, "tasks");
+  // async function fetchTasks() {
+  //   try {
+  //     const tasksRef = collection(db, "tasks");
 
-      // console.log(props.event.docRef);
-      // Create the query
-      const q = query(tasksRef, where("relatedEvent", "!=", null));
+  //     // console.log(props.event.docRef);
+  //     // Create the query
+  //     const q = query(tasksRef, where("relatedEvent", "!=", null));
 
-      // Execute the query
-      const querySnapshot = await getDocs(q);
+  //     // Execute the query
+  //     const querySnapshot = await getDocs(q);
 
-      if (querySnapshot.empty) {
-        console.log("No tasks found for this event");
-        return;
-      }
-      const tasksArray = querySnapshot.docs
-        .map((doc) => doc.data())
-        .filter(
-          (doc) =>
-            doc.relatedEvent && props.event.docRef.path && 
-            doc.relatedEvent.path === props.event.docRef.path
-        );
-      const completedTasks = tasksArray.filter(
-        (task) => task.taskStatus === "הושלמה"
-      ).length;
-      const percentage = (completedTasks / tasksArray.length) * 100;
+  //     if (querySnapshot.empty) {
+  //       console.log("No tasks found for this event");
+  //       return;
+  //     }
+  //     const tasksArray = querySnapshot.docs
+  //       .map((doc) => doc.data())
+  //       .filter(
+  //         (doc) =>
+  //           doc.relatedEvent && props.event.docRef.path && 
+  //           doc.relatedEvent.path === props.event.docRef.path
+  //       );
+  //     const completedTasks = tasksArray.filter(
+  //       (task) => task.taskStatus === "הושלמה"
+  //     ).length;
+  //     const percentage = (completedTasks / tasksArray.length) * 100;
 
-      // // Update state
-      // setTasks(tasksArray);
-      setCompletionPercentage(percentage);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  }
+  //     // // Update state
+  //     // setTasks(tasksArray);
+  //     setCompletionPercentage(percentage);
+  //   } catch (error) {
+  //     console.error("Error fetching tasks:", error);
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  // useEffect(() => {
+  //   fetchTasks();
+  // }, []);
 
   // console.log(props.event);
   const isTitle = props.event.eventType === "title";

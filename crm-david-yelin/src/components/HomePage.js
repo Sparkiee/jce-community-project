@@ -229,6 +229,7 @@ function HomePage() {
             <Task
               key={0}
               task={{
+                id: "אינדקס",
                 taskName: "משימה",
                 taskDescription: "תיאור",
                 taskDate: "תאריך",
@@ -255,6 +256,7 @@ function HomePage() {
             <Event
               key={0}
               event={{
+                id: "אינדקס",
                 eventName: "אירוע",
                 eventDescription: "תיאור",
                 eventDate: "תאריך",

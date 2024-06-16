@@ -5,8 +5,8 @@ import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import "../styles/HomePage.css";
 import Task from "./Task";
 import Event from "./Event";
-import CreateTask from "./CreateTask";
-import CreateEvent from "./CreateEvent";
+import CreateTask from "./Tasks/CreateTask";
+import CreateEvent from "./Events/CreateEvent";
 
 function HomePage() {
   const [tasks, setTasks] = useState([]); // Initialize state with an empty array

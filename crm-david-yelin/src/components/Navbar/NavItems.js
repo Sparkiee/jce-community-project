@@ -11,17 +11,17 @@ const NavItems = () => {
         </a>
       </li>
       <li>
-        <a to="/tasks" onClick={() => navigate("/tasks")}>
+        <a to="/tasks" onClick={() => navigate("#")}>
           משימות
         </a>
       </li>
       <li>
-        <a to="/events" onClick={() => navigate("/events")}>
+        <a to="/events" onClick={() => navigate("#")}>
           אירועים
         </a>
       </li>
       <li>
-        <a to="/contact" onClick={() => navigate("/contact")}>
+        <a to="/contact" onClick={() => navigate("#")}>
           תקשורת
         </a>
       </li>

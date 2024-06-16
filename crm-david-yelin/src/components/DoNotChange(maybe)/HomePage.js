@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../Navbar/NavbarComponent";
+import Navbar from "../Navbar/Navbar";
 import { db } from "../../firebase";
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import "../../styles/HomePage.css";

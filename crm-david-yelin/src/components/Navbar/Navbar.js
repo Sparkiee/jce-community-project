@@ -3,14 +3,17 @@ import "../../styles/Navbar.css";
 import { auth, db } from "../../firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
 import { setDoc, doc, onSnapshot } from "firebase/firestore";
-import Logo from "./LogoComponent.js";
-import NavItems from "./NavItemsComponent.js";
-import Search from "./SearchComponent.js";
-import Notification from "./NotificationComponent.js";
-import LogoutButton from "./LogoutButtonComponent.js";
+import { useNavigate } from "react-router-dom";
+import Logo from "./Logo.js";
+import NavItems from "./NavItems.js";
+import Search from "./Search.js";
+import Notification from "./Notification.js";
+import LogoutButton from "./LogoutButton.js";
 
 const Navbar = () => {
   const [notifications, setNotifications] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -26,16 +29,19 @@ const Navbar = () => {
 
         // // Return the unsubscribe function for the Firestore listener
         // return () => unsubscribeSnapshot();
+      } else {
+        // Clear the notifications when the user signs out
+        setNotifications(0);
       }
     });
-
     // Return the unsubscribe function for the auth listener
     return () => unsubscribeAuth();
   }, []);
 
   const disconnect = () => {
-    sessionStorage.removeItem("user");
     auth.signOut();
+    sessionStorage.removeItem("user");
+    navigate("/");
   };
 
   const handleNotifications = async () => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
@@ -20,25 +20,22 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log(userCredential);
-      
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       if (!userCredential.user.emailVerified) {
-        console.log("Email not verified");
         setIsEmailVerified(false);
         return;
       }
-
-      // Signed in
-      const user = userCredential.user;
-      const docRef = doc(db, "members", user.email); // Assuming user's uid is used as document id
+      const docRef = doc(db, "members", userCredential.user.email);
       const docSnap = await getDoc(docRef);
-
-      // You can now use docSnap to access the document data
       if (docSnap.exists()) {
         sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
+        navigate("/home");
       }
-      navigate("/home");
     } catch (error) {
       setWrongCredentials(true);
       console.log(error);

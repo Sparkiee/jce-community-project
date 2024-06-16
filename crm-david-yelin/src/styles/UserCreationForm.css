@@ -36,3 +36,11 @@
 .extra-create-user-button {
   margin-bottom: 0;
 }
+
+.department-select {
+  width: 100%;
+}
+
+.department-select select {
+  margin-right: 2rem;
+}

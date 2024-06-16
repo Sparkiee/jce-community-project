@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { getDoc, doc, serverTimestamp, setDoc, getDocs, collection } from "firebase/firestore";
 import "../styles/UserCreationForm.css";
-
+import DepartmentSelect from "./Selectors/DepartmentSelect";
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -17,51 +17,6 @@ function UserCreationForm() {
   const [emailExists, setEmailExists] = useState(false);
   const [accountCreated, setAccountCreated] = useState(false);
   const [department, setDepartment] = useState("");
-  const [departmentList, setDepartmentList] = useState([]);
-  const [isOtherSelected, setIsOtherSelected] = useState(false);
-  const [newDepartment, setNewDepartment] = useState("");
-
-  function addDepartment() {
-    if (newDepartment && !departmentList.includes(newDepartment)) {
-      setDepartmentList([...departmentList, newDepartment]);
-      setDepartment(newDepartment);
-      try {
-        const docRef = doc(db, "departments", newDepartment);
-        setDoc(docRef, {
-          name: newDepartment,
-        });
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-    }
-    setIsOtherSelected(false);
-    setNewDepartment("");
-  }
-
-  useEffect(() => {
-    let timer;
-    if (accountCreated) {
-      timer = setTimeout(() => {
-        setAccountCreated(false);
-      }, 5000); // Change back to false after 5 seconds
-    }
-    return () => clearTimeout(timer); // This will clear the timeout if the component unmounts before the timeout finishes
-  }, [accountCreated]);
-
-  // grab departments from firebase
-  useEffect(() => {
-    async function fetchDepartments() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "departments"));
-        const departments = querySnapshot.docs.map((doc) => doc.data().name);
-        setDepartmentList(departments);
-      } catch (e) {
-        console.error("Error fetching departments: ", e);
-      }
-    }
-
-    fetchDepartments();
-  }, []); // Empty dependency array means this effect runs once on mount
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -101,47 +56,7 @@ function UserCreationForm() {
                 placeholder="אימייל"
                 className="forms-input"
               />
-              <select
-                name="department"
-                value={department}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  if (value === "other") {
-                    setIsOtherSelected(true);
-                    setDepartment("");
-                  } else {
-                    setIsOtherSelected(false);
-                    setDepartment(value);
-                  }
-                }}
-                className="forms-input">
-                <option value="" disabled>
-                  בחר מחלקה
-                </option>
-                {departmentList.map((dept, index) => (
-                  <option key={index} value={dept}>
-                    {dept}
-                  </option>
-                ))}
-                <option value="other">הוסף מחלקה</option>
-              </select>
-              {isOtherSelected && (
-                <div className="new-department">
-                  <input
-                    type="text"
-                    value={newDepartment}
-                    placeholder="הוסף מחלקה"
-                    onChange={(event) => setNewDepartment(event.target.value)}
-                    className="forms-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={addDepartment}
-                    className="primary-button extra-create-user-button">
-                    הוסף מחלקה
-                  </button>
-                </div>
-              )}
+              <DepartmentSelect department={department} setDepartment={setDepartment} />
               <input
                 type="text"
                 value={role}

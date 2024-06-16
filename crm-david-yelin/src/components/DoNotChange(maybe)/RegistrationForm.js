@@ -1,9 +1,9 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase.js";
+import { db } from "../../firebase.js";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { auth } from "../firebase.js";
+import { auth } from "../../firebase.js";
 import "../styles/RegistrationForm.css";
 import PhoneInput from "react-phone-number-input/input";
 

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "./Navbar/NavbarComponent";
-import { db, updateUserData } from "../firebase";
+import Navbar from "../Navbar/NavbarComponent";
+import { db, updateUserData } from "../../firebase";
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import "../styles/HomePage.css";
-import Task from "./Task";
-import Event from "./Event";
-import CreateTask from "./Tasks/CreateTask";
-import CreateEvent from "./Events/CreateEvent";
+import Task from "../Tasks/DisplayTask";
+import Event from "../Events/DisplayEvent";
+import CreateTask from "../Tasks/CreateTask";
+import CreateEvent from "../Events/CreateEvent";
 
 function HomePage() {
   const [tasks, setTasks] = useState([]); // Initialize state with an empty array

@@ -42,6 +42,12 @@ header .logo a {
   padding: 0 3rem;
 }
 
+.right-side-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .nav-items ul {
   display: flex;
   align-items: center;

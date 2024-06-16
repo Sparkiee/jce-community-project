@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "./Navbar";
+import Navbar from "./Navbar/NavbarComponent";
 import { db, updateUserData } from "../firebase";
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import "../styles/HomePage.css";
@@ -23,16 +23,15 @@ function HomePage() {
       try {
         const tasksRef = collection(db, "tasks");
 
-        const q = query(
-          tasksRef,
-          where("assignees", "array-contains", "members/" + user.email)
-        );
+        const q = query(tasksRef, where("assignees", "array-contains", "members/" + user.email));
         const querySnapshot = await getDocs(q);
-        const taskArray = querySnapshot.docs.map((doc, index) => ({
-          ...doc.data(),
-          id: index + 1,
-          docRef: doc.ref
-        })).filter((task) => task.taskStatus !== "הושלמה");
+        const taskArray = querySnapshot.docs
+          .map((doc, index) => ({
+            ...doc.data(),
+            id: index + 1,
+            docRef: doc.ref,
+          }))
+          .filter((task) => task.taskStatus !== "הושלמה");
 
         setNumTasks(taskArray.length); // Update task count
         setTasks(taskArray);
@@ -44,16 +43,13 @@ function HomePage() {
     async function grabMyEvents() {
       try {
         const eventsRef = collection(db, "events");
-        const q = query(
-          eventsRef,
-          where("assignees", "array-contains", "members/" + user.email)
-        );
+        const q = query(eventsRef, where("assignees", "array-contains", "members/" + user.email));
         const querySnapshot = await getDocs(q);
         const eventsArray = querySnapshot.docs
           .map((doc, index) => ({
             ...doc.data(),
             id: index + 1,
-            docRef: doc.ref
+            docRef: doc.ref,
           }))
           .filter((event) => event.eventStatus !== "הושלמה");
         setNumEvents(eventsArray.length); // Update event count
@@ -88,15 +84,13 @@ function HomePage() {
                 onClick={() => {
                   setShowCreateTask(false);
                   updateUserData(user.email);
-                }}
-              >
+                }}>
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                >
+                  fill="currentColor">
                   <line
                     x1="17"
                     y1="7"
@@ -127,15 +121,13 @@ function HomePage() {
                 onClick={() => {
                   setShowCreateEvent(false);
                   updateUserData(user.email);
-                }}
-              >
+                }}>
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                >
+                  fill="currentColor">
                   <line
                     x1="17"
                     y1="7"
@@ -169,22 +161,16 @@ function HomePage() {
                 height="24px"
                 viewBox="0 0 24 24"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
                   <path
                     d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                     stroke="white"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
+                    strokeLinejoin="round"></path>
                 </g>
               </svg>
               הוסף משימה
@@ -195,22 +181,16 @@ function HomePage() {
                 height="24px"
                 viewBox="0 0 24 24"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
                   <path
                     d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                     stroke="white"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
+                    strokeLinejoin="round"></path>
                 </g>
               </svg>
               הוסף אירוע
@@ -235,7 +215,7 @@ function HomePage() {
                 taskDate: "תאריך",
                 taskTime: "שעה",
                 taskStatus: "סטטוס",
-                taskType: "title"
+                taskType: "title",
               }}
             />
             {tasks.map((task, index) => (
@@ -262,7 +242,7 @@ function HomePage() {
                 eventDate: "תאריך",
                 eventTime: "שעה",
                 eventStatus: "סטטוס",
-                eventType: "title"
+                eventType: "title",
               }}
             />
             {events.map((event, index) => (

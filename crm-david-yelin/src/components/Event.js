@@ -8,38 +8,6 @@ function Event(props) {
   const [tasks, setTasks] = useState([]);
 
   async function fetchTasks() {
-    //   try {
-    //     const tasksRef = collection(db, "tasks");
-
-    //     console.log(props.event.docRef);
-    //     // Create the query
-    //     const q = query(tasksRef, where("relatedEvent", "==", props.event.docRef));
-
-    //     // Execute the query
-    //     const querySnapshot = await getDocs(q);
-
-    //     // Map through the results and add document IDs
-    //     const tasksArray = querySnapshot.docs.map((doc) => ({
-    //       id: doc.id,
-    //       ...doc.data()
-    //     }));
-
-    //     // console.log("Tasks fetched:", tasksArray);
-    //     console.log(tasksArray.forEach((task) => console.log(task.relatedEvent.path)));
-    //     console.log("Number of tasks:", tasksArray.length);
-
-    //     // Calculate the completion percentage (dummy logic, adjust accordingly)
-    //     const completedTasks = tasksArray.filter(
-    //       (task) => task.status === "completed"
-    //     ).length;
-    //     const percentage = (completedTasks / tasksArray.length) * 100;
-
-    //     // Update state
-    //     setTasks(tasksArray);
-    //     setCompletionPercentage(percentage);
-    //   } catch (error) {
-    //     console.error("Error fetching tasks:", error);
-    //   }
     try {
       const tasksRef = collection(db, "tasks");
 
@@ -61,12 +29,6 @@ function Event(props) {
             doc.relatedEvent && props.event.docRef.path && 
             doc.relatedEvent.path === props.event.docRef.path
         );
-
-      // console.log("Tasks fetched:", tasksArray);
-
-      // console.log("Number of tasks:", tasksArray.length);
-
-      // Calculate the completion percentage (dummy logic, adjust accordingly)
       const completedTasks = tasksArray.filter(
         (task) => task.taskStatus === "הושלמה"
       ).length;
@@ -82,7 +44,7 @@ function Event(props) {
 
   useEffect(() => {
     fetchTasks();
-  }, []); // This effect runs on mount and whenever props.event.docRef changes
+  }, []);
 
   // console.log(props.event);
   const isTitle = props.event.eventType === "title";

@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import { db, updateUserData } from "../firebase";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-} from "firebase/firestore";
+import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import "../styles/HomePage.css";
 import Task from "./Task";
 import Event from "./Event";
@@ -29,59 +23,42 @@ function HomePage() {
       try {
         const tasksRef = collection(db, "tasks");
 
-        const q = query(tasksRef, where("assignees", "!=", null));
-
+        const q = query(
+          tasksRef,
+          where("assignees", "array-contains", "members/" + user.email)
+        );
         const querySnapshot = await getDocs(q);
-        const memberDocRef = doc(db, "members", user.email);
-        const tasksArray = querySnapshot.docs
-          .map((doc) => doc.data()) // Transform each doc to its data
-          .filter(
-            (task) =>
-              task.assignees.some(
-                (assignee) => assignee.path === memberDocRef.path
-              ) && task.taskStatus !== "הושלמה"
-          );
+        const taskArray = querySnapshot.docs.map((doc, index) => ({
+          ...doc.data(),
+          id: index + 1,
+          docRef: doc.ref
+        })).filter((task) => task.taskStatus !== "הושלמה");
 
-        setNumTasks(tasksArray.length); // Update task count
-
-        const indexedTasks = tasksArray.map((task, index) => ({
-          ...task,
-          id: index + 1
-        }));
-
-        setTasks(indexedTasks);
+        setNumTasks(taskArray.length); // Update task count
+        setTasks(taskArray);
       } catch (error) {
-        // console.error("Failed to fetch tasks:", error);
+        console.error("Failed to fetch tasks:", error);
       }
     }
 
     async function grabMyEvents() {
       try {
         const eventsRef = collection(db, "events");
-        const q = query(eventsRef, where("assignees", "!=", null));
+        const q = query(
+          eventsRef,
+          where("assignees", "array-contains", "members/" + user.email)
+        );
         const querySnapshot = await getDocs(q);
-
-        const memberDocRef = doc(db, "members", user.email);
         const eventsArray = querySnapshot.docs
-          .map((doc) => ({
-            ...doc.data(), 
-            id: doc.id,
-            docRef: doc.ref 
+          .map((doc, index) => ({
+            ...doc.data(),
+            id: index + 1,
+            docRef: doc.ref
           }))
-          .filter(
-            (event) =>
-              event.assignees.some(
-                (assignee) => assignee.path === memberDocRef.path
-              ) && event.status !== "הושלמה"
-          );
+          .filter((event) => event.eventStatus !== "הושלמה");
         setNumEvents(eventsArray.length); // Update event count
 
-        const indexedEvents = eventsArray.map((event, index) => ({
-          ...event,
-          id: index + 1
-        }));
-
-        setEvents(indexedEvents);
+        setEvents(eventsArray);
       } catch (error) {
         console.error("Failed to fetch tasks:", error);
       }
@@ -89,7 +66,7 @@ function HomePage() {
 
     grabMyEvents();
     grabMyTasks();
-  }, [user]);
+  }, [tasks, events]);
 
   const handleShowCreateTask = () => {
     setShowCreateTask(true);
@@ -261,10 +238,7 @@ function HomePage() {
               }}
             />
             {tasks.map((task, index) => (
-              // Assuming Task is a component that takes a task object as a prop
               <Task key={index} task={task} />
-              // Or if you don't have a Task component, you can directly render the task details here
-              // <div key={index}>Task Name: {task.name}</div>
             ))}
           </div>
         )}
@@ -276,22 +250,24 @@ function HomePage() {
         ) : (
           <h2 className="title-home">יש {numEvents} אירועים בקרוב</h2>
         )}
-        {numEvents > 0 && (<div className="display-pending-events">
-          <Event
-            key={0}
-            event={{
-              eventName: "משימה",
-              eventDescription: "תיאור",
-              eventDate: "תאריך",
-              eventTime: "שעה",
-              eventStatus: "סטטוס",
-              eventType: "title"
-            }}
-          />
-          {events.map((event, index) => (
-            <Event key={index} event={event} />
-          ))}
-        </div>)}
+        {numEvents > 0 && (
+          <div className="display-pending-events">
+            <Event
+              key={0}
+              event={{
+                eventName: "אירוע",
+                eventDescription: "תיאור",
+                eventDate: "תאריך",
+                eventTime: "שעה",
+                eventStatus: "סטטוס",
+                eventType: "title"
+              }}
+            />
+            {events.map((event, index) => (
+              <Event key={index} event={event} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

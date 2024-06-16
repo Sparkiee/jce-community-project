@@ -37,13 +37,6 @@ function CreateTask() {
       doc(db, "members", member.id)
     );
 
-    let targetEvent;
-    if (!selectedEvent || !selectedEvent.id) {
-      targetEvent = null;
-    } else {
-      targetEvent = doc(db, "events", selectedEvent.id);
-    }
-
     let updatedTaskDetails = {
       taskName: taskDetails.taskName,
       taskDescription: taskDetails.taskDescription,
@@ -55,12 +48,15 @@ function CreateTask() {
 
     // Conditionally add targetEvent if it exists and is not null
     if (selectedEvent && selectedEvent.id) {
-      updatedTaskDetails.relatedEvent = targetEvent;
+      updatedTaskDetails.relatedEvent = 'events/' + selectedEvent.id;
     }
 
     // Conditionally add assignees if the array is not empty
     if (assigneeRefs.length > 0) {
-      updatedTaskDetails.assignees = assigneeRefs;
+      updatedTaskDetails.assignees = selectedMembers.map(
+        (member) =>
+          `members/${member.id}`
+      );
     }
 
     try {

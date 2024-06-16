@@ -51,8 +51,10 @@ function CreateEvent() {
       return; // Exit the function to prevent further execution
     }
     setFormWarning(false);
-    const assigneeRefs = selectedMembers.map((member) =>
-      doc(db, "members", member.id)
+    const assigneeRefs = selectedMembers.map(
+      (member) =>
+        // doc(db, "members", member.id)
+        `members/${member.id}`
     );
     const updatedEventDetails = {
       eventName: eventDetails.eventName,
@@ -156,7 +158,9 @@ function CreateEvent() {
             className="create-event-input"
             onChange={(e) => {
               const date = new Date(e.target.value);
-              const formattedDate = date.toLocaleDateString('en-GB').replaceAll('/', '-');
+              const formattedDate = date
+                .toLocaleDateString("en-GB")
+                .replaceAll("/", "-");
               setEventDetails({ ...eventDetails, eventDate: formattedDate });
             }}
           />

@@ -47,7 +47,7 @@ function Navbar() {
       <div className="navbar-container">
         <div className="navbar">
           <div className="logo">
-            <a to="#" onClick={() => navigate("#")}>
+            <a to="/home" onClick={() => navigate("/home")}>
               <img
                 className="logo-img"
                 src={require("../assets/aguda.png")}

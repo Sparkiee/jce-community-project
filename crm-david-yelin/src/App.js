@@ -8,6 +8,8 @@ import UserCreationForm from './components/UserCreationForm';
 import RegistrationForm from './components/RegistrationForm';
 import CreateEvent from './components/CreateEvent';
 import CreateTask from './components/CreateTask';
+import AllEvents from './components/AllEvents';
+
 
 const App = () => {
   return (
@@ -17,6 +19,7 @@ const App = () => {
         <Route path="/home" element={<ProtectedRoute privilegeLevel={1} ><HomePage/></ProtectedRoute>} />
         <Route path="/create" element={<ProtectedRoute privilegeLevel={3} ><UserCreationForm/></ProtectedRoute>} />
         <Route path="/register" element={<RegistrationForm/>} />
+        <Route path='/events' element={<AllEvents/>} />
         <Route path="/create-event" element={<CreateEvent/>} />
         <Route path="/create-task" element={<CreateTask/>} />
       </Routes>

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
-import "../styles/LoginForm.css";
+import "../../styles/LoginForm.css";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -12,11 +12,17 @@ function LoginForm() {
   const [wrongCredentials, setWrongCredentials] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
 
+  useEffect(() => {
+    setWrongCredentials(false);
+    setIsEmailVerified(true);
+  }, [email, password]);
+
   async function handleSubmit(event) {
     event.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
+      console.log(userCredential);
+      
       if (!userCredential.user.emailVerified) {
         console.log("Email not verified");
         setIsEmailVerified(false);
@@ -32,10 +38,10 @@ function LoginForm() {
       if (docSnap.exists()) {
         sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
       }
-      setWrongCredentials(false);
       navigate("/home");
     } catch (error) {
       setWrongCredentials(true);
+      console.log(error);
     }
   }
 

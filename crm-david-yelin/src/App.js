@@ -1,11 +1,11 @@
 import "./App.css";
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute";
-import LoginForm from "./components/LoginForm";
-import HomePage from "./components/HomePage";
-import UserCreationForm from "./components/UserCreationForm";
-import RegistrationForm from "./components/RegistrationForm";
+import ProtectedRoute from "./components/DoNotChange(maybe)/ProtectedRoute";
+import LoginForm from "./components/DoNotChange(maybe)/LoginForm";
+import HomePage from "./components/DoNotChange(maybe)/HomePage";
+import UserCreationForm from "./components/User/CreateUser";
+import RegistrationForm from "./components/DoNotChange(maybe)/RegistrationForm";
 import CreateEvent from "./components/Events/CreateEvent";
 import CreateTask from "./components/Tasks/CreateTask";
 

@@ -1,4 +1,4 @@
-import "../styles/Event.css";
+import "../../styles/Event.css";
 import { db } from "../../firebase";
 import { collection, query, getDocs, where } from "firebase/firestore";
 import { useState, useEffect } from "react";

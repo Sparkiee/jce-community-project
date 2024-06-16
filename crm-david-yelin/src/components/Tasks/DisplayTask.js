@@ -1,4 +1,4 @@
-import "../styles/Task.css";
+import "../../styles/Task.css";
 
 function DisplayTask(props) {
   const isTitle = props.task.taskType === "title";

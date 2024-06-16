@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar/NavbarComponent";
 import { db, updateUserData } from "../../firebase";
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
-import "../styles/HomePage.css";
+import "../../styles/HomePage.css";
 import Task from "../Tasks/DisplayTask";
 import Event from "../Events/DisplayEvent";
 import CreateTask from "../Tasks/CreateTask";

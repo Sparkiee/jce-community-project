@@ -1,10 +1,10 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase.js";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth } from "../../firebase.js";
-import "../styles/RegistrationForm.css";
+import "../../styles/RegistrationForm.css";
 import PhoneInput from "react-phone-number-input/input";
 
 const checkPendingRegistration = async (email) => {
@@ -31,6 +31,7 @@ const grabRole = async (email) => {
   return null;
 };
 
+
 function RegistrationForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -43,6 +44,11 @@ function RegistrationForm() {
   const [accountExists, setAccountExists] = useState(false);
 
   const navigate = useNavigate();
+
+  // remove email notice upon email change
+  useEffect(() => {
+    setPendingAccount(false);
+  }, [email]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -114,9 +120,17 @@ function RegistrationForm() {
             <PhoneInput
               defaultCountry="IL"
               placeholder="טלפון"
+              maxLength="12"
               className="forms-input"
               value={phone}
-              onChange={setPhone}
+              onChange={(value) => {
+                if (value.length <= 15) {
+                  setPhone(value);
+                }
+                else {
+                  value = phone;
+                }
+              }}
               style={{ textAlign: "right" }}
             />
             <input

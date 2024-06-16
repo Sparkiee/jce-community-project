@@ -75,10 +75,7 @@ html {
   color: rgb(18, 21, 116);
 }
 
-.display-pending-tasks {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 80%
+.display-pending-tasks,
+.display-pending-events {
+  width: 80%;
 }

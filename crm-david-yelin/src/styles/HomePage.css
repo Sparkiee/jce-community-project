@@ -53,9 +53,6 @@ html {
 .display-create {
   top: 25%;
   position: fixed;
-  width: 30rem;
-  /* width: 100%; */
-  /* margin: auto; */
 }
 
 .action-close {

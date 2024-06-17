@@ -1,15 +1,17 @@
 .create-task {
-  direction: rtl;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgb(255, 255, 255);
-  padding: 2.5rem;
   border-radius: 1rem;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-  max-width: 30rem;
-  width: 100%;
+  background-color: rgb(255, 255, 255);
+  gap: 5rem;
+  padding: 10rem 8rem;
+  width: 60rem;
+}
+
+.extra-create-task-title {
+  margin: 0;
 }
 
 .create-task-form {
@@ -30,19 +32,29 @@
 }
 
 .create-task-input {
-  font: inherit;
-  width: 80%;
-  padding: 0.6rem;
-  border: 1px solid #e6ecf8;
-  border-radius: 0.3rem;
-  font-size: 1.4rem;
+  width: 85%;
+  padding: 1.5rem;
+  border: 2px solid #e6ecf8;
+  border-radius: 1.7rem;
+  font-size: 1.8rem;
   color: #141c3a;
   outline: 0;
 }
 
 .text-area {
+  font-family: inherit;
   height: 10rem;
   resize: none;
+}
+
+.date-time-input {
+  display: flex;
+  width: 90%;
+  gap: 1rem;
+}
+
+.extra-create-task-input {
+  width: 90%;
 }
 
 .create-event-selected-event {
@@ -54,7 +66,6 @@
 .selected-event {
   cursor: pointer;
   display: flex;
-  flex-direction: row; /* This is default and usually doesn't need to be explicitly set */
   align-items: center;
   transition: color 0.2s linear;
 }

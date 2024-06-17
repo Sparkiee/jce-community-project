@@ -1,14 +1,17 @@
 .create-event {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgb(255, 255, 255);
-  padding: 2.5rem;
   border-radius: 1rem;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-  max-width: 30rem;
-  width: 100%;
+  background-color: rgb(255, 255, 255);
+  gap: 5rem;
+  padding: 10rem 8rem;
+  width: 50rem;
+}
+
+.extra-create-event-title {
+  margin: 0;
 }
 
 .create-event-form {
@@ -29,17 +32,25 @@
 }
 
 .create-event-input {
-  width: 80%;
-  padding: 0.6rem;
-  border: 1px solid #e6ecf8;
-  border-radius: 0.3rem;
-  font-size: 1.4rem;
+  width: 85%;
+  padding: 1.5rem;
+  border: 2px solid #e6ecf8;
+  border-radius: 1.7rem;
+  font-size: 1.8rem;
   color: #141c3a;
   outline: 0;
 }
 
+.extra-date-time-input-event-form {
+  width: 92%;
+}
+
 .extra-create-event {
   margin-top: 1.2rem;
+}
+
+.extra-create-event-input {
+  width: 92%;
 }
 
 .create-event-selected-members {
@@ -51,7 +62,6 @@
 .selected-member {
   cursor: pointer;
   display: flex;
-  flex-direction: row; /* This is default and usually doesn't need to be explicitly set */
   align-items: center;
   transition: color 0.2s linear;
 }

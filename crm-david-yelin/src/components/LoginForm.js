@@ -4,6 +4,7 @@ import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
+import { CheckBox } from "@mui/icons-material";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -41,22 +42,29 @@ function LoginForm() {
 
   return (
     <div className="container">
-      <div className="forms-box">
-        <h1 className="title">שלום!</h1>
-        <p className="subtitle">נא הכנס שם משתמש וסיסמה</p>
-        <div className="error-messages">
-          {wrongCredentials && (
-            <div className="incorrect-box">
-              <p className="incorrect-message">פרטי ההתחברות שגויים</p>
-            </div>
-          )}
-          {!isEmailVerified && (
-            <div className="incorrect-box">
-              <p className="incorrect-message">אימייל לא מאומת</p>
-            </div>
-          )}
+      <div className="login-style">
+        <div className="forms-box">
+          <div className="login-logo">
+            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+            <p>
+              אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
+            </p>
+          </div>
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
+          <h1 className="title">התחברות משתמש</h1>
+          <div className="error-messages">
+            {wrongCredentials && (
+              <div className="incorrect-box">
+                <p className="incorrect-message">פרטי ההתחברות שגויים</p>
+              </div>
+            )}
+            {!isEmailVerified && (
+              <div className="incorrect-box">
+                <p className="incorrect-message">אימייל לא מאומת</p>
+              </div>
+            )}
+          </div>
           <div className="input-container">
             <input
               type="email"
@@ -75,16 +83,26 @@ function LoginForm() {
               onChange={(event) => setPassword(event.target.value)}
             />
           </div>
+          <div className="form-checkbox">
+            <input
+              className="input-checkbox"
+              id="input-checkbox"
+              type="checkbox"
+              name="remember-me"></input>
+            <label className="label-checkbox" for="input-checkbox">
+              זכור אותי
+            </label>
+          </div>
           <button type="submit" className="primary-button">
             התחברות
           </button>
-          <button type="submit" className="registration-button">
-            הרשמה
-          </button>
-          <div className="forgot-box">
+          <div className="extra-options">
             <a href="#forgot-password" className="forgot-password">
-              שכחתי סיסמה
+              שכחת סיסמה?
             </a>
+          </div>
+          <div className="registration-button">
+            <a href="register">הרשמה</a>
           </div>
         </form>
       </div>

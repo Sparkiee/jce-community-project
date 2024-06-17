@@ -93,9 +93,17 @@ function RegistrationForm() {
 
   return (
     <div className="container">
-      <div className="forms-box">
-        <h2 className="title">הרשמה</h2>
+      <div className="registration-style">
+        <div className="forms-box">
+          <div className="login-logo">
+            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+            <p>
+              אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
+            </p>
+          </div>
+        </div>
         <form className="registration-form" onSubmit={handleSubmit}>
+          <h2 className="title extra-registration-form-title">הרשמה</h2>
           <div className="registration-input-box">
             <input
               type="text"
@@ -115,6 +123,7 @@ function RegistrationForm() {
               defaultCountry="IL"
               placeholder="טלפון"
               className="forms-input"
+              maxLength="12"
               value={phone}
               onChange={setPhone}
               style={{ textAlign: "right" }}

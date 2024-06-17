@@ -3,7 +3,6 @@ import { db } from "../firebase";
 import { getDoc, doc, serverTimestamp, setDoc, getDocs, collection } from "firebase/firestore";
 import "../styles/UserCreationForm.css";
 
-
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
   const docSnap = await getDoc(docRef);
@@ -89,10 +88,18 @@ function UserCreationForm() {
   }
   return (
     <div className="container">
-      <div className="forms-box">
-        <h2 className="title">יצירת משתמש</h2>
+      <div className="user-creation-style">
+        <div className="forms-box">
+          <div className="login-logo">
+            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+            <p>
+              אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
+            </p>
+          </div>
+        </div>
         <form className="extra-create-user-form" onSubmit={handleSubmit}>
           <div className="create-user-form">
+            <h2 className="title extra-create-user-form-title">יצירת משתמש חדש</h2>
             <div className="create-user-input-box">
               <input
                 type="email"
@@ -123,14 +130,14 @@ function UserCreationForm() {
                     {dept}
                   </option>
                 ))}
-                <option value="other">הוסף מחלקה</option>
+                <option value="other">הוסף מחלקה חדשה</option>
               </select>
               {isOtherSelected && (
                 <div className="new-department">
                   <input
                     type="text"
                     value={newDepartment}
-                    placeholder="הוסף מחלקה"
+                    placeholder="שם מחלקה חדשה"
                     onChange={(event) => setNewDepartment(event.target.value)}
                     className="forms-input"
                   />
@@ -138,7 +145,7 @@ function UserCreationForm() {
                     type="button"
                     onClick={addDepartment}
                     className="primary-button extra-create-user-button">
-                    הוסף מחלקה
+                    הוסף מחלקה חדשה
                   </button>
                 </div>
               )}

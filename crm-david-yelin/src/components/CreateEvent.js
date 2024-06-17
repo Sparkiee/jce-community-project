@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
@@ -26,7 +26,7 @@ function CreateEvent() {
     eventDate: "",
     eventTime: "",
     eventLocation: "",
-    assignees: selectedMembers
+    assignees: selectedMembers,
   });
 
   async function handleSubmit(event) {
@@ -63,14 +63,11 @@ function CreateEvent() {
       eventLocation: eventDetails.eventLocation,
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
-      eventStatus: "בתהליך"
+      eventStatus: "בתהליך",
     };
 
     try {
-      const docRef = await addDoc(
-        collection(db, "events"),
-        updatedEventDetails
-      );
+      const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
       console.log("Event recorded with ID: ", docRef.id);
       setEventExists(true);
 
@@ -83,8 +80,8 @@ function CreateEvent() {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               eventID: docRef,
-              notificationMessage: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`
-            })
+              notificationMessage: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`,
+            }),
           });
         })
       );
@@ -107,14 +104,12 @@ function CreateEvent() {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some(
-              (selectedMember) => selectedMember.fullName === member.fullName
-            )
+            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
         );
       setMembers(results);
     } else {
@@ -124,10 +119,7 @@ function CreateEvent() {
 
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
-    if (
-      selectedMember &&
-      !selectedMembers.some((member) => member.id === selectedMember.id)
-    ) {
+    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
       setSearch(""); // Clear the search input after selection
       setMembers([]); // Clear the dropdown options
@@ -140,38 +132,34 @@ function CreateEvent() {
 
   return (
     <div className="create-event">
-      <h2 className="title">צור אירוע</h2>
       <form className="create-event-form" onSubmit={handleSubmit}>
+        <h2 className="title extra-create-event-title">צור אירוע</h2>
         <div className="create-event-input-box">
           <input
             type="text"
             placeholder="שם האירוע"
             name="eventName"
             className="create-event-input"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, eventName: e.target.value })
-            }
+            onChange={(e) => setEventDetails({ ...eventDetails, eventName: e.target.value })}
           />
-          <input
-            type="date"
-            name="eventDate"
-            className="create-event-input"
-            onChange={(e) => {
-              const date = new Date(e.target.value);
-              const formattedDate = date
-                .toLocaleDateString("en-GB")
-                .replaceAll("/", "-");
-              setEventDetails({ ...eventDetails, eventDate: formattedDate });
-            }}
-          />
-          <input
-            type="time"
-            name="eventTime"
-            className="create-event-input"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, eventTime: e.target.value })
-            }
-          />
+          <div className="date-time-input extra-date-time-input-event-form">
+            <input
+              type="date"
+              name="eventDate"
+              className="create-event-input"
+              onChange={(e) => {
+                const date = new Date(e.target.value);
+                const formattedDate = date.toLocaleDateString("en-GB").replaceAll("/", "-");
+                setEventDetails({ ...eventDetails, eventDate: formattedDate });
+              }}
+            />
+            <input
+              type="time"
+              name="eventTime"
+              className="create-event-input"
+              onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value })}
+            />
+          </div>
           <input
             type="text"
             placeholder="מיקום האירוע"
@@ -180,13 +168,13 @@ function CreateEvent() {
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
-                eventLocation: e.target.value
+                eventLocation: e.target.value,
               })
             }
           />
           <Select
             placeholder="הוסף חבר וועדה"
-            className="create-event-input"
+            className="create-event-input extra-create-event-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });
             }}
@@ -195,7 +183,7 @@ function CreateEvent() {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
           <div className="create-event-selected-members">
@@ -203,8 +191,7 @@ function CreateEvent() {
               <div
                 key={index}
                 className="selected-member"
-                onClick={() => handleRemoveMember(member.id)}
-              >
+                onClick={() => handleRemoveMember(member.id)}>
                 <svg
                   className="w-6 h-6 text-gray-800 dark:text-white"
                   aria-hidden="true"
@@ -212,8 +199,7 @@ function CreateEvent() {
                   width="24"
                   height="24"
                   fill="none"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path
                     stroke="currentColor"
                     strokeLinecap="round"
@@ -227,17 +213,11 @@ function CreateEvent() {
             ))}
           </div>
         </div>
-        <input
-          type="submit"
-          value="צור אירוע"
-          className="primary-button extra-create-event"
-        />
+        <input type="submit" value="צור אירוע" className="primary-button extra-create-event" />
         <div className="feedback">
           {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
         </div>
-        <div className="feedback warning">
-          {formWarning && <p style={{ color: "red" }}>{warningText}</p>}
-        </div>
+        <div className="feedback warning">{formWarning && <p>{warningText}</p>}</div>
       </form>
     </div>
   );

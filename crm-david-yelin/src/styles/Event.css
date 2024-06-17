@@ -17,6 +17,17 @@
     text-align: center;
 }
 
+.event-field > span {
+    width: 70%;
+}
+
+.event-field > svg {
+    /* width: 30%; */
+    min-width: 30%;
+    max-width: 30%;
+    margin-right: 0.5rem;
+}
+
 .event-id, .event-view {
     width: 3%;
     text-align: center;
@@ -35,3 +46,4 @@
     transform: scale(1.2);
     color: rgb(18, 21, 116);
 }
+

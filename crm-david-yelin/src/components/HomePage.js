@@ -24,36 +24,36 @@ function HomePage() {
     {
       field: "id",
       headerName: "אינדקס",
-      width: 90,
+      width: "3%",
       align: "right",
-      colors: "red"
+      colors: "red",
+      flex: 1
     },
-    { field: "taskName", headerName: "משימה", width: 150, align: "right" },
+    { field: "taskName", headerName: "משימה", width: 150, align: "right", flex: 2},
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
-      align: "right"
+      align: "right", flex: 3
     },
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
       width: 150,
-      align: "right"
+      align: "right", flex: 2
     },
     {
       field: "taskEndDate",
       headerName: "תאריך סיום",
       width: 150,
-      align: "right"
+      align: "right", flex: 2
     },
-    { field: "taskTime", headerName: "שעת סיום", width: 150, align: "right" },
+    { field: "taskTime", headerName: "שעת סיום", width: 150, align: "right", flex: 2 },
     {
       field: "taskStatus",
       headerName: "סטטוס",
       width: 150,
-      align: "right",
-      editable: true
+      align: "right", flex: 2
     }
   ];
 
@@ -61,7 +61,8 @@ function HomePage() {
     {
       id: 1,
       taskName: "משימה 1",
-      taskDescription: "תיאור 1 מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך",
+      taskDescription:
+        "תיאור 1 מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך",
       taskStartDate: "תאריך 1",
       taskEndDate: "תאריך 1",
       taskTime: "שעה 1",
@@ -319,7 +320,7 @@ function HomePage() {
                 "& .MuiDataGrid-cell": {
                   color: "black",
                   fontWeight: "bold"
-                   // Or any color that makes the text more visible
+                  // Or any color that makes the text more visible
                 }
               }}
             />
@@ -329,9 +330,9 @@ function HomePage() {
         {numEvents === 0 ? (
           <h2 className="title-home">אין אירועים קרובים!</h2>
         ) : numEvents === 1 ? (
-          <h2 className="title-home">יש אירוע אחד בקרוב</h2>
+          <h2 className="title-home">יש לך אירוע אחד בקרוב</h2>
         ) : (
-          <h2 className="title-home">יש {numEvents} אירועים בקרוב</h2>
+          <h2 className="title-home">יש לך {numEvents} אירועים בקרוב</h2>
         )}
         {numEvents > 0 && (
           <div className="display-pending-events">

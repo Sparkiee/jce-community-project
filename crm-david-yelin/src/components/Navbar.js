@@ -6,20 +6,28 @@ import { onAuthStateChanged } from "firebase/auth";
 import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import IconButton from "@mui/material/IconButton";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 function Navbar() {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(0);
 
+
   useEffect(() => {
     // Listener for authentication state
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const member = JSON.parse(sessionStorage.getItem("user"));
-        if (!member.Notifications) setNotifications(0);
-        else setNotifications(member.Notifications.length);
+        // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
+        const unsubscribeSnapshot = onSnapshot(doc(db, "members", user.email), (doc) => {
+          const data = doc.data();
+          sessionStorage.setItem("user", JSON.stringify(data));
+          // Directly update notifications from the document data
+          setNotifications(data?.Notifications?.length || 0);
+        });
+
+        // Return the unsubscribe function for the Firestore listener
+        return () => unsubscribeSnapshot();
       }
     });
 
@@ -42,7 +50,7 @@ function Navbar() {
     } catch (error) {}
   };
 
-  
+
 
   return (
     <header>

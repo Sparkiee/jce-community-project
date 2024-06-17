@@ -41,11 +41,29 @@
   outline: 0;
 }
 
-.extra-date-time-input-event-form {
+.start-due-date-event {
+  display: flex;
   width: 92%;
+  gap: 1rem;
 }
 
-.extra-create-event {
+.start-date-event {
+  width: 50%;
+}
+
+.start-date-event label {
+  font-size: 1.8rem;
+}
+
+.due-date-event {
+  width: 50%;
+}
+
+.due-date-event label {
+  font-size: 1.8rem;
+}
+
+.extra-create-event-button {
   margin-top: 1.2rem;
 }
 

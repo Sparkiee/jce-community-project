@@ -24,6 +24,7 @@ function CreateEvent() {
   const [eventDetails, setEventDetails] = useState({
     eventName: "",
     eventDate: "",
+    //add start date and due date
     eventTime: "",
     eventLocation: "",
     assignees: selectedMembers,
@@ -142,24 +143,44 @@ function CreateEvent() {
             className="create-event-input"
             onChange={(e) => setEventDetails({ ...eventDetails, eventName: e.target.value })}
           />
-          <div className="date-time-input extra-date-time-input-event-form">
-            <input
-              type="date"
-              name="eventDate"
-              className="create-event-input"
-              onChange={(e) => {
-                const date = new Date(e.target.value);
-                const formattedDate = date.toLocaleDateString("en-GB").replaceAll("/", "-");
-                setEventDetails({ ...eventDetails, eventDate: formattedDate });
-              }}
-            />
-            <input
-              type="time"
-              name="eventTime"
-              className="create-event-input"
-              onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value })}
-            />
+          <div className="start-due-date-event">
+            <div className="start-date-event">
+              <label for="start">תאריך התחלה</label>
+              <input
+                type="date"
+                name="eventDate"
+                id="start"
+                className="create-event-input"
+                onChange={(e) => {
+                  const date = new Date(e.target.value);
+                  const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+                  //change the start date
+                  setEventDetails({ ...eventDetails, eventDate: formattedDate });
+                }}
+              />
+            </div>
+            <div className="due-date-event">
+              <label for="due">תאריך סיום</label>
+              <input
+                type="date"
+                name="eventDate"
+                id="due"
+                className="create-event-input"
+                onChange={(e) => {
+                  const date = new Date(e.target.value);
+                  const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+                  //change the due date
+                  setEventDetails({ ...eventDetails, eventDate: formattedDate });
+                }}
+              />
+            </div>
           </div>
+          <input
+            type="time"
+            name="eventTime"
+            className="create-event-input"
+            onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value })}
+          />
           <input
             type="text"
             placeholder="מיקום האירוע"
@@ -213,7 +234,11 @@ function CreateEvent() {
             ))}
           </div>
         </div>
-        <input type="submit" value="צור אירוע" className="primary-button extra-create-event" />
+        <input
+          type="submit"
+          value="צור אירוע"
+          className="primary-button extra-create-event-button"
+        />
         <div className="feedback">
           {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
         </div>

@@ -47,10 +47,27 @@
   resize: none;
 }
 
-.date-time-input {
+.start-due-date-task {
   display: flex;
-  width: 90%;
+  width: 92%;
   gap: 1rem;
+  margin-right: 1rem;
+}
+
+.start-date-task {
+  width: 50%;
+}
+
+.start-date-task label {
+  font-size: 1.8rem;
+}
+
+.due-date-task {
+  width: 50%;
+}
+
+.due-date-task label {
+  font-size: 1.8rem;
 }
 
 .extra-create-task-input {

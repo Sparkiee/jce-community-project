@@ -18,55 +18,58 @@ function HomePage() {
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  // useEffect(() => {
-  //   async function grabMyTasks() {
-  //     try {
-  //       const tasksRef = collection(db, "tasks");
+  async function grabMyTasks() {
+    try {
+      const tasksRef = collection(db, "tasks");
 
-  //       const q = query(
-  //         tasksRef,
-  //         where("assignees", "array-contains", "members/" + user.email)
-  //       );
-  //       const querySnapshot = await getDocs(q);
-  //       const taskArray = querySnapshot.docs.map((doc, index) => ({
-  //         ...doc.data(),
-  //         id: index + 1,
-  //         docRef: doc.ref
-  //       })).filter((task) => task.taskStatus !== "הושלמה");
+      const q = query(
+        tasksRef,
+        where("assignees", "array-contains", "members/" + user.email)
+      );
+      const querySnapshot = await getDocs(q);
+      const taskArray = querySnapshot.docs
+        .map((doc, index) => ({
+          ...doc.data(),
+          id: index + 1,
+          docRef: doc.ref
+        }))
+        .filter((task) => task.taskStatus !== "הושלמה");
 
-  //       setNumTasks(taskArray.length); // Update task count
-  //       setTasks(taskArray);
-  //     } catch (error) {
-  //       console.error("Failed to fetch tasks:", error);
-  //     }
-  //   }
+      setNumTasks(taskArray.length); // Update task count
+      setTasks(taskArray);
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+    }
+  }
 
-  //   async function grabMyEvents() {
-  //     try {
-  //       const eventsRef = collection(db, "events");
-  //       const q = query(
-  //         eventsRef,
-  //         where("assignees", "array-contains", "members/" + user.email)
-  //       );
-  //       const querySnapshot = await getDocs(q);
-  //       const eventsArray = querySnapshot.docs
-  //         .map((doc, index) => ({
-  //           ...doc.data(),
-  //           id: index + 1,
-  //           docRef: doc.ref
-  //         }))
-  //         .filter((event) => event.eventStatus !== "הושלמה");
-  //       setNumEvents(eventsArray.length); // Update event count
+  async function grabMyEvents() {
+    try {
+      const eventsRef = collection(db, "events");
+      const q = query(
+        eventsRef,
+        where("assignees", "array-contains", "members/" + user.email)
+      );
+      const querySnapshot = await getDocs(q);
+      const eventsArray = querySnapshot.docs
+        .map((doc, index) => ({
+          ...doc.data(),
+          id: index + 1,
+          docRef: doc.ref
+        }))
+        .filter((event) => event.eventStatus !== "הושלמה");
+      setNumEvents(eventsArray.length); // Update event count
 
-  //       setEvents(eventsArray);
-  //     } catch (error) {
-  //       console.error("Failed to fetch tasks:", error);
-  //     }
-  //   }
+      setEvents(eventsArray);
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+    }
+  }
 
-  //   grabMyEvents();
-  //   grabMyTasks();
-  // }, [tasks, events]);
+  // Fix trigger for fetching events / tasks
+  useEffect(() => {
+    grabMyEvents();
+    grabMyTasks();
+  }, []);
 
   const handleShowCreateTask = () => {
     setShowCreateTask(true);

@@ -8,6 +8,10 @@ import Event from "./Event";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
 
+import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
+import { colors } from "@mui/material";
+
 function HomePage() {
   const [tasks, setTasks] = useState([]); // Initialize state with an empty array
   const [events, setEvents] = useState([]); // Initialize state with an empty array
@@ -16,6 +20,63 @@ function HomePage() {
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
 
+  const columns = [
+    {
+      field: "id",
+      headerName: "אינדקס",
+      width: 90,
+      align: "right",
+      colors: "red"
+    },
+    { field: "taskName", headerName: "משימה", width: 150, align: "right" },
+    {
+      field: "taskDescription",
+      headerName: "תיאור",
+      width: 150,
+      align: "right"
+    },
+    {
+      field: "taskStartDate",
+      headerName: "תאריך התחלה",
+      width: 150,
+      align: "right"
+    },
+    {
+      field: "taskEndDate",
+      headerName: "תאריך סיום",
+      width: 150,
+      align: "right"
+    },
+    { field: "taskTime", headerName: "שעת סיום", width: 150, align: "right" },
+    {
+      field: "taskStatus",
+      headerName: "סטטוס",
+      width: 150,
+      align: "right",
+      editable: true
+    }
+  ];
+
+  const rows = [
+    {
+      id: 1,
+      taskName: "משימה 1",
+      taskDescription: "תיאור 1 מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך",
+      taskStartDate: "תאריך 1",
+      taskEndDate: "תאריך 1",
+      taskTime: "שעה 1",
+      taskStatus: "סטטוס 1"
+    },
+    {
+      id: 2,
+      taskName: "משימה 2",
+      taskDescription: "תיאור 2",
+      taskStartDate: "תאריך 2",
+      taskEndDate: "תאריך 2",
+      taskTime: "שעה 2",
+      taskStatus: "סטטוס 2"
+    }
+  ];
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   async function grabMyTasks() {
@@ -37,6 +98,7 @@ function HomePage() {
 
       setNumTasks(taskArray.length); // Update task count
       setTasks(taskArray);
+      console.log(taskArray);
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
     }
@@ -228,23 +290,40 @@ function HomePage() {
           <h2 className="pending-tasks">יש לך {numTasks} משימות פתוחות</h2>
         )}
         {numTasks > 0 && (
-          <div className="display-pending-tasks">
-            <Task
-              key={0}
-              task={{
-                id: "אינדקס",
-                taskName: "משימה",
-                taskDescription: "תיאור",
-                taskDate: "תאריך",
-                taskTime: "שעה",
-                taskStatus: "סטטוס",
-                taskType: "title"
+          // <div className="display-pending-tasks">
+          //   <Task
+          //     key={0}
+          //     task={{
+          //       id: "אינדקס",
+          //       taskName: "משימה",
+          //       taskDescription: "תיאור",
+          //       taskDate: "תאריך",
+          //       taskTime: "שעה",
+          //       taskStatus: "סטטוס",
+          //       taskType: "title"
+          //     }}
+          //   />
+          //   {tasks.map((task, index) => (
+          //     <Task key={index} task={task} />
+          //   ))}
+          // </div>
+          <Box
+            sx={{ height: 400, width: "80%", margin: "auto" }}
+            className="display-data"
+          >
+            <DataGrid
+              columns={columns}
+              rows={rows}
+              pageSize={5}
+              sx={{
+                "& .MuiDataGrid-cell": {
+                  color: "black",
+                  fontWeight: "bold"
+                   // Or any color that makes the text more visible
+                }
               }}
             />
-            {tasks.map((task, index) => (
-              <Task key={index} task={task} />
-            ))}
-          </div>
+          </Box>
         )}
         <hr className="divider" />
         {numEvents === 0 ? (
@@ -272,6 +351,8 @@ function HomePage() {
               <Event key={index} event={event} />
             ))}
           </div>
+
+          // <Box sx={{ height: 400, width: "100%" }}></Box>
         )}
       </div>
     </div>

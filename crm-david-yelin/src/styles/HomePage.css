@@ -76,3 +76,7 @@ html {
 .display-pending-events {
   width: 80%;
 }
+
+.display-data {
+  color: black;
+}

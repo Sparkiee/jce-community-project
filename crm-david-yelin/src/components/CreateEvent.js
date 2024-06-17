@@ -23,7 +23,8 @@ function CreateEvent() {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [eventDetails, setEventDetails] = useState({
     eventName: "",
-    eventDate: "",
+    eventStartDate: "",
+    eventEndDate: "",
     //add start date and due date
     eventTime: "",
     eventLocation: "",
@@ -35,7 +36,7 @@ function CreateEvent() {
     setWarningText("");
     if (
       !eventDetails.eventName ||
-      !eventDetails.eventDate ||
+      !eventDetails.eventEndDate ||
       !eventDetails.eventTime ||
       !eventDetails.eventLocation
     ) {
@@ -51,6 +52,11 @@ function CreateEvent() {
       setWarningText(warning);
       return; // Exit the function to prevent further execution
     }
+    if(!eventDetails.eventStartDate){
+      const date = new Date().toDateString();
+      const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+      eventDetails.eventStartDate = formattedDate;
+    }
     setFormWarning(false);
     const assigneeRefs = selectedMembers.map(
       (member) =>
@@ -59,7 +65,8 @@ function CreateEvent() {
     );
     const updatedEventDetails = {
       eventName: eventDetails.eventName,
-      eventDate: eventDetails.eventDate,
+      eventStartDate: eventDetails.eventStartDate,
+      eventEndDate: eventDetails.eventEndDate,
       eventTime: eventDetails.eventTime,
       eventLocation: eventDetails.eventLocation,
       eventCreated: serverTimestamp(),
@@ -148,14 +155,14 @@ function CreateEvent() {
               <label for="start">תאריך התחלה</label>
               <input
                 type="date"
-                name="eventDate"
+                name="eventStartDate"
                 id="start"
                 className="create-event-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
                   const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
                   //change the start date
-                  setEventDetails({ ...eventDetails, eventDate: formattedDate });
+                  setEventDetails({ ...eventDetails, eventStartDate: formattedDate });
                 }}
               />
             </div>
@@ -163,14 +170,14 @@ function CreateEvent() {
               <label for="due">תאריך סיום</label>
               <input
                 type="date"
-                name="eventDate"
+                name="eventEndDate"
                 id="due"
                 className="create-event-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
                   const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
                   //change the due date
-                  setEventDetails({ ...eventDetails, eventDate: formattedDate });
+                  setEventDetails({ ...eventDetails, eventEndDate: formattedDate });
                 }}
               />
             </div>

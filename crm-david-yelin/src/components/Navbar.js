@@ -42,6 +42,8 @@ function Navbar() {
     } catch (error) {}
   };
 
+  
+
   return (
     <header>
       <div className="navbar-container">

@@ -24,8 +24,8 @@ function CreateTask() {
   const [taskDetails, setTaskDetails] = useState({
     taskName: "",
     taskDescription: "",
-    taskDate: "",
-    //add task satrt date and due date
+    taskStartDate: "",
+    taskEndDate: "",
     taskTime: "",
     relatedEvent: selectedEvent,
     assignees: selectedMembers,
@@ -38,7 +38,8 @@ function CreateTask() {
     let updatedTaskDetails = {
       taskName: taskDetails.taskName,
       taskDescription: taskDetails.taskDescription,
-      taskDate: taskDetails.taskDate,
+      taskStartDate: taskDetails.taskStartDate,
+      taskEndDate: taskDetails.taskEndDate,
       taskTime: taskDetails.taskTime,
       taskCreated: serverTimestamp(),
       taskStatus: "בתהליך",
@@ -52,6 +53,12 @@ function CreateTask() {
     // Conditionally add assignees if the array is not empty
     if (assigneeRefs.length > 0) {
       updatedTaskDetails.assignees = selectedMembers.map((member) => `members/${member.id}`);
+    }
+
+    if(!updatedTaskDetails.taskStartDate){
+      const date = new Date().toDateString();
+      const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+      updatedTaskDetails.taskStartDate = formattedDate;
     }
 
     try {
@@ -171,14 +178,14 @@ function CreateTask() {
               <label for="start">תאריך התחלה</label>
               <input
                 type="date"
-                name="taskDate"
+                name="taskStartDate"
                 id="start"
                 className="create-task-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
                   const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
                   //change the start date
-                  setTaskDetails({ ...taskDetails, taskDate: formattedDate });
+                  setTaskDetails({ ...taskDetails, taskStartDate: formattedDate });
                 }}
               />
             </div>
@@ -186,14 +193,14 @@ function CreateTask() {
               <label for="due">תאריך סיום</label>
               <input
                 type="date"
-                name="taskDate"
+                name="taskEndDate"
                 id="due"
                 className="create-task-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
                   const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
                   //change the due date
-                  setTaskDetails({ ...taskDetails, taskDate: formattedDate });
+                  setTaskDetails({ ...taskDetails, taskEndDate: formattedDate });
                 }}
               />
             </div>

@@ -135,10 +135,12 @@ function HomePage() {
   }, []);
 
   const handleShowCreateTask = () => {
+    setShowCreateEvent(false);
     setShowCreateTask(true);
   };
 
   const handleShowCreateEvent = () => {
+    setShowCreateTask(false);
     setShowCreateEvent(true);
   };
 
@@ -291,40 +293,40 @@ function HomePage() {
           <h2 className="pending-tasks">יש לך {numTasks} משימות פתוחות</h2>
         )}
         {numTasks > 0 && (
-          // <div className="display-pending-tasks">
-          //   <Task
-          //     key={0}
-          //     task={{
-          //       id: "אינדקס",
-          //       taskName: "משימה",
-          //       taskDescription: "תיאור",
-          //       taskDate: "תאריך",
-          //       taskTime: "שעה",
-          //       taskStatus: "סטטוס",
-          //       taskType: "title"
-          //     }}
-          //   />
-          //   {tasks.map((task, index) => (
-          //     <Task key={index} task={task} />
-          //   ))}
-          // </div>
-          <Box
-            sx={{ height: 400, width: "80%", margin: "auto" }}
-            className="display-data"
-          >
-            <DataGrid
-              columns={columns}
-              rows={rows}
-              pageSize={5}
-              sx={{
-                "& .MuiDataGrid-cell": {
-                  color: "black",
-                  fontWeight: "bold"
-                  // Or any color that makes the text more visible
-                }
+          <div className="display-pending-tasks">
+            <Task
+              key={0}
+              task={{
+                id: "אינדקס",
+                taskName: "משימה",
+                taskDescription: "תיאור",
+                taskDate: "תאריך",
+                taskTime: "שעה",
+                taskStatus: "סטטוס",
+                taskType: "title"
               }}
             />
-          </Box>
+            {tasks.map((task, index) => (
+              <Task key={index} task={task} />
+            ))}
+          </div>
+          // <Box
+          //   sx={{ height: 400, width: "80%", margin: "auto" }}
+          //   className="display-data"
+          // >
+          //   <DataGrid
+          //     columns={columns}
+          //     rows={rows}
+          //     pageSize={5}
+          //     sx={{
+          //       "& .MuiDataGrid-cell": {
+          //         color: "black",
+          //         fontWeight: "bold"
+          //         // Or any color that makes the text more visible
+          //       }
+          //     }}
+          //   />
+          // </Box>
         )}
         <hr className="divider" />
         {numEvents === 0 ? (

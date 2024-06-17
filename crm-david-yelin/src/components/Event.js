@@ -56,13 +56,13 @@ function Event(props) {
       <div className={`event-field event-title ${isTitle ? "event-bold" : ""}`}>
         {props.event.eventName}
       </div>
-      <div
+      {/* <div
         className={`event-field event-description ${
           isTitle ? "event-bold" : ""
         }`}
       >
         {props.event.eventDescription}
-      </div>
+      </div> */}
       <div className={`event-field event-date ${isTitle ? "event-bold" : ""}`}>
         {props.event.eventDate}
       </div>

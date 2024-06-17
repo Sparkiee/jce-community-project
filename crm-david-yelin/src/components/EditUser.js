@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -8,7 +8,6 @@ import "../styles/RegistrationForm.css";
 function EditUser() {
   const [firstName, setFirstName] = useState(""); // replace with current user's firstName
   const [lastName, setLastName] = useState(""); // replace with current user's lastName
-  const [id, setId] = useState(""); // replace with current user's id
   const [phone, setPhone] = useState(""); // replace with current user's phone
 
   const navigate = useNavigate();
@@ -18,18 +17,21 @@ function EditUser() {
     try {
       console.log("Updating document...");
       const docRef = doc(db, "members", id);
-      await setDoc(docRef, {
-        firstName: firstName,
-        lastName: lastName,
-        fullName: firstName + " " + lastName,
-        id: id,
-        phone: phone,
-        updatedOn: serverTimestamp()
-      }, { merge: true });
+      await setDoc(
+        docRef,
+        {
+          firstName: firstName,
+          lastName: lastName,
+          fullName: firstName + " " + lastName,
+          phone: phone,
+          updatedOn: serverTimestamp(),
+        },
+        { merge: true }
+      );
       console.log("Document successfully updated!");
       // Navigate to user profile page or wherever you want
       setTimeout(() => {
-        navigate('/profile');
+        navigate("/profile");
       }, 5000);
     } catch (e) {
       console.error("Error updating document: ", e);
@@ -59,15 +61,6 @@ function EditUser() {
               onChange={(event) => setLastName(event.target.value)}
             />
           </div>
-          <div className="id">
-            <input
-              type="text"
-              placeholder="תעודת זהות"
-              className="styled-input"
-              value={id}
-              onChange={(event) => setId(event.target.value)}
-            />
-          </div>
           <div className="phone">
             <input
               type="tel"
@@ -78,16 +71,12 @@ function EditUser() {
             />
           </div>
           <div>
-            <input
-              type="email"
-              placeholder="אימייל"
-              className="styled-input"
-            />
-            <select className='privileges'>
-                <option value='user'>משתמש לא באגודה</option>
-                <option value='member'>חבר אגודה</option>
-                <option value='department-head'>ראש מחלקה</option>
-                <option value='chairman'>יושב ראש האגודה</option>
+            <input type="email" placeholder="אימייל" className="styled-input" />
+            <select className="privileges">
+              <option value="user">משתמש לא באגודה</option>
+              <option value="member">חבר אגודה</option>
+              <option value="department-head">ראש מחלקה</option>
+              <option value="chairman">יושב ראש האגודה</option>
             </select>
           </div>
         </div>

@@ -31,9 +31,32 @@ function CreateTask() {
     relatedEvent: selectedEvent,
     assignees: selectedMembers
   });
+  const [formWarning, setFormWarning] = useState(false);
+  const [warningText, setWarningText] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setFormWarning(false);
+    setTaskExists(false);
+    setWarningText("");
+    if (
+      !taskDetails.taskName ||
+      !taskDetails.taskDescription ||
+      !taskDetails.taskEndDate ||
+      !taskDetails.taskTime
+    ) {
+      setFormWarning(true);
+      let warning = "אנא מלא את כל השדות";
+      setWarningText(warning);
+      return;
+    }
+    if (!taskDetails.taskStartDate) {
+      const date = new Date().toDateString();
+      const formattedDate = date
+        .toLocaleDateString("he-IL")
+        .replaceAll("/", "-");
+      taskDetails.taskStartDate = formattedDate;
+    }
     const assigneeRefs = selectedMembers.map((member) =>
       doc(db, "members", member.id)
     );
@@ -51,6 +74,19 @@ function CreateTask() {
     // Conditionally add targetEvent if it exists and is not null
     if (selectedEvent && selectedEvent.id) {
       updatedTaskDetails.relatedEvent = "events/" + selectedEvent.id;
+    }
+
+    if (
+      await taskExistsAndOpen(
+        updatedTaskDetails.taskName,
+        updatedTaskDetails.relatedEvent
+      )
+    ) {
+      setFormWarning(true);
+      if (updatedTaskDetails.relatedEvent)
+        setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
+      else setWarningText("קיימת משימה כללית פתוחה עם שם זהה (ללא אירוע)");
+      return;
     }
 
     // Conditionally add assignees if the array is not empty
@@ -90,6 +126,28 @@ function CreateTask() {
     } catch (error) {
       console.error("Error adding document: ", error);
     }
+  }
+
+  async function taskExistsAndOpen(taskName, relatedEvent) {
+    let taskQuery;
+
+    if (!relatedEvent) {
+      taskQuery = query(
+        collection(db, "tasks"),
+        where("taskName", "==", taskName),
+        where("taskStatus", "!=", "הושלמה")
+      );
+    } else {
+      taskQuery = query(
+        collection(db, "tasks"),
+        where("relatedEvent", "==", relatedEvent),
+        where("taskName", "==", taskName),
+        where("taskStatus", "!=", "הושלמה")
+      );
+    }
+    const querySnapshot = await getDocs(taskQuery);
+    console.log(!querySnapshot.empty);
+    return !querySnapshot.empty;
   }
 
   async function handleSearchEvent(event) {
@@ -339,6 +397,9 @@ function CreateTask() {
           {taskExists && (
             <p style={{ color: "green" }}>משימה חדשה התווספה בהצלחה</p>
           )}
+        </div>
+        <div className="feedback warning">
+          {formWarning && <p>{warningText}</p>}
         </div>
       </form>
     </div>

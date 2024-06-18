@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion,
+  arrayUnion
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
@@ -26,14 +26,15 @@ function CreateEvent() {
     eventName: "",
     eventStartDate: "",
     eventEndDate: "",
-    //add start date and due date
     eventTime: "",
     eventLocation: "",
-    assignees: selectedMembers,
+    assignees: selectedMembers
   });
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setFormWarning(false);
+    setEventExists(false);
     setWarningText("");
     if (
       !eventDetails.eventName ||
@@ -42,23 +43,24 @@ function CreateEvent() {
       !eventDetails.eventLocation
     ) {
       setFormWarning(true);
-      // Alert the user or set an error state here
-      const target = document.querySelector(".warning");
       let warning = "אנא מלא את כל השדות";
-      // console.log({warningText} + "\nשם האירוע")
-      // if (!eventDetails.eventName) warning += "\nשם האירוע חסר";
-      // if (!eventDetails.eventDate) warning += "\nתאריך האירוע חסר";
-      // if (!eventDetails.eventTime) warning += "\nשעת האירוע חסר";
-      // if (!eventDetails.eventLocation) warning += "\nמיקום האירוע חסר";
       setWarningText(warning);
       return; // Exit the function to prevent further execution
     }
+
+    if(await eventExistsAndOpen(eventDetails.eventName)) {
+      setFormWarning(true);
+      setWarningText("משימה פתוחה עם שם זהה כבר קיימת");
+      return;
+    }
+
     if (!eventDetails.eventStartDate) {
       const date = new Date().toDateString();
-      const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+      const formattedDate = date
+        .toLocaleDateString("he-IL")
+        .replaceAll("/", "-");
       eventDetails.eventStartDate = formattedDate;
     }
-    setFormWarning(false);
     const assigneeRefs = selectedMembers.map(
       (member) =>
         // doc(db, "members", member.id)
@@ -72,11 +74,14 @@ function CreateEvent() {
       eventLocation: eventDetails.eventLocation,
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
-      eventStatus: "בתהליך",
+      eventStatus: "בתהליך"
     };
 
     try {
-      const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
+      const docRef = await addDoc(
+        collection(db, "events"),
+        updatedEventDetails
+      );
       console.log("Event recorded with ID: ", docRef.id);
       setEventExists(true);
 
@@ -89,8 +94,8 @@ function CreateEvent() {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               eventID: docRef,
-              notificationMessage: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`,
-            }),
+              notificationMessage: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`
+            })
           });
         })
       );
@@ -99,6 +104,16 @@ function CreateEvent() {
     } catch (e) {
       console.error("Error adding document: ", e);
     }
+  }
+
+  async function eventExistsAndOpen(eventName) {
+    const eventQuery = query(
+      collection(db, "events"),
+      where("eventName", "==", eventName),
+      where("eventStatus", "!=", "הסתיים")
+    );
+    const querySnapshot = await getDocs(eventQuery);
+    return !querySnapshot.empty;
   }
 
   async function handleSearchMember(event) {
@@ -113,12 +128,14 @@ function CreateEvent() {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
+            !selectedMembers.some(
+              (selectedMember) => selectedMember.fullName === member.fullName
+            )
         );
       setMembers(results);
     } else {
@@ -128,7 +145,10 @@ function CreateEvent() {
 
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
-    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
+    if (
+      selectedMember &&
+      !selectedMembers.some((member) => member.id === selectedMember.id)
+    ) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
       setSearch(""); // Clear the search input after selection
       setMembers([]); // Clear the dropdown options
@@ -149,7 +169,9 @@ function CreateEvent() {
             placeholder="שם האירוע"
             name="eventName"
             className="create-event-input"
-            onChange={(e) => setEventDetails({ ...eventDetails, eventName: e.target.value })}
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, eventName: e.target.value })
+            }
           />
           <div className="start-due-date-event">
             <div className="start-date-event">
@@ -161,9 +183,14 @@ function CreateEvent() {
                 className="create-event-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
-                  const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+                  const formattedDate = date
+                    .toLocaleDateString("he-IL")
+                    .replaceAll("/", "-");
                   //change the start date
-                  setEventDetails({ ...eventDetails, eventStartDate: formattedDate });
+                  setEventDetails({
+                    ...eventDetails,
+                    eventStartDate: formattedDate
+                  });
                 }}
               />
             </div>
@@ -176,9 +203,14 @@ function CreateEvent() {
                 className="create-event-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
-                  const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+                  const formattedDate = date
+                    .toLocaleDateString("he-IL")
+                    .replaceAll("/", "-");
                   //change the due date
-                  setEventDetails({ ...eventDetails, eventEndDate: formattedDate });
+                  setEventDetails({
+                    ...eventDetails,
+                    eventEndDate: formattedDate
+                  });
                 }}
               />
             </div>
@@ -187,7 +219,9 @@ function CreateEvent() {
             type="time"
             name="eventTime"
             className="create-event-input"
-            onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value })}
+            onChange={(e) =>
+              setEventDetails({ ...eventDetails, eventTime: e.target.value })
+            }
           />
           <input
             type="text"
@@ -197,7 +231,7 @@ function CreateEvent() {
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
-                eventLocation: e.target.value,
+                eventLocation: e.target.value
               })
             }
           />
@@ -212,7 +246,7 @@ function CreateEvent() {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="create-event-selected-members">
@@ -220,7 +254,8 @@ function CreateEvent() {
               <div
                 key={index}
                 className="selected-member"
-                onClick={() => handleRemoveMember(member.id)}>
+                onClick={() => handleRemoveMember(member.id)}
+              >
                 <svg
                   className="w-6 h-6 text-gray-800 dark:text-white"
                   aria-hidden="true"
@@ -228,7 +263,8 @@ function CreateEvent() {
                   width="24"
                   height="24"
                   fill="none"
-                  viewBox="0 0 24 24">
+                  viewBox="0 0 24 24"
+                >
                   <path
                     stroke="currentColor"
                     strokeLinecap="round"
@@ -246,7 +282,9 @@ function CreateEvent() {
         <div className="feedback">
           {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
         </div>
-        <div className="feedback warning">{formWarning && <p>{warningText}</p>}</div>
+        <div className="feedback warning">
+          {formWarning && <p>{warningText}</p>}
+        </div>
       </form>
     </div>
   );

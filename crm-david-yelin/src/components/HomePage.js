@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import { db, updateUserData } from "../firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import "../styles/HomePage.css";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
@@ -173,10 +173,35 @@ function HomePage() {
     }
   }
 
-  // Fix trigger for fetching events / tasks
+  // Trigger to fetch events & tasks
   useEffect(() => {
-    grabMyEvents();
-    grabMyTasks();
+    const eventsRef = collection(db, "events");
+    const eventsQuery = query(eventsRef, where("assignees", "array-contains", "members/" + user.email)); 
+  
+    const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => { 
+        if(change.type === "added" || change.type === "modified") {
+          grabMyEvents();
+        }
+      });
+    });
+  
+    // Fetch tasks
+    const tasksRef = collection(db, "tasks");
+    const tasksQuery = query(tasksRef, where("assignees", "array-contains", "members/" + user.email)); 
+    const unsubscribeTasks = onSnapshot(tasksQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => { 
+        if(change.type === "added" || change.type === "modified") {
+          grabMyTasks();
+        }
+      });
+    });
+  
+    // Cleanup function to unsubscribe from both snapshots
+    return () => {
+      unsubscribeEvents();
+      unsubscribeTasks();
+    };
   }, []);
 
   const handleShowCreateTask = () => {

@@ -1,49 +1,57 @@
 .event-bold {
-    font-weight: bold;
-  }
+  font-weight: bold;
+}
 
-  .event-box {
-    display: flex;
-    width: 100%;
+.event-box {
+  display: flex;
+  width: 100%;
 }
 
 .event-field {
-    width: 20%;
-    min-height: 2.5rem;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.253);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  width: 20%;
+  min-height: 2.5rem;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.253);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
-.event-field > span {
-    width: 70%;
+.event-field > div {
+  width: 70%;
 }
 
-.event-field > svg {
-    /* width: 30%; */
-    min-width: 30%;
-    max-width: 30%;
-    margin-right: 0.5rem;
+.event-field > .sort-svg {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  transition: transform 0.2s linear;
 }
 
-.event-id, .event-view {
-    width: 3%;
-    text-align: center;
+.event-field > .sort-svg:hover {
+  cursor: pointer;
+  opacity: 100%;
+  transform: scale(1.1);
+}
+
+/* .event-id, */
+.event-view {
+  width: 3%;
+  text-align: center;
 }
 
 .event-bold {
-    font-weight: bold;
-  }
+  font-weight: bold;
+}
 
 .event-view > svg {
-    transition: color 0.2s linear, transform 0.2s linear;
+  transition: opacity 0.2s linear, color 0.2s linear, transform 0.2s linear;
+  opacity: 60%;
 }
 
 .event-view > svg:hover {
-    cursor: pointer;
-    transform: scale(1.2);
-    color: rgb(18, 21, 116);
+  cursor: pointer;
+  opacity: 100%;
+  transform: scale(1.2);
+  color: rgb(18, 21, 116);
 }
-

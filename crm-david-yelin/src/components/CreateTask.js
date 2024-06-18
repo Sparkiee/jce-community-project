@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion,
+  arrayUnion
 } from "firebase/firestore";
 import Select from "react-select";
 import "../styles/CreateTask.css";
@@ -29,12 +29,14 @@ function CreateTask() {
     taskEndDate: "",
     taskTime: "",
     relatedEvent: selectedEvent,
-    assignees: selectedMembers,
+    assignees: selectedMembers
   });
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const assigneeRefs = selectedMembers.map((member) => doc(db, "members", member.id));
+    const assigneeRefs = selectedMembers.map((member) =>
+      doc(db, "members", member.id)
+    );
 
     let updatedTaskDetails = {
       taskName: taskDetails.taskName,
@@ -43,7 +45,7 @@ function CreateTask() {
       taskEndDate: taskDetails.taskEndDate,
       taskTime: taskDetails.taskTime,
       taskCreated: serverTimestamp(),
-      taskStatus: "בתהליך",
+      taskStatus: "בתהליך"
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -53,12 +55,16 @@ function CreateTask() {
 
     // Conditionally add assignees if the array is not empty
     if (assigneeRefs.length > 0) {
-      updatedTaskDetails.assignees = selectedMembers.map((member) => `members/${member.id}`);
+      updatedTaskDetails.assignees = selectedMembers.map(
+        (member) => `members/${member.id}`
+      );
     }
 
     if (!updatedTaskDetails.taskStartDate) {
       const date = new Date().toDateString();
-      const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+      const formattedDate = date
+        .toLocaleDateString("he-IL")
+        .replaceAll("/", "-");
       updatedTaskDetails.taskStartDate = formattedDate;
     }
 
@@ -76,8 +82,8 @@ function CreateTask() {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               taskID: docRef,
-              message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
-            }),
+              message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`
+            })
           });
         })
       );
@@ -91,13 +97,14 @@ function CreateTask() {
       const eventRef = collection(db, "events");
       const q = query(
         eventRef,
+        where("eventStatus", "!=", "הסתיים"),
         where("eventName", ">=", event.target.value),
         where("eventName", "<=", event.target.value + "\uf8ff")
       );
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }));
       setEvents(results);
     } else setEvents([]);
@@ -114,12 +121,14 @@ function CreateTask() {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
+            !selectedMembers.some(
+              (selectedMember) => selectedMember.fullName === member.fullName
+            )
         );
       setMembers(results);
     } else {
@@ -137,7 +146,10 @@ function CreateTask() {
   }
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
-    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
+    if (
+      selectedMember &&
+      !selectedMembers.some((member) => member.id === selectedMember.id)
+    ) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
       setSearchMember(""); // Clear the search input after selection
       setMembers([]); // Clear the dropdown options
@@ -161,7 +173,9 @@ function CreateTask() {
             placeholder="שם המשימה"
             name="taskName "
             className="create-task-input"
-            onChange={(e) => setTaskDetails({ ...taskDetails, taskName: e.target.value })}
+            onChange={(e) =>
+              setTaskDetails({ ...taskDetails, taskName: e.target.value })
+            }
           />
           <textarea
             placeholder="תיאור המשימה"
@@ -170,7 +184,7 @@ function CreateTask() {
             onChange={(e) =>
               setTaskDetails({
                 ...taskDetails,
-                taskDescription: e.target.value,
+                taskDescription: e.target.value
               })
             }
           />
@@ -184,9 +198,14 @@ function CreateTask() {
                 className="create-task-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
-                  const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+                  const formattedDate = date
+                    .toLocaleDateString("he-IL")
+                    .replaceAll("/", "-");
                   //change the start date
-                  setTaskDetails({ ...taskDetails, taskStartDate: formattedDate });
+                  setTaskDetails({
+                    ...taskDetails,
+                    taskStartDate: formattedDate
+                  });
                 }}
               />
             </div>
@@ -199,9 +218,14 @@ function CreateTask() {
                 className="create-task-input"
                 onChange={(e) => {
                   const date = new Date(e.target.value);
-                  const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+                  const formattedDate = date
+                    .toLocaleDateString("he-IL")
+                    .replaceAll("/", "-");
                   //change the due date
-                  setTaskDetails({ ...taskDetails, taskEndDate: formattedDate });
+                  setTaskDetails({
+                    ...taskDetails,
+                    taskEndDate: formattedDate
+                  });
                 }}
               />
             </div>
@@ -210,7 +234,9 @@ function CreateTask() {
             type="time"
             name="taskTime"
             className="create-task-input"
-            onChange={(e) => setTaskDetails({ ...taskDetails, taskTime: e.target.value })}
+            onChange={(e) =>
+              setTaskDetails({ ...taskDetails, taskTime: e.target.value })
+            }
           />
           <Select
             name="relatedEvent"
@@ -224,12 +250,15 @@ function CreateTask() {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName,
+              label: event.eventName
             }))}
           />
           <div className="create-task-selected-task">
             {selectedEvent && (
-              <div className="selected-task" onClick={() => handleRemoveEvent()}>
+              <div
+                className="selected-task"
+                onClick={() => handleRemoveEvent()}
+              >
                 <svg
                   fill="#000000"
                   width="20px"
@@ -240,9 +269,14 @@ function CreateTask() {
                   xmlns="http://www.w3.org/2000/svg"
                   xmlnsXlink="http://www.w3.org/1999/xlink"
                   style={{ enableBackground: "new 0 0 110.01 122.88" }}
-                  xmlSpace="preserve">
+                  xmlSpace="preserve"
+                >
                   <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
                   <g id="SVGRepo_iconCarrier">
                     <style type="text/css">{`.st0{fill-rule:evenodd;clip-rule:evenodd;}`}</style>
                     <g>
@@ -268,7 +302,7 @@ function CreateTask() {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="create-task-selected-members">
@@ -276,7 +310,8 @@ function CreateTask() {
               <div
                 key={index}
                 className="selected-member"
-                onClick={() => handleRemoveMember(member.id)}>
+                onClick={() => handleRemoveMember(member.id)}
+              >
                 <svg
                   className="w-6 h-6 text-gray-800 dark:text-white"
                   aria-hidden="true"
@@ -284,7 +319,8 @@ function CreateTask() {
                   width="24"
                   height="24"
                   fill="none"
-                  viewBox="0 0 24 24">
+                  viewBox="0 0 24 24"
+                >
                   <path
                     stroke="currentColor"
                     strokeLinecap="round"
@@ -300,7 +336,9 @@ function CreateTask() {
         </div>
         <input type="submit" value="צור משימה" className="primary-button" />
         <div className="feedback">
-          {taskExists && <p style={{ color: "green" }}>משימה חדשה התווספה בהצלחה</p>}
+          {taskExists && (
+            <p style={{ color: "green" }}>משימה חדשה התווספה בהצלחה</p>
+          )}
         </div>
       </form>
     </div>

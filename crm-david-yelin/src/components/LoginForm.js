@@ -17,7 +17,11 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
       if (!userCredential.user.emailVerified) {
         console.log("Email not verified");
@@ -46,7 +50,11 @@ function LoginForm() {
       <div className="login-style">
         <div className="forms-box">
           <div className="login-logo">
-            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+            <img
+              className="login-logo-img"
+              src={require("../assets/aguda.png")}
+              alt="aguda icon"
+            />
             <p>
               אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
             </p>
@@ -72,7 +80,11 @@ function LoginForm() {
               placeholder="אימייל"
               className="forms-input"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setWrongCredentials(false);
+                setIsEmailVerified(true);
+                setEmail(event.target.value);
+              }}
             />
           </div>
           <div className="input-container">
@@ -81,7 +93,11 @@ function LoginForm() {
               placeholder="סיסמה"
               className="forms-input"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => {
+                setWrongCredentials(false);
+                setIsEmailVerified(true);
+                setPassword(event.target.value);
+              }}
             />
           </div>
           <div className="form-checkbox">
@@ -89,7 +105,8 @@ function LoginForm() {
               className="input-checkbox"
               id="input-checkbox"
               type="checkbox"
-              name="remember-me"></input>
+              name="remember-me"
+            ></input>
             <label className="label-checkbox" for="input-checkbox">
               זכור אותי
             </label>

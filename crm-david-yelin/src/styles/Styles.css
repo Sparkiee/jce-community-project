@@ -8,8 +8,14 @@ body {
   color: #212529;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1440px) {
   html {
-    font-size: 5px;
+    font-size: 8px;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  html {
+    font-size: 6px;
   }
 }

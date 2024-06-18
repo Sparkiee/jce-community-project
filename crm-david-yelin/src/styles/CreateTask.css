@@ -6,7 +6,7 @@
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
   background-color: rgb(255, 255, 255);
   gap: 5rem;
-  padding: 10rem 8rem;
+  padding: 5rem 5rem;
   width: 60rem;
 }
 
@@ -74,27 +74,31 @@
   width: 90%;
 }
 
-.create-event-selected-event {
-  font-size: 1.4rem;
-  color: black;
-  transition: color 0.2s linear;
-}
-
-.selected-event {
-  cursor: pointer;
+.selected-task {
   display: flex;
   align-items: center;
+  cursor: pointer;
+  font-size: 1.4rem;
   transition: color 0.2s linear;
 }
 
-.create-event-selected-event svg {
-  margin-left: 0.5rem;
-}
-
-.selected-event:hover {
+.selected-task:hover {
   color: rgb(2, 4, 79);
 }
 
-.selected-member {
-  display: inline-block;
+.create-task-selected-task svg {
+  margin-left: 0.5rem;
+}
+
+.create-task-selected-members {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 1.4rem;
+  padding: 1.5rem;
+}
+
+.create-task-selected-members svg {
+  margin-left: 0.2rem;
 }

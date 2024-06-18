@@ -227,9 +227,9 @@ function CreateTask() {
               label: event.eventName,
             }))}
           />
-          <div className="create-event-selected-event">
+          <div className="create-task-selected-task">
             {selectedEvent && (
-              <div className="selected-event" onClick={() => handleRemoveEvent()}>
+              <div className="selected-task" onClick={() => handleRemoveEvent()}>
                 <svg
                   fill="#000000"
                   width="20px"
@@ -253,8 +253,7 @@ function CreateTask() {
                     </g>
                   </g>
                 </svg>
-
-                <div className="selected-event-text">{selectedEvent.eventName}</div>
+                <p className="selected-task-text">{selectedEvent.eventName}</p>
               </div>
             )}
           </div>
@@ -272,7 +271,7 @@ function CreateTask() {
               label: member.fullName,
             }))}
           />
-          <div className="create-event-selected-members">
+          <div className="create-task-selected-members">
             {selectedMembers.map((member, index) => (
               <div
                 key={index}
@@ -299,7 +298,7 @@ function CreateTask() {
             ))}
           </div>
         </div>
-        <input type="submit" value="צור משימה" className="primary-button extra-create-event" />
+        <input type="submit" value="צור משימה" className="primary-button" />
         <div className="feedback">
           {taskExists && <p style={{ color: "green" }}>משימה חדשה התווספה בהצלחה</p>}
         </div>

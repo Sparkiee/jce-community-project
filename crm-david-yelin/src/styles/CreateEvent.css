@@ -6,7 +6,7 @@
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
   background-color: rgb(255, 255, 255);
   gap: 5rem;
-  padding: 10rem 8rem;
+  padding: 4rem 6rem;
   width: 50rem;
 }
 
@@ -72,20 +72,23 @@
 }
 
 .create-event-selected-members {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
   font-size: 1.4rem;
-  color: black;
-  transition: color 0.2s linear;
+  padding: 1.5rem;
 }
 
 .selected-member {
-  cursor: pointer;
   display: flex;
   align-items: center;
+  cursor: pointer;
   transition: color 0.2s linear;
 }
 
 .create-event-selected-members svg {
-  margin-left: 0.5rem;
+  margin-left: 0.2rem;
 }
 
 .selected-member:hover {

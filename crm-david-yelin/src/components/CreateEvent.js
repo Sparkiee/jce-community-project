@@ -242,11 +242,7 @@ function CreateEvent() {
             ))}
           </div>
         </div>
-        <input
-          type="submit"
-          value="צור אירוע"
-          className="primary-button extra-create-event-button"
-        />
+        <input type="submit" value="צור אירוע" className="primary-button" />
         <div className="feedback">
           {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
         </div>

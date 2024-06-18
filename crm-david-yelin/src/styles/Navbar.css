@@ -25,14 +25,8 @@ header .logo a {
 .logo a p {
   text-align: center;
   font-size: 1.2rem;
-  width: 10rem;
+  width: 11rem;
   color: white;
-}
-
-@media screen and (max-width: 1440px) {
-  .logo a p {
-    width: 11rem;
-  }
 }
 
 .nav-items {

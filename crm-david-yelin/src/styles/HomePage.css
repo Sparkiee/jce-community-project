@@ -19,7 +19,11 @@
   gap: 1rem;
 }
 
-.task-button {
+.add-task-button {
+  padding-right: 0.4rem !important;
+}
+
+.action-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,7 +38,7 @@
   transition: all 0.2s linear;
 }
 
-.task-button:hover {
+.action-button:hover {
   background-color: rgb(18, 21, 116);
 }
 

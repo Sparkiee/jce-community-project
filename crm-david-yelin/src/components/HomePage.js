@@ -271,7 +271,7 @@ function HomePage() {
         </div>
         {user.privileges > 1 && (
           <div className="pending-actions">
-            <div className="task-button" onClick={handleShowCreateTask}>
+            <div className="action-button add-task-button" onClick={handleShowCreateTask}>
               <svg
                 width="24px"
                 height="24px"
@@ -291,7 +291,7 @@ function HomePage() {
               </svg>
               הוסף משימה
             </div>
-            <div className="task-button" onClick={handleShowCreateEvent}>
+            <div className="action-button" onClick={handleShowCreateEvent}>
               <svg
                 width="24px"
                 height="24px"

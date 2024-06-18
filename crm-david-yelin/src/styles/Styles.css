@@ -7,3 +7,9 @@ body {
   font-family: "Poppins", sans-serif;
   color: #212529;
 }
+
+@media (max-width: 1024px) {
+  html {
+    font-size: 5px;
+  }
+}

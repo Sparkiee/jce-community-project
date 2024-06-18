@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
 import { CheckBox } from "@mui/icons-material";
+import "../styles/Styles.css";
 
 function LoginForm() {
   const [email, setEmail] = useState("");

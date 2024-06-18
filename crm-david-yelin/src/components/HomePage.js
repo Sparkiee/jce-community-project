@@ -1,105 +1,143 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import { db, updateUserData } from "../firebase";
-import { collection, query, where, getDocs, doc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import "../styles/HomePage.css";
-import Task from "./Task";
-import Event from "./Event";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
-
-import Box from "@mui/material/Box";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
-import { colors } from "@mui/material";
+import { heIL } from "@mui/material/locale";
+import "../styles/Styles.css";
 
 function HomePage() {
-  const [tasks, setTasks] = useState([]); // Initialize state with an empty array
-  const [events, setEvents] = useState([]); // Initialize state with an empty array
   const [numTasks, setNumTasks] = useState(0);
   const [numEvents, setNumEvents] = useState(0);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [rowsTasks, setRowsTasks] = useState([]);
+  const [rowsEvents, setrowsEvents] = useState([]);
 
-  const columns = [
+  const theme = createTheme(
+    {
+      direction: "rtl",
+      typography: {
+        fontSize: 24,
+      },
+    },
+    heIL
+  );
+
+  const columnsTasks = [
     {
       field: "id",
       headerName: "אינדקס",
       width: "3%",
       align: "right",
       colors: "red",
-      flex: 1
+      flex: 1,
     },
-    { field: "taskName", headerName: "משימה", width: 150, align: "right", flex: 2},
+    { field: "taskName", headerName: "משימה", width: 150, align: "right", flex: 2 },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
-      align: "right", flex: 3
+      align: "right",
+      flex: 3,
     },
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
       width: 150,
-      align: "right", flex: 2
+      align: "right",
+      flex: 2,
     },
     {
       field: "taskEndDate",
       headerName: "תאריך סיום",
       width: 150,
-      align: "right", flex: 2
+      align: "right",
+      flex: 2,
     },
     { field: "taskTime", headerName: "שעת סיום", width: 150, align: "right", flex: 2 },
     {
       field: "taskStatus",
       headerName: "סטטוס",
       width: 150,
-      align: "right", flex: 2
-    }
+      align: "right",
+      flex: 2,
+    },
   ];
 
-  const rows = [
+  const columnsEvents = [
     {
-      id: 1,
-      taskName: "משימה 1",
-      taskDescription:
-        "תיאור 1 מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך מאוד מאוד מאוד מאוד ארוך",
-      taskStartDate: "תאריך 1",
-      taskEndDate: "תאריך 1",
-      taskTime: "שעה 1",
-      taskStatus: "סטטוס 1"
+      field: "id",
+      headerName: "אינדקס",
+      width: "3%",
+      align: "right",
+      colors: "red",
+      flex: 1,
+    },
+    { field: "eventName", headerName: "שם האירוע", width: 150, align: "right", flex: 2 },
+    {
+      field: "eventLocation",
+      headerName: "מיקום האירוע",
+      width: 150,
+      align: "right",
+      flex: 3,
     },
     {
-      id: 2,
-      taskName: "משימה 2",
-      taskDescription: "תיאור 2",
-      taskStartDate: "תאריך 2",
-      taskEndDate: "תאריך 2",
-      taskTime: "שעה 2",
-      taskStatus: "סטטוס 2"
-    }
+      field: "eventStartDate",
+      headerName: "תאריך התחלה",
+      width: 150,
+      align: "right",
+      flex: 2,
+    },
+    {
+      field: "eventEndDate",
+      headerName: "תאריך סיום",
+      width: 150,
+      align: "right",
+      flex: 2,
+    },
+    { field: "eventTime", headerName: "שעה", width: 150, align: "right", flex: 2 },
+    {
+      field: "eventStatus",
+      headerName: "סטטוס",
+      width: 150,
+      align: "right",
+      flex: 2,
+    },
   ];
+
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   async function grabMyTasks() {
     try {
       const tasksRef = collection(db, "tasks");
-
-      const q = query(
-        tasksRef,
-        where("assignees", "array-contains", "members/" + user.email)
-      );
+      const q = query(tasksRef, where("assignees", "array-contains", "members/" + user.email));
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.ref
+          docRef: doc.ref,
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
 
       setNumTasks(taskArray.length); // Update task count
-      setTasks(taskArray);
-      console.log(taskArray);
+
+      // Map the tasks to the format expected by DataGrid
+      const rowsTasksData = taskArray.map((task, index) => ({
+        id: index + 1,
+        taskName: task.taskName,
+        taskDescription: task.taskDescription,
+        taskStartDate: task.taskStartDate,
+        taskEndDate: task.taskEndDate,
+        taskTime: task.taskTime,
+        taskStatus: task.taskStatus,
+      }));
+      setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
     }
@@ -108,23 +146,30 @@ function HomePage() {
   async function grabMyEvents() {
     try {
       const eventsRef = collection(db, "events");
-      const q = query(
-        eventsRef,
-        where("assignees", "array-contains", "members/" + user.email)
-      );
+      const q = query(eventsRef, where("assignees", "array-contains", "members/" + user.email));
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.ref
+          docRef: doc.ref,
         }))
         .filter((event) => event.eventStatus !== "הושלמה");
       setNumEvents(eventsArray.length); // Update event count
 
-      setEvents(eventsArray);
+      // Map the events to the format expected by DataGrid
+      const rowsEventsData = eventsArray.map((event, index) => ({
+        id: index + 1,
+        eventName: event.eventName,
+        eventLocation: event.eventLocation,
+        eventStartDate: event.eventStartDate,
+        eventEndDate: event.eventEndDate,
+        eventTime: event.eventTime,
+        eventStatus: event.eventStatus,
+      }));
+      setrowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
-      console.error("Failed to fetch tasks:", error);
+      console.error("Failed to fetch events:", error);
     }
   }
 
@@ -156,15 +201,13 @@ function HomePage() {
                 onClick={() => {
                   setShowCreateTask(false);
                   updateUserData(user.email);
-                }}
-              >
+                }}>
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                >
+                  fill="currentColor">
                   <line
                     x1="17"
                     y1="7"
@@ -195,15 +238,13 @@ function HomePage() {
                 onClick={() => {
                   setShowCreateEvent(false);
                   updateUserData(user.email);
-                }}
-              >
+                }}>
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                >
+                  fill="currentColor">
                   <line
                     x1="17"
                     y1="7"
@@ -228,7 +269,6 @@ function HomePage() {
             </div>
           )}
         </div>
-        <h1 className="title-home">דף הבית</h1>
         {user.privileges > 1 && (
           <div className="pending-actions">
             <div className="task-button" onClick={handleShowCreateTask}>
@@ -237,22 +277,16 @@ function HomePage() {
                 height="24px"
                 viewBox="0 0 24 24"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
                   <path
                     d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                     stroke="white"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
+                    strokeLinejoin="round"></path>
                 </g>
               </svg>
               הוסף משימה
@@ -263,22 +297,16 @@ function HomePage() {
                 height="24px"
                 viewBox="0 0 24 24"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
                   <path
                     d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                     stroke="white"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
+                    strokeLinejoin="round"></path>
                 </g>
               </svg>
               הוסף אירוע
@@ -292,42 +320,21 @@ function HomePage() {
         ) : (
           <h2 className="pending-tasks">יש לך {numTasks} משימות פתוחות</h2>
         )}
-        {numTasks > 0 && (
-          <div className="display-pending-tasks">
-            <Task
-              key={0}
-              task={{
-                id: "אינדקס",
-                taskName: "משימה",
-                taskDescription: "תיאור",
-                taskDate: "תאריך",
-                taskTime: "שעה",
-                taskStatus: "סטטוס",
-                taskType: "title"
+        <div style={{ height: 371, width: "80%" }}>
+          <ThemeProvider theme={theme}>
+            <DataGrid
+              className="data-grid"
+              rows={rowsTasks}
+              columns={columnsTasks}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
+              pageSizeOptions={[5, 5]}
             />
-            {tasks.map((task, index) => (
-              <Task key={index} task={task} />
-            ))}
-          </div>
-          // <Box
-          //   sx={{ height: 400, width: "80%", margin: "auto" }}
-          //   className="display-data"
-          // >
-          //   <DataGrid
-          //     columns={columns}
-          //     rows={rows}
-          //     pageSize={5}
-          //     sx={{
-          //       "& .MuiDataGrid-cell": {
-          //         color: "black",
-          //         fontWeight: "bold"
-          //         // Or any color that makes the text more visible
-          //       }
-          //     }}
-          //   />
-          // </Box>
-        )}
+          </ThemeProvider>
+        </div>
         <hr className="divider" />
         {numEvents === 0 ? (
           <h2 className="title-home">אין אירועים קרובים!</h2>
@@ -336,27 +343,21 @@ function HomePage() {
         ) : (
           <h2 className="title-home">יש לך {numEvents} אירועים בקרוב</h2>
         )}
-        {numEvents > 0 && (
-          <div className="display-pending-events">
-            <Event
-              key={0}
-              event={{
-                id: "אינדקס",
-                eventName: "אירוע",
-                eventDescription: "תיאור",
-                eventDate: "תאריך",
-                eventTime: "שעה",
-                eventStatus: "סטטוס",
-                eventType: "title"
+        <div style={{ height: 371, width: "80%" }}>
+          <ThemeProvider theme={theme}>
+            <DataGrid
+              className="data-grid"
+              rows={rowsEvents}
+              columns={columnsEvents}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
+              pageSizeOptions={[5, 5]}
             />
-            {events.map((event, index) => (
-              <Event key={index} event={event} />
-            ))}
-          </div>
-
-          // <Box sx={{ height: 400, width: "100%" }}></Box>
-        )}
+          </ThemeProvider>
+        </div>
       </div>
     </div>
   );

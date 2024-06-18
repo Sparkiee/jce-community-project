@@ -1,11 +1,7 @@
-html {
-  font-size: 9px;
-}
 .home-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f5f5f5;
 }
 
 .divider {
@@ -18,31 +14,28 @@ html {
 .pending-actions {
   display: flex;
   flex-direction: row-reverse;
-  row-gap: 2rem;
+  margin-top: 2rem;
   width: 80%;
+  gap: 1rem;
 }
+
 .task-button {
-  margin-left: 0.5rem;
-  background-color: rgb(2, 4, 79);
-  color: white;
   display: flex;
-  border: 2px solid rgb(2, 4, 79);
-  border-radius: 2rem;
-  padding: 0.3rem 0rem 0.3rem 0.6rem;
-  font-size: 1rem;
   align-items: center;
   justify-content: center;
-  width: 4%;
-  min-width: 85px;
-  align-self: flex-start; /* Changed from flex-end to flex-start */
-  left: 0;
-  transition: linear 0.2s background-color, linear 0.1s transform;
+  color: white;
+  background-color: rgb(2, 4, 79);
+  border: 2px solid rgb(2, 4, 79);
+  border-radius: 2.5rem;
+  padding: 0.7rem 0rem 0.7rem 1.2rem;
+  font-size: 1.5rem;
+  min-width: 10rem;
+  cursor: pointer;
+  transition: all 0.2s linear;
 }
 
 .task-button:hover {
-  cursor: pointer;
   background-color: rgb(18, 21, 116);
-  transform: scale(1.02);
 }
 
 .add-task svg {
@@ -53,6 +46,7 @@ html {
 .display-create {
   top: 25%;
   position: fixed;
+  z-index: 1;
 }
 
 .action-close {

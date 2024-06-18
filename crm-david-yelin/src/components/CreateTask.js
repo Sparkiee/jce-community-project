@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import Select from "react-select";
 import "../styles/CreateTask.css";
+import "../styles/Styles.css";
 
 function CreateTask() {
   const [taskExists, setTaskExists] = useState(false);
@@ -55,7 +56,7 @@ function CreateTask() {
       updatedTaskDetails.assignees = selectedMembers.map((member) => `members/${member.id}`);
     }
 
-    if(!updatedTaskDetails.taskStartDate){
+    if (!updatedTaskDetails.taskStartDate) {
       const date = new Date().toDateString();
       const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
       updatedTaskDetails.taskStartDate = formattedDate;

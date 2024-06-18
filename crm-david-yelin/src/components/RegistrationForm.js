@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/
 import { auth } from "../firebase.js";
 import "../styles/RegistrationForm.css";
 import PhoneInput from "react-phone-number-input/input";
+import "../styles/Styles.css";
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);

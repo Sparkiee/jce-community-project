@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
+import "../styles/Styles.css";
 
 function CreateEvent() {
   const [search, setSearch] = useState("");
@@ -52,7 +53,7 @@ function CreateEvent() {
       setWarningText(warning);
       return; // Exit the function to prevent further execution
     }
-    if(!eventDetails.eventStartDate){
+    if (!eventDetails.eventStartDate) {
       const date = new Date().toDateString();
       const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
       eventDetails.eventStartDate = formattedDate;

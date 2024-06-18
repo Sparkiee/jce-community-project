@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
-
+import "../styles/Styles.css";
 import "../styles/RegistrationForm.css";
 
 function EditUser() {

@@ -4,7 +4,7 @@ import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firest
 import { db } from "../firebase.js";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth } from "../firebase.js";
-import "../styles/RegistrationForm.css";
+import "../styles/RegisterUser.css";
 import PhoneInput from "react-phone-number-input/input";
 import "../styles/Styles.css";
 
@@ -32,7 +32,7 @@ const grabRole = async (email) => {
   return null;
 };
 
-function RegistrationForm() {
+function RegisterUser() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -167,4 +167,4 @@ function RegistrationForm() {
   );
 }
 
-export default RegistrationForm;
+export default RegisterUser;

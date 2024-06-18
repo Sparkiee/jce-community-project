@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
-import "../styles/RegistrationForm.css";
+import "../styles/RegisterUser.css";
 
 function EditUser() {
   const [firstName, setFirstName] = useState(""); // replace with current user's firstName

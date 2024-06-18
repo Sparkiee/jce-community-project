@@ -1,6 +1,7 @@
 .home-content {
   display: flex;
   flex-direction: column;
+  gap: 0.8rem;
   align-items: center;
 }
 
@@ -9,7 +10,7 @@
   border: none;
   border-top: 2px solid rgb(2, 4, 79);
   /* margin: px 0; */
-  margin-top: 3rem;
+  margin-top: 5rem;
 }
 
 .pending-actions {

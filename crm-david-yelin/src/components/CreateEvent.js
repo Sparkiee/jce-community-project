@@ -153,7 +153,7 @@ function CreateEvent() {
           />
           <div className="start-due-date-event">
             <div className="start-date-event">
-              <label for="start">תאריך התחלה</label>
+              <label htmlFor="start">תאריך התחלה</label>
               <input
                 type="date"
                 name="eventStartDate"
@@ -168,7 +168,7 @@ function CreateEvent() {
               />
             </div>
             <div className="due-date-event">
-              <label for="due">תאריך סיום</label>
+              <label htmlFor="due">תאריך סיום</label>
               <input
                 type="date"
                 name="eventEndDate"

@@ -407,7 +407,7 @@ function HomePage() {
           <h2 className="title-home">יש לך {numTasks} משימות פתוחות</h2>
         )}
         <div style={{ height: 371, width: "80%" }}>
-          <ThemeProvider theme={theme} direction="rtl">
+          {/* <ThemeProvider theme={theme} direction="rtl">
             <DataGrid
               direction="rtl"
               className="data-grid"
@@ -420,6 +420,32 @@ function HomePage() {
               }}
               pageSizeOptions={[5]}
             />
+          </ThemeProvider> */}
+          <ThemeProvider theme={theme}>
+            <div style={{ height: 400, width: "100%" }}>
+              <DataGrid
+                direction="rtl"
+                className="data-grid"
+                rows={rowsTasks}
+                columns={columnsTasks}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
+                }}
+                pageSizeOptions={[5]}
+                localeText={{
+                  // Customizing displayed rows text
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${
+                        count !== -1 ? count : `יותר מ-${to}`
+                      }`,
+                    labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
+                  }
+                }}
+              />
+            </div>
           </ThemeProvider>
         </div>
         <hr className="divider" />
@@ -432,17 +458,28 @@ function HomePage() {
         )}
         <div style={{ height: 371, width: "80%" }}>
           <ThemeProvider theme={theme}>
-            <DataGrid
-              className="data-grid"
-              rows={rowsEvents}
-              columns={columnsEvents}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 5 }
-                }
-              }}
-              pageSizeOptions={[5]}
-            />
+            <div style={{ height: 400, width: "100%" }}>
+              <DataGrid
+                className="data-grid"
+                rows={rowsEvents}
+                columns={columnsEvents}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
+                }}
+                pageSizeOptions={[5]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${
+                        count !== -1 ? count : `יותר מ ${to}`
+                      }`,
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  }
+                }}
+              />
+            </div>
           </ThemeProvider>
         </div>
       </div>

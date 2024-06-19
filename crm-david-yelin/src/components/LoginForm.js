@@ -43,6 +43,7 @@ function LoginForm() {
       navigate("/home");
     } catch (error) {
       setWrongCredentials(true);
+      console.log(error)
     }
   }
 

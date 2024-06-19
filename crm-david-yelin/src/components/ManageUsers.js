@@ -6,8 +6,11 @@ function ManageUsers() {
   return (
     <div>
       <Navbar />
-      <div>
-        <h1>Manage Users</h1>
+      <div className="manage-users-content">
+        <div className="page-title">מערכת ניהול משתמשים</div>
+        <div className="manage-users-table">
+            edit
+        </div>
       </div>
     </div>
   );

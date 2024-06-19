@@ -1,0 +1,10 @@
+.manage-users-content {
+    display: flex;
+    margin-right: 3rem;
+    margin-top: 3rem;
+}
+
+.manage-users-content > .page-title {
+    font-size: 3rem;
+    font-weight: bold;
+}

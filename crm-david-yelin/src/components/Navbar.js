@@ -175,16 +175,15 @@ function Navbar() {
                     displayNotifications.map((notification) => (
                       <div className="notification-item">
                         <Divider />
-                        <p>{notification}</p>
+                        {notification}
                       </div>
                     ))}
-                    {displayNotifications.length === 0 && (
-                      <div className="notification-item">
-                        <Divider />
-                        אין התראות חדשות
-                      </div>
-                    
-                    )}
+                  {displayNotifications.length === 0 && (
+                    <div className="notification-item">
+                      <Divider />
+                      אין התראות חדשות
+                    </div>
+                  )}
                   <Divider />
                   <div className="notification-actions">
                     <a
@@ -194,9 +193,13 @@ function Navbar() {
                     >
                       סגור
                     </a>
-                    <a href="#" className="notification-button" onClick={() => {
-                      handleNotifications();
-                    }}>
+                    <a
+                      href="#"
+                      className="notification-button"
+                      onClick={() => {
+                        handleNotifications();
+                      }}
+                    >
                       הצג עוד
                     </a>
                   </div>

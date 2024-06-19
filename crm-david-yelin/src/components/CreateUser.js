@@ -51,6 +51,7 @@ function CreateUser() {
       }
     }
     setIsOtherSelected(false);
+    setDepartment(newDepartment);
     setNewDepartment("");
   }
 

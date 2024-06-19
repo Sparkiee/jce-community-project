@@ -108,7 +108,7 @@ function LoginForm() {
               זכור אותי
             </label>
           </div>
-          <button type="submit" className="prמimary-button">
+          <button type="submit" className="primary-button">
             התחברות
           </button>
           <div className="extra-options">

@@ -50,6 +50,10 @@ function Navbar() {
   };
 
   const handleNotifications = async () => {
+    if (notificationsVisible) {
+      setNotificationsVisible(false);
+      return;
+    }
     setDisplayNotifications([]);
     setNotificationsVisible(true);
     const member = JSON.parse(sessionStorage.getItem("user"));

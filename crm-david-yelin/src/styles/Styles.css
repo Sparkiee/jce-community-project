@@ -19,3 +19,12 @@ body {
     font-size: 6px;
   }
 }
+
+.feedback-alert {
+  display: flex;
+  align-items: center;
+  font-size: 1.7rem !important;
+  padding-left: 3rem !important;
+  border-radius: 10px !important;
+  gap: 0.4rem;
+}

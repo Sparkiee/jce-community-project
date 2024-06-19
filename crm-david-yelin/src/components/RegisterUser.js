@@ -7,6 +7,7 @@ import { auth } from "../firebase.js";
 import "../styles/RegisterUser.css";
 import PhoneInput from "react-phone-number-input/input";
 import "../styles/Styles.css";
+import Alert from '@mui/material/Alert';
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -39,6 +40,7 @@ function RegisterUser() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [verifyPassword, setVerifyPassword] = useState("");
+  const [formWarning, setFormWarning] = useState(false);
 
   const [pendingAccount, setPendingAccount] = useState(false);
   const [accountExists, setAccountExists] = useState(false);
@@ -47,6 +49,11 @@ function RegisterUser() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if(!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
+      // fields are empty
+      setFormWarning(true);
+      return;
+    }
     try {
       const isPendingRegistration = await checkPendingRegistration(email.toLowerCase());
       setPendingAccount(!isPendingRegistration);
@@ -155,11 +162,12 @@ function RegisterUser() {
             הירשם
           </button>
           <div className="feedback">
-            {pendingAccount && <p>אימייל לא מורשה להרשם למערכת</p>}
+          {formWarning && <Alert className="feedback-alert" severity="error">אנא מלא את כל השדות</Alert>}
+            {pendingAccount && <Alert className="feedback-alert" severity="warning">אימייל לא מורשה להרשם למערכת</Alert>}
             {accountExists && (
-              <p style={{ color: "green" }}>משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</p>
+              <Alert className="feedback-alert" severity="info">!משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</Alert>
             )}
-            {!passwordsMatch && <p>הסיסמאות אינן תואמות</p>}
+            {!passwordsMatch && <Alert className="feedback-alert" severity="warning">הסיסמאות אינן תואמות</Alert>}
           </div>
         </form>
       </div>

@@ -6,6 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
 import { CheckBox } from "@mui/icons-material";
 import "../styles/Styles.css";
+import Alert from '@mui/material/Alert';
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -64,13 +65,14 @@ function LoginForm() {
           <h1 className="title">התחברות משתמש</h1>
           <div className="error-messages">
             {wrongCredentials && (
-              <div className="incorrect-box">
-                <p className="incorrect-message">פרטי ההתחברות שגויים</p>
-              </div>
+              // <div className="incorrect-box">
+              //   <p className="incorrect-message">פרטי ההתחברות שגויים</p>
+              // </div>
+              <Alert className="feedback-alert login-alert" severity="error">פרטי התחברות שגויים</Alert>
             )}
             {!isEmailVerified && (
               <div className="incorrect-box">
-                <p className="incorrect-message">אימייל לא מאומת</p>
+                <Alert className="feedback-alert login-alert" severity="error">אימייל לא מאומת</Alert>
               </div>
             )}
           </div>

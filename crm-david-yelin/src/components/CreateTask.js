@@ -14,6 +14,7 @@ import {
 import Select from "react-select";
 import "../styles/CreateTask.css";
 import "../styles/Styles.css";
+import Alert from '@mui/material/Alert';
 
 function CreateTask() {
   const [taskExists, setTaskExists] = useState(false);
@@ -395,11 +396,11 @@ function CreateTask() {
         <input type="submit" value="צור משימה" className="primary-button" />
         <div className="feedback">
           {taskExists && (
-            <p style={{ color: "green" }}>משימה חדשה התווספה בהצלחה</p>
+            <p><Alert className="feedback-alert" severity="success">!משימה חדשה התווספה בהצלחה</Alert></p>
           )}
         </div>
         <div className="feedback warning">
-          {formWarning && <p>{warningText}</p>}
+          {formWarning && <p>{<Alert className="feedback-alert" severity="error">{warningText}</Alert>}</p>}
         </div>
       </form>
     </div>

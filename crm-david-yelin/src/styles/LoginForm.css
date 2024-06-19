@@ -166,3 +166,7 @@
 .incorrect-message {
   margin-top: 0;
 }
+
+.login-alert {
+  margin-bottom: 2rem;
+}

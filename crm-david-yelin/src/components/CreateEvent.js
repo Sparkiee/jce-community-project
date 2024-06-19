@@ -14,6 +14,7 @@ import {
 import "../styles/CreateEvent.css";
 import Select from "react-select";
 import "../styles/Styles.css";
+import Alert from '@mui/material/Alert';
 
 function CreateEvent() {
   const [search, setSearch] = useState("");
@@ -280,10 +281,10 @@ function CreateEvent() {
         </div>
         <input type="submit" value="צור אירוע" className="primary-button" />
         <div className="feedback">
-          {eventExists && <p style={{ color: "green" }}>אירוע נוצר בהצלחה</p>}
+          {eventExists && <p><Alert className="feedback-alert" severity="success">אירוע נוצר בהצלחה!</Alert></p>}
         </div>
         <div className="feedback warning">
-          {formWarning && <p>{warningText}</p>}
+          {formWarning && <p>{<Alert className="feedback-alert" severity="error">{warningText}</Alert>}</p>}
         </div>
       </form>
     </div>

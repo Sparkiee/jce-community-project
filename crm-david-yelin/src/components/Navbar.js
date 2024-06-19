@@ -172,8 +172,8 @@ function Navbar() {
                 <div className="notification-dropdown">
                   <div className="notification-title">התראות</div>
                   {displayNotifications.length > 0 &&
-                    displayNotifications.map((notification) => (
-                      <div className="notification-item">
+                    displayNotifications.map((notification, index) => (
+                      <div key={index} className="notification-item">
                         <Divider />
                         {notification}
                       </div>

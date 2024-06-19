@@ -397,7 +397,7 @@ function CreateTask() {
         <div className="feedback">
           {taskExists && (
             <Alert className="feedback-alert" severity="success">
-              !משימה חדשה התווספה בהצלחה
+              משימה חדשה התווספה בהצלחה!
             </Alert>
           )}
         </div>

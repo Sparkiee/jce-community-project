@@ -4,8 +4,10 @@ import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firest
 import { db } from "../firebase.js";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth } from "../firebase.js";
-import "../styles/RegistrationForm.css";
+import "../styles/RegisterUser.css";
 import PhoneInput from "react-phone-number-input/input";
+import "../styles/Styles.css";
+import Alert from "@mui/material/Alert";
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -31,13 +33,14 @@ const grabRole = async (email) => {
   return null;
 };
 
-function RegistrationForm() {
+function RegisterUser() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [verifyPassword, setVerifyPassword] = useState("");
+  const [formWarning, setFormWarning] = useState(false);
 
   const [pendingAccount, setPendingAccount] = useState(false);
   const [accountExists, setAccountExists] = useState(false);
@@ -46,6 +49,11 @@ function RegistrationForm() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
+      // fields are empty
+      setFormWarning(true);
+      return;
+    }
     try {
       const isPendingRegistration = await checkPendingRegistration(email.toLowerCase());
       setPendingAccount(!isPendingRegistration);
@@ -93,9 +101,20 @@ function RegistrationForm() {
 
   return (
     <div className="container">
-      <div className="forms-box">
-        <h2 className="title">הרשמה</h2>
+      <div className="registration-style">
+        <a href="/" className="back-home">
+          → חזרה לעמוד הראשי
+        </a>
+        <div className="forms-box">
+          <div className="login-logo">
+            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+            <p>
+              אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
+            </p>
+          </div>
+        </div>
         <form className="registration-form" onSubmit={handleSubmit}>
+          <h2 className="title extra-registration-form-title">הרשמה</h2>
           <div className="registration-input-box">
             <input
               type="text"
@@ -115,6 +134,7 @@ function RegistrationForm() {
               defaultCountry="IL"
               placeholder="טלפון"
               className="forms-input"
+              maxLength="12"
               value={phone}
               onChange={setPhone}
               style={{ textAlign: "right" }}
@@ -145,11 +165,26 @@ function RegistrationForm() {
             הירשם
           </button>
           <div className="feedback">
-            {pendingAccount && <p>אימייל לא מורשה להרשם למערכת</p>}
-            {accountExists && (
-              <p style={{ color: "green" }}>משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</p>
+            {formWarning && (
+              <Alert className="feedback-alert" severity="error">
+                אנא מלא את כל השדות
+              </Alert>
             )}
-            {!passwordsMatch && <p>הסיסמאות אינן תואמות</p>}
+            {pendingAccount && (
+              <Alert className="feedback-alert" severity="error">
+                אימייל לא מורשה להרשם למערכת
+              </Alert>
+            )}
+            {accountExists && (
+              <Alert className="feedback-alert" severity="info">
+                משתמש נוצר, נא לאמת אימייל דרך התיבת דואר
+              </Alert>
+            )}
+            {!passwordsMatch && (
+              <Alert className="feedback-alert" severity="warning">
+                הסיסמאות אינן תואמות
+              </Alert>
+            )}
           </div>
         </form>
       </div>
@@ -157,4 +192,4 @@ function RegistrationForm() {
   );
 }
 
-export default RegistrationForm;
+export default RegisterUser;

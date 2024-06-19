@@ -1,67 +1,104 @@
 .create-task {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(255, 255, 255, 0.7);
-    padding: 2.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-    max-width: 30rem;
-    width: 100%;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
+  background-color: rgb(255, 255, 255);
+  gap: 5rem;
+  padding: 5rem 5rem;
+  width: 60rem;
+}
 
-  .create-task-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
+.extra-create-task-title {
+  margin: 0;
+}
 
-  .create-task-input-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    gap: 0.8rem;
-  }
+.create-task-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 
-  .create-task-input {
-    font: inherit;
-    width: 80%;
-    padding: 0.6rem;
-    border: 1px solid #e6ecf8;
-    border-radius: 0.3rem;
-    font-size: 1.4rem;
-    color: #141c3a;
-    outline: 0;
-  }
+.create-task-input-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.8rem;
+}
 
-  .text-area {
-    height: 10rem;
-    resize: none;
-  }
+.create-task-input {
+  width: 85%;
+  padding: 1.5rem;
+  border: 2px solid #e6ecf8;
+  border-radius: 1.7rem;
+  font-size: 1.8rem;
+  color: #141c3a;
+  outline: 0;
+}
 
-  .create-event-selected-event {
-    font-size: 1.4rem;
-    color: black;
-    transition: color 0.2s linear;
-  }
+.text-area {
+  font-family: inherit;
+  height: 10rem;
+  resize: none;
+}
 
-  .selected-event {
-    cursor: pointer;
-    display: flex;
-    flex-direction: row; /* This is default and usually doesn't need to be explicitly set */
-    align-items: center;
-    transition: color 0.2s linear;
-  }
+.start-due-date-task {
+  display: flex;
+  width: 92%;
+  gap: 1rem;
+  margin-right: 1rem;
+}
 
-  .create-event-selected-event svg {
-    margin-left: 0.5rem;
-  }
+.start-date-task {
+  width: 50%;
+}
 
-  .selected-event:hover {
-    color: rgb(2, 4, 79);
-  }
+.start-date-task label {
+  font-size: 1.8rem;
+}
+
+.due-date-task {
+  width: 50%;
+}
+
+.due-date-task label {
+  font-size: 1.8rem;
+}
+
+.extra-create-task-input {
+  width: 90%;
+}
+
+.selected-task {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.4rem;
+  transition: color 0.2s linear;
+}
+
+.selected-task:hover {
+  color: rgb(2, 4, 79);
+}
+
+.create-task-selected-task svg {
+  margin-left: 0.5rem;
+}
+
+.create-task-selected-members {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 1.4rem;
+  padding: 1.5rem;
+}
+
+.create-task-selected-members svg {
+  margin-left: 0.2rem;
+}

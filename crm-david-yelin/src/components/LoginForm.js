@@ -4,6 +4,9 @@ import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
+import { CheckBox } from "@mui/icons-material";
+import "../styles/Styles.css";
+import Alert from '@mui/material/Alert';
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -15,7 +18,11 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
       if (!userCredential.user.emailVerified) {
         console.log("Email not verified");
@@ -41,29 +48,40 @@ function LoginForm() {
 
   return (
     <div className="container">
-      <div className="forms-box">
-        <h1 className="title">שלום!</h1>
-        <p className="subtitle">נא הכנס שם משתמש וסיסמה</p>
-        <div className="error-messages">
-          {wrongCredentials && (
-            <div className="incorrect-box">
-              <p className="incorrect-message">פרטי ההתחברות שגויים</p>
-            </div>
-          )}
-          {!isEmailVerified && (
-            <div className="incorrect-box">
-              <p className="incorrect-message">אימייל לא מאומת</p>
-            </div>
-          )}
+      <div className="login-style">
+        <div className="forms-box">
+          <div className="login-logo">
+            <img
+              className="login-logo-img"
+              src={require("../assets/aguda.png")}
+              alt="aguda icon"
+            />
+            <p>
+              אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
+            </p>
+          </div>
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
+          <h1 className="title">התחברות משתמש</h1>
+          <div className="error-messages">
+            {wrongCredentials && (
+              <Alert className="feedback-alert login-alert" severity="error">פרטי התחברות שגויים</Alert>
+            )}
+            {!isEmailVerified && (
+                <Alert className="feedback-alert login-alert" severity="error">אימייל לא אומת</Alert>
+            )}
+          </div>
           <div className="input-container">
             <input
               type="email"
               placeholder="אימייל"
               className="forms-input"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setWrongCredentials(false);
+                setIsEmailVerified(true);
+                setEmail(event.target.value);
+              }}
             />
           </div>
           <div className="input-container">
@@ -72,19 +90,34 @@ function LoginForm() {
               placeholder="סיסמה"
               className="forms-input"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => {
+                setWrongCredentials(false);
+                setIsEmailVerified(true);
+                setPassword(event.target.value);
+              }}
             />
+          </div>
+          <div className="form-checkbox">
+            <input
+              className="input-checkbox"
+              id="input-checkbox"
+              type="checkbox"
+              name="remember-me"
+            ></input>
+            <label className="label-checkbox" htmlFor="input-checkbox">
+              זכור אותי
+            </label>
           </div>
           <button type="submit" className="primary-button">
             התחברות
           </button>
-          <button type="submit" className="registration-button">
-            הרשמה
-          </button>
-          <div className="forgot-box">
+          <div className="extra-options">
             <a href="#forgot-password" className="forgot-password">
-              שכחתי סיסמה
+              שכחת סיסמה?
             </a>
+          </div>
+          <div className="registration-button">
+            <a href="register">הרשמה</a>
           </div>
         </form>
       </div>

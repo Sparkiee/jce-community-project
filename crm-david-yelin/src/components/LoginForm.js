@@ -4,9 +4,8 @@ import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
-import { CheckBox } from "@mui/icons-material";
 import "../styles/Styles.css";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -18,11 +17,7 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
       if (!userCredential.user.emailVerified) {
         console.log("Email not verified");
@@ -51,26 +46,26 @@ function LoginForm() {
       <div className="login-style">
         <div className="forms-box">
           <div className="login-logo">
-            <img
-              className="login-logo-img"
-              src={require("../assets/aguda.png")}
-              alt="aguda icon"
-            />
+            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
             <p>
               אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
             </p>
           </div>
         </div>
+        <div className="error-messages">
+          {wrongCredentials && (
+            <Alert className="feedback-alert login-alert" severity="error">
+              פרטי התחברות שגויים
+            </Alert>
+          )}
+          {!isEmailVerified && (
+            <Alert className="feedback-alert login-alert" severity="error">
+              אימייל לא אומת
+            </Alert>
+          )}
+        </div>
         <form className="login-form" onSubmit={handleSubmit}>
           <h1 className="title">התחברות משתמש</h1>
-          <div className="error-messages">
-            {wrongCredentials && (
-              <Alert className="feedback-alert login-alert" severity="error">פרטי התחברות שגויים</Alert>
-            )}
-            {!isEmailVerified && (
-                <Alert className="feedback-alert login-alert" severity="error">אימייל לא אומת</Alert>
-            )}
-          </div>
           <div className="input-container">
             <input
               type="email"
@@ -102,8 +97,7 @@ function LoginForm() {
               className="input-checkbox"
               id="input-checkbox"
               type="checkbox"
-              name="remember-me"
-            ></input>
+              name="remember-me"></input>
             <label className="label-checkbox" htmlFor="input-checkbox">
               זכור אותי
             </label>

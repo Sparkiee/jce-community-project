@@ -164,29 +164,29 @@ function RegisterUser() {
           <button type="submit" className="primary-button extra-reg">
             הירשם
           </button>
-          <div className="feedback">
-            {formWarning && (
-              <Alert className="feedback-alert" severity="error">
-                אנא מלא את כל השדות
-              </Alert>
-            )}
-            {pendingAccount && (
-              <Alert className="feedback-alert" severity="error">
-                אימייל לא מורשה להרשם למערכת
-              </Alert>
-            )}
-            {accountExists && (
-              <Alert className="feedback-alert" severity="info">
-                משתמש נוצר, נא לאמת אימייל דרך התיבת דואר
-              </Alert>
-            )}
-            {!passwordsMatch && (
-              <Alert className="feedback-alert" severity="warning">
-                הסיסמאות אינן תואמות
-              </Alert>
-            )}
-          </div>
         </form>
+        <div className="feedback-registration">
+          {formWarning && (
+            <Alert className="feedback-alert" severity="error">
+              אנא מלא את כל השדות
+            </Alert>
+          )}
+          {pendingAccount && (
+            <Alert className="feedback-alert" severity="error">
+              אימייל לא מורשה להרשם למערכת
+            </Alert>
+          )}
+          {accountExists && (
+            <Alert className="feedback-alert" severity="info">
+              משתמש נוצר, נא לאמת אימייל דרך התיבת דואר
+            </Alert>
+          )}
+          {!passwordsMatch && (
+            <Alert className="feedback-alert" severity="warning">
+              הסיסמאות אינן תואמות
+            </Alert>
+          )}
+        </div>
       </div>
     </div>
   );

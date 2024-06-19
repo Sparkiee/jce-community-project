@@ -117,6 +117,60 @@ header .logo a {
   color: white;
 }
 
-.MuiBadge-badge {
+/* .MuiBadge-badge {
   font-size: 1.5rem !important;
+} */
+
+.notification-dropdown {
+  font-size: 1.5rem;
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 7.5rem; /* Position it right below the bell icon */
+  right: 85%; /* Align it to the right edge of the bell icon */
+  background-color: white; /* Example background */
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Example shadow */
+  z-index: 100; /* Ensure it's above other content */
+  border-radius: 10px;
+  border: 1px solid #d3d3d3;
+  max-width: 30rem;
+  min-width: 25rem;
+}
+
+.notification-title {
+  font-weight: bold;
+  font-size: 1.75rem;
+  margin: 0rem 0rem 1rem 0rem;
+}
+
+.notification-msg {
+  text-align: right;
+}
+
+.notification-actions {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.notification-button {
+  text-decoration: none;
+  font-size: 1.5rem;
+  padding: 0.3rem 1.2rem;
+  border-radius: 1rem;
+  color: #fff;
+  background-color: dodgerblue;
+  transition: all 0.2s linear;
+}
+
+.notification-button:hover {
+  background-color: #333;
+}
+
+.notification-item {
+  width: 100%;
+  text-align: right;
 }

@@ -114,34 +114,35 @@ header .logo a {
 }
 
 .notification-icon {
+  position: relative;
   color: white;
 }
 
-/* .MuiBadge-badge {
+.MuiBadge-badge {
   font-size: 1.5rem !important;
-} */
+}
 
 .notification-dropdown {
-  font-size: 1.5rem;
-  padding: 1.3rem;
+  position: absolute;
   display: flex;
   flex-direction: column;
-  position: absolute;
-  top: 7.5rem; /* Position it right below the bell icon */
-  right: 85%; /* Align it to the right edge of the bell icon */
-  background-color: white; /* Example background */
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Example shadow */
-  z-index: 100; /* Ensure it's above other content */
+  font-size: 1.6rem;
+  padding: 1.3rem;
+  top: 7rem;
+  left: 21.5rem;
+  background-color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
   border-radius: 10px;
   border: 1px solid #d3d3d3;
-  max-width: 30rem;
-  min-width: 25rem;
+  max-width: 27rem;
+  min-width: 27rem;
 }
 
 .notification-title {
   font-weight: bold;
-  font-size: 1.75rem;
-  margin: 0rem 0rem 1rem 0rem;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
 }
 
 .notification-msg {
@@ -158,9 +159,9 @@ header .logo a {
 
 .notification-button {
   text-decoration: none;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   padding: 0.3rem 1.2rem;
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   color: #fff;
   background-color: dodgerblue;
   transition: all 0.2s linear;

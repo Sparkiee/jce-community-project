@@ -8,6 +8,7 @@ import CreateUser from './components/CreateUser';
 import RegisterUser from './components/RegisterUser';
 import CreateEvent from './components/CreateEvent';
 import CreateTask from './components/CreateTask';
+import ManageUsers from './components/ManageUsers';
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/register" element={<RegisterUser/>} />
         <Route path="/create-event" element={<CreateEvent/>} />
         <Route path="/create-task" element={<CreateTask/>} />
+        <Route path="/manage" element={<ManageUsers/>} />
       </Routes>
     </Router>
   );

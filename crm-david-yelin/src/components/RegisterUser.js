@@ -7,7 +7,7 @@ import { auth } from "../firebase.js";
 import "../styles/RegisterUser.css";
 import PhoneInput from "react-phone-number-input/input";
 import "../styles/Styles.css";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -49,7 +49,7 @@ function RegisterUser() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if(!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
+    if (!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
       // fields are empty
       setFormWarning(true);
       return;
@@ -102,6 +102,9 @@ function RegisterUser() {
   return (
     <div className="container">
       <div className="registration-style">
+        <a href="/" className="back-home">
+          → חזרה לעמוד הראשי
+        </a>
         <div className="forms-box">
           <div className="login-logo">
             <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
@@ -162,12 +165,26 @@ function RegisterUser() {
             הירשם
           </button>
           <div className="feedback">
-          {formWarning && <Alert className="feedback-alert" severity="error">אנא מלא את כל השדות</Alert>}
-            {pendingAccount && <Alert className="feedback-alert" severity="error">אימייל לא מורשה להרשם למערכת</Alert>}
-            {accountExists && (
-              <Alert className="feedback-alert" severity="info">משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</Alert>
+            {formWarning && (
+              <Alert className="feedback-alert" severity="error">
+                אנא מלא את כל השדות
+              </Alert>
             )}
-            {!passwordsMatch && <Alert className="feedback-alert" severity="warning">הסיסמאות אינן תואמות</Alert>}
+            {pendingAccount && (
+              <Alert className="feedback-alert" severity="error">
+                אימייל לא מורשה להרשם למערכת
+              </Alert>
+            )}
+            {accountExists && (
+              <Alert className="feedback-alert" severity="info">
+                משתמש נוצר, נא לאמת אימייל דרך התיבת דואר
+              </Alert>
+            )}
+            {!passwordsMatch && (
+              <Alert className="feedback-alert" severity="warning">
+                הסיסמאות אינן תואמות
+              </Alert>
+            )}
           </div>
         </form>
       </div>

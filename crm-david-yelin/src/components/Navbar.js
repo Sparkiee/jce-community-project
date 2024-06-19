@@ -11,6 +11,7 @@ import { updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
+import MessageIcon from "@mui/icons-material/Message";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -111,11 +112,6 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
-              <li>
-                <a to="/contact" onClick={() => navigate("/contact")}>
-                  תקשורת
-                </a>
-              </li>
               <li className="search-li-nav">
                 <svg
                   viewBox="0 0 32 32"
@@ -144,6 +140,7 @@ function Navbar() {
               </li>
             </ul>
             <div className="left-side-nav">
+              <MessageIcon className="message-icon" />
               <IconButton color="primary" onClick={() => handleNotifications()}>
                 <Badge badgeContent={notifications} color="primary">
                   <NotificationsIcon className="notification-icon" />

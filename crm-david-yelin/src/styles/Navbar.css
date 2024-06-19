@@ -93,7 +93,15 @@ header .logo a {
   transition: transform 0.2s linear;
 }
 
-.left-side-nav svg:hover {
+.MuiAvatar-root {
+  width: 5rem !important;
+  height: 5rem !important;
+  cursor: pointer;
+  transition: transform 0.2s linear;
+}
+
+.left-side-nav svg:hover,
+.MuiAvatar-root:hover {
   transform: scale(1.1);
 }
 
@@ -111,6 +119,10 @@ header .logo a {
 .logout-button:hover {
   border: 2px solid red;
   background-color: red;
+}
+
+.message-icon {
+  color: white;
 }
 
 .notification-icon {

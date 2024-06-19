@@ -1,4 +1,5 @@
 .create-event {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6,7 +7,7 @@
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
   background-color: rgb(255, 255, 255);
   gap: 5rem;
-  padding: 4rem 6rem;
+  padding: 4rem 6rem 7rem;
   width: 50rem;
 }
 
@@ -93,4 +94,9 @@
 
 .selected-member:hover {
   color: rgb(2, 4, 79);
+}
+
+.feedback-create-event {
+  position: absolute;
+  bottom: 2%;
 }

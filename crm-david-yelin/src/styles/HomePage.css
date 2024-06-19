@@ -46,7 +46,6 @@
     padding: 0.4rem 0rem 0.4rem 2rem;
     min-width: 10rem;
   }
-  
 }
 
 .action-button:hover {
@@ -68,15 +67,16 @@
   position: relative;
 }
 
-.action-close > svg {
+.action-close svg {
   position: absolute;
+  z-index: 2;
   right: 1rem;
   top: 1rem;
   cursor: pointer;
   transition: transform 0.2s linear, color 0.2s linear;
 }
 
-.action-close > svg:hover {
+.action-close svg:hover {
   transform: scale(1.2);
   color: rgb(18, 21, 116);
 }

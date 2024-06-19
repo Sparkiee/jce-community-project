@@ -11,14 +11,6 @@
   width: 110rem;
 }
 
-.registration-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
 .back-home {
   position: absolute;
   top: 8%;
@@ -28,6 +20,14 @@
   color: rgb(0, 124, 201);
   cursor: pointer;
   transition: color 0.2s linear;
+}
+
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .back-home:hover {
@@ -51,10 +51,8 @@
   margin-top: 2rem;
 }
 
-.feedback p {
-  text-align: center;
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: #d04848;
-  margin: 0;
+.feedback-registration {
+  position: absolute;
+  bottom: 6%;
+  left: 18%;
 }

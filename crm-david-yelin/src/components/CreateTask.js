@@ -14,7 +14,7 @@ import {
 import Select from "react-select";
 import "../styles/CreateTask.css";
 import "../styles/Styles.css";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
 function CreateTask() {
   const [taskExists, setTaskExists] = useState(false);
@@ -249,7 +249,7 @@ function CreateTask() {
           />
           <div className="start-due-date-task">
             <div className="start-date-task">
-              <label for="start">תאריך התחלה</label>
+              <label htmlFor="start">תאריך התחלה</label>
               <input
                 type="date"
                 name="taskStartDate"
@@ -269,7 +269,7 @@ function CreateTask() {
               />
             </div>
             <div className="due-date-task">
-              <label for="due">תאריך סיום</label>
+              <label htmlFor="due">תאריך סיום</label>
               <input
                 type="date"
                 name="taskEndDate"
@@ -396,11 +396,17 @@ function CreateTask() {
         <input type="submit" value="צור משימה" className="primary-button" />
         <div className="feedback">
           {taskExists && (
-            <p><Alert className="feedback-alert" severity="success">!משימה חדשה התווספה בהצלחה</Alert></p>
+            <Alert className="feedback-alert" severity="success">
+              !משימה חדשה התווספה בהצלחה
+            </Alert>
           )}
         </div>
         <div className="feedback warning">
-          {formWarning && <p>{<Alert className="feedback-alert" severity="error">{warningText}</Alert>}</p>}
+          {formWarning && (
+            <Alert className="feedback-alert" severity="error">
+              {warningText}
+            </Alert>
+          )}
         </div>
       </form>
     </div>

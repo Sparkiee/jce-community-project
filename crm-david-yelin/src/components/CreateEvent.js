@@ -281,10 +281,10 @@ function CreateEvent() {
         </div>
         <input type="submit" value="צור אירוע" className="primary-button" />
         <div className="feedback">
-          {eventExists && <p><Alert className="feedback-alert" severity="success">אירוע נוצר בהצלחה!</Alert></p>}
+          {eventExists && <Alert className="feedback-alert" severity="success">אירוע נוצר בהצלחה!</Alert>}
         </div>
         <div className="feedback warning">
-          {formWarning && <p>{<Alert className="feedback-alert" severity="error">{warningText}</Alert>}</p>}
+          {formWarning && <Alert className="feedback-alert" severity="error">{warningText}</Alert>}
         </div>
       </form>
     </div>

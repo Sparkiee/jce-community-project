@@ -65,15 +65,10 @@ function LoginForm() {
           <h1 className="title">התחברות משתמש</h1>
           <div className="error-messages">
             {wrongCredentials && (
-              // <div className="incorrect-box">
-              //   <p className="incorrect-message">פרטי ההתחברות שגויים</p>
-              // </div>
               <Alert className="feedback-alert login-alert" severity="error">פרטי התחברות שגויים</Alert>
             )}
             {!isEmailVerified && (
-              <div className="incorrect-box">
-                <Alert className="feedback-alert login-alert" severity="error">אימייל לא מאומת</Alert>
-              </div>
+                <Alert className="feedback-alert login-alert" severity="error">אימייל לא אומת</Alert>
             )}
           </div>
           <div className="input-container">
@@ -109,11 +104,11 @@ function LoginForm() {
               type="checkbox"
               name="remember-me"
             ></input>
-            <label className="label-checkbox" for="input-checkbox">
+            <label className="label-checkbox" htmlFor="input-checkbox">
               זכור אותי
             </label>
           </div>
-          <button type="submit" className="primary-button">
+          <button type="submit" className="prמimary-button">
             התחברות
           </button>
           <div className="extra-options">

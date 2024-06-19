@@ -91,7 +91,7 @@ function CreateUser() {
         setEmailPendingRegistration(true);
         return;
       }
-      if(isExistingAccount) {
+      if (isExistingAccount) {
         setEmailExists(true);
       }
       setEmailPendingRegistration(false);
@@ -193,29 +193,19 @@ function CreateUser() {
             </button>
             <div className="feedback">
               {emailPendingRegistration && (
-                <p>
-                  {
-                    <Alert className="feedback-alert" severity="error">
-                      אימייל כבר מחכה להרשמה
-                    </Alert>
-                  }
-                </p>
+                <Alert className="feedback-alert" severity="error">
+                  אימייל כבר מחכה להרשמה
+                </Alert>
               )}
               {emailExists && (
-                <p>
-                  {
-                    <Alert className="feedback-alert" severity="error">
-                      אימייל כבר קיים במערכת
-                    </Alert>
-                  }
-                </p>
+                <Alert className="feedback-alert" severity="error">
+                  אימייל כבר קיים במערכת
+                </Alert>
               )}
               {accountCreated && (
-                <p>
-                  <Alert className="feedback-alert" severity="success">
-                    המשתמש נוצר בהצלחה
-                  </Alert>
-                </p>
+                <Alert className="feedback-alert" severity="success">
+                  המשתמש נוצר בהצלחה
+                </Alert>
               )}
             </div>
           </div>

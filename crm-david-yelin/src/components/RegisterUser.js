@@ -163,9 +163,9 @@ function RegisterUser() {
           </button>
           <div className="feedback">
           {formWarning && <Alert className="feedback-alert" severity="error">אנא מלא את כל השדות</Alert>}
-            {pendingAccount && <Alert className="feedback-alert" severity="warning">אימייל לא מורשה להרשם למערכת</Alert>}
+            {pendingAccount && <Alert className="feedback-alert" severity="error">אימייל לא מורשה להרשם למערכת</Alert>}
             {accountExists && (
-              <Alert className="feedback-alert" severity="info">!משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</Alert>
+              <Alert className="feedback-alert" severity="info">משתמש נוצר, נא לאמת אימייל דרך התיבת דואר</Alert>
             )}
             {!passwordsMatch && <Alert className="feedback-alert" severity="warning">הסיסמאות אינן תואמות</Alert>}
           </div>

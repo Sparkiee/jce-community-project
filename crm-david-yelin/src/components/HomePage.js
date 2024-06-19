@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import { db, updateUserData } from "../firebase";
-import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  onSnapshot
+} from "firebase/firestore";
 import "../styles/HomePage.css";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
@@ -22,8 +28,8 @@ function HomePage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -35,50 +41,50 @@ function HomePage() {
       width: "3%",
       align: "right",
       colors: "red",
-      flex: 1,
+      flex: 1
     },
     {
       field: "taskName",
       headerName: "משימה",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskEndDate",
       headerName: "תאריך סיום",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 2,
-    },
+      flex: 2
+    }
   ];
 
   const columnsEvents = [
@@ -88,50 +94,50 @@ function HomePage() {
       width: "3%",
       align: "right",
       colors: "red",
-      flex: 1,
+      flex: 1
     },
     {
       field: "eventName",
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventEndDate",
       headerName: "תאריך סיום",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventTime",
       headerName: "שעה",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 2,
-    },
+      flex: 2
+    }
   ];
 
   const user = JSON.parse(sessionStorage.getItem("user"));
@@ -139,13 +145,16 @@ function HomePage() {
   async function grabMyTasks() {
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(tasksRef, where("assignees", "array-contains", "members/" + user.email));
+      const q = query(
+        tasksRef,
+        where("assignees", "array-contains", "members/" + user.email)
+      );
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.ref,
+          docRef: doc.ref
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
 
@@ -159,7 +168,7 @@ function HomePage() {
         taskStartDate: task.taskStartDate,
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
-        taskStatus: task.taskStatus,
+        taskStatus: task.taskStatus
       }));
       setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
@@ -170,13 +179,16 @@ function HomePage() {
   async function grabMyEvents() {
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("assignees", "array-contains", "members/" + user.email));
+      const q = query(
+        eventsRef,
+        where("assignees", "array-contains", "members/" + user.email)
+      );
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.ref,
+          docRef: doc.ref
         }))
         .filter((event) => event.eventStatus !== "הסתיים");
       setNumEvents(eventsArray.length); // Update event count
@@ -189,7 +201,7 @@ function HomePage() {
         eventStartDate: event.eventStartDate,
         eventEndDate: event.eventEndDate,
         eventTime: event.eventTime,
-        eventStatus: event.eventStatus,
+        eventStatus: event.eventStatus
       }));
       setrowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
@@ -255,14 +267,15 @@ function HomePage() {
                 className="action-close"
                 onClick={() => {
                   setShowCreateTask(false);
-                  updateUserData(user.email);
-                }}>
+                }}
+              >
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor">
+                  fill="currentColor"
+                >
                   <line
                     x1="17"
                     y1="7"
@@ -292,14 +305,15 @@ function HomePage() {
                 className="action-close"
                 onClick={() => {
                   setShowCreateEvent(false);
-                  updateUserData(user.email);
-                }}>
+                }}
+              >
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor">
+                  fill="currentColor"
+                >
                   <line
                     x1="17"
                     y1="7"
@@ -326,22 +340,31 @@ function HomePage() {
         </div>
         {user.privileges > 1 && (
           <div className="pending-actions">
-            <div className="action-button add-task-button" onClick={handleShowCreateTask}>
+            <div
+              className="action-button add-task-button"
+              onClick={handleShowCreateTask}
+            >
               <svg
                 width="24px"
                 height="24px"
                 viewBox="0 0 24 24"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></g>
                 <g id="SVGRepo_iconCarrier">
                   <path
                     d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                     stroke="white"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    strokeLinejoin="round"></path>
+                    strokeLinejoin="round"
+                  ></path>
                 </g>
               </svg>
               הוסף משימה
@@ -352,16 +375,22 @@ function HomePage() {
                 height="24px"
                 viewBox="0 0 24 24"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></g>
                 <g id="SVGRepo_iconCarrier">
                   <path
                     d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                     stroke="white"
                     strokeWidth="2"
                     strokeLinecap="round"
-                    strokeLinejoin="round"></path>
+                    strokeLinejoin="round"
+                  ></path>
                 </g>
               </svg>
               הוסף אירוע
@@ -384,17 +413,19 @@ function HomePage() {
               columns={columnsTasks}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5]}
               localeText={{
                 // Customizing displayed rows text
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:", // Optional: customize other texts
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ-${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
+                }
               }}
             />
           </ThemeProvider>
@@ -415,16 +446,18 @@ function HomePage() {
               columns={columnsEvents}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
             />
           </ThemeProvider>

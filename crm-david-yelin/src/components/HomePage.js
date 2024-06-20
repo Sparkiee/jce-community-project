@@ -40,7 +40,6 @@ function HomePage() {
       headerName: "אינדקס",
       width: "3%",
       align: "right",
-      colors: "red",
       flex: 1
     },
     {

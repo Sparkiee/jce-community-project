@@ -19,6 +19,8 @@ function Navbar() {
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [displayNotifications, setDisplayNotifications] = useState([]);
   const [fullName, setFullName] = useState("");
+  
+  const member = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     // Listener for authentication state
@@ -55,7 +57,6 @@ function Navbar() {
     }
     setDisplayNotifications([]);
     setNotificationsVisible(true);
-    const member = JSON.parse(sessionStorage.getItem("user"));
     if (!member || !member.email) return;
     const docRef = doc(db, "members", member.email);
     try {
@@ -112,6 +113,14 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
+              {member.privileges >= 3 && (
+                <li>
+                  <a to="/manage-users" onClick={() => navigate("/users")}>
+                    ניהול משתמשים
+                  </a>
+                </li>
+              
+              )}
               <li className="search-li-nav">
                 <svg
                   viewBox="0 0 32 32"

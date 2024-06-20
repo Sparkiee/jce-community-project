@@ -6,15 +6,24 @@ import { heIL } from "@mui/material/locale";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  updateDoc,
+  doc,
+  query,
+  collection,
+  getDocs,
+  where
+} from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import IconButton from "@mui/material/IconButton";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
+import Alert from "@mui/material/Alert";
 
 function ManageUsers() {
   const [disabledMemberRows, setDisabledMemberRows] = useState([]);
   const [activeMemberRows, setActiveMemberRows] = useState([]);
+  const [removeLastAdminAlert, setRemoveLastAdminAlert] = useState(false);
 
   const theme = createTheme(
     {
@@ -88,18 +97,53 @@ function ManageUsers() {
       width: 150,
       align: "right",
       flex: 1.5,
-      renderCell: () => (
+      renderCell: (params) => (
         <div>
-          <IconButton aria-label="edit" title="עריכה">
+          <IconButton
+            aria-label="edit"
+            title="עריכה"
+            onClick={() => console.log("Edit row:", params.row)}
+          >
             <EditIcon />
           </IconButton>
-          <IconButton aria-label="removePerm" title="הסר גישה לאתר" onClick={() => console.log("well")}>
+          <IconButton
+            aria-label="removePerm"
+            title="הסר גישה לאתר"
+            onClick={() => handleRemovePermissions(params.row)}
+          >
             <PersonOffIcon />
           </IconButton>
         </div>
       )
     }
   ];
+
+  async function handleRemovePermissions(targetUser) {
+    try {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      if (user.privileges < 3) {
+        return;
+      }
+      const usersRef = collection(db, "members");
+      if (targetUser.privileges >= 3) {
+        const q = query(usersRef, where("privileges", ">=", 3));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.size === 1) {
+          setRemoveLastAdminAlert(true);
+          setTimeout(() => {
+            setRemoveLastAdminAlert(false);
+          }, 5000);
+          return;
+        }
+      }
+      const targetUserRef = doc(usersRef, targetUser.email);
+      await updateDoc(targetUserRef, {
+        privileges: 0
+      });
+    } catch (error) {
+      console.error("Remove permissions error:", error);
+    }
+  }
 
   const editDisabled = [
     ...columns,
@@ -109,43 +153,13 @@ function ManageUsers() {
       width: 150,
       align: "right",
       flex: 1.5,
-      renderCell: () => (
+      renderCell: (params) => (
         <div>
-          <IconButton aria-label="edit">
+          <IconButton aria-label="edit" title="עריכה">
             <EditIcon />
           </IconButton>
         </div>
       )
-    }
-  ];
-
-  const fakeRows = [
-    {
-      id: 1,
-      firstName: "ישראל ישראלי",
-      email: "israeli@example.com",
-      phone: "050-1234567",
-      department: "הנדסה",
-      role: "מהנדס תוכנה",
-      privileges: "מנהל"
-    },
-    {
-      id: 2,
-      firstName: "דנה כהן",
-      email: "dcohen@example.com",
-      phone: "052-7654321",
-      department: "שיווק",
-      role: "מנהלת שיווק",
-      privileges: "עורך"
-    },
-    {
-      id: 3,
-      firstName: "אבי לוי",
-      email: "levy@example.com",
-      phone: "054-9876543",
-      department: "מכירות",
-      role: "נציג מכירות",
-      privileges: "משתמש"
     }
   ];
 
@@ -202,6 +216,9 @@ function ManageUsers() {
         <div className="page-title">ניהול משתמשים</div>
         <div className="table-title">משתמשים פעילים</div>
         <div className="search-users-table">פה יהיה חיפוש</div>
+        {removeLastAdminAlert && <Alert className="feedback-alert user-data-feedback" severity="warning">
+          לא ניתן להסיר מנהל ראשי אחרון מהמערכת
+        </Alert>}
         <div className="datagrid-table">
           <ThemeProvider theme={theme}>
             <DataGrid

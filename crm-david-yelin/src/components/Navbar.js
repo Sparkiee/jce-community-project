@@ -33,6 +33,11 @@ function Navbar() {
           // Directly update notifications from the document data
           setNotifications(data?.Notifications?.length || 0);
           setFullName(data?.fullName || "");
+
+          if(user.privileges < 1) {
+            disconnect();
+            navigate("/");
+          }
         });
 
         // Return the unsubscribe function for the Firestore listener

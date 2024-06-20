@@ -1,10 +1,22 @@
-.manage-users-content {
+.manage-users-container {
     display: flex;
-    margin-right: 3rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     margin-top: 3rem;
 }
 
-.manage-users-content > .page-title {
+.page-title {
     font-size: 3rem;
     font-weight: bold;
+}
+
+.table-title {
+    margin-top: 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.datagrid-table {
+    width: 80%;
 }

@@ -37,7 +37,8 @@ const App = () => {
         <Route path="/create-event" element={<CreateEvent />} />
         <Route path="/create-task" element={<CreateTask />} />
         <Route path="/users" element={<ManageUsers />} />
-        <Route path="/Manage-tasks" element={<ManageTasks />} />
+        <Route path="/tasks" element={<ManageTasks />} />
+        <Route path="/events" element={<ManageEvents />} />
       </Routes>
     </Router>
   );

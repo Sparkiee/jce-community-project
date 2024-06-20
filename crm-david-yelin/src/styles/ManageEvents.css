@@ -1,0 +1,11 @@
+.manage-events-styles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.manage-events-styles h1 {
+  font-size: 3.5rem;
+}

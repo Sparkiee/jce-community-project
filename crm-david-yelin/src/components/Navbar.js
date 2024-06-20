@@ -99,7 +99,7 @@ function Navbar() {
           <div className="nav-items">
             <ul>
               <li>
-                <a to="#" onClick={() => navigate("#")}>
+                <a to="#" onClick={() => navigate("/home")}>
                   ראשי
                 </a>
               </li>

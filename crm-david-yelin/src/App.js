@@ -10,6 +10,7 @@ import CreateEvent from "./components/CreateEvent";
 import CreateTask from "./components/CreateTask";
 import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
+import ManageEvents from "./components/ManageEvents";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/home" element={<ProtectedRoute privilegeLevel={1} ><HomePage/></ProtectedRoute>} />
         <Route path="/create" element={<ProtectedRoute privilegeLevel={3} ><CreateUser/></ProtectedRoute>} />
         <Route path="/tasks" element={<ManageTasks/>} />
+        <Route path="/events" element={<ManageEvents/>} />
         <Route path="/register" element={<RegisterUser/>} />
         <Route path="/create-event" element={<CreateEvent/>} />
         <Route path="/create-task" element={<CreateTask/>} />

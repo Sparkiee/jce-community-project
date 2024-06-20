@@ -7,6 +7,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import IconButton from "@mui/material/IconButton";
+import PersonOffIcon from "@mui/icons-material/PersonOff";
 
 function ManageUsers() {
   const [disabledMemberRows, setDisabledMemberRows] = useState([]);
@@ -27,19 +31,22 @@ function ManageUsers() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1
+      flex: 1,
+      edittable: true
     },
     {
       field: "firstName",
       headerName: "שם פרטי",
       align: "right",
-      flex: 2
+      flex: 2,
+      edittable: true
     },
     {
       field: "lastName",
       headerName: "שם משפחה",
       align: "right",
-      flex: 2
+      flex: 2,
+      edittable: true
     },
     {
       field: "email",
@@ -70,6 +77,45 @@ function ManageUsers() {
       headerName: "הרשאות",
       align: "right",
       flex: 2
+    }
+  ];
+
+  const editEnabled = [
+    ...columns,
+    {
+      field: "edit",
+      headerName: "עריכה",
+      width: 150,
+      align: "right",
+      flex: 1.5,
+      renderCell: () => (
+        <div>
+          <IconButton aria-label="edit">
+            <EditIcon />
+          </IconButton>
+          <IconButton aria-label="removePerm" title="הסר גישה לאתר" onClick={() => console.log("well")}>
+            <PersonOffIcon />
+          </IconButton>
+        </div>
+      )
+    }
+  ];
+
+  const editDisabled = [
+    ...columns,
+    {
+      field: "edit",
+      headerName: "עריכה",
+      width: 150,
+      align: "right",
+      flex: 1.5,
+      renderCell: () => (
+        <div>
+          <IconButton aria-label="edit">
+            <EditIcon />
+          </IconButton>
+        </div>
+      )
     }
   ];
 
@@ -161,7 +207,7 @@ function ManageUsers() {
             <DataGrid
               className="data-grid"
               rows={activeMemberRows}
-              columns={columns}
+              columns={editEnabled}
               initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 5 }
@@ -187,7 +233,7 @@ function ManageUsers() {
             <DataGrid
               className="data-grid"
               rows={disabledMemberRows}
-              columns={columns}
+              columns={editDisabled}
               initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 5 }

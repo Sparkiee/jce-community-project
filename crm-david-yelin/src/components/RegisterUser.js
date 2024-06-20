@@ -102,7 +102,7 @@ function RegisterUser() {
   return (
     <div className="container">
       <div className="registration-style">
-        <a href="/" className="back-home">
+        <a href="/home" className="back-home">
           → חזרה לעמוד הראשי
         </a>
         <div className="forms-box">

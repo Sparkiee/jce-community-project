@@ -103,6 +103,9 @@ function CreateUser() {
   return (
     <div className="container">
       <div className="user-creation-style">
+        <a href="/home" className="back-home">
+          → חזרה לעמוד הראשי
+        </a>
         <div className="forms-box">
           <div className="login-logo">
             <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />

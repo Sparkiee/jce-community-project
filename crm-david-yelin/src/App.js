@@ -10,6 +10,7 @@ import CreateEvent from "./components/CreateEvent";
 import CreateTask from "./components/CreateTask";
 import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
+import ManageEvents from "./components/ManageEvents";
 
 const App = () => {
   return (

@@ -211,7 +211,6 @@ function ManageTasks() {
               columns={columns}
               pageSize={5}
               rowsPerPageOptions={[5]}
-              checkboxSelection
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>

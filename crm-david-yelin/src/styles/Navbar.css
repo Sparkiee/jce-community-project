@@ -187,3 +187,29 @@ header .logo a {
   width: 100%;
   text-align: right;
 }
+
+
+.search-results {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 1px solid #d3d3d3;
+  max-width: 30rem;
+  min-width: 30rem;
+  top: 3.5rem;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.search-result-item {
+  padding: 1rem;
+  font-size: 1.2rem;
+  color: rgb(2, 4, 79);
+  cursor: pointer;
+  transition: background-color 0.2s linear;
+}
+
+.search-result-item:hover {
+  background-color: rgba(2, 4, 79, 0.1);
+}

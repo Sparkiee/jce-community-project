@@ -90,7 +90,7 @@ function ManageUsers() {
       flex: 1.5,
       renderCell: () => (
         <div>
-          <IconButton aria-label="edit">
+          <IconButton aria-label="edit" title="עריכה">
             <EditIcon />
           </IconButton>
           <IconButton aria-label="removePerm" title="הסר גישה לאתר" onClick={() => console.log("well")}>

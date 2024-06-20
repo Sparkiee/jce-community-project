@@ -1,4 +1,5 @@
 .manage-tasks-styles {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,4 +9,26 @@
 
 .manage-tasks-styles h1 {
   font-size: 3.5rem;
+}
+
+.add-task-manage-tasks {
+  position: absolute;
+  top: 5.5%;
+  right: 5%;
+}
+
+@media (max-width: 1440px) {
+  .add-task-manage-tasks {
+    position: absolute;
+    top: 4.5%;
+    right: 5%;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .add-task-manage-tasks {
+    position: absolute;
+    top: 3%;
+    right: 5%;
+  }
 }

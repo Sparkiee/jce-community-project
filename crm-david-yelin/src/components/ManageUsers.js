@@ -19,11 +19,16 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import IconButton from "@mui/material/IconButton";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import Alert from "@mui/material/Alert";
+import EditUser from "./EditUser";
+import CreateUser from "./CreateUser";
 
 function ManageUsers() {
   const [disabledMemberRows, setDisabledMemberRows] = useState([]);
   const [activeMemberRows, setActiveMemberRows] = useState([]);
   const [removeLastAdminAlert, setRemoveLastAdminAlert] = useState(false);
+  const [editUserForm, setEditUserForm] = useState(false);
+  const [editUser, setEditUser] = useState();
+  const [showCreateUser, setShowCreateUser] = useState(false);
 
   const theme = createTheme(
     {
@@ -102,14 +107,21 @@ function ManageUsers() {
           <IconButton
             aria-label="edit"
             title="עריכה"
-            onClick={() => console.log("Edit row:", params.row)}
+            onClick={() => {
+              setEditUser(params.row);
+              setEditUserForm(true);
+              console.log("Edit row:", params.row);
+            }}
           >
             <EditIcon />
           </IconButton>
           <IconButton
             aria-label="removePerm"
             title="הסר גישה לאתר"
-            onClick={() => handleRemovePermissions(params.row)}
+            onClick={() => {
+              handleRemovePermissions(params.row);
+              fetchUsers();
+            }}
           >
             <PersonOffIcon />
           </IconButton>
@@ -155,7 +167,15 @@ function ManageUsers() {
       flex: 1.5,
       renderCell: (params) => (
         <div>
-          <IconButton aria-label="edit" title="עריכה">
+          <IconButton
+            aria-label="edit"
+            title="עריכה"
+            onClick={() => {
+              setEditUser(params.row);
+              setEditUserForm(true);
+              console.log("Edit row:", params.row);
+            }}
+          >
             <EditIcon />
           </IconButton>
         </div>
@@ -213,12 +233,124 @@ function ManageUsers() {
     <div>
       <Navbar />
       <div className="manage-users-container">
+        {editUserForm && (
+          <div className="display-edit-user">
+            <div
+              className="action-close"
+              onClick={() => {
+                setEditUserForm(false);
+              }}
+            >
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <line
+                  x1="17"
+                  y1="7"
+                  x2="7"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="7"
+                  y1="7"
+                  x2="17"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <EditUser target={editUser} />
+          </div>
+        )}
+        {showCreateUser && (
+          <div className="display-create-user">
+            <div
+              className="action-close"
+              onClick={() => {
+                setShowCreateUser(false);
+              }}
+            >
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <line
+                  x1="17"
+                  y1="7"
+                  x2="7"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="7"
+                  y1="7"
+                  x2="17"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <CreateUser />
+          </div>
+        )}
         <div className="page-title">ניהול משתמשים</div>
+        <div className="pending-actions">
+          <div
+            className="action-button add-task-button"
+            onClick={() => setShowCreateUser(true)}
+          >
+            <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                ></path>
+              </g>
+            </svg>
+            הוסף משתמש
+          </div>
+        </div>
         <div className="table-title">משתמשים פעילים</div>
         <div className="search-users-table">פה יהיה חיפוש</div>
-        {removeLastAdminAlert && <Alert className="feedback-alert user-data-feedback" severity="warning">
-          לא ניתן להסיר מנהל ראשי אחרון מהמערכת
-        </Alert>}
+        {removeLastAdminAlert && (
+          <Alert
+            className="feedback-alert user-data-feedback"
+            severity="warning"
+          >
+            לא ניתן להסיר מנהל ראשי אחרון מהמערכת
+          </Alert>
+        )}
         <div className="datagrid-table">
           <ThemeProvider theme={theme}>
             <DataGrid
@@ -244,6 +376,32 @@ function ManageUsers() {
           </ThemeProvider>
         </div>
         <div className="table-title">משתמשים לא פעילים</div>
+        <div className="search-users-table">פה יהיה חיפוש</div>
+        <div className="datagrid-table">
+          <ThemeProvider theme={theme}>
+            <DataGrid
+              className="data-grid"
+              rows={disabledMemberRows}
+              columns={editDisabled}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
+              }}
+              pageSizeOptions={[5]}
+              localeText={{
+                MuiTablePagination: {
+                  labelDisplayedRows: ({ from, to, count }) =>
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
+              }}
+            />
+          </ThemeProvider>
+        </div>
+        <div className="table-title">משתמשים שמחכים להרשמה</div>
         <div className="search-users-table">פה יהיה חיפוש</div>
         <div className="datagrid-table">
           <ThemeProvider theme={theme}>

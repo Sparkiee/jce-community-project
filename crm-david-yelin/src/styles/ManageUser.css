@@ -1,27 +1,43 @@
 .manage-users-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
 }
 
 .page-title {
-    font-size: 3rem;
-    font-weight: bold;
+  font-size: 3rem;
+  font-weight: bold;
 }
 
 .table-title {
-    margin-top: 2rem;
-    font-size: 2rem;
-    font-weight: bold;
+  margin-top: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .datagrid-table {
-    width: 80%;
+  width: 80%;
 }
 
 .user-data-feedback {
-    margin: 1rem;
-    
+  margin: 1rem;
+}
+
+.display-edit-user {
+  top: 7%;
+  position: fixed;
+  z-index: 1;
+}
+
+.pending-actions {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.display-create-user {
+    top: 7%;
+    position: fixed;
+    z-index: 1;
 }

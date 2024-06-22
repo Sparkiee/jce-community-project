@@ -24,7 +24,6 @@ function LoginForm() {
       );
 
       if (!userCredential.user.emailVerified) {
-        console.log("Email not verified");
         setIsEmailVerified(false);
         return;
       }
@@ -124,7 +123,7 @@ function LoginForm() {
             התחברות
           </button>
           <div className="extra-options">
-            <a href="#forgot-password" className="forgot-password">
+            <a href="#" className="forgot-password" onClick={() => navigate("forgot-password")}>
               שכחת סיסמה?
             </a>
           </div>

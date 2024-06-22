@@ -10,6 +10,7 @@ import CreateEvent from "./components/CreateEvent";
 import CreateTask from "./components/CreateTask";
 import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
+import ForgotPassword from "./components/ForgotPassword";
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/create-task" element={<CreateTask />} />
         <Route path="/users" element={<ManageUsers />} />
         <Route path="/Manage-tasks" element={<ManageTasks />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </Router>
   );

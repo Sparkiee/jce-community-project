@@ -76,11 +76,11 @@ function ManageTasks() {
       flex: 2,
       renderCell: () => (
         <AvatarGroup className="manage-task-avatar-group" max={3}>
-          <Avatar {...stringAvatar("Kent Dodds")} src={require("../assets/profile.jpg")} />
-          <Avatar {...stringAvatar("Travis Howard")} src="/static/images/avatar/2.jpg" />
-          <Avatar {...stringAvatar("Cindy Baker")} src="/static/images/avatar/3.jpg" />
-          <Avatar {...stringAvatar("Agnes Walker")} src="/static/images/avatar/4.jpg" />
-          <Avatar {...stringAvatar("Trevor Henderson")} src="/static/images/avatar/5.jpg" />
+          <Avatar {...stringAvatar("Kent Dodds")} />
+          <Avatar {...stringAvatar("פנחס מתיאס דגדגד")} />
+          <Avatar {...stringAvatar("Cindy Baker")} />
+          <Avatar {...stringAvatar("Agnes Walker")} />
+          <Avatar {...stringAvatar("Trevor Henderson")} />
         </AvatarGroup>
       ),
     },

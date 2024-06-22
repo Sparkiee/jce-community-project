@@ -70,7 +70,7 @@ function EditUser(params) {
           setIsNoLevel3(true);
           setTimeout(() => {
             setIsNoLevel3(false);
-          }, 3000);
+          }, 1000);
           return;
         }
       }
@@ -91,7 +91,7 @@ function EditUser(params) {
       setEdittedSuccessfully(true);
       setTimeout(() => {
         setEdittedSuccessfully(false);
-      }, 3000);
+      }, 1000);
     } catch (e) {
       console.error("Error updating document: ", e);
     }

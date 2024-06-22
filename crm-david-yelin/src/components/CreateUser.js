@@ -112,7 +112,7 @@ function CreateUser() {
       setTimeout(() => {
         setAccountCreated(false);
         navigate(0);
-      }, 3000);
+      }, 1000);
     } catch (e) {
       console.error("Error adding document: ", e);
     }

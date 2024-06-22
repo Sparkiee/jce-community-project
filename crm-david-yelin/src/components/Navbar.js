@@ -35,6 +35,11 @@ function Navbar() {
           // Directly update notifications from the document data
           setNotifications(data?.Notifications?.length || 0);
           setFullName(data?.fullName || "");
+
+          if(user.privileges < 1) {
+            disconnect();
+            navigate("/");
+          }
         });
 
         // Return the unsubscribe function for the Firestore listener
@@ -171,13 +176,24 @@ function Navbar() {
                   value={searchQuery}
                   onChange={handleSearch}
                 />
-                {searchResults.length > 0 && (
+                {searchQuery && (
                   <div className="search-results">
-                    {searchResults.map((result, index) => (
-                      <div key={index} className="search-result-item">
-                        {result.fullName}
-                      </div>
-                    ))}
+                    {searchResults.length > 0 ? (
+                      searchResults.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            {index > 0 && <div className="custom-divider" />}
+                            <div
+                              className={`search-result-item ${result.privileges === 0 ? 'strikethrough' : ''}`}
+                            >
+                              {result.fullName}
+                            </div>
+                          </React.Fragment>
+                        );
+                      })
+                    ) : (
+                      <div className="no-result-found">לא נמצאה התאמה.</div>
+                    )}
                   </div>
                 )}
               </li>

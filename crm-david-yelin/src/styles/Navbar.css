@@ -213,3 +213,28 @@ header .logo a {
 .search-result-item:hover {
   background-color: rgba(2, 4, 79, 0.1);
 }
+
+/* .strikethrough {
+  position: relative;
+  display: inline-block;
+  }
+
+.strikethrough::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 55%;
+  border-top: 1px solid rgb(2, 4, 79);
+  transform: translateY(-50%);
+} */
+
+.strikethrough {
+  text-decoration: line-through 1px rgb(2, 4, 79);
+}
+
+.custom-divider {
+  color: rgb(2, 4, 79);
+  height: 0.1px;
+  background-color: rgb(2, 4, 79);
+}

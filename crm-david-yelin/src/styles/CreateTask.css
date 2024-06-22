@@ -96,12 +96,27 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 1.5rem;
-  font-size: 1.4rem;
   padding: 1.5rem;
 }
 
-.create-task-selected-members svg {
-  margin-left: 0.2rem;
+.css-uoam7u-MuiButtonBase-root-MuiChip-root {
+  height: 4rem !important;
+  border-radius: 2rem !important;
+}
+
+.MuiButtonBase-root .MuiChip-avatar {
+  width: 3rem !important;
+  height: 3rem !important;
+  margin-right: 0 !important;
+}
+
+.MuiChip-label {
+  font-size: 1.4rem !important;
+}
+
+.MuiChip-deleteIcon {
+  margin: 0 !important;
+  font-size: 3rem !important;
 }
 
 .feedback-create-task {

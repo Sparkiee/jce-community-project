@@ -25,9 +25,15 @@ import CreateUser from "./CreateUser";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 function ManageUsers() {
-  const [disabledMemberRows, setDisabledMemberRows] = useState([]);
+
+  const [fullActiveMembers, setFullActiveMembers] = useState([]);
+  const [fullDisabledMembers, setFullDisabledMembers] = useState([]);
+  const [fullPendingMembers, setFullPendingMembers] = useState([]);
+
   const [activeMemberRows, setActiveMemberRows] = useState([]);
   const [pendingMemberRows, setPendingMemberRows] = useState([]);
+  const [disabledMemberRows, setDisabledMemberRows] = useState([]);
+
   const [removeLastAdminAlert, setRemoveLastAdminAlert] = useState(false);
   const [editUserForm, setEditUserForm] = useState(false);
   const [editUser, setEditUser] = useState();
@@ -278,6 +284,10 @@ function ManageUsers() {
       });
       setDisabledMemberRows(disabledMembersFormatted);
       setActiveMemberRows(enabledMembersFormatted);
+
+      setFullActiveMembers(enabledMembersFormatted);
+      setFullDisabledMembers(disabledMembersFormatted);
+
     } catch (error) {
       console.error("Fetch user error:", error);
     }
@@ -295,6 +305,7 @@ function ManageUsers() {
         };
       });
       setPendingMemberRows(membersFormatted);
+      setFullPendingMembers(membersFormatted);
     } catch (error) {
       console.error("Fetch user error:", error);
     }
@@ -417,7 +428,57 @@ function ManageUsers() {
           </div>
         </div>
         <div className="table-title">משתמשים פעילים</div>
-        <div className="search-users-table">פה יהיה חיפוש</div>
+        <div className="search-users-table">
+          <svg
+            viewBox="0 0 32 32"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
+          >
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <title>search</title>
+              <desc>Created with Sketch Beta.</desc>
+              <defs></defs>
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <g
+                  id="Icon-Set"
+                  transform="translate(-256.000000, -1139.000000)"
+                  fill="#000000"
+                >
+                  <path
+                    d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
+                    id="search"
+                  ></path>
+                </g>
+              </g>
+            </g>
+          </svg>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="חיפוש משתמש"
+            onChange={(event) => {
+              const searchValue = event.target.value;
+              const filteredMembers = fullActiveMembers.filter((member) => {
+                const fullName = `${member.firstName} ${member.lastName}`;
+                return fullName.includes(searchValue);
+              });
+              setActiveMemberRows(filteredMembers);
+            }}
+          />
+        </div>
         {removeLastAdminAlert && (
           <Alert
             className="feedback-alert user-data-feedback"
@@ -450,8 +511,59 @@ function ManageUsers() {
             />
           </ThemeProvider>
         </div>
+        <hr className="divider" />
         <div className="table-title">משתמשים לא פעילים</div>
-        <div className="search-users-table">פה יהיה חיפוש</div>
+        <div className="search-users-table">
+          <svg
+            viewBox="0 0 32 32"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
+          >
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <title>search</title>
+              <desc>Created with Sketch Beta.</desc>
+              <defs></defs>
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <g
+                  id="Icon-Set"
+                  transform="translate(-256.000000, -1139.000000)"
+                  fill="#000000"
+                >
+                  <path
+                    d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
+                    id="search"
+                  ></path>
+                </g>
+              </g>
+            </g>
+          </svg>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="חיפוש משתמש"
+            onChange={(event) => {
+              const searchValue = event.target.value;
+              const filteredMembers = fullDisabledMembers.filter((member) => {
+                const fullName = `${member.firstName} ${member.lastName}`;
+                return fullName.includes(searchValue);
+              });
+              setDisabledMemberRows(filteredMembers);
+            }}
+          />
+        </div>
         <div className="datagrid-table">
           <ThemeProvider theme={theme}>
             <DataGrid
@@ -476,8 +588,58 @@ function ManageUsers() {
             />
           </ThemeProvider>
         </div>
+        <hr className="divider" />
         <div className="table-title">משתמשים שמחכים להרשמה</div>
-        <div className="search-users-table">פה יהיה חיפוש</div>
+        <div className="search-users-table">
+          <svg
+            viewBox="0 0 32 32"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
+          >
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <title>search</title>
+              <desc>Created with Sketch Beta.</desc>
+              <defs></defs>
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <g
+                  id="Icon-Set"
+                  transform="translate(-256.000000, -1139.000000)"
+                  fill="#000000"
+                >
+                  <path
+                    d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
+                    id="search"
+                  ></path>
+                </g>
+              </g>
+            </g>
+          </svg>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="חיפוש אימייל"
+            onChange={(event) => {
+              const searchValue = event.target.value;
+              const filteredMembers = fullPendingMembers.filter((member) => {
+                return member.email.includes(searchValue);
+              });
+              setPendingMemberRows(filteredMembers);
+            }}
+          />
+        </div>
         <div className="datagrid-table">
           <ThemeProvider theme={theme}>
             <DataGrid

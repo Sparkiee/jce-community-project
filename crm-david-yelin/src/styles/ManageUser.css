@@ -41,3 +41,20 @@
     position: fixed;
     z-index: 1;
 }
+
+.search-input {
+  border: 1px solid #ccc;
+  border-radius: 2rem;
+  padding: 0.6rem 3rem 0.6rem 0;
+  margin: 0.5rem;
+}
+
+.search-users-table {
+  position: relative;
+}
+.search-users-table svg {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  right: 4%;
+}

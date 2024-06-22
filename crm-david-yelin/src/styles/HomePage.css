@@ -1,4 +1,5 @@
 .home-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -14,8 +15,8 @@
 }
 
 .pending-actions {
+  margin: 1rem;
   display: flex;
-  flex-direction: row-reverse;
   margin-top: 1rem;
   margin-bottom: 1rem;
   width: 80%;
@@ -42,6 +43,13 @@
 }
 
 @media screen and(max-width: 1440px) {
+  .action-button {
+    padding: 0.4rem 0rem 0.4rem 2rem;
+    min-width: 10rem;
+  }
+}
+
+@media screen and (max-width: 1280px) {
   .action-button {
     padding: 0.4rem 0rem 0.4rem 2rem;
     min-width: 10rem;

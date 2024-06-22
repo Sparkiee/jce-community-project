@@ -1,22 +1,64 @@
 .manage-users-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 3rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
 }
 
 .page-title {
-    font-size: 3rem;
-    font-weight: bold;
+  font-size: 3rem;
+  font-weight: bold;
 }
 
 .table-title {
-    margin-top: 2rem;
-    font-size: 2rem;
-    font-weight: bold;
+  margin-top: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .datagrid-table {
-    width: 80%;
+  width: 80%;
+}
+
+.user-data-feedback {
+  margin: 1rem;
+}
+
+.display-edit-user {
+  top: 7%;
+  position: fixed;
+  z-index: 1;
+}
+
+.pending-actions {
+  top: 0;
+  margin: 1rem;
+  position: absolute;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.display-create-user {
+  top: 7%;
+  position: fixed;
+  z-index: 1;
+}
+
+.search-input {
+  border: 1px solid #ccc;
+  border-radius: 2rem;
+  padding: 0.6rem 3rem 0.6rem 0;
+  margin: 0.5rem;
+}
+
+.search-users-table {
+  position: relative;
+}
+.search-users-table svg {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  right: 4%;
 }

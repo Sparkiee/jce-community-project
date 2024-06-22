@@ -1,8 +1,17 @@
 import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDoc, doc, serverTimestamp, setDoc, deleteDoc } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  serverTimestamp,
+  setDoc,
+  deleteDoc
+} from "firebase/firestore";
 import { db } from "../firebase.js";
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification
+} from "firebase/auth";
 import { auth } from "../firebase.js";
 import "../styles/RegisterUser.css";
 import PhoneInput from "react-phone-number-input/input";
@@ -49,16 +58,25 @@ function RegisterUser() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
+    if (
+      !firstName ||
+      !lastName ||
+      !phone ||
+      !email ||
+      !password ||
+      !verifyPassword
+    ) {
       // fields are empty
       setFormWarning(true);
       return;
     }
     try {
-      const isPendingRegistration = await checkPendingRegistration(email.toLowerCase());
+      const isPendingRegistration = await checkPendingRegistration(
+        email.toLowerCase()
+      );
       setPendingAccount(!isPendingRegistration);
       if (isPendingRegistration) {
-        await grabDepartment(email);
+        const userDepartment = await grabDepartment(email);
 
         try {
           console.log("Writing document...");
@@ -70,32 +88,39 @@ function RegisterUser() {
             fullName: firstName + " " + lastName,
             phone: phone,
             privileges: 1,
-            department: await grabDepartment(email),
+            department: userDepartment,
             role: await grabRole(email),
-            createdOn: serverTimestamp(),
+            createdOn: serverTimestamp()
           });
           console.log("Document successfully written!");
           setAccountExists(true);
 
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
           const user = userCredential.user;
           console.log(`User registered with UID: ${user.uid}`);
           await sendEmailVerification(user);
           // Delete the document from the awaiting_registration collection
-          const awaitingRegistrationDocRef = doc(db, "awaiting_registration", email);
+          const awaitingRegistrationDocRef = doc(
+            db,
+            "awaiting_registration",
+            email
+          );
           await deleteDoc(awaitingRegistrationDocRef);
-          console.log("Document successfully deleted from awaiting_registration!");
-          // Navigate to login page
-          setTimeout(() => {
-            navigate("/");
-          }, 5000);
+          console.log(
+            "Document successfully deleted from awaiting_registration!"
+          );
         } catch (e) {
           console.error("Error writing document: ", e);
           setAccountExists(false);
         }
       }
-    } catch (e) {}
-    // Handle form submission
+    } catch (e) {
+      console.log(e);
+    }
   }
   const passwordsMatch = password === verifyPassword;
 
@@ -107,7 +132,11 @@ function RegisterUser() {
         </a>
         <div className="forms-box">
           <div className="login-logo">
-            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+            <img
+              className="login-logo-img"
+              src={require("../assets/aguda.png")}
+              alt="aguda icon"
+            />
             <p>
               אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
             </p>

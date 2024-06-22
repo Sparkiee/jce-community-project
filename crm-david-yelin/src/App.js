@@ -10,18 +10,35 @@ import CreateEvent from "./components/CreateEvent";
 import CreateTask from "./components/CreateTask";
 import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
+import ForgotPassword from "./components/ForgotPassword";
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route exact path="/" element={<LoginForm/>} />
-        <Route path="/home" element={<ProtectedRoute privilegeLevel={1} ><HomePage/></ProtectedRoute>} />
-        <Route path="/create" element={<ProtectedRoute privilegeLevel={3} ><CreateUser/></ProtectedRoute>} />
-        <Route path="/register" element={<RegisterUser/>} />
-        <Route path="/create-event" element={<CreateEvent/>} />
-        <Route path="/create-task" element={<CreateTask/>} />
-        <Route path="/users" element={<ManageUsers/>} />
+        <Route exact path="/" element={<LoginForm />} />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create"
+          element={
+            <ProtectedRoute privilegeLevel={3}>
+              <CreateUser />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/register" element={<RegisterUser />} />
+        <Route path="/create-event" element={<CreateEvent />} />
+        <Route path="/create-task" element={<CreateTask />} />
+        <Route path="/users" element={<ManageUsers />} />
+        <Route path="/Manage-tasks" element={<ManageTasks />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </Router>
   );

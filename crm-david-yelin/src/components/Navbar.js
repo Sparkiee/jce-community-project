@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import IconButton from "@mui/material/IconButton";
-import { updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
+import { updateDoc, doc, onSnapshot, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
@@ -19,7 +19,9 @@ function Navbar() {
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [displayNotifications, setDisplayNotifications] = useState([]);
   const [fullName, setFullName] = useState("");
-  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   const member = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
@@ -89,6 +91,24 @@ function Navbar() {
     }
   };
 
+  const handleSearch = async (e) => {
+    const searchValue = e.target.value;
+    setSearchQuery(searchValue);
+    if (searchValue.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    const q = query(
+      collection(db, "members"),
+      where("fullName", ">=", searchValue),
+      where("fullName", "<=", searchValue + "\uf8ff")
+    );
+    const querySnapshot = await getDocs(q);
+    const results = querySnapshot.docs.map((doc) => doc.data());
+    setSearchResults(results);
+  };
+
   return (
     <header>
       <div className="navbar-container">
@@ -104,7 +124,7 @@ function Navbar() {
           <div className="nav-items">
             <ul>
               <li>
-                <a to="#" onClick={() => navigate("#")}>
+                <a to="#" onClick={() => navigate("/home")}>
                   ראשי
                 </a>
               </li>
@@ -124,7 +144,6 @@ function Navbar() {
                     ניהול משתמשים
                   </a>
                 </li>
-              
               )}
               <li className="search-li-nav">
                 <svg
@@ -150,7 +169,33 @@ function Navbar() {
                     </g>
                   </g>
                 </svg>
-                <input type="text" placeholder="חיפוש משתמש" className="search-input-nav" />
+                <input
+                  type="text"
+                  placeholder="חיפוש משתמש"
+                  className="search-input-nav"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                />
+                {searchQuery && (
+                  <div className="search-results">
+                    {searchResults.length > 0 ? (
+                      searchResults.map((result, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            {index > 0 && <div className="custom-divider" />}
+                            <div
+                              className={`search-result-item ${result.privileges === 0 ? 'strikethrough' : ''}`}
+                            >
+                              {result.fullName}
+                            </div>
+                          </React.Fragment>
+                        );
+                      })
+                    ) : (
+                      <div className="no-result-found">לא נמצאה התאמה.</div>
+                    )}
+                  </div>
+                )}
               </li>
             </ul>
             <div className="left-side-nav">
@@ -208,3 +253,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

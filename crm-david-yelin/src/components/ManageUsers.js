@@ -12,7 +12,8 @@ import {
   query,
   collection,
   getDocs,
-  where
+  where,
+  deleteDoc
 } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -21,10 +22,12 @@ import PersonOffIcon from "@mui/icons-material/PersonOff";
 import Alert from "@mui/material/Alert";
 import EditUser from "./EditUser";
 import CreateUser from "./CreateUser";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function ManageUsers() {
   const [disabledMemberRows, setDisabledMemberRows] = useState([]);
   const [activeMemberRows, setActiveMemberRows] = useState([]);
+  const [pendingMemberRows, setPendingMemberRows] = useState([]);
   const [removeLastAdminAlert, setRemoveLastAdminAlert] = useState(false);
   const [editUserForm, setEditUserForm] = useState(false);
   const [editUser, setEditUser] = useState();
@@ -39,6 +42,53 @@ function ManageUsers() {
     },
     heIL
   );
+
+  const awaitingColumns = [
+    {
+      field: "id",
+      headerName: "אינדקס",
+      align: "right",
+      flex: 1
+    },
+    {
+      field: "email",
+      headerName: "אימייל",
+      align: "right",
+      flex: 3
+    },
+    {
+      field: "department",
+      headerName: "מחלקה",
+      align: "right",
+      flex: 2
+    },
+    {
+      field: "role",
+      headerName: "תפקיד",
+      align: "right",
+      flex: 2
+    },
+    {
+      field: "edit",
+      headerName: "מחיקה",
+      width: 150,
+      align: "right",
+      flex: 1.5,
+      renderCell: (params) => (
+        <div>
+          <IconButton
+            aria-label="edit"
+            title="מחיקה"
+            onClick={() => {
+              deleteUser(params.row.email);
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      )
+    }
+  ];
 
   const columns = [
     {
@@ -110,7 +160,6 @@ function ManageUsers() {
             onClick={() => {
               setEditUser(params.row);
               setEditUserForm(true);
-              console.log("Edit row:", params.row);
             }}
           >
             <EditIcon />
@@ -182,7 +231,16 @@ function ManageUsers() {
       )
     }
   ];
-
+  async function deleteUser(email) {
+    try {
+      const docRef = doc(db, "awaiting_registration", email);
+      await deleteDoc(docRef);
+      console.log("Document successfully deleted!");
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
+    fetchUsers();
+  }
   async function fetchUsers() {
     try {
       const membersRef = collection(db, "members");
@@ -220,6 +278,23 @@ function ManageUsers() {
       });
       setDisabledMemberRows(disabledMembersFormatted);
       setActiveMemberRows(enabledMembersFormatted);
+    } catch (error) {
+      console.error("Fetch user error:", error);
+    }
+
+    try {
+      const membersRef = collection(db, "awaiting_registration");
+      const membersSnapshot = await getDocs(membersRef);
+      const membersList = membersSnapshot.docs.map((doc) => doc.data());
+      const membersFormatted = membersList.map((member, index) => {
+        return {
+          id: index + 1,
+          email: member.email,
+          department: member.department,
+          role: member.role
+        };
+      });
+      setPendingMemberRows(membersFormatted);
     } catch (error) {
       console.error("Fetch user error:", error);
     }
@@ -407,8 +482,8 @@ function ManageUsers() {
           <ThemeProvider theme={theme}>
             <DataGrid
               className="data-grid"
-              rows={disabledMemberRows}
-              columns={editDisabled}
+              rows={pendingMemberRows}
+              columns={awaitingColumns}
               initialState={{
                 pagination: {
                   paginationModel: { page: 0, pageSize: 5 }

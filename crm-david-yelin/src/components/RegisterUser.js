@@ -58,7 +58,7 @@ function RegisterUser() {
       const isPendingRegistration = await checkPendingRegistration(email.toLowerCase());
       setPendingAccount(!isPendingRegistration);
       if (isPendingRegistration) {
-        await grabDepartment(email);
+        const userDepartment = await grabDepartment(email);
 
         try {
           console.log("Writing document...");
@@ -70,7 +70,7 @@ function RegisterUser() {
             fullName: firstName + " " + lastName,
             phone: phone,
             privileges: 1,
-            department: await grabDepartment(email),
+            department: userDepartment,
             role: await grabRole(email),
             createdOn: serverTimestamp(),
           });

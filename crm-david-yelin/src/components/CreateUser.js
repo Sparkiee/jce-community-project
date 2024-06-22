@@ -109,6 +109,10 @@ function CreateUser() {
         timestamp: serverTimestamp()
       });
       setAccountCreated(true);
+      setTimeout(() => {
+        setAccountCreated(false);
+        navigate(0);
+      }, 3000);
     } catch (e) {
       console.error("Error adding document: ", e);
     }

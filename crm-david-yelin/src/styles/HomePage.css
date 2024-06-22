@@ -1,4 +1,5 @@
 .home-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -14,6 +15,7 @@
 }
 
 .pending-actions {
+  margin: 1rem;
   display: flex;
   margin-top: 1rem;
   margin-bottom: 1rem;

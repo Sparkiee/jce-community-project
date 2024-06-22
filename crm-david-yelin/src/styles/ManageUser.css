@@ -34,7 +34,6 @@
 
 .pending-actions {
   top: 0;
-  margin: 1rem;
   position: absolute;
   display: flex;
   flex-direction: row-reverse;

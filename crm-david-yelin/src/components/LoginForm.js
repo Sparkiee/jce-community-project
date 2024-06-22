@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,11 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
       if (!userCredential.user.emailVerified) {
         console.log("Email not verified");
@@ -38,16 +42,28 @@ function LoginForm() {
       navigate("/home");
     } catch (error) {
       setWrongCredentials(true);
-      console.log(error)
+      console.log(error);
     }
   }
+
+  useEffect(() => {
+    const session = sessionStorage.getItem("user");
+    if (session !== null) {
+      console.log("yeee");
+      navigate("/home");
+    }
+  }, []);
 
   return (
     <div className="container">
       <div className="login-style">
         <div className="forms-box">
           <div className="login-logo">
-            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
+            <img
+              className="login-logo-img"
+              src={require("../assets/aguda.png")}
+              alt="aguda icon"
+            />
             <p>
               אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
             </p>
@@ -98,7 +114,8 @@ function LoginForm() {
               className="input-checkbox"
               id="input-checkbox"
               type="checkbox"
-              name="remember-me"></input>
+              name="remember-me"
+            ></input>
             <label className="label-checkbox" htmlFor="input-checkbox">
               זכור אותי
             </label>

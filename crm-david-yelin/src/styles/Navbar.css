@@ -96,6 +96,7 @@ header .logo a {
 .MuiAvatar-root {
   width: 5rem !important;
   height: 5rem !important;
+  font-size: 1.8rem !important;
   cursor: pointer;
   transition: transform 0.2s linear;
 }

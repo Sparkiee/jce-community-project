@@ -15,6 +15,9 @@ import Select from "react-select";
 import "../styles/CreateTask.css";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
+import Avatar from "@mui/material/Avatar";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
 
 function CreateTask() {
   const [taskExists, setTaskExists] = useState(false);
@@ -211,13 +214,13 @@ function CreateTask() {
         <div className="create-task-input-box">
           <input
             type="text"
-            placeholder="שם המשימה"
+            placeholder="שם המשימה (חובה*)"
             name="taskName "
             className="create-task-input"
             onChange={(e) => setTaskDetails({ ...taskDetails, taskName: e.target.value })}
           />
           <textarea
-            placeholder="תיאור המשימה"
+            placeholder="תיאור המשימה (חובה*)"
             name="taskDescription"
             className="create-task-input text-area"
             onChange={(e) =>
@@ -247,7 +250,7 @@ function CreateTask() {
               />
             </div>
             <div className="due-date-task">
-              <label htmlFor="due">תאריך סיום</label>
+              <label htmlFor="due">תאריך סיום (חובה*)</label>
               <input
                 type="date"
                 name="taskEndDate"
@@ -288,32 +291,13 @@ function CreateTask() {
           />
           <div className="create-task-selected-task">
             {selectedEvent && (
-              <div className="selected-task" onClick={() => handleRemoveEvent()}>
-                <svg
-                  fill="#000000"
-                  width="20px"
-                  height="20px"
-                  viewBox="-6.43 0 122.88 122.88"
-                  version="1.1"
-                  id="Layer_1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                  style={{ enableBackground: "new 0 0 110.01 122.88" }}
-                  xmlSpace="preserve">
-                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <style type="text/css">{`.st0{fill-rule:evenodd;clip-rule:evenodd;}`}</style>
-                    <g>
-                      <path
-                        className="st0"
-                        d="M1.87,14.69h22.66L24.5,14.3V4.13C24.5,1.86,26.86,0,29.76,0c2.89,0,5.26,1.87,5.26,4.13V14.3l-0.03,0.39 h38.59l-0.03-0.39V4.13C73.55,1.86,75.91,0,78.8,0c2.89,0,5.26,1.87,5.26,4.13V14.3l-0.03,0.39h24.11c1.03,0,1.87,0.84,1.87,1.87 v19.46c0,1.03-0.84,1.87-1.87,1.87H1.87C0.84,37.88,0,37.04,0,36.01V16.55C0,15.52,0.84,14.69,1.87,14.69L1.87,14.69z M31.35,83.53 c-2.27-1.97-2.52-5.41-0.55-7.69c1.97-2.28,5.41-2.53,7.69-0.56l12.45,10.8l20.31-20.04c2.13-2.12,5.59-2.11,7.71,0.02 c2.12,2.13,2.11,5.59-0.02,7.71L55.02,97.37c-2,1.99-5.24,2.14-7.41,0.26L31.35,83.53L31.35,83.53L31.35,83.53z M0.47,42.19h109.08 c0.26,0,0.46,0.21,0.46,0.47l0,0v79.76c0,0.25-0.21,0.46-0.46,0.46l-109.08,0c-0.25,0-0.46-0.21-0.46-0.46V42.66 C0,42.4,0.21,42.19,0.47,42.19L0.47,42.19L0.47,42.19z M8.84,50.58h93.84c0.52,0,0.94,0.45,0.94,0.94v62.85 c0,0.49-0.45,0.94-0.94,0.94H8.39c-0.49,0-0.94-0.42-0.94-0.94v-62.4c0-1.03,0.84-1.86,1.86-1.86L8.84,50.58L8.84,50.58z M78.34,29.87c2.89,0,5.26-1.87,5.26-4.13V15.11l-0.03-0.41l-10.45,0l-0.03,0.41v10.16c0,2.27,2.36,4.13,5.25,4.13L78.34,29.87 L78.34,29.87z M29.29,29.87c2.89,0,5.26-1.87,5.26-4.13V15.11l-0.03-0.41l-10.46,0l-0.03,0.41v10.16c0,2.27,2.36,4.13,5.25,4.13 V29.87L29.29,29.87z"
-                      />
-                    </g>
-                  </g>
-                </svg>
-                <p className="selected-task-text">{selectedEvent.eventName}</p>
-              </div>
+              <Stack direction="row" spacing={1}>
+                <Chip
+                  label={selectedEvent.eventName}
+                  onDelete={() => handleRemoveEvent()}
+                  variant="outlined"
+                />
+              </Stack>
             )}
           </div>
           <Select
@@ -331,29 +315,16 @@ function CreateTask() {
             }))}
           />
           <div className="create-task-selected-members">
-            {selectedMembers.map((member, index) => (
-              <div
-                key={index}
-                className="selected-member"
-                onClick={() => handleRemoveMember(member.id)}>
-                <svg
-                  className="w-6 h-6 text-gray-800 dark:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24">
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                </svg>
-                <div className="selected-member-text">{member.fullName}</div>
-              </div>
+            {selectedMembers.map((member) => (
+              <Stack direction="row" spacing={1}>
+                <Chip
+                  key={member.id}
+                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
+                  label={member.fullName}
+                  onDelete={() => handleRemoveMember(member.id)}
+                  variant="outlined"
+                />
+              </Stack>
             ))}
           </div>
         </div>

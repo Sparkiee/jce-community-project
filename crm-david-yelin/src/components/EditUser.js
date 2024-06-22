@@ -164,7 +164,7 @@ function EditUser(params) {
             style={{ textAlign: "right" }}
           />
           <input
-            uneditable
+            readOnly
             type="email"
             placeholder="אימייל"
             className="forms-input"

@@ -127,8 +127,8 @@ function RegisterUser() {
   return (
     <div className="container">
       <div className="registration-style">
-        <a href="/home" className="back-home">
-          → חזרה לעמוד הראשי
+        <a href="/" className="back-home">
+          → חזרה להתחברות
         </a>
         <div className="forms-box">
           <div className="login-logo">

@@ -34,3 +34,7 @@ body {
   border-radius: 10px !important;
   gap: 0.4rem;
 }
+
+.footer {
+  margin-bottom: 4rem;
+}

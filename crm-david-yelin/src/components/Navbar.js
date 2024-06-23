@@ -150,7 +150,7 @@ function Navbar() {
       <div className="navbar-container">
         <div className="navbar">
           <div className="logo">
-            <a to="/home" onClick={() => navigate("/home")}>
+            <a to="#" onClick={() => navigate("/home")}>
               <img
                 className="logo-img"
                 src={require("../assets/aguda.png")}
@@ -169,18 +169,18 @@ function Navbar() {
                 </a>
               </li>
               <li>
-                <a to="/tasks" onClick={() => navigate("/tasks")}>
+                <a to="#" onClick={() => navigate("/tasks")}>
                   משימות
                 </a>
               </li>
               <li>
-                <a to="/events" onClick={() => navigate("/events")}>
+                <a to="#" onClick={() => navigate("/events")}>
                   אירועים
                 </a>
               </li>
               {member.privileges >= 3 && (
                 <li>
-                  <a to="/manage-users" onClick={() => navigate("/users")}>
+                  <a to="#" onClick={() => navigate("/users")}>
                     ניהול משתמשים
                   </a>
                 </li>

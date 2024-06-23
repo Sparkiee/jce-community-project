@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "./Navbar";
 import { db, updateUserData } from "../firebase";
 import {
   collection,
@@ -256,8 +255,6 @@ function HomePage() {
   };
 
   return (
-    <div className="HomePage">
-      <Navbar />
       <div className="home-content">
         <div className="display-create">
           {user.privileges > 1 && showCreateTask && (
@@ -465,7 +462,6 @@ function HomePage() {
           </ThemeProvider>
         </div>
       </div>
-    </div>
   );
 }
 

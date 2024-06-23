@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children, privilegeLevel }) => {
     return <Navigate to="/" />;
   }
   if(user.privileges < privilegeLevel) {
-    return <Navigate to="/profile" />;
+    return <Navigate to="/home" />;
   }
   return children;
 };

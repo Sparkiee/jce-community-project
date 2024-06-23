@@ -51,7 +51,7 @@ const App = () => {
 
 const Navigation = () => {
   const location = useLocation();
-  const noNavbarRoutes = ['/', '/register', '/home']; // Add paths where Navbar should not be rendered
+  const noNavbarRoutes = ['/', '/register', '/forgot-password']; // Add paths where Navbar should not be rendered
   const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);
 
   return shouldDisplayNavbar ? <Navbar /> : null;

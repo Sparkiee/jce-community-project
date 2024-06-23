@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
@@ -13,9 +13,12 @@ import ManageTasks from "./components/ManageTasks";
 import ForgotPassword from "./components/ForgotPassword";
 import ManageEvents from "./components/ManageEvents";
 
+import Navbar from "./components/Navbar";
+
 const App = () => {
   return (
     <Router>
+      <Navigation />
       <Routes>
         <Route exact path="/" element={<LoginForm />} />
         <Route
@@ -44,6 +47,14 @@ const App = () => {
       </Routes>
     </Router>
   );
+};
+
+const Navigation = () => {
+  const location = useLocation();
+  const noNavbarRoutes = ['/', '/register', '/home']; // Add paths where Navbar should not be rendered
+  const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);
+
+  return shouldDisplayNavbar ? <Navbar /> : null;
 };
 
 export default App;

@@ -139,7 +139,6 @@ function ManageTasks() {
 
   return (
     <div>
-      <Navbar />
       <div className="manage-tasks-styles">
         <h1>משימות</h1>
         <div className="display-create">

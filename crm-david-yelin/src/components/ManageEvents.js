@@ -4,7 +4,6 @@ import { collection, query, where, getDocs, onSnapshot } from "firebase/firestor
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
-import Navbar from "./Navbar";
 import "../styles/Styles.css";
 import "../styles/ManageEvents.css";
 import EditIcon from "@mui/icons-material/Edit";
@@ -139,7 +138,6 @@ function ManageEvents() {
 
   return (
     <div>
-      <Navbar />
       <div className="manage-events-styles">
         <h1>אירועים</h1>
         <div className="display-create">

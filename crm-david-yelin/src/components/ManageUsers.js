@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "./Navbar";
 import "../styles/Styles.css";
 import "../styles/ManageUser.css";
 import { heIL } from "@mui/material/locale";
@@ -317,7 +316,6 @@ function ManageUsers() {
 
   return (
     <div>
-      <Navbar />
       <div className="manage-users-container">
         {editUserForm && (
           <div className="display-edit-user">

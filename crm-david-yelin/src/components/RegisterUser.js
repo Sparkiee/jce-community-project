@@ -1,5 +1,4 @@
-import { React, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { React, useState, useEffect } from "react";
 import {
   getDoc,
   doc,
@@ -17,6 +16,7 @@ import "../styles/RegisterUser.css";
 import PhoneInput from "react-phone-number-input/input";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
+import { useNavigate } from "react-router-dom";
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -43,6 +43,7 @@ const grabRole = async (email) => {
 };
 
 function RegisterUser() {
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -54,7 +55,12 @@ function RegisterUser() {
   const [pendingAccount, setPendingAccount] = useState(false);
   const [accountExists, setAccountExists] = useState(false);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const session = sessionStorage.getItem("user");
+    if (session !== null) {
+      navigate("/home");
+    }
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, setPersistence, Persistence } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
+import Cookies from 'js-cookie';
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const [wrongCredentials, setWrongCredentials] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -26,7 +28,7 @@ function LoginForm() {
       if (!userCredential.user.emailVerified) {
         setIsEmailVerified(false);
         return;
-      }
+      } 
 
       // Signed in
       const user = userCredential.user;
@@ -48,7 +50,6 @@ function LoginForm() {
   useEffect(() => {
     const session = sessionStorage.getItem("user");
     if (session !== null) {
-      console.log("yeee");
       navigate("/home");
     }
   }, []);
@@ -114,6 +115,9 @@ function LoginForm() {
               id="input-checkbox"
               type="checkbox"
               name="remember-me"
+              onChange={(event) => {setRememberMe(event.target.checked)
+                console.log(event.target.checked);}
+              }
             ></input>
             <label className="label-checkbox" htmlFor="input-checkbox">
               זכור אותי

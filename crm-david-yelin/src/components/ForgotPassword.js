@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Styles.css";
 import "../styles/ForgotPassword.css";
 
 import { auth } from "../firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const session = sessionStorage.getItem("user");
+    if (session !== null) {
+      navigate("/home");
+    }
+  }, []);
 
   function handleSubmit(event) {
     event.preventDefault();

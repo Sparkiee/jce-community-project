@@ -1,6 +1,7 @@
 import "./App.css";
-import React from "react";
+import React, {useEffect} from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
@@ -12,6 +13,8 @@ import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
 import ForgotPassword from "./components/ForgotPassword";
 import ManageEvents from "./components/ManageEvents";
+import Cookies from 'js-cookie';
+import { auth } from "./firebase";
 
 import Navbar from "./components/Navbar";
 

@@ -7,7 +7,7 @@ import {
   getDocs,
   collection,
   where,
-  query
+  query,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
@@ -86,7 +86,7 @@ function EditUser(params) {
         role: role,
         department: department,
         privileges: privileges,
-        lastUpdate: serverTimestamp()
+        lastUpdate: serverTimestamp(),
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {
@@ -105,7 +105,7 @@ function EditUser(params) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment
+          name: newDepartment,
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -136,7 +136,7 @@ function EditUser(params) {
         <h2 className="title extra-registration-form-title">
           עריכת משתמש, {params.target.firstName} {params.target.lastName}
         </h2>
-        <div className="registration-input-box">
+        <div className="edit-user-input-box">
           <input
             type="text"
             placeholder="שם פרטי"
@@ -184,8 +184,7 @@ function EditUser(params) {
                 setDepartment(value);
               }
             }}
-            className="forms-input"
-          >
+            className="forms-input">
             <option value="" disabled>
               בחר מחלקה
             </option>
@@ -208,8 +207,7 @@ function EditUser(params) {
               <button
                 type="button"
                 onClick={addDepartment}
-                className="primary-button extra-create-user-button"
-              >
+                className="primary-button extra-create-user-button">
                 הוסף מחלקה חדשה
               </button>
             </div>
@@ -224,26 +222,19 @@ function EditUser(params) {
           <select
             value={privileges}
             onChange={(event) => setPrivileges(Number(event.target.value))}
-            className="forms-input"
-          >
+            className="forms-input">
             <option value={3}>יו"ר</option>
             <option value={2}>ראש מחלקה</option>
             <option value={1}>חבר מועצה</option>
             <option value={0}>משתמש מושהה</option>
           </select>
           {isNoLevel3 && (
-            <Alert
-              severity="warning"
-              className="feedback-alert feedback-edituser"
-            >
+            <Alert severity="warning" className="feedback-alert feedback-edituser">
               חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
             </Alert>
           )}
           {edittedSuccessfully && (
-            <Alert
-              severity="success"
-              className="feedback-alert feedback-edituser"
-            >
+            <Alert severity="success" className="feedback-alert feedback-edituser">
               פרטי המשתמש עודכנו בהצלחה
             </Alert>
           )}

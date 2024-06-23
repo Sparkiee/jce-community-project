@@ -203,13 +203,17 @@ function ManageTasks() {
             הוסף משימה
           </div>
         )}
-        <div style={{ height: 1000, width: "90%" }}>
+        <div style={{ height: 995, width: "90%" }}>
           <ThemeProvider theme={theme}>
             <DataGrid
               rows={rows}
               columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 17 },
+                },
+              }}
+              pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
@@ -221,6 +225,7 @@ function ManageTasks() {
           </ThemeProvider>
         </div>
       </div>
+      <div className="footer"></div>
     </div>
   );
 }

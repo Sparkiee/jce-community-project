@@ -415,7 +415,7 @@ function HomePage() {
                   paginationModel: { page: 0, pageSize: 5 }
                 }
               }}
-              pageSizeOptions={[5]}
+              pageSizeOptions={[5, 10, 20]}
               localeText={{
                 // Customizing displayed rows text
                 MuiTablePagination: {
@@ -448,7 +448,7 @@ function HomePage() {
                   paginationModel: { page: 0, pageSize: 5 }
                 }
               }}
-              pageSizeOptions={[5]}
+              pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>

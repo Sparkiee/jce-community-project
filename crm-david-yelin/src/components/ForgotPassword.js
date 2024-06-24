@@ -25,9 +25,6 @@ function ForgotPassword() {
     sendPasswordResetEmail(auth, email)
       .then(() => {
         setEmailSent(true);
-        setTimeout(() => {
-          setEmailSent(false);
-        }, 5000);
       })
       .catch((error) => {
         const errorCode = error.code;

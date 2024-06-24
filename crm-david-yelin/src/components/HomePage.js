@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { db, updateUserData } from "../firebase";
+import React, { useState, useEffect, useRef } from "react";
+import { db } from "../firebase";
 import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import "../styles/HomePage.css";
 import CreateTask from "./CreateTask";
@@ -15,7 +15,7 @@ function HomePage() {
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rowsTasks, setRowsTasks] = useState([]);
-  const [rowsEvents, setrowsEvents] = useState([]);
+  const [rowsEvents, setRowsEvents] = useState([]);
 
   const theme = createTheme(
     {
@@ -133,6 +133,8 @@ function HomePage() {
   ];
 
   const user = JSON.parse(sessionStorage.getItem("user"));
+  const createTaskRef = useRef(null);
+  const createEventRef = useRef(null);
 
   async function grabMyTasks() {
     try {
@@ -189,14 +191,16 @@ function HomePage() {
         eventTime: event.eventTime,
         eventStatus: event.eventStatus,
       }));
-      setrowsEvents(rowsEventsData); // Update event rows state
+      setRowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
       console.error("Failed to fetch events:", error);
     }
   }
 
-  // Trigger to fetch events & tasks
   useEffect(() => {
+    grabMyTasks();
+    grabMyEvents();
+
     const eventsRef = collection(db, "events");
     const eventsQuery = query(
       eventsRef,
@@ -211,7 +215,6 @@ function HomePage() {
       });
     });
 
-    // Fetch tasks
     const tasksRef = collection(db, "tasks");
     const tasksQuery = query(
       tasksRef,
@@ -232,6 +235,27 @@ function HomePage() {
     };
   }, [user.email]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
+        setShowCreateTask(false);
+      }
+      if (createEventRef.current && !createEventRef.current.contains(event.target)) {
+        setShowCreateEvent(false);
+      }
+    };
+
+    if (showCreateTask || showCreateEvent) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCreateTask, showCreateEvent]);
+
   const handleShowCreateTask = () => {
     setShowCreateEvent(false);
     setShowCreateTask(true);
@@ -246,7 +270,7 @@ function HomePage() {
     <div className="home-content">
       <div className="display-create">
         {user.privileges > 1 && showCreateTask && (
-          <div>
+          <div ref={createTaskRef}>
             <div
               className="action-close"
               onClick={() => {
@@ -282,7 +306,7 @@ function HomePage() {
           </div>
         )}
         {user.privileges > 1 && showCreateEvent && (
-          <div>
+          <div ref={createEventRef}>
             <div
               className="action-close"
               onClick={() => {

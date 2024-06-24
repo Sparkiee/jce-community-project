@@ -63,11 +63,11 @@ function EditUser(params) {
           setTimeout(() => {
             setIsNoLevel3(false);
           }, 1000);
-          return;
         }
       }
     }
     const docRef = doc(db, "members", email);
+    
     try {
       setDoc(docRef, {
         firstName: firstName,
@@ -147,14 +147,14 @@ function EditUser(params) {
             onChange={(event) => setLastName(event.target.value)}
           />
           <PhoneInput
-            defaultCountry="IL"
-            placeholder="טלפון"
-            className="forms-input"
-            maxLength="12"
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            style={{ textAlign: "right" }}
-          />
+              defaultCountry="IL"
+              placeholder="טלפון"
+              className="forms-input"
+              maxLength="12"
+              value={phone}
+              onChange={(value) => setPhone(value)}
+              style={{ textAlign: "right" }}
+            />
           <input
             readOnly
             type="email"

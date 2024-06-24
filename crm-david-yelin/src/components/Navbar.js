@@ -22,6 +22,7 @@ import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
 
+
 function Navbar() {
   function stringToColor(string) {
     let hash = 0;

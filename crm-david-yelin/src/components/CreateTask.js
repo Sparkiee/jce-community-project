@@ -250,7 +250,7 @@ function CreateTask() {
               />
             </div>
             <div className="due-date-task">
-              <label htmlFor="due">תאריך יעד (חובה*)</label>
+              <label htmlFor="due">תאריך סיום (חובה*)</label>
               <input
                 type="date"
                 name="taskEndDate"

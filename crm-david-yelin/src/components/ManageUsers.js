@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../styles/Styles.css";
 import "../styles/ManageUser.css";
 import { heIL } from "@mui/material/locale";
@@ -30,6 +30,10 @@ function ManageUsers() {
   const [showCreateUser, setShowCreateUser] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState("");
+  const [removePermmisionTarget, setRemovePermmisionTarget] = useState("");
+
+  const editUserRef = useRef(null);
+  const createUserRef = useRef(null);
 
   const handleDeleteClick = (email) => {
     setDeleteTarget(email);
@@ -91,7 +95,6 @@ function ManageUsers() {
             title="מחיקה"
             onClick={() => {
               handleDeleteClick(params.row.email);
-              // deleteUser(params.row.email);
             }}>
             <DeleteIcon />
           </IconButton>
@@ -177,8 +180,7 @@ function ManageUsers() {
             aria-label="removePerm"
             title="הסר גישה לאתר"
             onClick={() => {
-              handleRemovePermissions(params.row);
-              fetchUsers();
+              setRemovePermmisionTarget(params.row);
             }}>
             <PersonOffIcon />
           </IconButton>
@@ -187,14 +189,15 @@ function ManageUsers() {
     },
   ];
 
-  async function handleRemovePermissions(targetUser) {
+  async function handleRemovePermissions() {
+    setRemovePermmisionTarget("");
     try {
       const user = JSON.parse(sessionStorage.getItem("user"));
       if (user.privileges < 3) {
         return;
       }
       const usersRef = collection(db, "members");
-      if (targetUser.privileges >= 3) {
+      if (removePermmisionTarget.privileges >= 3) {
         const q = query(usersRef, where("privileges", ">=", 3));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.size === 1) {
@@ -205,10 +208,11 @@ function ManageUsers() {
           return;
         }
       }
-      const targetUserRef = doc(usersRef, targetUser.email);
+      const targetUserRef = doc(usersRef, removePermmisionTarget.email);
       await updateDoc(targetUserRef, {
         privileges: 0,
       });
+      fetchUsers();
     } catch (error) {
       console.error("Remove permissions error:", error);
     }
@@ -272,7 +276,7 @@ function ManageUsers() {
           firstName: member.firstName || "",
           lastName: member.lastName || "",
           email: member.email || "",
-          phone: member.phone | 0,
+          phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
           privileges: member.privileges || 0,
@@ -308,10 +312,33 @@ function ManageUsers() {
 
   useEffect(() => {
     fetchUsers();
+  
+    const handleClickOutside = (event) => {
+      if (editUserRef.current && !editUserRef.current.contains(event.target)) {
+        setEditUserForm(false);
+      }
+
+      if(createUserRef.current && !createUserRef.current.contains(event.target)) {
+        setShowCreateUser(false);
+      }
+    };
+    // Add the event listener when the component mounts
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    // Return a cleanup function to remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
     <div>
+      {removePermmisionTarget && (
+        <ConfirmAction
+          onConfirm={() => handleRemovePermissions()}
+          onCancel={() => setRemovePermmisionTarget("")}
+        />
+      )}
       {deleteTarget && (
         <ConfirmAction
           onConfirm={() => handleConfirmDelete()}
@@ -320,7 +347,7 @@ function ManageUsers() {
       )}
       <div className="manage-users-container">
         {editUserForm && (
-          <div className="display-edit-user">
+          <div ref={editUserRef} className="display-edit-user">
             <div
               className="action-close"
               onClick={() => {
@@ -352,11 +379,11 @@ function ManageUsers() {
                 />
               </svg>
             </div>
-            <EditUser target={editUser} />
+            <EditUser target={editUser}/>
           </div>
         )}
         {showCreateUser && (
-          <div className="display-create-user">
+          <div ref={createUserRef} className="display-create-user">
             <div
               className="action-close"
               onClick={() => {

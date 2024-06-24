@@ -7,7 +7,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import { db } from "../firebase";
 import { updateDoc, doc, query, collection, getDocs, where, deleteDoc } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import IconButton from "@mui/material/IconButton";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import Alert from "@mui/material/Alert";
@@ -39,10 +38,10 @@ function ManageUsers() {
   const handleConfirmDelete = () => {
     deleteUser(deleteTarget);
     setDeleteTarget("");
-  }
+  };
   const handleCancelDelete = () => {
     setDeleteTarget("");
-  }
+  };
 
   const theme = createTheme(
     {
@@ -313,7 +312,12 @@ function ManageUsers() {
 
   return (
     <div>
-      {deleteTarget&& (<ConfirmAction onConfirm={() => handleConfirmDelete()} onCancel={() => handleCancelDelete()} />)}
+      {deleteTarget && (
+        <ConfirmAction
+          onConfirm={() => handleConfirmDelete()}
+          onCancel={() => handleCancelDelete()}
+        />
+      )}
       <div className="manage-users-container">
         {editUserForm && (
           <div className="display-edit-user">

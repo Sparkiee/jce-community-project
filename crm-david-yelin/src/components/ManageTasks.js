@@ -14,6 +14,7 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateTask from "./CreateTask";
 import ConfirmAction from "./ConfirmAction";
 import { Alert } from "@mui/material";
+import EditTask from "./EditTask";
 
 function stringToColor(string) {
   let hash = 0;
@@ -36,9 +37,9 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
 }
 
@@ -46,15 +47,15 @@ function ManageTasks() {
   const [rows, setRows] = useState([]);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [alert, setAlert] = useState(false);
-
+  const [editingTask, setEditingTask] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState("");
 
   const theme = createTheme(
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -68,49 +69,49 @@ function ManageTasks() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 2.5
+      flex: 2.5,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "relatedEvent",
       headerName: "שייך לאירוע",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
     },
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "assignTo",
@@ -126,8 +127,8 @@ function ManageTasks() {
             ))}
           </AvatarGroup>
         );
-      }
-    }
+      },
+    },
   ];
 
   const editColumn = {
@@ -138,18 +139,17 @@ function ManageTasks() {
     flex: 1.5,
     renderCell: (params) => (
       <div>
-        <IconButton aria-label="edit" onClick={() => console.log(params.row)}>
+        <IconButton aria-label="edit" onClick={() => setEditingTask(params.row)}>
           <EditIcon />
         </IconButton>
         <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
           <DeleteForeverIcon />
         </IconButton>
       </div>
-    )
+    ),
   };
 
-  const columns =
-    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -206,7 +206,7 @@ function ManageTasks() {
             taskEndDate: task.taskEndDate,
             taskTime: task.taskTime,
             taskStatus: task.taskStatus,
-            assignTo: assigneeData
+            assignTo: assigneeData,
           };
         })
       );
@@ -235,14 +235,16 @@ function ManageTasks() {
       setTimeout(() => {
         setAlert(false);
       }, 5000);
-    } catch(e) {
+    } catch (e) {
       console.error("Error deleting document: ", e);
     }
   }
 
   return (
     <div>
-      {deleteTarget && <ConfirmAction onConfirm={() => handleDeleteTask()} onCancel={() => setDeleteTarget("")} />}
+      {deleteTarget && (
+        <ConfirmAction onConfirm={() => handleDeleteTask()} onCancel={() => setDeleteTarget("")} />
+      )}
       <div className="manage-tasks-styles">
         <h1>משימות</h1>
         <div className="display-create">
@@ -252,15 +254,13 @@ function ManageTasks() {
                 className="action-close"
                 onClick={() => {
                   setShowCreateTask(false);
-                }}
-              >
+                }}>
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                >
+                  fill="currentColor">
                   <line
                     x1="17"
                     y1="7"
@@ -288,32 +288,65 @@ function ManageTasks() {
         {user.privileges > 1 && (
           <div
             className="action-button add-tasks-button add-tasks-manage-tasks"
-            onClick={handleShowCreateTask}
-          >
+            onClick={handleShowCreateTask}>
             <svg
               width="24px"
               height="24px"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></g>
+              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
                 <path
                   d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                   stroke="white"
                   strokeWidth="2"
                   strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
+                  strokeLinejoin="round"></path>
               </g>
             </svg>
             הוסף משימה
+          </div>
+        )}
+        {editingTask && (
+          <div className="display-edit-task">
+            <div
+              className="action-close"
+              onClick={() => {
+                setEditingTask(null);
+              }}>
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor">
+                <line
+                  x1="17"
+                  y1="7"
+                  x2="7"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="7"
+                  y1="7"
+                  x2="17"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <EditTask
+              task={editingTask}
+              onClose={() => setEditingTask(null)}
+              onTaskUpdated={getTasks}
+            />
           </div>
         )}
         <div style={{ height: 995, width: "90%" }}>
@@ -323,23 +356,25 @@ function ManageTasks() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 }
-                }
+                  paginationModel: { page: 0, pageSize: 17 },
+                },
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${
-                      count !== -1 ? count : `יותר מ ${to}`
-                    }`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
             />
           </ThemeProvider>
         </div>
-        {alert && <Alert className="feedback-alert" severity="info">משימה הוסרה בהצלחה!</Alert>}
+        {alert && (
+          <Alert className="feedback-alert" severity="info">
+            משימה הוסרה בהצלחה!
+          </Alert>
+        )}
       </div>
       <div className="footer"></div>
     </div>

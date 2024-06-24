@@ -56,6 +56,11 @@
 
 .feedback-create-user {
   position: absolute;
-  top: 78%;
-  right: 61.5%;
+  top: 48rem;
+  right: 21.5rem;
 }
+
+/* .create-user-alert-position {
+  position: relative;
+  right: 50;
+} */

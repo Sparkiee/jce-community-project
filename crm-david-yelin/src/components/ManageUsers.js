@@ -272,7 +272,7 @@ function ManageUsers() {
           firstName: member.firstName || "",
           lastName: member.lastName || "",
           email: member.email || "",
-          phone: member.phone | 0,
+          phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
           privileges: member.privileges || 0,

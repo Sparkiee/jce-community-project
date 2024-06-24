@@ -147,14 +147,14 @@ function EditUser(params) {
             onChange={(event) => setLastName(event.target.value)}
           />
           <PhoneInput
-            defaultCountry="IL"
-            placeholder="טלפון"
-            className="forms-input"
-            maxLength="12"
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            style={{ textAlign: "right" }}
-          />
+              defaultCountry="IL"
+              placeholder="טלפון"
+              className="forms-input"
+              maxLength="12"
+              value={phone}
+              onChange={(value) => setPhone(value)}
+              style={{ textAlign: "right" }}
+            />
           <input
             readOnly
             type="email"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, deleteDoc } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -12,6 +12,8 @@ import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateTask from "./CreateTask";
+import ConfirmAction from "./ConfirmAction";
+import { Alert } from "@mui/material";
 
 function stringToColor(string) {
   let hash = 0;
@@ -43,6 +45,9 @@ function stringAvatar(name) {
 function ManageTasks() {
   const [rows, setRows] = useState([]);
   const [showCreateTask, setShowCreateTask] = useState(false);
+  const [alert, setAlert] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState("");
 
   const theme = createTheme(
     {
@@ -131,12 +136,12 @@ function ManageTasks() {
     width: 150,
     align: "right",
     flex: 1.5,
-    renderCell: () => (
+    renderCell: (params) => (
       <div>
-        <IconButton aria-label="edit">
+        <IconButton aria-label="edit" onClick={() => console.log(params.row)}>
           <EditIcon />
         </IconButton>
-        <IconButton aria-label="delete">
+        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
           <DeleteForeverIcon />
         </IconButton>
       </div>
@@ -177,7 +182,8 @@ function ManageTasks() {
       const querySnapshot = await getDocs(collection(db, "tasks"));
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
-        id: index + 1
+        id: index + 1,
+        doc: doc.id,
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -192,6 +198,7 @@ function ManageTasks() {
           );
           return {
             id: index + 1,
+            taskDoc: task.doc,
             taskName: task.taskName,
             taskDescription: task.taskDescription,
             relatedEvent,
@@ -218,8 +225,24 @@ function ManageTasks() {
     setShowCreateTask(true);
   };
 
+  async function handleDeleteTask() {
+    try {
+      const docRef = doc(db, "tasks", deleteTarget.taskDoc);
+      await deleteDoc(docRef);
+      setDeleteTarget("");
+      getTasks();
+      setAlert(true);
+      setTimeout(() => {
+        setAlert(false);
+      }, 5000);
+    } catch(e) {
+      console.error("Error deleting document: ", e);
+    }
+  }
+
   return (
     <div>
+      {deleteTarget && <ConfirmAction onConfirm={() => handleDeleteTask()} onCancel={() => setDeleteTarget("")} />}
       <div className="manage-tasks-styles">
         <h1>משימות</h1>
         <div className="display-create">
@@ -316,6 +339,7 @@ function ManageTasks() {
             />
           </ThemeProvider>
         </div>
+        {alert && <Alert className="feedback-alert" severity="info">משימה הוסרה בהצלחה!</Alert>}
       </div>
       <div className="footer"></div>
     </div>

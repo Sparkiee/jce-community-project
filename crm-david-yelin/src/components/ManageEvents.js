@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { collection, getDoc, doc, getDocs } from "firebase/firestore";
+import { collection, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -12,6 +12,8 @@ import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateEvent from "./CreateEvent";
+import ConfirmAction from "./ConfirmAction";
+import { Alert } from "@mui/material";
 
 function stringToColor(string) {
   let hash = 0;
@@ -45,6 +47,8 @@ function stringAvatar(name) {
 function ManageEvents() {
   const [rows, setRows] = useState([]);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState("");
+  const [alert, setAlert] = useState(false);
 
   const theme = createTheme(
     {
@@ -90,12 +94,12 @@ function ManageEvents() {
     width: 150,
     align: "right",
     flex: 1.5,
-    renderCell: () => (
+    renderCell: (params) => (
       <div>
         <IconButton aria-label="edit">
           <EditIcon />
         </IconButton>
-        <IconButton aria-label="delete">
+        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
           <DeleteForeverIcon />
         </IconButton>
       </div>
@@ -121,6 +125,7 @@ function ManageEvents() {
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
+        doc: doc.id,
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
@@ -134,6 +139,7 @@ function ManageEvents() {
         );
       return {
         id: index + 1,
+        eventDoc: event.doc,
         eventName: event.eventName,
         eventLocation: event.eventLocation,
         eventStartDate: event.eventStartDate,
@@ -157,8 +163,24 @@ function ManageEvents() {
     setShowCreateEvent(true);
   };
 
+  async function handleDeleteEvent() {
+    try {
+      const docRef = doc(db, "events", deleteTarget.eventDoc);
+      await deleteDoc(docRef);
+      setDeleteTarget("");
+      getEvents();
+      setAlert(true);
+      setTimeout(() => {
+        setAlert(false);
+      }, 5000);
+    } catch(e) {
+      console.error("Error deleting document: ", e);
+    }
+  }
+
   return (
     <div>
+      {deleteTarget && <ConfirmAction onConfirm={() => handleDeleteEvent()} onCancel={() => setDeleteTarget("")} />}
       <div className="manage-events-styles">
         <h1>אירועים</h1>
         <div className="display-create">
@@ -244,6 +266,7 @@ function ManageEvents() {
             />
           </ThemeProvider>
         </div>
+        {alert && <Alert className="feedback-alert" severity="info">אירוע הוסר בהצלחה!</Alert>}
       </div>
       <div className="footer"></div>
     </div>

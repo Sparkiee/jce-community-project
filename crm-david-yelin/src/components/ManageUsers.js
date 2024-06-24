@@ -313,7 +313,7 @@ function ManageUsers() {
 
   return (
     <div>
-      {deleteTarget !== "" && (<ConfirmAction onConfirm={() => handleConfirmDelete()} onCancel={() => handleCancelDelete()} />)}
+      {deleteTarget&& (<ConfirmAction onConfirm={() => handleConfirmDelete()} onCancel={() => handleCancelDelete()} />)}
       <div className="manage-users-container">
         {editUserForm && (
           <div className="display-edit-user">

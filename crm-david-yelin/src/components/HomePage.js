@@ -58,7 +58,7 @@ function HomePage() {
     },
     {
       field: "taskEndDate",
-      headerName: "תאריך סיום",
+      headerName: "תאריך יעד",
       width: 150,
       align: "right",
       flex: 2,
@@ -111,7 +111,7 @@ function HomePage() {
     },
     {
       field: "eventEndDate",
-      headerName: "תאריך סיום",
+      headerName: "תאריך יעד",
       width: 150,
       align: "right",
       flex: 2,

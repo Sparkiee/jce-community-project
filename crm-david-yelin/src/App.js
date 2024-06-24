@@ -16,6 +16,7 @@ import ManageEvents from "./components/ManageEvents";
 import { auth } from "./firebase";
 
 import Navbar from "./components/Navbar";
+import ConfirmAction from "./components/ConfirmAction";
 
 const App = () => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
         <Route path="/users" element={<ManageUsers />} />
         <Route path="/tasks" element={<ManageTasks />} />
         <Route path="/events" element={<ManageEvents />} />
+        <Route path="/dev" element={<ConfirmAction />} />
       </Routes>
     </Router>
   );
@@ -53,7 +55,7 @@ const App = () => {
 
 const Navigation = () => {
   const location = useLocation();
-  const noNavbarRoutes = ['/', '/register', '/forgot-password']; // Add paths where Navbar should not be rendered
+  const noNavbarRoutes = ['/', '/register', '/forgot-password', '/dev']; // Add paths where Navbar should not be rendered
   const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);
 
   return shouldDisplayNavbar ? <Navbar /> : null;

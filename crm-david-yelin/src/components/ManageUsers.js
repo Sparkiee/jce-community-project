@@ -14,6 +14,7 @@ import Alert from "@mui/material/Alert";
 import EditUser from "./EditUser";
 import CreateUser from "./CreateUser";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmAction from "./ConfirmAction";
 
 function ManageUsers() {
   const [fullActiveMembers, setFullActiveMembers] = useState([]);
@@ -28,6 +29,20 @@ function ManageUsers() {
   const [editUserForm, setEditUserForm] = useState(false);
   const [editUser, setEditUser] = useState();
   const [showCreateUser, setShowCreateUser] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState("");
+
+  const handleDeleteClick = (email) => {
+    setDeleteTarget(email);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteUser(deleteTarget);
+    setDeleteTarget("");
+  }
+  const handleCancelDelete = () => {
+    setDeleteTarget("");
+  }
 
   const theme = createTheme(
     {
@@ -76,7 +91,8 @@ function ManageUsers() {
             aria-label="edit"
             title="מחיקה"
             onClick={() => {
-              deleteUser(params.row.email);
+              handleDeleteClick(params.row.email);
+              // deleteUser(params.row.email);
             }}>
             <DeleteIcon />
           </IconButton>
@@ -298,6 +314,7 @@ function ManageUsers() {
 
   return (
     <div>
+      {deleteTarget !== "" && (<ConfirmAction onConfirm={() => handleConfirmDelete()} onCancel={() => handleCancelDelete()} />)}
       <div className="manage-users-container">
         {editUserForm && (
           <div className="display-edit-user">

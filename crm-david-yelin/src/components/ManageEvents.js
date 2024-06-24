@@ -63,7 +63,7 @@ function ManageEvents() {
     { field: "eventName", headerName: "שם האירוע", width: 150, align: "right", flex: 3 },
     { field: "eventLocation", headerName: "מיקום", width: 150, align: "right", flex: 4 },
     { field: "eventStartDate", headerName: "תאריך התחלה", width: 150, align: "right", flex: 1.5 },
-    { field: "eventEndDate", headerName: "תאריך סיום", width: 150, align: "right", flex: 1.5 },
+    { field: "eventEndDate", headerName: "תאריך יעד", width: 150, align: "right", flex: 1.5 },
     { field: "eventTime", headerName: "שעת סיום", width: 150, align: "right", flex: 1 },
     { field: "eventStatus", headerName: "סטטוס", width: 150, align: "right", flex: 1.5 },
     {

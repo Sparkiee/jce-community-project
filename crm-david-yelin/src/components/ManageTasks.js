@@ -88,7 +88,7 @@ function ManageTasks() {
     },
     {
       field: "taskEndDate",
-      headerName: "תאריך סיום",
+      headerName: "תאריך יעד",
       width: 150,
       align: "right",
       flex: 1.5

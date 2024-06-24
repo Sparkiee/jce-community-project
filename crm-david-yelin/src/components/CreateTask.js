@@ -55,7 +55,7 @@ function CreateTask() {
       return;
     }
     if (!taskDetails.taskStartDate) {
-      const date = new Date().toDateString();
+      const date = new Date();
       const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
       taskDetails.taskStartDate = formattedDate;
     }
@@ -250,7 +250,7 @@ function CreateTask() {
               />
             </div>
             <div className="due-date-task">
-              <label htmlFor="due">תאריך סיום (חובה*)</label>
+              <label htmlFor="due">תאריך יעד (חובה*)</label>
               <input
                 type="date"
                 name="taskEndDate"

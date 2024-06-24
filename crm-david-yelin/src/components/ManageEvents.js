@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { db, updateUserData } from "../firebase";
-import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
+import { collection, getDoc, doc, getDocs } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -11,7 +11,6 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
-import Stack from "@mui/material/Stack";
 import CreateEvent from "./CreateEvent";
 
 function stringToColor(string) {
@@ -73,15 +72,15 @@ function ManageEvents() {
       width: 150,
       align: "right",
       flex: 2,
-      renderCell: () => (
-        <AvatarGroup className="manage-events-avatar-group" max={3}>
-          <Avatar {...stringAvatar("Kent Dodds")} src={require("../assets/profile.jpg")} />
-          <Avatar {...stringAvatar("Travis Howard")} src="/static/images/avatar/2.jpg" />
-          <Avatar {...stringAvatar("Cindy Baker")} src="/static/images/avatar/3.jpg" />
-          <Avatar {...stringAvatar("Agnes Walker")} src="/static/images/avatar/4.jpg" />
-          <Avatar {...stringAvatar("Trevor Henderson")} src="/static/images/avatar/5.jpg" />
-        </AvatarGroup>
-      ),
+      renderCell: (params) => {
+        return (
+          <AvatarGroup className="manage-task-avatar-group" max={3}>
+            {params.value.map((user, index) => (
+              <Avatar key={index} {...stringAvatar(user.fullName)} />
+            ))}
+          </AvatarGroup>
+        );
+      },
     },
   ];
 
@@ -105,6 +104,17 @@ function ManageEvents() {
 
   const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
+  async function getMemberFullName(email) {
+    try {
+      const memberDoc = await getDoc(doc(collection(db, "members"), email));
+      if (memberDoc.exists()) {
+        return memberDoc.data().fullName;
+      }
+    } catch (e) {
+      console.error("Error getting member document: ", e);
+    }
+  }
+
   async function getEvents() {
     try {
       const querySnapshot = await getDocs(collection(db, "events"));
@@ -112,7 +122,17 @@ function ManageEvents() {
         ...doc.data(),
         id: index + 1,
       }));
-      const rowsEventsData = eventsArray.map((event, index) => ({
+      const rowsEventsData = await Promise.all(
+        eventsArray.map(async (event, index) => {
+          const assignees = Array.isArray(event.assignees) ? event.assignees : [];
+          const assigneeData = await Promise.all(
+            assignees.map(async (assignee) => {
+              const email = assignee.split("/")[1];
+              const fullName = await getMemberFullName(email);
+              return { email, fullName };
+            })
+        );
+      return {
         id: index + 1,
         eventName: event.eventName,
         eventLocation: event.eventLocation,
@@ -120,8 +140,19 @@ function ManageEvents() {
         eventEndDate: event.eventEndDate,
         eventTime: event.eventTime,
         eventStatus: event.eventStatus,
-        assignTo: event.assignTo || [],
-      }));
+        assignTo: assigneeData || [],
+      };
+    }));
+      // const rowsEventsData = eventsArray.map((event, index) => ({
+      //   id: index + 1,
+      //   eventName: event.eventName,
+      //   eventLocation: event.eventLocation,
+      //   eventStartDate: event.eventStartDate,
+      //   eventEndDate: event.eventEndDate,
+      //   eventTime: event.eventTime,
+      //   eventStatus: event.eventStatus,
+      //   assignTo: event.assignTo || [],
+      // }));
       setRows(rowsEventsData);
     } catch (e) {
       console.error("Error getting documents: ", e);

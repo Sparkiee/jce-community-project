@@ -75,7 +75,7 @@ function ManageTasks() {
         return (
           <AvatarGroup className="manage-task-avatar-group" max={3}>
             {params.value.map((user, index) => (
-              <Avatar key={index} {...stringAvatar(user.name)} />
+              <Avatar key={index} {...stringAvatar(user.fullName)} />
             ))}
           </AvatarGroup>
         );
@@ -144,7 +144,7 @@ function ManageTasks() {
             assignees.map(async (assigneePath) => {
               const email = assigneePath.split("/")[1];
               const fullName = await getMemberFullName(email);
-              return { email, name: fullName };
+              return { email, fullName };
             })
           );
           return {

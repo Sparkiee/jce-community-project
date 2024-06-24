@@ -34,9 +34,9 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
   };
 }
 
@@ -48,8 +48,8 @@ function ManageTasks() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -58,13 +58,55 @@ function ManageTasks() {
 
   const baseColumns = [
     { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
-    { field: "taskName", headerName: "שם המשימה", width: 150, align: "right", flex: 2.5 },
-    { field: "taskDescription", headerName: "תיאור", width: 150, align: "right", flex: 3 },
-    { field: "relatedEvent", headerName: "שייך לאירוע", width: 150, align: "right", flex: 2 },
-    { field: "taskStartDate", headerName: "תאריך התחלה", width: 150, align: "right", flex: 1.5 },
-    { field: "taskEndDate", headerName: "תאריך סיום", width: 150, align: "right", flex: 1.5 },
-    { field: "taskTime", headerName: "שעת סיום", width: 150, align: "right", flex: 1 },
-    { field: "taskStatus", headerName: "סטטוס", width: 150, align: "right", flex: 1 },
+    {
+      field: "taskName",
+      headerName: "שם המשימה",
+      width: 150,
+      align: "right",
+      flex: 2.5
+    },
+    {
+      field: "taskDescription",
+      headerName: "תיאור",
+      width: 150,
+      align: "right",
+      flex: 3
+    },
+    {
+      field: "relatedEvent",
+      headerName: "שייך לאירוע",
+      width: 150,
+      align: "right",
+      flex: 2
+    },
+    {
+      field: "taskStartDate",
+      headerName: "תאריך התחלה",
+      width: 150,
+      align: "right",
+      flex: 1.5
+    },
+    {
+      field: "taskEndDate",
+      headerName: "תאריך סיום",
+      width: 150,
+      align: "right",
+      flex: 1.5
+    },
+    {
+      field: "taskTime",
+      headerName: "שעת סיום",
+      width: 150,
+      align: "right",
+      flex: 1
+    },
+    {
+      field: "taskStatus",
+      headerName: "סטטוס",
+      width: 150,
+      align: "right",
+      flex: 1
+    },
     {
       field: "assignTo",
       headerName: "משוייכים",
@@ -79,8 +121,8 @@ function ManageTasks() {
             ))}
           </AvatarGroup>
         );
-      },
-    },
+      }
+    }
   ];
 
   const editColumn = {
@@ -98,10 +140,11 @@ function ManageTasks() {
           <DeleteForeverIcon />
         </IconButton>
       </div>
-    ),
+    )
   };
 
-  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  const columns =
+    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -134,7 +177,7 @@ function ManageTasks() {
       const querySnapshot = await getDocs(collection(db, "tasks"));
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
-        id: index + 1,
+        id: index + 1
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -156,7 +199,7 @@ function ManageTasks() {
             taskEndDate: task.taskEndDate,
             taskTime: task.taskTime,
             taskStatus: task.taskStatus,
-            assignTo: assigneeData,
+            assignTo: assigneeData
           };
         })
       );
@@ -186,13 +229,15 @@ function ManageTasks() {
                 className="action-close"
                 onClick={() => {
                   setShowCreateTask(false);
-                }}>
+                }}
+              >
                 <svg
                   width="24px"
                   height="24px"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor">
+                  fill="currentColor"
+                >
                   <line
                     x1="17"
                     y1="7"
@@ -219,23 +264,30 @@ function ManageTasks() {
         </div>
         {user.privileges > 1 && (
           <div
-            className="action-button add-task-button add-task-manage-tasks"
-            onClick={handleShowCreateTask}>
+            className="action-button add-tasks-button add-tasks-manage-tasks"
+            onClick={handleShowCreateTask}
+          >
             <svg
               width="24px"
               height="24px"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
                 <path
                   d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                   stroke="white"
                   strokeWidth="2"
                   strokeLinecap="round"
-                  strokeLinejoin="round"></path>
+                  strokeLinejoin="round"
+                ></path>
               </g>
             </svg>
             הוסף משימה
@@ -248,16 +300,18 @@ function ManageTasks() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 },
-                },
+                  paginationModel: { page: 0, pageSize: 17 }
+                }
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
             />
           </ThemeProvider>

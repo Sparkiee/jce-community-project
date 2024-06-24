@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { db, updateUserData } from "../firebase";
-import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
+import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
-import Navbar from "./Navbar";
 import "../styles/Styles.css";
 import "../styles/ManageTasks.css";
 import EditIcon from "@mui/icons-material/Edit";
@@ -13,13 +12,11 @@ import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateTask from "./CreateTask";
-import Stack from "@mui/material/Stack";
 
 function stringToColor(string) {
   let hash = 0;
   let i;
 
-  /* eslint-disable no-bitwise */
   for (i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
@@ -30,7 +27,6 @@ function stringToColor(string) {
     const value = (hash >> (i * 8)) & 0xff;
     color += `00${value.toString(16)}`.slice(-2);
   }
-  /* eslint-enable no-bitwise */
 
   return color;
 }
@@ -62,27 +58,28 @@ function ManageTasks() {
 
   const baseColumns = [
     { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
-    { field: "taskName", headerName: "שם המשימה", width: 150, align: "right", flex: 3 },
-    { field: "taskDescription", headerName: "תיאור", width: 150, align: "right", flex: 4 },
+    { field: "taskName", headerName: "שם המשימה", width: 150, align: "right", flex: 2.5 },
+    { field: "taskDescription", headerName: "תיאור", width: 150, align: "right", flex: 3 },
+    { field: "relatedEvent", headerName: "שייך לאירוע", width: 150, align: "right", flex: 2 },
     { field: "taskStartDate", headerName: "תאריך התחלה", width: 150, align: "right", flex: 1.5 },
     { field: "taskEndDate", headerName: "תאריך סיום", width: 150, align: "right", flex: 1.5 },
     { field: "taskTime", headerName: "שעת סיום", width: 150, align: "right", flex: 1 },
-    { field: "taskStatus", headerName: "סטטוס", width: 150, align: "right", flex: 1.5 },
+    { field: "taskStatus", headerName: "סטטוס", width: 150, align: "right", flex: 1 },
     {
       field: "assignTo",
       headerName: "משוייכים",
       width: 150,
       align: "right",
       flex: 2,
-      renderCell: () => (
-        <AvatarGroup className="manage-task-avatar-group" max={3}>
-          <Avatar {...stringAvatar("Kent Dodds")} />
-          <Avatar {...stringAvatar("פנחס מתיאס דגדגד")} />
-          <Avatar {...stringAvatar("Cindy Baker")} />
-          <Avatar {...stringAvatar("Agnes Walker")} />
-          <Avatar {...stringAvatar("Trevor Henderson")} />
-        </AvatarGroup>
-      ),
+      renderCell: (params) => {
+        return (
+          <AvatarGroup className="manage-task-avatar-group" max={3}>
+            {params.value.map((user, index) => (
+              <Avatar key={index} {...stringAvatar(user.name)} />
+            ))}
+          </AvatarGroup>
+        );
+      },
     },
   ];
 
@@ -106,6 +103,32 @@ function ManageTasks() {
 
   const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
+  async function getMemberFullName(email) {
+    try {
+      const memberDoc = await getDoc(doc(collection(db, "members"), email));
+      if (memberDoc.exists()) {
+        return memberDoc.data().fullName;
+      }
+    } catch (e) {
+      console.error("Error getting member document: ", e);
+    }
+  }
+
+  async function getRelatedEvent(relatedEvent) {
+    if (!relatedEvent) return "";
+    let relatedEventTitle = relatedEvent.split("/")[1];
+    try {
+      const querySnapshot = await getDoc(doc(db, "events", relatedEventTitle));
+      if (querySnapshot.exists()) {
+        return querySnapshot.data().eventName;
+      } else {
+        return " ";
+      }
+    } catch (e) {
+      console.error("Error getting documents: ", e);
+    }
+  }
+
   async function getTasks() {
     try {
       const querySnapshot = await getDocs(collection(db, "tasks"));
@@ -113,16 +136,31 @@ function ManageTasks() {
         ...doc.data(),
         id: index + 1,
       }));
-      const rowsTasksData = taskArray.map((task, index) => ({
-        id: index + 1,
-        taskName: task.taskName,
-        taskDescription: task.taskDescription,
-        taskStartDate: task.taskStartDate,
-        taskEndDate: task.taskEndDate,
-        taskTime: task.taskTime,
-        taskStatus: task.taskStatus,
-        assignTo: task.assignTo || [],
-      }));
+      const rowsTasksData = await Promise.all(
+        taskArray.map(async (task, index) => {
+          const relatedEvent = await getRelatedEvent(task.relatedEvent);
+          const assignees = Array.isArray(task.assignees) ? task.assignees : [];
+          const assigneeData = await Promise.all(
+            assignees.map(async (assigneePath) => {
+              const email = assigneePath.split("/")[1];
+              const fullName = await getMemberFullName(email);
+              return { email, name: fullName };
+            })
+          );
+          return {
+            id: index + 1,
+            taskName: task.taskName,
+            taskDescription: task.taskDescription,
+            relatedEvent,
+            taskStartDate: task.taskStartDate,
+            taskEndDate: task.taskEndDate,
+            taskTime: task.taskTime,
+            taskStatus: task.taskStatus,
+            assignTo: assigneeData,
+          };
+        })
+      );
+
       setRows(rowsTasksData);
     } catch (e) {
       console.error("Error getting documents: ", e);

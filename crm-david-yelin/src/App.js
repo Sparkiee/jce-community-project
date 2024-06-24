@@ -13,7 +13,6 @@ import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
 import ForgotPassword from "./components/ForgotPassword";
 import ManageEvents from "./components/ManageEvents";
-import Cookies from 'js-cookie';
 import { auth } from "./firebase";
 
 import Navbar from "./components/Navbar";

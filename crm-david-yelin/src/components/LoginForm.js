@@ -6,7 +6,6 @@ import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
-import Cookies from 'js-cookie';
 
 function LoginForm() {
   const [email, setEmail] = useState("");

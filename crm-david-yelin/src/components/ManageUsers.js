@@ -30,6 +30,7 @@ function ManageUsers() {
   const [showCreateUser, setShowCreateUser] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState("");
+  const [removePermmisionTarget, setRemovePermmisionTarget] = useState("");
 
   const handleDeleteClick = (email) => {
     setDeleteTarget(email);
@@ -91,7 +92,6 @@ function ManageUsers() {
             title="מחיקה"
             onClick={() => {
               handleDeleteClick(params.row.email);
-              // deleteUser(params.row.email);
             }}>
             <DeleteIcon />
           </IconButton>
@@ -177,8 +177,7 @@ function ManageUsers() {
             aria-label="removePerm"
             title="הסר גישה לאתר"
             onClick={() => {
-              handleRemovePermissions(params.row);
-              fetchUsers();
+              setRemovePermmisionTarget(params.row);
             }}>
             <PersonOffIcon />
           </IconButton>
@@ -187,14 +186,15 @@ function ManageUsers() {
     },
   ];
 
-  async function handleRemovePermissions(targetUser) {
+  async function handleRemovePermissions() {
+    setRemovePermmisionTarget("");
     try {
       const user = JSON.parse(sessionStorage.getItem("user"));
       if (user.privileges < 3) {
         return;
       }
       const usersRef = collection(db, "members");
-      if (targetUser.privileges >= 3) {
+      if (removePermmisionTarget.privileges >= 3) {
         const q = query(usersRef, where("privileges", ">=", 3));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.size === 1) {
@@ -205,10 +205,11 @@ function ManageUsers() {
           return;
         }
       }
-      const targetUserRef = doc(usersRef, targetUser.email);
+      const targetUserRef = doc(usersRef, removePermmisionTarget.email);
       await updateDoc(targetUserRef, {
         privileges: 0,
       });
+      fetchUsers();
     } catch (error) {
       console.error("Remove permissions error:", error);
     }
@@ -312,6 +313,12 @@ function ManageUsers() {
 
   return (
     <div>
+      {removePermmisionTarget && (
+        <ConfirmAction
+          onConfirm={() => handleRemovePermissions()}
+          onCancel={() => setRemovePermmisionTarget("")}
+        />
+      )}
       {deleteTarget && (
         <ConfirmAction
           onConfirm={() => handleConfirmDelete()}

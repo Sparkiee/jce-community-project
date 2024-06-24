@@ -143,16 +143,6 @@ function ManageEvents() {
         assignTo: assigneeData || [],
       };
     }));
-      // const rowsEventsData = eventsArray.map((event, index) => ({
-      //   id: index + 1,
-      //   eventName: event.eventName,
-      //   eventLocation: event.eventLocation,
-      //   eventStartDate: event.eventStartDate,
-      //   eventEndDate: event.eventEndDate,
-      //   eventTime: event.eventTime,
-      //   eventStatus: event.eventStatus,
-      //   assignTo: event.assignTo || [],
-      // }));
       setRows(rowsEventsData);
     } catch (e) {
       console.error("Error getting documents: ", e);

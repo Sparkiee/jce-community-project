@@ -29,28 +29,24 @@ function ForgotPassword() {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // ..
+        console.log(errorCode, errorMessage);
       });
   }
   return (
     <div className="container">
-      <div className="login-style">
-      <a href="/home" className="back-home">
+      <div className="forgot-password-style">
+        <a href="/home" className="back-home">
           → חזרה לעמוד הראשי
         </a>
         <div className="forms-box">
           <div className="login-logo">
-            <img
-              className="login-logo-img"
-              src={require("../assets/aguda.png")}
-              alt="aguda icon"
-            />
+            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
             <p>
               אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
             </p>
           </div>
         </div>
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="forgot-password-form" onSubmit={handleSubmit}>
           <h1 className="title-forgot-password">איפוס סיסמה</h1>
           <div className="input-container">
             <input
@@ -67,7 +63,7 @@ function ForgotPassword() {
             אפס סיסמה
           </button>
           {emailSent && (
-            <Alert className="feedback-alert" severity="info">
+            <Alert className="feedback-alert forgot-password-feedback" severity="info">
               אימייל לאיפוס סיסמה נשלח לכתובת במידה וקיים במערכת
             </Alert>
           )}

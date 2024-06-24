@@ -67,6 +67,7 @@ function EditUser(params) {
       }
     }
     const docRef = doc(db, "members", email);
+    
     try {
       setDoc(docRef, {
         firstName: firstName,
@@ -123,7 +124,7 @@ function EditUser(params) {
 
   return (
     <div className="edit-user">
-      <form className="edit-user-form">
+      <form className="edit-user-form" onSubmit={handleSubmit}>
         <h2 className="title extra-registration-form-title">
           עריכת משתמש, {params.target.firstName} {params.target.lastName}
         </h2>

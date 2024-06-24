@@ -231,7 +231,6 @@ function ManageUsers() {
             onClick={() => {
               setEditUser(params.row);
               setEditUserForm(true);
-              console.log("Edit row:", params.row);
             }}>
             <EditIcon />
           </IconButton>
@@ -259,25 +258,25 @@ function ManageUsers() {
       const disabledMembersFormatted = disabledMembers.map((member, index) => {
         return {
           id: index + 1,
-          firstName: member.firstName,
-          lastName: member.lastName,
-          email: member.email,
-          phone: member.phone,
-          department: member.department,
-          role: member.role,
-          privileges: member.privileges,
+          firstName: member.firstName || "",
+          lastName: member.lastName || "",
+          email: member.email || "",
+          phone: member.phone || 0,
+          department: member.department || "",
+          role: member.role || "",
+          privileges: member.privileges || 0,
         };
       });
       const enabledMembersFormatted = enabledMembers.map((member, index) => {
         return {
           id: index + 1,
-          firstName: member.firstName,
-          lastName: member.lastName,
-          email: member.email,
-          phone: member.phone,
-          department: member.department,
-          role: member.role,
-          privileges: member.privileges,
+          firstName: member.firstName || "",
+          lastName: member.lastName || "",
+          email: member.email || "",
+          phone: member.phone | 0,
+          department: member.department || "",
+          role: member.role || "",
+          privileges: member.privileges || 0,
         };
       });
       setDisabledMemberRows(disabledMembersFormatted);
@@ -296,9 +295,9 @@ function ManageUsers() {
       const membersFormatted = membersList.map((member, index) => {
         return {
           id: index + 1,
-          email: member.email,
-          department: member.department,
-          role: member.role,
+          email: member.email || "",
+          department: member.department || "",
+          role: member.role || "",
         };
       });
       setPendingMemberRows(membersFormatted);

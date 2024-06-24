@@ -12,23 +12,17 @@ import {
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
 import "../styles/EditUser.css";
-import TextField from "@mui/material/TextField";
 import PhoneInput from "react-phone-number-input/input";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import { Alert } from "@mui/material";
 
 function EditUser(params) {
-  const [firstName, setFirstName] = useState(params.target.firstName);
-  const [lastName, setLastName] = useState(params.target.lastName);
-  const [email, setEmail] = useState(params.target.email);
-  const [phone, setPhone] = useState(params.target.phone);
-  const [role, setRole] = useState(params.target.role);
-  const [department, setDepartment] = useState(params.target.department);
-  const [privileges, setPrivileges] = useState(params.target.privileges);
+  const [firstName, setFirstName] = useState(params.target.firstName || "");
+  const [lastName, setLastName] = useState(params.target.lastName || "");
+  const [email, setEmail] = useState(params.target.email || "");
+  const [phone, setPhone] = useState(params.target.phone || "");
+  const [role, setRole] = useState(params.target.role || "");
+  const [department, setDepartment] = useState(params.target.department || "");
+  const [privileges, setPrivileges] = useState(params.target.privileges) || "";
 
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
@@ -41,10 +35,8 @@ function EditUser(params) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log("submitting form");
 
     if (params.target.privileges > 2 && privileges !== 3) {
-      console.log("here");
 
       // Reference to the Firestore "members" collection
       const memberRef = collection(db, "members");

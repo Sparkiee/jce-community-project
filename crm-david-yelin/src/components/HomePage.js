@@ -319,7 +319,9 @@ function HomePage() {
         )}
       </div>
 
-      <div className="page-title-home">היי {user.fullName}</div>
+      <div className="page-title-home">
+        <h1>היי {user.fullName}</h1>
+      </div>
       <div className="page-subtitle">כאן תוכל להתעדכן עם האירועים והמשימות שלך</div>
       {user.privileges > 1 && (
         <div className="pending-actions">
@@ -343,7 +345,7 @@ function HomePage() {
             </svg>
             הוסף משימה
           </div>
-          <div className="action-button" onClick={handleShowCreateEvent}>
+          <div className="action-button add-event-button" onClick={handleShowCreateEvent}>
             <svg
               width="24px"
               height="24px"

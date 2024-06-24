@@ -63,7 +63,6 @@ function EditUser(params) {
           setTimeout(() => {
             setIsNoLevel3(false);
           }, 1000);
-          return;
         }
       }
     }
@@ -124,7 +123,7 @@ function EditUser(params) {
 
   return (
     <div className="edit-user">
-      <form className="edit-user-form" onSubmit={handleSubmit}>
+      <form className="edit-user-form">
         <h2 className="title extra-registration-form-title">
           עריכת משתמש, {params.target.firstName} {params.target.lastName}
         </h2>

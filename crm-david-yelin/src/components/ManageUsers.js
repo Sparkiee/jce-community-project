@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../styles/Styles.css";
 import "../styles/ManageUser.css";
 import { heIL } from "@mui/material/locale";
@@ -31,6 +31,9 @@ function ManageUsers() {
 
   const [deleteTarget, setDeleteTarget] = useState("");
   const [removePermmisionTarget, setRemovePermmisionTarget] = useState("");
+
+  const editUserRef = useRef(null);
+  const createUserRef = useRef(null);
 
   const handleDeleteClick = (email) => {
     setDeleteTarget(email);
@@ -309,6 +312,23 @@ function ManageUsers() {
 
   useEffect(() => {
     fetchUsers();
+  
+    const handleClickOutside = (event) => {
+      if (editUserRef.current && !editUserRef.current.contains(event.target)) {
+        setEditUserForm(false);
+      }
+
+      if(createUserRef.current && !createUserRef.current.contains(event.target)) {
+        setShowCreateUser(false);
+      }
+    };
+    // Add the event listener when the component mounts
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    // Return a cleanup function to remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -327,7 +347,7 @@ function ManageUsers() {
       )}
       <div className="manage-users-container">
         {editUserForm && (
-          <div className="display-edit-user">
+          <div ref={editUserRef} className="display-edit-user">
             <div
               className="action-close"
               onClick={() => {
@@ -359,11 +379,11 @@ function ManageUsers() {
                 />
               </svg>
             </div>
-            <EditUser target={editUser} />
+            <EditUser target={editUser}/>
           </div>
         )}
         {showCreateUser && (
-          <div className="display-create-user">
+          <div ref={createUserRef} className="display-create-user">
             <div
               className="action-close"
               onClick={() => {

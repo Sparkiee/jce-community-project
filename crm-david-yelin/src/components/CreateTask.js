@@ -68,7 +68,7 @@ function CreateTask() {
       taskEndDate: taskDetails.taskEndDate,
       taskTime: taskDetails.taskTime,
       taskCreated: serverTimestamp(),
-      taskStatus: "בתהליך",
+      taskStatus: "טרם החלה",
     };
 
     // Conditionally add targetEvent if it exists and is not null

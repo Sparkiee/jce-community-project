@@ -78,7 +78,7 @@ function CreateEvent() {
       eventLocation: eventDetails.eventLocation,
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
-      eventStatus: "בתהליך"
+      eventStatus: "טרם החל"
     };
 
     try {

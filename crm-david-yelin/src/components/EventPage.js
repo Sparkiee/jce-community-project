@@ -56,6 +56,7 @@ function EventPage() {
   const [event, setEvent] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [userPrivileges, setUserPrivileges] = useState(0); // Assuming default privilege level is 0
   const theme = createTheme(
     {
       direction: "rtl",
@@ -111,7 +112,15 @@ function EventPage() {
       }
     }
 
+    function fetchUserPrivileges() {
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      if (user && user.privileges) {
+        setUserPrivileges(user.privileges);
+      }
+    }
+
     fetchTasks();
+    fetchUserPrivileges(); // Fetch the user privileges from session storage
   }, [id]);
 
   const handleEditClick = () => {
@@ -181,9 +190,11 @@ function EventPage() {
               <p>סטטוס: {event.eventStatus}</p>
               <p>שעת סיום: {event.eventTime}</p>
             </div>
-            <IconButton aria-label="edit" onClick={handleEditClick}>
-              <EditIcon />
-            </IconButton>
+            {userPrivileges >= 2 && (
+              <IconButton aria-label="edit" onClick={handleEditClick}>
+                <EditIcon />
+              </IconButton>
+            )}
           </>
         )}
       </div>
@@ -231,4 +242,3 @@ function EventPage() {
 }
 
 export default EventPage;
-

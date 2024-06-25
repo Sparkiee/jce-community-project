@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
@@ -12,22 +12,18 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
 import Modal from "@mui/material/Modal";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function stringToColor(string) {
   let hash = 0;
-  let i;
-
-  for (i = 0; i < string.length; i += 1) {
+  for (let i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
-
   let color = "#";
-
-  for (i = 0; i < 3; i += 1) {
+  for (let i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
     color += `00${value.toString(16)}`.slice(-2);
   }
-
   return color;
 }
 
@@ -56,7 +52,9 @@ function EventPage() {
   const [event, setEvent] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [userPrivileges, setUserPrivileges] = useState(0); // Assuming default privilege level is 0
+  const [userPrivileges, setUserPrivileges] = useState(1);
+  const [loading, setLoading] = useState(true);
+
   const theme = createTheme(
     {
       direction: "rtl",
@@ -67,7 +65,7 @@ function EventPage() {
     heIL
   );
 
-  const fetchEvent = async () => {
+  const fetchEvent = useCallback(async () => {
     try {
       const eventDoc = await getDoc(doc(db, "events", id));
       if (eventDoc.exists()) {
@@ -79,49 +77,50 @@ function EventPage() {
     } catch (e) {
       console.error("Error fetching event: ", e);
     }
-  };
+  }, [id]);
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`));
+      const querySnapshot = await getDocs(q);
+      const tasksArray = await Promise.all(
+        querySnapshot.docs.map(async (doc, index) => {
+          const taskData = doc.data();
+          const assignees = Array.isArray(taskData.assignees) ? taskData.assignees : [];
+          const assigneeData = await Promise.all(
+            assignees.map(async (assigneePath) => {
+              const email = assigneePath.split("/")[1];
+              const fullName = await getMemberFullName(email);
+              return { email, fullName };
+            })
+          );
+          return {
+            ...taskData,
+            id: index + 1,
+            assignTo: assigneeData
+          };
+        })
+      );
+      setTasks(tasksArray);
+    } catch (e) {
+      console.error("Error fetching tasks: ", e);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  const fetchUserPrivileges = useCallback(() => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (user && user.privileges) {
+      setUserPrivileges(user.privileges);
+    }
+  }, []);
 
   useEffect(() => {
     fetchEvent();
-
-    async function fetchTasks() {
-      try {
-        const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`));
-        const querySnapshot = await getDocs(q);
-        const tasksArray = await Promise.all(
-          querySnapshot.docs.map(async (doc, index) => {
-            const taskData = doc.data();
-            const assignees = Array.isArray(taskData.assignees) ? taskData.assignees : [];
-            const assigneeData = await Promise.all(
-              assignees.map(async (assigneePath) => {
-                const email = assigneePath.split("/")[1];
-                const fullName = await getMemberFullName(email);
-                return { email, fullName };
-              })
-            );
-            return {
-              ...taskData,
-              id: index + 1,
-              assignTo: assigneeData
-            };
-          })
-        );
-        setTasks(tasksArray);
-      } catch (e) {
-        console.error("Error fetching tasks: ", e);
-      }
-    }
-
-    function fetchUserPrivileges() {
-      const user = JSON.parse(sessionStorage.getItem('user'));
-      if (user && user.privileges) {
-        setUserPrivileges(user.privileges);
-      }
-    }
-
     fetchTasks();
-    fetchUserPrivileges(); // Fetch the user privileges from session storage
-  }, [id]);
+    fetchUserPrivileges();
+  }, [fetchEvent, fetchTasks, fetchUserPrivileges]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -199,27 +198,31 @@ function EventPage() {
         )}
       </div>
       <div className="event-tasks">
-        <ThemeProvider theme={theme}>
-          <DataGrid
-            rows={tasks}
-            columns={taskColumns}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 10 }
-              }
-            }}
-            pageSizeOptions={[10, 25, 50]}
-            localeText={{
-              MuiTablePagination: {
-                labelDisplayedRows: ({ from, to, count }) =>
-                  `${from}-${to} מתוך ${
-                    count !== -1 ? count : `יותר מ ${to}`
-                  }`,
-                labelRowsPerPage: "שורות בכל עמוד:"
-              }
-            }}
-          />
-        </ThemeProvider>
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <ThemeProvider theme={theme}>
+            <DataGrid
+              rows={tasks}
+              columns={taskColumns}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 10 }
+                }
+              }}
+              pageSizeOptions={[10, 25, 50]}
+              localeText={{
+                MuiTablePagination: {
+                  labelDisplayedRows: ({ from, to, count }) =>
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
+              }}
+            />
+          </ThemeProvider>
+        )}
       </div>
       <Modal
         open={isEditing}

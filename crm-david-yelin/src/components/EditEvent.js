@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import "../styles/CreateEvent.css";
@@ -8,6 +8,7 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function EditEvent({ eventDetails, onClose, onSave }) {
   const [search, setSearch] = useState("");
@@ -15,6 +16,7 @@ function EditEvent({ eventDetails, onClose, onSave }) {
   const [warningText, setWarningText] = useState("");
   const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState({
     eventName: eventDetails.eventName,
     eventStartDate: eventDetails.eventStartDate,
@@ -24,33 +26,34 @@ function EditEvent({ eventDetails, onClose, onSave }) {
     assignees: eventDetails.assignees
   });
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      const membersRef = collection(db, "members");
-      const membersSnapshot = await getDocs(membersRef);
-      const membersList = membersSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setMembers(membersList);
+  const fetchMembers = useCallback(async () => {
+    const membersRef = collection(db, "members");
+    const membersSnapshot = await getDocs(membersRef);
+    const membersList = membersSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    setMembers(membersList);
 
-      // Fetch full names of the assigned members
-      const assignedMembers = await Promise.all(
-        eventDetails.assignees.map(async (assigneePath) => {
-          const email = assigneePath.split("/")[1];
-          const memberDoc = await getDoc(doc(membersRef, email));
-          if (memberDoc.exists()) {
-            return { id: email, ...memberDoc.data() };
-          }
-          return null;
-        })
-      );
+    // Fetch full names of the assigned members
+    const assignedMembers = await Promise.all(
+      eventDetails.assignees.map(async (assigneePath) => {
+        const email = assigneePath.split("/")[1];
+        const memberDoc = await getDoc(doc(membersRef, email));
+        if (memberDoc.exists()) {
+          return { id: email, ...memberDoc.data() };
+        }
+        return null;
+      })
+    );
 
-      setSelectedMembers(assignedMembers.filter((member) => member !== null));
-    };
-
-    fetchMembers();
+    setSelectedMembers(assignedMembers.filter((member) => member !== null));
+    setLoading(false);
   }, [eventDetails.assignees]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -124,127 +127,131 @@ function EditEvent({ eventDetails, onClose, onSave }) {
 
   return (
     <div className="create-event">
-      <form className="create-event-form" onSubmit={handleSubmit}>
-        <h2 className="title extra-create-event-title">ערוך אירוע</h2>
-        <div className="create-event-input-box">
-          <input
-            type="text"
-            placeholder="שם האירוע (חובה*)"
-            name="eventName"
-            className="create-event-input"
-            value={event.eventName}
-            onChange={(e) =>
-              setEvent({ ...event, eventName: e.target.value })
-            }
-          />
-          <div className="start-due-date-event">
-            <div className="start-date-event">
-              <label htmlFor="start">תאריך התחלה</label>
-              <input
-                type="date"
-                name="eventStartDate"
-                id="start"
-                className="create-event-input"
-                value={event.eventStartDate}
-                onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  const formattedDate = date
-                    .toLocaleDateString("he-IL")
-                    .replaceAll("/", "-");
-                  setEvent({
-                    ...event,
-                    eventStartDate: formattedDate
-                  });
-                }}
-              />
-            </div>
-            <div className="due-date-event">
-              <label htmlFor="due">תאריך יעד (חובה*)</label>
-              <input
-                type="date"
-                name="eventEndDate"
-                id="due"
-                className="create-event-input"
-                value={event.eventEndDate}
-                onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  const formattedDate = date
-                    .toLocaleDateString("he-IL")
-                    .replaceAll("/", "-");
-                  setEvent({
-                    ...event,
-                    eventEndDate: formattedDate
-                  });
-                }}
-              />
-            </div>
-          </div>
-          <label htmlFor="time" className="event-time-label">
-            שעת האירוע (חובה*)
-          </label>
-          <input
-            type="time"
-            name="eventTime"
-            className="create-event-input"
-            value={event.eventTime}
-            onChange={(e) =>
-              setEvent({ ...event, eventTime: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="מיקום האירוע"
-            name="eventLocation"
-            className="create-event-input"
-            value={event.eventLocation}
-            onChange={(e) =>
-              setEvent({
-                ...event,
-                eventLocation: e.target.value
-              })
-            }
-          />
-          <Select
-            placeholder="הוסף חבר וועדה"
-            className="create-event-input extra-create-event-input"
-            onInputChange={(inputValue) => {
-              handleSearchMember({ target: { value: inputValue } });
-            }}
-            onChange={(e) => {
-              handleSelectMember(e.value);
-            }}
-            options={members.map((member) => ({
-              value: member.fullName,
-              label: member.fullName
-            }))}
-          />
-          <div className="create-task-selected-members">
-            {selectedMembers.map((member) => (
-              <Stack direction="row" spacing={1} key={member.id}>
-                <Chip
-                  avatar={
-                    <Avatar
-                      alt={member.fullName}
-                      src={require("../assets/profile.jpg")}
-                    />
-                  }
-                  label={member.fullName}
-                  onDelete={() => handleRemoveMember(member.id)}
-                  variant="outlined"
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <form className="create-event-form" onSubmit={handleSubmit}>
+          <h2 className="title extra-create-event-title">ערוך אירוע</h2>
+          <div className="create-event-input-box">
+            <input
+              type="text"
+              placeholder="שם האירוע (חובה*)"
+              name="eventName"
+              className="create-event-input"
+              value={event.eventName}
+              onChange={(e) =>
+                setEvent({ ...event, eventName: e.target.value })
+              }
+            />
+            <div className="start-due-date-event">
+              <div className="start-date-event">
+                <label htmlFor="start">תאריך התחלה</label>
+                <input
+                  type="date"
+                  name="eventStartDate"
+                  id="start"
+                  className="create-event-input"
+                  value={event.eventStartDate}
+                  onChange={(e) => {
+                    const date = new Date(e.target.value);
+                    const formattedDate = date
+                      .toLocaleDateString("he-IL")
+                      .replaceAll("/", "-");
+                    setEvent({
+                      ...event,
+                      eventStartDate: formattedDate
+                    });
+                  }}
                 />
-              </Stack>
-            ))}
+              </div>
+              <div className="due-date-event">
+                <label htmlFor="due">תאריך יעד (חובה*)</label>
+                <input
+                  type="date"
+                  name="eventEndDate"
+                  id="due"
+                  className="create-event-input"
+                  value={event.eventEndDate}
+                  onChange={(e) => {
+                    const date = new Date(e.target.value);
+                    const formattedDate = date
+                      .toLocaleDateString("he-IL")
+                      .replaceAll("/", "-");
+                    setEvent({
+                      ...event,
+                      eventEndDate: formattedDate
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            <label htmlFor="time" className="event-time-label">
+              שעת האירוע (חובה*)
+            </label>
+            <input
+              type="time"
+              name="eventTime"
+              className="create-event-input"
+              value={event.eventTime}
+              onChange={(e) =>
+                setEvent({ ...event, eventTime: e.target.value })
+              }
+            />
+            <input
+              type="text"
+              placeholder="מיקום האירוע"
+              name="eventLocation"
+              className="create-event-input"
+              value={event.eventLocation}
+              onChange={(e) =>
+                setEvent({
+                  ...event,
+                  eventLocation: e.target.value
+                })
+              }
+            />
+            <Select
+              placeholder="הוסף חבר וועדה"
+              className="create-event-input extra-create-event-input"
+              onInputChange={(inputValue) => {
+                handleSearchMember({ target: { value: inputValue } });
+              }}
+              onChange={(e) => {
+                handleSelectMember(e.value);
+              }}
+              options={members.map((member) => ({
+                value: member.fullName,
+                label: member.fullName
+              }))}
+            />
+            <div className="create-task-selected-members">
+              {selectedMembers.map((member) => (
+                <Stack direction="row" spacing={1} key={member.id}>
+                  <Chip
+                    avatar={
+                      <Avatar
+                        alt={member.fullName}
+                        src={require("../assets/profile.jpg")}
+                      />
+                    }
+                    label={member.fullName}
+                    onDelete={() => handleRemoveMember(member.id)}
+                    variant="outlined"
+                  />
+                </Stack>
+              ))}
+            </div>
           </div>
-        </div>
-        <input type="submit" value="שמור שינויים" className="primary-button" />
-        <div className="feedback-create-event">
-          {formWarning && (
-            <Alert className="feedback-alert" severity="error">
-              {warningText}
-            </Alert>
-          )}
-        </div>
-      </form>
+          <input type="submit" value="שמור שינויים" className="primary-button" />
+          <div className="feedback-create-event">
+            {formWarning && (
+              <Alert className="feedback-alert" severity="error">
+                {warningText}
+              </Alert>
+            )}
+          </div>
+        </form>
+      )}
     </div>
   );
 }

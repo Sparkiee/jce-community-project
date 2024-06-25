@@ -62,6 +62,7 @@ function ManageEvents() {
   const [deleteTarget, setDeleteTarget] = useState("");
   const [alert, setAlert] = useState(false);
 
+
   const createEventRef = useRef(null);
   const navigate = useNavigate();
 
@@ -74,6 +75,7 @@ function ManageEvents() {
     },
     heIL
   );
+
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 

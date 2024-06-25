@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "../styles/Styles.css";
 import "../styles/DisplayProfile.css";
@@ -8,10 +8,10 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import IconButton from "@mui/material/IconButton";
 
 function DisplayProfile(params) {
-  // sessionStorage.setItem("profileView", JSON.stringify(member));
-
+  // const [profile, setProfile] = useState();
   const profile = JSON.parse(sessionStorage.getItem("profileView"));
 
   const pages = ["פניות", "משימות פתוחות", "אירועים קרובים"];
@@ -48,11 +48,15 @@ function DisplayProfile(params) {
       children: `${firstInitial}${secondInitial}`
     };
   }
+  useEffect(() => {
+  }, []);
 
   return (
     <div className="profile-page-container">
       <div className="profile-information right-side">
-        <EditIcon className="profile-edit-icon" />
+        <IconButton color="primary" className="profile-edit-icon">
+          <EditIcon color="default" className="edit-button"/>
+        </IconButton>
         <h1>{profile.fullName}</h1>
         <h2>
           {profile.department} • {profile.role}

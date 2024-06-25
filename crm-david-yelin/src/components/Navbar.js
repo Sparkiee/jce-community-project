@@ -78,7 +78,7 @@ function Navbar() {
         setNotifications(data?.Notifications?.length || 0);
         setFullName(data?.fullName || "");
 
-        if (member.privileges < 1) {
+        if (member.privileges < 1 || !member || !member.email) {
           disconnect();
           navigate("/");
         }

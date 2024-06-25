@@ -10,6 +10,7 @@
 div .profile-avatar {
   width: 25rem !important;
   height: 25rem !important;
+  font-size: 10rem !important;
 }
 
 div .profile-avatar:hover {
@@ -26,6 +27,7 @@ div .profile-avatar:hover {
 }
 
 .profile-information {
+    border-radius: 0.25rem;
   position: relative;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
   background-color: #e6e4e4;
@@ -54,7 +56,32 @@ div .profile-avatar:hover {
   padding: 0.3rem;
   border: 1px solid #000;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: #e6e4e4d5;
   right: 28rem;
   top: 0.8rem;
 }
+
+.profile-user-info {
+    margin-top: 4rem;
+}
+
+.title-info {
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-navbar ul {
+    display: flex;
+    gap: 1rem;
+    width: auto;
+}
+.profile-navbar li {
+    list-style: none;
+    font-weight: bold;
+    font-size: 1.8rem;
+}
+
+.profile-navbar li.selected {
+    text-decoration: underline;
+    /* Or any other styles for the selected state */
+  }

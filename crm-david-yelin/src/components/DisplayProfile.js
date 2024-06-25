@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 
 import "../styles/Styles.css";
 import "../styles/DisplayProfile.css";
 import { Avatar } from "@mui/material";
 import TaskIcon from "@mui/icons-material/Task";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 
 function DisplayProfile(params) {
+  const pages = ["פניות", "משימות פתוחות", "אירועים קרובים"];
+  const [menuSelected, setMenuSelected] = useState(pages[0]);
+
   function stringToColor(string) {
     let hash = 0;
     let i;
@@ -48,6 +53,7 @@ function DisplayProfile(params) {
         <h2>מחלקה • תפקיד</h2>
         <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />
         <div className="profile-stats">
+          <h2 className="title-info">התקדמות אישית</h2>
           <div className="profile-stats-row">
             <AssignmentIcon />
             <h3>5 משימות פתוחות</h3>
@@ -67,12 +73,37 @@ function DisplayProfile(params) {
             <h3>(אחוז השלמה)</h3>
           </div>
         </div>
+        <div className="profile-stats">
+          <h2 className="title-info">פרטים אישיים</h2>
+          <div className="profile-stats-row">
+            <PhoneIphoneIcon />
+            <h3>מספר פאלפון</h3>
+          </div>
+          <div className="profile-stats-row">
+            <AlternateEmailIcon />
+            <h3>כתובת אימייל</h3>
+          </div>
+        </div>
       </div>
-      <div className="profile-data left-side"></div>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat.
+      <div className="profile-data left-side">
+        <div className="profile-navbar">
+          <ul>
+            {pages.map((page, index) => (
+              <li
+                key={index}
+                onClick={() => setMenuSelected(page)}
+                className={menuSelected === page ? "selected" : ""}
+              >
+                {page}
+              </li>
+            ))}
+          </ul>
+        </div>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat.
+      </div>
     </div>
   );
 }

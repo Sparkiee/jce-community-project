@@ -161,7 +161,7 @@ function EditUser(params) {
             readOnly
             type="email"
             placeholder="אימייל"
-            className="forms-input"
+            className="forms-input email-input"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />

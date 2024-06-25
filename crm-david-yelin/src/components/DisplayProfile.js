@@ -10,6 +10,10 @@ import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 
 function DisplayProfile(params) {
+  // sessionStorage.setItem("profileView", JSON.stringify(member));
+
+  const profile = JSON.parse(sessionStorage.getItem("profileView"));
+  
   const pages = ["פניות", "משימות פתוחות", "אירועים קרובים"];
   const [menuSelected, setMenuSelected] = useState(pages[0]);
 

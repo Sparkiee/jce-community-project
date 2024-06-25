@@ -21,6 +21,7 @@ import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
+import DisplayProfile from "./DisplayProfile.js";
 
 
 function Navbar() {
@@ -162,6 +163,11 @@ function Navbar() {
     const results = querySnapshot.docs.map((doc) => doc.data());
     setSearchResults(results);
   };
+
+  function handleProfileClick() {
+    sessionStorage.setItem("profileView", JSON.stringify(member));
+    navigate("/profile");
+  }
 
   return (
     <header>
@@ -315,7 +321,7 @@ function Navbar() {
                   </div>
                 </div>
               )}
-              <Avatar {...stringAvatar(fullName)} title={fullName} />
+              <Avatar {...stringAvatar(fullName)} title={fullName} onClick={() => handleProfileClick()}/>
               <a
                 className="logout-button"
                 to="/logout"

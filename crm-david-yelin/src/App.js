@@ -48,7 +48,7 @@ const App = () => {
         <Route path="/users" element={<ManageUsers />} />
         <Route path="/tasks" element={<ManageTasks />} />
         <Route path="/events" element={<ManageEvents />} />
-        <Route path="/dev" element={<DisplayProfile />} />
+        <Route path="/profile" element={<DisplayProfile />} />
       </Routes>
     </Router>
   );
@@ -56,7 +56,7 @@ const App = () => {
 
 const Navigation = () => {
   const location = useLocation();
-  const noNavbarRoutes = ['/', '/register', '/forgot-password', '/dev']; // Add paths where Navbar should not be rendered
+  const noNavbarRoutes = ['/', '/register', '/forgot-password']; // Add paths where Navbar should not be rendered
   const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);
 
   return shouldDisplayNavbar ? <Navbar /> : null;

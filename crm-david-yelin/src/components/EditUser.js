@@ -7,14 +7,14 @@ import {
   getDocs,
   collection,
   where,
-  query,
+  query
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
 import "../styles/EditUser.css";
 import PhoneInput from "react-phone-number-input/input";
 import { Alert } from "@mui/material";
-import MailLockIcon from '@mui/icons-material/MailLock';
+import LockIcon from "@mui/icons-material/Lock";
 
 function EditUser(params) {
   const [firstName, setFirstName] = useState(params.target.firstName || "");
@@ -38,7 +38,6 @@ function EditUser(params) {
     event.preventDefault();
 
     if (params.target.privileges > 2 && privileges !== 3) {
-
       // Reference to the Firestore "members" collection
       const memberRef = collection(db, "members");
 
@@ -68,7 +67,7 @@ function EditUser(params) {
       }
     }
     const docRef = doc(db, "members", email);
-    
+
     try {
       setDoc(docRef, {
         firstName: firstName,
@@ -79,7 +78,7 @@ function EditUser(params) {
         role: role,
         department: department,
         privileges: privileges,
-        lastUpdate: serverTimestamp(),
+        lastUpdate: serverTimestamp()
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {
@@ -98,7 +97,7 @@ function EditUser(params) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment,
+          name: newDepartment
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -148,15 +147,15 @@ function EditUser(params) {
             onChange={(event) => setLastName(event.target.value)}
           />
           <PhoneInput
-              defaultCountry="IL"
-              placeholder="טלפון"
-              className="forms-input"
-              maxLength="12"
-              value={phone}
-              onChange={(value) => setPhone(value)}
-              style={{ textAlign: "right" }}
-            />
-          <MailLockIcon className="mail-lock-icon" />
+            defaultCountry="IL"
+            placeholder="טלפון"
+            className="forms-input"
+            maxLength="12"
+            value={phone}
+            onChange={(value) => setPhone(value)}
+            style={{ textAlign: "right" }}
+          />
+          <LockIcon className="mail-lock-icon" />
           <input
             readOnly
             type="email"
@@ -178,7 +177,8 @@ function EditUser(params) {
                 setDepartment(value);
               }
             }}
-            className="forms-input">
+            className="forms-input"
+          >
             <option value="" disabled>
               בחר מחלקה
             </option>
@@ -201,7 +201,8 @@ function EditUser(params) {
               <button
                 type="button"
                 onClick={addDepartment}
-                className="primary-button extra-create-user-button">
+                className="primary-button extra-create-user-button"
+              >
                 הוסף מחלקה חדשה
               </button>
             </div>
@@ -216,19 +217,26 @@ function EditUser(params) {
           <select
             value={privileges}
             onChange={(event) => setPrivileges(Number(event.target.value))}
-            className="forms-input">
+            className="forms-input"
+          >
             <option value={3}>יו"ר</option>
             <option value={2}>ראש מחלקה</option>
             <option value={1}>חבר מועצה</option>
             <option value={0}>משתמש מושהה</option>
           </select>
           {isNoLevel3 && (
-            <Alert severity="warning" className="feedback-alert feedback-edituser">
+            <Alert
+              severity="warning"
+              className="feedback-alert feedback-edituser"
+            >
               חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
             </Alert>
           )}
           {edittedSuccessfully && (
-            <Alert severity="success" className="feedback-alert feedback-edituser">
+            <Alert
+              severity="success"
+              className="feedback-alert feedback-edituser"
+            >
               פרטי המשתמש עודכנו בהצלחה
             </Alert>
           )}

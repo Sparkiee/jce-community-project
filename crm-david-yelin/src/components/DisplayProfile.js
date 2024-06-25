@@ -54,7 +54,9 @@ function DisplayProfile(params) {
       <div className="profile-information right-side">
         <EditIcon className="profile-edit-icon" />
         <h1>{profile.fullName}</h1>
-        <h2>{profile.department} • {profile.role}</h2>
+        <h2>
+          {profile.department} • {profile.role}
+        </h2>
         <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />
         <div className="profile-stats">
           <h2 className="title-info">התקדמות אישית</h2>
@@ -79,13 +81,18 @@ function DisplayProfile(params) {
         </div>
         <div className="profile-stats">
           <h2 className="title-info">פרטים אישיים</h2>
-          <div className="profile-stats-row">
+          <div
+            className="profile-stats-row profile-personal-info"
+            onClick={() =>
+              window.open(`https://wa.me/${profile.phone}`, "_blank")
+            }
+          >
             <PhoneIphoneIcon />
-            <h3>מספר פאלפון</h3>
+            <h3 className="profile-phone">{profile.phone}</h3>
           </div>
-          <div className="profile-stats-row">
+          <div className="profile-stats-row profile-personal-info">
             <AlternateEmailIcon />
-            <h3>כתובת אימייל</h3>
+            <h3>{profile.email}</h3>
           </div>
         </div>
       </div>

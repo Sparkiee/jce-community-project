@@ -14,6 +14,7 @@ import "../styles/Styles.css";
 import "../styles/EditUser.css";
 import PhoneInput from "react-phone-number-input/input";
 import { Alert } from "@mui/material";
+import MailLockIcon from '@mui/icons-material/MailLock';
 
 function EditUser(params) {
   const [firstName, setFirstName] = useState(params.target.firstName || "");
@@ -155,6 +156,7 @@ function EditUser(params) {
               onChange={(value) => setPhone(value)}
               style={{ textAlign: "right" }}
             />
+          <MailLockIcon className="mail-lock-icon" />
           <input
             readOnly
             type="email"

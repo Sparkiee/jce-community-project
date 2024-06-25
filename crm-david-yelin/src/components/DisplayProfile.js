@@ -5,6 +5,7 @@ import "../styles/DisplayProfile.css";
 import { Avatar } from "@mui/material";
 import TaskIcon from "@mui/icons-material/Task";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import EditIcon from '@mui/icons-material/Edit';
 
 function DisplayProfile(params) {
   function stringToColor(string) {
@@ -42,6 +43,7 @@ function DisplayProfile(params) {
   return (
     <div className="profile-page-container">
       <div className="profile-information right-side">
+        <EditIcon className="profile-edit-icon" />
         <h1>שם משתמש יופיע כאן</h1>
         <h2>מחלקה • תפקיד</h2>
         <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />

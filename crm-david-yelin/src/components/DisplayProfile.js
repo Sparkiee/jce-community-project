@@ -13,7 +13,7 @@ function DisplayProfile(params) {
   // sessionStorage.setItem("profileView", JSON.stringify(member));
 
   const profile = JSON.parse(sessionStorage.getItem("profileView"));
-  
+
   const pages = ["פניות", "משימות פתוחות", "אירועים קרובים"];
   const [menuSelected, setMenuSelected] = useState(pages[0]);
 
@@ -53,8 +53,8 @@ function DisplayProfile(params) {
     <div className="profile-page-container">
       <div className="profile-information right-side">
         <EditIcon className="profile-edit-icon" />
-        <h1>שם משתמש יופיע כאן</h1>
-        <h2>מחלקה • תפקיד</h2>
+        <h1>{profile.fullName}</h1>
+        <h2>{profile.department} • {profile.role}</h2>
         <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />
         <div className="profile-stats">
           <h2 className="title-info">התקדמות אישית</h2>

@@ -233,7 +233,7 @@ function HomePage() {
       unsubscribeEvents();
       unsubscribeTasks();
     };
-  }, [user.email]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

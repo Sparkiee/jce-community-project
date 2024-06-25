@@ -1,10 +1,12 @@
 .profile-information h1 {
   margin-top: 0;
   margin-bottom: 0;
+  font-size: 2.5rem;
 }
 
 .profile-information h2 {
   margin-top: 0;
+  font-size: 1.8rem;
 }
 
 div .profile-avatar {
@@ -18,7 +20,7 @@ div .profile-avatar:hover {
 }
 
 .profile-page-container {
-  gap: 2rem;
+  gap: 5rem;
   display: flex;
   width: 90%;
   margin-top: 5rem;
@@ -48,7 +50,16 @@ div .profile-avatar:hover {
 }
 
 .profile-stats-row h3 {
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.profile-stats-row h3 {
   margin: 0;
+}
+
+.profile-data {
+  width: 70%;
 }
 
 .profile-edit-icon {
@@ -73,13 +84,19 @@ div .profile-avatar:hover {
 }
 
 .profile-personal-info {
-    transition: 0.2s linear transform;
+    transition: 0.2s linear transform, 0.2s linear font-weight;
 }
 
 .profile-personal-info:hover {
     cursor: pointer;
     transform: scale(1.05);
+    font-weight: bold;
 }
+
+.profile-stats-contact {
+  color: #1976d2;
+}
+
 
 .profile-phone {
     direction: ltr;
@@ -89,21 +106,35 @@ div .profile-avatar:hover {
 
 .title-info {
     margin-right: 1.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0rem;
+}
+
+.profile-navbar {
+  border-bottom: 1px solid #ccc;
 }
 
 .profile-navbar ul {
     display: flex;
     gap: 1rem;
     width: auto;
+    padding: 0;
+    list-style: none;
 }
 .profile-navbar li {
-    list-style: none;
     font-weight: bold;
     font-size: 1.8rem;
 }
 
-.profile-navbar li.selected {
-    text-decoration: underline;
+.profile-navbar .selected {
+    text-decoration: underline; 
+    background-color: rgb(2, 4, 79) !important;
     /* Or any other styles for the selected state */
+  }
+
+  .profile-navbar-buttons {
+    font-size: 1.8rem !important;
+  }
+
+  .profile-content {
+    margin-top: 3.5rem;
   }

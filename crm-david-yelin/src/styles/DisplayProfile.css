@@ -1,0 +1,49 @@
+.profile-information h1 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.profile-information h2 {
+    margin-top: 0;
+}
+
+div .profile-avatar {
+  width: 25rem !important;
+  height: 25rem !important;
+}
+
+div .profile-avatar:hover {
+  transform: scale(1);
+}
+
+.profile-page-container {
+  gap: 2rem;
+  display: flex;
+  width: 90%;
+  margin-top: 5rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.profile-information {
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
+  background-color: #e6e4e4;
+  padding: 3rem;
+}
+
+.profile-stats {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.profile-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.profile-stats-row h3 {
+    margin: 0;
+}

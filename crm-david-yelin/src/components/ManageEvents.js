@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import {
   collection,
@@ -42,11 +43,16 @@ function stringToColor(string) {
 }
 
 function stringAvatar(name) {
+  if (!name) {
+    return { sx: { bgcolor: '#000000' }, children: '?' }; // Default values if name is undefined or null
+  }
+  const nameParts = name.split(" ");
+  const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    children: initials,
   };
 }
 
@@ -57,6 +63,7 @@ function ManageEvents() {
   const [alert, setAlert] = useState(false);
 
   const createEventRef = useRef(null);
+  const navigate = useNavigate();
 
   const theme = createTheme(
     {
@@ -121,9 +128,10 @@ function ManageEvents() {
       align: "right",
       flex: 2,
       renderCell: (params) => {
+        const assignees = Array.isArray(params.value) ? params.value : [];
         return (
           <AvatarGroup className="manage-task-avatar-group" max={3}>
-            {params.value.map((user, index) => (
+            {assignees.map((user, index) => (
               <Avatar key={index} {...stringAvatar(user.fullName)} />
             ))}
           </AvatarGroup>
@@ -244,6 +252,10 @@ function ManageEvents() {
     }
   }
 
+  const handleRowDoubleClick = (params) => {
+    navigate(`/event/${params.row.eventDoc}`);
+  };
+
   return (
     <div>
       {deleteTarget && (
@@ -345,6 +357,7 @@ function ManageEvents() {
                   labelRowsPerPage: "שורות בכל עמוד:"
                 }
               }}
+              onRowDoubleClick={handleRowDoubleClick}
             />
           </ThemeProvider>
         </div>

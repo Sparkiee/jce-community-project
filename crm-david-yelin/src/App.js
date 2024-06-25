@@ -14,7 +14,7 @@ import ManageTasks from "./components/ManageTasks";
 import ForgotPassword from "./components/ForgotPassword";
 import ManageEvents from "./components/ManageEvents";
 import { auth } from "./firebase";
-
+import EventPage from "./components/EventPage";
 import Navbar from "./components/Navbar";
 import ConfirmAction from "./components/ConfirmAction";
 
@@ -45,6 +45,7 @@ const App = () => {
         <Route path="/create-task" element={<CreateTask />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/users" element={<ManageUsers />} />
+        <Route path="/event/:id" element={<EventPage />} /> 
         <Route path="/tasks" element={<ManageTasks />} />
         <Route path="/events" element={<ManageEvents />} />
         <Route path="/dev" element={<ConfirmAction />} />

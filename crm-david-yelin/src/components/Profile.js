@@ -14,6 +14,7 @@ import "../styles/Styles.css";
 import "../styles/Profile.css";
 import ChangePassword from "./ChangePassword";
 import EditUser from "./EditUser";
+import { useNavigate } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
@@ -49,6 +50,8 @@ function Profile() {
   const [profile, setProfile] = useState();
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+
+  const navigate = useNavigate();
 
   const user = JSON.parse(sessionStorage.getItem("user"));
   const editUserRef = useRef(null);
@@ -169,7 +172,7 @@ function Profile() {
           <IconButton
             aria-label="edit"
             title="הצגה"
-            // onClick={() => navigate(`/profile/${params.row.email}`)}
+            onClick={() => navigate(`/task/${params.row.taskDoc}`)}
           >
             <VisibilityIcon />
           </IconButton>
@@ -237,7 +240,7 @@ function Profile() {
           <IconButton
             aria-label="edit"
             title="הצגה"
-            // onClick={() => navigate(`/profile/${params.row.email}`)}
+            onClick={() => navigate(`/event/${params.row.eventDoc}`)}
           >
             <VisibilityIcon />
           </IconButton>
@@ -258,7 +261,7 @@ function Profile() {
       const taskAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.ref
+        docRef: doc.id
       }));
 
       let completeNum = taskAll.filter(
@@ -273,6 +276,7 @@ function Profile() {
       // Map the tasks to the format expected by DataGrid
       const rowsTasksData = taskArray.map((task, index) => ({
         id: index + 1,
+        taskDoc: task.docRef,
         taskName: task.taskName,
         taskDescription: task.taskDescription,
         taskStartDate: task.taskStartDate,
@@ -298,7 +302,7 @@ function Profile() {
       const eventAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.ref
+        docRef: doc.id
       }));
       // .filter((event) => event.eventStatus !== "הסתיים");
       let completeNum = eventAll.filter(
@@ -314,6 +318,7 @@ function Profile() {
       // Map the events to the format expected by DataGrid
       const rowsEventsData = eventsArray.map((event, index) => ({
         id: index + 1,
+        eventDoc: event.docRef,
         eventName: event.eventName,
         eventLocation: event.eventLocation,
         eventStartDate: event.eventStartDate,
@@ -421,6 +426,7 @@ function Profile() {
                     labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
                   }
                 }}
+                onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
               />
             </ThemeProvider>
           </div>
@@ -448,6 +454,7 @@ function Profile() {
                     labelRowsPerPage: "שורות בכל עמוד:"
                   }
                 }}
+                onRowDoubleClick={(params) => navigate(`/event/${params.row.eventDoc}`)}
               />
             </ThemeProvider>
           </div>

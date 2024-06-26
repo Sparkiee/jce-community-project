@@ -369,7 +369,6 @@ function Profile() {
   }, [profile]);
 
   useEffect(() => {
-    console.log("im here")
     const handleClickOutside = (event) => {
       if (
         changePasswordRef.current &&

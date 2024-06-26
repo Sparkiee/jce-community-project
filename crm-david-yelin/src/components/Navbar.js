@@ -23,7 +23,6 @@ import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
 import Profile from "./Profile.js";
 
-
 function Navbar() {
   function stringToColor(string) {
     let hash = 0;
@@ -72,14 +71,15 @@ function Navbar() {
     const member = JSON.parse(sessionStorage.getItem("user"));
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
     if (member && member.email && member.privileges >= 1) {
-      const unsubscribeSnapshot = onSnapshot(doc(db, "members", member.email),
+      const unsubscribeSnapshot = onSnapshot(
+        doc(db, "members", member.email),
         (doc) => {
           const data = doc.data();
           sessionStorage.setItem("user", JSON.stringify(data));
           // Assuming setNotifications and setFullName are state setters from useState
           setNotifications(data?.Notifications?.length || 0);
           setFullName(data?.fullName || "");
-        }, 
+        },
         (error) => {
           console.error("Error fetching document: ", error);
           // Handle the error appropriately
@@ -260,6 +260,9 @@ function Navbar() {
                           <React.Fragment key={index}>
                             {index > 0 && <Divider />}
                             <div
+                              onClick={() =>
+                                navigate(`/profile/${result.email}`)
+                              }
                               className={`search-result-item ${
                                 result.privileges === 0 ? "strikethrough" : ""
                               }`}
@@ -320,7 +323,11 @@ function Navbar() {
                   </div>
                 </div>
               )}
-              <Avatar {...stringAvatar(fullName)} title={fullName} onClick={() => handleProfileClick()}/>
+              <Avatar
+                {...stringAvatar(fullName)}
+                title={fullName}
+                onClick={() => handleProfileClick()}
+              />
               <a
                 className="logout-button"
                 to="/logout"

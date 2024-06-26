@@ -75,7 +75,7 @@ function ManageTasks() {
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   const baseColumns = [
-    { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
+    { field: "id", headerName: "אינדקס", align: "right", flex: 1 },
     {
       field: "taskName",
       headerName: "שם המשימה",
@@ -146,7 +146,7 @@ function ManageTasks() {
       headerName: "צפייה",
       width: 80,
       align: "center",
-      flex: 1.5,
+      flex: 0.5,
       renderCell: (params) => (
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
           <VisibilityIcon />

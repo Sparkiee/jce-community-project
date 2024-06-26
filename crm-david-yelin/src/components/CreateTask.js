@@ -72,7 +72,7 @@ function CreateTask(props) {
       taskEndDate: taskDetails.taskEndDate,
       taskTime: taskDetails.taskTime,
       taskCreated: serverTimestamp(),
-      taskStatus: "טרם החלה"
+      taskStatus: "טרם החלה",
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -230,7 +230,10 @@ function CreateTask(props) {
   };
   return (
     <div className="create-task">
-      <div className="action-close" onClick={props.onClose}>
+      <div
+        className="action-close"
+        onClick={props.onClose}
+      >
         <svg
           width="24px"
           height="24px"

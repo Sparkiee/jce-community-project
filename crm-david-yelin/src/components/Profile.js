@@ -402,7 +402,7 @@ function Profile() {
         return <div>פה יהיה תוכן של היסטוריה</div>;
       case pages[2]:
         return (
-          <div style={{ height: 371, width: "100%" }}>
+          <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
               <DataGrid
                 direction="rtl"
@@ -411,10 +411,10 @@ function Profile() {
                 columns={columnsTasks}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 5 }
+                    paginationModel: { page: 0, pageSize: 10 }
                   }
                 }}
-                pageSizeOptions={[5, 10, 20]}
+                pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   // Customizing displayed rows text
                   MuiTablePagination: {
@@ -431,7 +431,7 @@ function Profile() {
         );
       case pages[3]:
         return (
-          <div style={{ height: 372, width: "100%" }}>
+          <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
               <DataGrid
                 className="data-grid"
@@ -439,10 +439,10 @@ function Profile() {
                 columns={columnsEvents}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 5 }
+                    paginationModel: { page: 0, pageSize: 10 }
                   }
                 }}
-                pageSizeOptions={[5, 10, 20]}
+                pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>

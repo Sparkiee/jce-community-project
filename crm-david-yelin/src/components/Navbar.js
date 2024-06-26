@@ -89,6 +89,9 @@ function Navbar() {
       // Cleanup function to unsubscribe from the snapshot when the component unmounts
       return () => unsubscribeSnapshot();
     }
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         notificationsRef.current &&
@@ -100,12 +103,11 @@ function Navbar() {
 
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Return the unsubscribe function for the Firestore listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  });
-
+  }, []);
+  
   const disconnect = () => {
     navigate("/");
     sessionStorage.removeItem("user");
@@ -119,7 +121,9 @@ function Navbar() {
     }
     setDisplayNotifications([]);
     setNotificationsVisible(true);
+
     if (!user || !user.email) return;
+
     const docRef = doc(db, "members", user.email);
     try {
       const docSnap = await getDoc(docRef);

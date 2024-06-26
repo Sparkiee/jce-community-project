@@ -65,26 +65,30 @@ function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  const member = JSON.parse(sessionStorage.getItem("user"));
+  const user = JSON.parse(sessionStorage.getItem("user"));
   const notificationsRef = useRef(null);
 
   useEffect(() => {
+    const member = JSON.parse(sessionStorage.getItem("user"));
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
-    const unsubscribeSnapshot = onSnapshot(
-      doc(db, "members", member.email),
-      (doc) => {
-        const data = doc.data();
-        sessionStorage.setItem("user", JSON.stringify(data));
-        // Directly update notifications from the document data
-        setNotifications(data?.Notifications?.length || 0);
-        setFullName(data?.fullName || "");
-
-        if (member.privileges < 1 || !member || !member.email) {
-          disconnect();
-          navigate("/");
+    if (member && member.email && member.privileges >= 1) {
+      const unsubscribeSnapshot = onSnapshot(doc(db, "members", member.email),
+        (doc) => {
+          const data = doc.data();
+          sessionStorage.setItem("user", JSON.stringify(data));
+          // Assuming setNotifications and setFullName are state setters from useState
+          setNotifications(data?.Notifications?.length || 0);
+          setFullName(data?.fullName || "");
+        }, 
+        (error) => {
+          console.error("Error fetching document: ", error);
+          // Handle the error appropriately
         }
-      }
-    );
+      );
+
+      // Cleanup function to unsubscribe from the snapshot when the component unmounts
+      return () => unsubscribeSnapshot();
+    }
     const handleClickOutside = (event) => {
       if (
         notificationsRef.current &&
@@ -98,12 +102,8 @@ function Navbar() {
 
     // Return the unsubscribe function for the Firestore listener
     return () => {
-      unsubscribeSnapshot();
       document.removeEventListener("mousedown", handleClickOutside);
     };
-
-    // Return the unsubscribe function for the Firestore listener
-    return () => unsubscribeSnapshot();
   });
 
   const disconnect = () => {
@@ -119,8 +119,8 @@ function Navbar() {
     }
     setDisplayNotifications([]);
     setNotificationsVisible(true);
-    if (!member || !member.email) return;
-    const docRef = doc(db, "members", member.email);
+    if (!user || !user.email) return;
+    const docRef = doc(db, "members", user.email);
     try {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -165,7 +165,7 @@ function Navbar() {
   };
 
   function handleProfileClick() {
-    sessionStorage.setItem("profileView", JSON.stringify(member));
+    sessionStorage.setItem("profileView", JSON.stringify(user));
     navigate("/profile");
   }
 
@@ -202,7 +202,7 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
-              {member.privileges >= 3 && (
+              {user && user.privileges >= 3 && (
                 <li>
                   <a to="#" onClick={() => navigate("/users")}>
                     ניהול משתמשים

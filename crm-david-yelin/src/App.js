@@ -1,30 +1,32 @@
 import "./App.css";
-import React, {useEffect} from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation
+} from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
-import CreateUser from "./components/CreateUser";
 import RegisterUser from "./components/RegisterUser";
-import CreateEvent from "./components/CreateEvent";
-import CreateTask from "./components/CreateTask";
 import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
 import ForgotPassword from "./components/ForgotPassword";
 import ManageEvents from "./components/ManageEvents";
 import DisplayProfile from "./components/DisplayProfile";
-import { auth } from "./firebase";
 
 import Navbar from "./components/Navbar";
-import ConfirmAction from "./components/ConfirmAction";
 
 const App = () => {
   return (
     <Router>
       <Navigation />
       <Routes>
+        {/* OPEN ACCESS PAGES */}
         <Route exact path="/" element={<LoginForm />} />
+        <Route path="/register" element={<RegisterUser />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/home"
           element={
@@ -33,22 +35,39 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        {/* PRIVATE PAGES */}
         <Route
-          path="/create"
+          path="/users"
           element={
             <ProtectedRoute privilegeLevel={3}>
-              <CreateUser />
+              <ManageUsers />
             </ProtectedRoute>
           }
         />
-        <Route path="/register" element={<RegisterUser />} />
-        <Route path="/create-event" element={<CreateEvent />} />
-        <Route path="/create-task" element={<CreateTask />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/users" element={<ManageUsers />} />
-        <Route path="/tasks" element={<ManageTasks />} />
-        <Route path="/events" element={<ManageEvents />} />
-        <Route path="/profile" element={<DisplayProfile />} />
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <ManageTasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <ManageEvents />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <DisplayProfile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );
@@ -56,7 +75,7 @@ const App = () => {
 
 const Navigation = () => {
   const location = useLocation();
-  const noNavbarRoutes = ['/', '/register', '/forgot-password']; // Add paths where Navbar should not be rendered
+  const noNavbarRoutes = ["/", "/register", "/forgot-password"]; // Add paths where Navbar should not be rendered
   const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);
 
   return shouldDisplayNavbar ? <Navbar /> : null;

@@ -29,10 +29,11 @@ div .profile-avatar:hover {
 }
 
 .profile-information {
-    border-radius: 0.25rem;
+  border-radius: 0.25rem;
+  border: 0.5px solid #ccc;
   position: relative;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-  background-color: #e6e4e4;
+  background-color: rgba(204, 207, 204, 0.377);
   padding: 3rem;
 }
 
@@ -80,33 +81,32 @@ div .profile-avatar:hover {
 }
 
 .profile-user-info {
-    margin-top: 4rem;
+  margin-top: 4rem;
 }
 
 .profile-personal-info {
-    transition: 0.2s linear transform, 0.2s linear font-weight;
+  transition: 0.2s linear transform, 0.2s linear font-weight;
 }
 
 .profile-personal-info:hover {
-    cursor: pointer;
-    transform: scale(1.05);
-    font-weight: bold;
+  cursor: pointer;
+  transform: scale(1.05);
+  font-weight: bold;
 }
 
 .profile-stats-contact {
   color: #1976d2;
 }
 
-
 .profile-phone {
-    direction: ltr;
-    color: black;
-    text-decoration: none;
+  direction: ltr;
+  color: black;
+  text-decoration: none;
 }
 
 .title-info {
-    margin-right: 1.5rem;
-    margin-bottom: 0rem;
+  margin-right: 1.5rem;
+  margin-bottom: 0rem;
 }
 
 .profile-navbar {
@@ -114,27 +114,27 @@ div .profile-avatar:hover {
 }
 
 .profile-navbar ul {
-    display: flex;
-    gap: 1rem;
-    width: auto;
-    padding: 0;
-    list-style: none;
+  display: flex;
+  gap: 1rem;
+  width: auto;
+  padding: 0;
+  list-style: none;
 }
 .profile-navbar li {
-    font-weight: bold;
-    font-size: 1.8rem;
+  font-weight: bold;
+  font-size: 1.8rem;
 }
 
 .profile-navbar .selected {
-    text-decoration: underline; 
-    background-color: rgb(2, 4, 79) !important;
-    /* Or any other styles for the selected state */
-  }
+  text-decoration: underline;
+  background-color: rgb(2, 4, 79) !important;
+  /* Or any other styles for the selected state */
+}
 
-  .profile-navbar-buttons {
-    font-size: 1.8rem !important;
-  }
+.profile-navbar-buttons {
+  font-size: 1.8rem !important;
+}
 
-  .profile-content {
-    margin-top: 3.5rem;
-  }
+.profile-content {
+  margin-top: 3.5rem;
+}

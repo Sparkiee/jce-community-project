@@ -25,12 +25,19 @@ import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import { CardActionArea } from "@mui/material";
+import CardActions from '@mui/material/CardActions';
+
 function DisplayProfile(params) {
   // const [profile, setProfile] = useState();
   const profile = JSON.parse(sessionStorage.getItem("profileView"));
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  const pages = ["פניות", "משימות פתוחות", "אירועים קרובים"];
+  const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
   const [menuSelected, setMenuSelected] = useState(pages[0]);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
@@ -290,11 +297,12 @@ function DisplayProfile(params) {
   }, []);
 
   const PageContent = ({ pageName }) => {
-    console.log(pageName);
     switch (pageName) {
       case pages[0]:
         return <div>פה יהיה תוכן של פניות</div>;
       case pages[1]:
+        return <div>פה יהיה תוכן של היסטוריה</div>;
+      case pages[2]:
         return (
           <div style={{ height: 371, width: "100%" }}>
             <ThemeProvider theme={theme}>
@@ -323,7 +331,7 @@ function DisplayProfile(params) {
             </ThemeProvider>
           </div>
         );
-      case pages[2]:
+      case pages[3]:
         return (
           <div style={{ height: 371, width: "100%" }}>
             <ThemeProvider theme={theme}>
@@ -410,6 +418,58 @@ function DisplayProfile(params) {
           </div>
         </div>
       </div>
+      {/* <Card sx={{ maxWidth: 345 }} style={{ backgroundColor: "#FAF9F6" }} variant="outlined">
+        <CardActionArea>
+          <CardContent>
+            <h1>{profile.fullName}</h1>
+            <h2>
+              {profile.department} • {profile.role}
+            </h2>
+            <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />
+            <div className="profile-stats">
+              <div className="profile-stats-row profile-stats-contact profile-personal-info">
+                <SendIcon />
+                <h3>צור קשר עם {profile.fullName}</h3>
+              </div>
+              <h2 className="title-info">התקדמות אישית</h2>
+              <div className="profile-stats-row">
+                <AssignmentIcon />
+                <h3>{numTasks} משימות פתוחות</h3>
+              </div>
+              <div className="profile-stats-row">
+                <AssignmentIcon />
+                <h3>{numEvents} אירועים קרובים</h3>
+              </div>
+              <div className="profile-stats-row">
+                <TaskIcon />
+                <h3>משימות שהושלמו</h3>
+                <h3>(אחוז השלמה)</h3>
+              </div>
+              <div className="profile-stats-row">
+                <TaskIcon />
+                <h3>אירועים שהושלמו</h3>
+                <h3>(אחוז השלמה)</h3>
+              </div>
+            </div>
+            <div className="profile-stats">
+              <h2 className="title-info">פרטים אישיים</h2>
+              <div
+                className="profile-stats-row profile-personal-info"
+                onClick={() =>
+                  window.open(`https://wa.me/${profile.phone}`, "_blank")
+                }
+              >
+                <PhoneIphoneIcon />
+                <h3 className="profile-phone">{profile.phone}</h3>
+              </div>
+              <div className="profile-stats-row profile-personal-info">
+                <AlternateEmailIcon />
+                <h3>{profile.email}</h3>
+              </div>
+            </div>
+          </CardContent>
+        </CardActionArea>
+      </Card> */}
       <div className="profile-data left-side">
         <div className="profile-navbar">
           <ul>

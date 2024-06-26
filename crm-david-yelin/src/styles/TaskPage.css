@@ -1,0 +1,54 @@
+.task-page {
+    position: absolute;
+    right: 5%;
+    top: 10%;
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    gap: 5rem;
+  }
+  
+  .task-details {
+    width: 20%;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-details h1 {
+    margin: 0;
+    padding-bottom: 2rem;
+    font-size: 5rem;
+  }
+  
+  .task-info p {
+    padding-top: 10px;
+    font-size: medium;
+  }
+  
+  .task-assignees {
+    width: 20%;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .assignees-list {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .assignee-item {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+  }
+  
+  .assignee-item p {
+    font-size: large;
+    margin-right: 20px;
+  }
+  
+  

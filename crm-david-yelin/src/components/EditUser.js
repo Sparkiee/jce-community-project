@@ -155,7 +155,7 @@ function EditUser(props) {
       </div>
       <form className="edit-user-form" onSubmit={handleSubmit}>
         <h2 className="title extra-registration-form-title">
-          עריכת משתמש, {props.target.firstName} {props.target.lastName}
+          עריכת משתמש
         </h2>
         <div className="edit-user-input-box">
           <input

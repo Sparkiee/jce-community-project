@@ -7,13 +7,14 @@
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
   background-color: rgb(255, 255, 255);
   padding: 4rem 4rem 6rem;
-  width: 60rem;
+  width: 50rem;
 }
 
-.user-edit-form {
+.edit-user-form {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  align-items: center;
   width: 100%;
 }
 
@@ -24,7 +25,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .edit-user-input-box select {
@@ -37,8 +38,8 @@
 
 .mail-lock-icon {
   position: absolute;
-  right: 0.5rem;
-  top: 21rem;
+  top: 21.4rem;
+  right: 0;
 }
 
 .email-input {

@@ -13,14 +13,14 @@
 
 .add-tasks-manage-tasks {
   position: absolute;
-  top: 5.5%;
+  top: 5.5rem;
   right: 5%;
 }
 
 @media (max-width: 1440px) {
   .add-tasks-manage-tasks {
     position: absolute;
-    top: 4.5%;
+    top: 5.5rem;
     right: 5%;
   }
 }
@@ -28,7 +28,7 @@
 @media screen and (max-width: 1280px) {
   .add-tasks-manage-tasks {
     position: absolute;
-    top: 3%;
+    top: 5.5rem;
     right: 5%;
   }
 }

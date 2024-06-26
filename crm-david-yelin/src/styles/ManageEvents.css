@@ -13,14 +13,14 @@
 
 .add-events-manage-events {
   position: absolute;
-  top: 5.5%;
+  top: 5.5rem;
   right: 5%;
 }
 
 @media (max-width: 1440px) {
   .add-events-manage-events {
     position: absolute;
-    top: 4.5%;
+    top: 5.5rem;
     right: 5%;
   }
 }

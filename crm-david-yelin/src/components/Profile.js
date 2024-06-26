@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   collection,
   query,
@@ -12,6 +12,8 @@ import { db } from "../firebase";
 import { useParams } from "react-router-dom";
 import "../styles/Styles.css";
 import "../styles/Profile.css";
+import ChangePassword from "./ChangePassword";
+import EditUser from "./EditUser";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
@@ -28,7 +30,7 @@ import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
-import ChangePassword from "./ChangePassword";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 function Profile() {
   const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
@@ -45,8 +47,10 @@ function Profile() {
 
   const [profile, setProfile] = useState();
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   const user = JSON.parse(sessionStorage.getItem("user"));
+  const editUserRef = useRef(null);
 
   const { email } = useParams();
 
@@ -434,6 +438,44 @@ function Profile() {
           <ChangePassword />
         </div>
       )}
+      {showEditProfile && (
+        <div ref={editUserRef} className="display-edit-user">
+          <div
+            className="action-close"
+            onClick={() => {
+              setShowEditProfile(false);
+            }}
+          >
+            <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+            >
+              <line
+                x1="17"
+                y1="7"
+                x2="7"
+                y2="17"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+              <line
+                x1="7"
+                y1="7"
+                x2="17"
+                y2="17"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+          <EditUser target={profile} />
+        </div>
+      )}
       {profile ? (
         <div className="profile-page-container">
           <div className="profile-information right-side">
@@ -504,9 +546,12 @@ function Profile() {
                   <VpnKeyIcon />
                   <h3 className="profile-phone">שינוי סיסמה נוכחית</h3>
                 </div>
-                <div className="profile-stats-row profile-personal-info">
-                  <AlternateEmailIcon />
-                  <h3>{profile && profile.email}</h3>
+                <div
+                  className="profile-stats-row profile-personal-info"
+                  onClick={() => setShowEditProfile(true)}
+                >
+                  <SettingsIcon />
+                  <h3>עדכן פרטים אישיים</h3>
                 </div>
               </div>
             ) : null}

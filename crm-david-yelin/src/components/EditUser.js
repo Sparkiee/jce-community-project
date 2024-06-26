@@ -32,6 +32,8 @@ function EditUser(params) {
   const [isNoLevel3, setIsNoLevel3] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
 
+  const user = JSON.parse(sessionStorage.getItem("user"));
+
   let navigate = useNavigate();
 
   async function handleSubmit(event) {
@@ -164,66 +166,71 @@ function EditUser(params) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          <select
-            name="department"
-            value={department}
-            onChange={(event) => {
-              const value = event.target.value;
-              if (value === "other") {
-                setIsOtherSelected(true);
-                setDepartment("");
-              } else {
-                setIsOtherSelected(false);
-                setDepartment(value);
-              }
-            }}
-            className="forms-input"
-          >
-            <option value="" disabled>
-              בחר מחלקה
-            </option>
-            {departmentList.map((dept, index) => (
-              <option key={index} value={dept}>
-                {dept}
-              </option>
-            ))}
-            <option value="other">הוסף מחלקה חדשה</option>
-          </select>
-          {isOtherSelected && (
-            <div className="new-department">
+          {user && user.privileges > 2 && (
+            <>
+              <select
+                id="department-select"
+                name="department"
+                value={department}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setIsOtherSelected(value === "other");
+                  setDepartment(value === "other" ? "" : value);
+                }}
+                className="forms-input"
+              >
+                <option value="" disabled>
+                  בחר מחלקה
+                </option>
+                {departmentList.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
+                <option value="other">הוסף מחלקה חדשה</option>
+              </select>
+              {isOtherSelected && (
+                <div className="new-department">
+                  <input
+                    type="text"
+                    value={newDepartment}
+                    placeholder="שם מחלקה חדשה"
+                    onChange={(event) => setNewDepartment(event.target.value)}
+                    className="forms-input"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addDepartment(newDepartment);
+                      setNewDepartment("");
+                    }}
+                    className="primary-button extra-create-user-button"
+                  >
+                    הוסף מחלקה חדשה
+                  </button>
+                </div>
+              )}
               <input
+                id="role-input"
                 type="text"
-                value={newDepartment}
-                placeholder="שם מחלקה חדשה"
-                onChange={(event) => setNewDepartment(event.target.value)}
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+                placeholder="תפקיד"
                 className="forms-input"
               />
-              <button
-                type="button"
-                onClick={addDepartment}
-                className="primary-button extra-create-user-button"
+              <select
+                id="privileges-select"
+                value={privileges}
+                onChange={(event) => setPrivileges(Number(event.target.value))}
+                className="forms-input"
               >
-                הוסף מחלקה חדשה
-              </button>
-            </div>
+                <option value={3}>יו"ר</option>
+                <option value={2}>ראש מחלקה</option>
+                <option value={1}>חבר מועצה</option>
+                <option value={0}>משתמש מושהה</option>
+              </select>
+            </>
           )}
-          <input
-            type="text"
-            value={role}
-            onChange={(event) => setRole(event.target.value)}
-            placeholder="תפקיד"
-            className="forms-input"
-          />
-          <select
-            value={privileges}
-            onChange={(event) => setPrivileges(Number(event.target.value))}
-            className="forms-input"
-          >
-            <option value={3}>יו"ר</option>
-            <option value={2}>ראש מחלקה</option>
-            <option value={1}>חבר מועצה</option>
-            <option value={0}>משתמש מושהה</option>
-          </select>
           {isNoLevel3 && (
             <Alert
               severity="warning"

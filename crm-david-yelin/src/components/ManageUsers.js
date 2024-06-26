@@ -393,6 +393,10 @@ function ManageUsers() {
     setShowCreateUser(false);
   };
 
+  const handleRowDoubleClick = (params) => {
+    navigate(`/profile/${params.row.email}`);
+  };
+
   return (
     <div>
       {editUserForm && (
@@ -541,6 +545,7 @@ function ManageUsers() {
                   labelRowsPerPage: "שורות בכל עמוד:"
                 }
               }}
+              onRowDoubleClick={handleRowDoubleClick}
             />
           </ThemeProvider>
         </div>
@@ -618,6 +623,7 @@ function ManageUsers() {
                   labelRowsPerPage: "שורות בכל עמוד:"
                 }
               }}
+              onRowDoubleClick={handleRowDoubleClick}
             />
           </ThemeProvider>
         </div>

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { db } from "../firebase";
 import {
   collection,
@@ -26,6 +28,7 @@ function stringToColor(string) {
   let hash = 0;
   let i;
 
+  /* eslint-disable no-bitwise */
   for (i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
@@ -36,16 +39,22 @@ function stringToColor(string) {
     const value = (hash >> (i * 8)) & 0xff;
     color += `00${value.toString(16)}`.slice(-2);
   }
+  /* eslint-enable no-bitwise */
 
   return color;
 }
 
 function stringAvatar(name) {
+  if (!name) {
+    return { sx: { bgcolor: '#000000' }, children: '?' }; // Default values if name is undefined or null
+  }
+  const nameParts = name.split(" ");
+  const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    children: initials,
   };
 }
 
@@ -57,6 +66,7 @@ function ManageTasks() {
   const [deleteTarget, setDeleteTarget] = useState("");
 
   const createTaskRef = useRef(null);
+  const navigate = useNavigate();
 
   const theme = createTheme(
     {
@@ -136,6 +146,18 @@ function ManageTasks() {
           </AvatarGroup>
         );
       }
+    },
+    {
+      field: 'view', 
+      headerName: 'צפייה',
+      width: 80,
+      align: 'center',
+      flex: 1.5,
+      renderCell: (params) => (
+        <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>  
+          <VisibilityIcon />
+        </IconButton >
+      )
     }
   ];
 
@@ -413,6 +435,7 @@ function ManageTasks() {
                   labelRowsPerPage: "שורות בכל עמוד:"
                 }
               }}
+              onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
             />
           </ThemeProvider>
         </div>

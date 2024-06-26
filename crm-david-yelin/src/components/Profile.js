@@ -32,6 +32,7 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
 import SettingsIcon from "@mui/icons-material/Settings";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 function Profile() {
   const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
@@ -511,7 +512,7 @@ function Profile() {
                   )
                 }
               >
-                <PhoneIphoneIcon />
+                <WhatsAppIcon />
                 <h3 className="profile-phone">{profile && profile.phone}</h3>
               </div>
               <div className="profile-stats-row profile-personal-info">

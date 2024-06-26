@@ -2,7 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { db } from "../firebase";
-import { collection, getDocs, getDoc, doc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  deleteDoc
+} from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -43,12 +49,13 @@ function stringAvatar(name) {
     return { sx: { bgcolor: "#000000" }, children: "?" }; // Default values if name is undefined or null
   }
   const nameParts = name.split(" ");
-  const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
+  const initials =
+    nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -66,8 +73,8 @@ function ManageTasks() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -81,49 +88,49 @@ function ManageTasks() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 2.5,
+      flex: 2.5
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "relatedEvent",
       headerName: "שייך לאירוע",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 1.5,
+      flex: 1.5
     },
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 1.5,
+      flex: 1.5
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "assignTo",
@@ -139,7 +146,7 @@ function ManageTasks() {
             ))}
           </AvatarGroup>
         );
-      },
+      }
     },
     {
       field: "view",
@@ -148,11 +155,14 @@ function ManageTasks() {
       align: "center",
       flex: 0.5,
       renderCell: (params) => (
-        <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
+        <IconButton
+          aria-label="view"
+          onClick={() => navigate(`/task/${params.row.taskDoc}`)}
+        >
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const editColumn = {
@@ -163,17 +173,24 @@ function ManageTasks() {
     flex: 1.5,
     renderCell: (params) => (
       <div>
-        <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
+        <IconButton
+          aria-label="edit"
+          onClick={() => handleEditClick(params.row)}
+        >
           <EditIcon />
         </IconButton>
-        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
+        <IconButton
+          aria-label="delete"
+          onClick={() => setDeleteTarget(params.row)}
+        >
           <DeleteForeverIcon />
         </IconButton>
       </div>
-    ),
+    )
   };
 
-  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  const columns =
+    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -208,7 +225,7 @@ function ManageTasks() {
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        taskDoc: doc.id, // Ensure taskDoc is set correctly
+        taskDoc: doc.id // Ensure taskDoc is set correctly
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -231,7 +248,7 @@ function ManageTasks() {
             taskEndDate: task.taskEndDate,
             taskTime: task.taskTime,
             taskStatus: task.taskStatus,
-            assignTo: assigneeData,
+            assignTo: assigneeData
           };
         })
       );
@@ -246,14 +263,23 @@ function ManageTasks() {
     const taskDoc = await getDoc(doc(db, "tasks", row.taskDoc));
     if (taskDoc.exists()) {
       const taskData = taskDoc.data();
-      const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
-      const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
+      const assigneeEmails = taskData.assignees.map(
+        (email) => email.split("/")[1]
+      );
+      const assigneePromises = assigneeEmails.map((email) =>
+        getDoc(doc(db, "members", email))
+      );
       const assigneeDocs = await Promise.all(assigneePromises);
-      const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
+      const assigneeData = assigneeDocs
+        .map((doc) => (doc.exists() ? doc.data() : null))
+        .filter((data) => data);
       setEditingTask({
         ...taskData,
         taskDoc: row.taskDoc,
-        assignTo: assigneeData.map((assignee) => ({ value: assignee.email, label: assignee.fullName })),
+        assignTo: assigneeData.map((assignee) => ({
+          value: assignee.email,
+          label: assignee.fullName
+        }))
       });
     } else {
       console.error("No such document!");
@@ -264,7 +290,10 @@ function ManageTasks() {
     getTasks();
 
     const handleClickOutside = (event) => {
-      if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
+      if (
+        createTaskRef.current &&
+        !createTaskRef.current.contains(event.target)
+      ) {
         setShowCreateTask(false);
       }
     };
@@ -278,6 +307,10 @@ function ManageTasks() {
 
   const handleShowCreateTask = () => {
     setShowCreateTask(true);
+  };
+
+  const handleCloseForms = () => {
+    setShowCreateTask(false);
   };
 
   async function handleDeleteTask() {
@@ -298,47 +331,27 @@ function ManageTasks() {
   return (
     <div>
       {deleteTarget && (
-        <ConfirmAction onConfirm={handleDeleteTask} onCancel={() => setDeleteTarget("")} />
+        <ConfirmAction
+          onConfirm={handleDeleteTask}
+          onCancel={() => setDeleteTarget("")}
+        />
       )}
       <div className="manage-tasks-styles">
         <h1>משימות</h1>
         <div ref={createTaskRef} className="display-create">
           {user && user.privileges > 1 && showCreateTask && (
-            <div>
-              <div className="action-close" onClick={() => setShowCreateTask(false)}>
-                <svg
-                  width="24px"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                >
-                  <line
-                    x1="17"
-                    y1="7"
-                    x2="7"
-                    y2="17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="7"
-                    y1="7"
-                    x2="17"
-                    y2="17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
+            <div className="popup-overlay">
+              <div ref={createTaskRef} className="popup-content">
+                <CreateTask onClose={handleCloseForms} />
               </div>
-              <CreateTask />
             </div>
           )}
         </div>
         {user.privileges > 1 && (
-          <div className="action-button add-tasks-button add-tasks-manage-tasks" onClick={handleShowCreateTask}>
+          <div
+            className="action-button add-tasks-button add-tasks-manage-tasks"
+            onClick={handleShowCreateTask}
+          >
             <svg
               width="24px"
               height="24px"
@@ -347,7 +360,11 @@ function ManageTasks() {
               xmlns="http://www.w3.org/2000/svg"
             >
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
                 <path
                   d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
@@ -368,18 +385,22 @@ function ManageTasks() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 },
-                },
+                  paginationModel: { page: 0, pageSize: 17 }
+                }
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
-              onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
+              onRowDoubleClick={(params) =>
+                navigate(`/task/${params.row.taskDoc}`)
+              }
             />
           </ThemeProvider>
         </div>
@@ -411,5 +432,3 @@ function ManageTasks() {
 }
 
 export default ManageTasks;
-
-

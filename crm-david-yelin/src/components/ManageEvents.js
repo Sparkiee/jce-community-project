@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDoc,
+  doc,
+  getDocs,
+  deleteDoc
+} from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -43,12 +49,13 @@ function stringAvatar(name) {
     return { sx: { bgcolor: "#000000" }, children: "?" }; // Default values if name is undefined or null
   }
   const nameParts = name.split(" ");
-  const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
+  const initials =
+    nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -67,8 +74,8 @@ function ManageEvents() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -82,42 +89,42 @@ function ManageEvents() {
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "eventLocation",
       headerName: "מיקום",
       width: 150,
       align: "right",
-      flex: 4,
+      flex: 4
     },
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 1.5,
+      flex: 1.5
     },
     {
       field: "eventEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 1.5,
+      flex: 1.5
     },
     {
       field: "eventTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 1.5,
+      flex: 1.5
     },
     {
       field: "assignTo",
@@ -134,7 +141,7 @@ function ManageEvents() {
             ))}
           </AvatarGroup>
         );
-      },
+      }
     },
     {
       field: "view",
@@ -143,11 +150,14 @@ function ManageEvents() {
       align: "center",
       flex: 0.5,
       renderCell: (params) => (
-        <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
+        <IconButton
+          aria-label="view"
+          onClick={() => navigate(`/event/${params.row.eventDoc}`)}
+        >
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const editColumn = {
@@ -158,17 +168,24 @@ function ManageEvents() {
     flex: 1.5,
     renderCell: (params) => (
       <div>
-        <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
+        <IconButton
+          aria-label="edit"
+          onClick={() => handleEditClick(params.row)}
+        >
           <EditIcon />
         </IconButton>
-        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
+        <IconButton
+          aria-label="delete"
+          onClick={() => setDeleteTarget(params.row)}
+        >
           <DeleteForeverIcon />
         </IconButton>
       </div>
-    ),
+    )
   };
 
-  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  const columns =
+    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -187,11 +204,13 @@ function ManageEvents() {
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        eventDoc: doc.id,
+        eventDoc: doc.id
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
-          const assignees = Array.isArray(event.assignees) ? event.assignees : [];
+          const assignees = Array.isArray(event.assignees)
+            ? event.assignees
+            : [];
           const assigneeData = await Promise.all(
             assignees.map(async (assignee) => {
               const email = assignee.split("/")[1];
@@ -208,7 +227,7 @@ function ManageEvents() {
             eventEndDate: event.eventEndDate,
             eventTime: event.eventTime,
             eventStatus: event.eventStatus,
-            assignTo: assigneeData || [],
+            assignTo: assigneeData || []
           };
         })
       );
@@ -222,7 +241,10 @@ function ManageEvents() {
     getEvents();
 
     const handleClickOutside = (event) => {
-      if (createEventRef.current && !createEventRef.current.contains(event.target)) {
+      if (
+        createEventRef.current &&
+        !createEventRef.current.contains(event.target)
+      ) {
         setShowCreateEvent(false);
       }
     };
@@ -236,6 +258,10 @@ function ManageEvents() {
 
   const handleShowCreateEvents = () => {
     setShowCreateEvent(true);
+  };
+
+  const handleCloseForms = () => {
+    setShowCreateEvent(false);
   };
 
   async function handleDeleteEvent() {
@@ -284,67 +310,48 @@ function ManageEvents() {
   return (
     <div>
       {deleteTarget && (
-        <ConfirmAction onConfirm={() => handleDeleteEvent()} onCancel={() => setDeleteTarget("")} />
+        <ConfirmAction
+          onConfirm={() => handleDeleteEvent()}
+          onCancel={() => setDeleteTarget("")}
+        />
       )}
       <div className="manage-events-styles">
         <h1>אירועים</h1>
         <div ref={createEventRef} className="display-create">
           {user && user.privileges > 1 && showCreateEvent && (
-            <div>
-              <div
-                className="action-close"
-                onClick={() => {
-                  setShowCreateEvent(false);
-                }}>
-                <svg
-                  width="24px"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor">
-                  <line
-                    x1="17"
-                    y1="7"
-                    x2="7"
-                    y2="17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="7"
-                    y1="7"
-                    x2="17"
-                    y2="17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
+            <div className="popup-overlay">
+              <div ref={createEventRef} className="popup-content">
+                <CreateEvent onClose={handleCloseForms} />
               </div>
-              <CreateEvent />
             </div>
           )}
         </div>
         {user && user.privileges > 1 && (
           <div
             className="action-button add-events-button add-events-manage-events"
-            onClick={handleShowCreateEvents}>
+            onClick={handleShowCreateEvents}
+          >
             <svg
               width="24px"
               height="24px"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
                 <path
                   d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                   stroke="white"
                   strokeWidth="2"
                   strokeLinecap="round"
-                  strokeLinejoin="round"></path>
+                  strokeLinejoin="round"
+                ></path>
               </g>
             </svg>
             הוסף אירוע
@@ -357,16 +364,18 @@ function ManageEvents() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 },
-                },
+                  paginationModel: { page: 0, pageSize: 17 }
+                }
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -383,7 +392,8 @@ function ManageEvents() {
         open={isEditing}
         onClose={handleCloseEdit}
         aria-labelledby="edit-event-modal-title"
-        aria-describedby="edit-event-modal-description">
+        aria-describedby="edit-event-modal-description"
+      >
         <div className="modal-content">
           {editEventDetails && (
             <EditEvent

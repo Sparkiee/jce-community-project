@@ -17,7 +17,6 @@ import { Alert } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 
 function EditUser(props) {
-  console.log(props);
   const [firstName, setFirstName] = useState(props.target.firstName || "");
   const [lastName, setLastName] = useState(props.target.lastName || "");
   const [email, setEmail] = useState(props.target.email || "");
@@ -34,8 +33,6 @@ function EditUser(props) {
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
 
   const user = JSON.parse(sessionStorage.getItem("user"));
-
-  let navigate = useNavigate();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -87,10 +84,11 @@ function EditUser(props) {
       setTimeout(() => {
         setEdittedSuccessfully(false);
       }, 1000);
+
+      props.onClose();
     } catch (e) {
       console.error("Error updating document: ", e);
     }
-    navigate("/users");
   }
 
   function addDepartment() {
@@ -127,10 +125,7 @@ function EditUser(props) {
 
   return (
     <div className="edit-user">
-      <div
-        className="action-close"
-        onClick={props.onClose}
-      >
+      <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
           height="24px"

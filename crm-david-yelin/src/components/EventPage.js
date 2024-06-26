@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
@@ -11,8 +11,7 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
-import Modal from "@mui/material/Modal";
-import CircularProgress from "@mui/material/CircularProgress";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function stringToColor(string) {
   let hash = 0;
@@ -30,21 +29,10 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
-}
-
-async function getMemberFullName(email) {
-  try {
-    const memberDoc = await getDoc(doc(collection(db, "members"), email));
-    if (memberDoc.exists()) {
-      return memberDoc.data().fullName;
-    }
-  } catch (e) {
-    console.error("Error getting member document: ", e);
-  }
 }
 
 function EventPage() {
@@ -54,16 +42,28 @@ function EventPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [userPrivileges, setUserPrivileges] = useState(1);
   const [loading, setLoading] = useState(true);
+  const createEventRef = useRef(null);
 
   const theme = createTheme(
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
+
+  async function getMemberFullName(email) {
+    try {
+      const memberDoc = await getDoc(doc(collection(db, "members"), email));
+      if (memberDoc.exists()) {
+        return memberDoc.data().fullName;
+      }
+    } catch (e) {
+      console.error("Error getting member document: ", e);
+    }
+  }
 
   const fetchEvent = useCallback(async () => {
     try {
@@ -97,7 +97,7 @@ function EventPage() {
           return {
             ...taskData,
             id: index + 1,
-            assignTo: assigneeData
+            assignTo: assigneeData,
           };
         })
       );
@@ -109,8 +109,9 @@ function EventPage() {
     }
   }, [id]);
 
+  const user = JSON.parse(sessionStorage.getItem("user"));
+
   const fetchUserPrivileges = useCallback(() => {
-    const user = JSON.parse(sessionStorage.getItem('user'));
     if (user && user.privileges) {
       setUserPrivileges(user.privileges);
     }
@@ -135,6 +136,24 @@ function EventPage() {
     fetchEvent(); // Refresh event details
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (createEventRef.current && !createEventRef.current.contains(event.target)) {
+        setIsEditing(false);
+      }
+    };
+
+    if (isEditing) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isEditing]);
+
   const taskColumns = [
     { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
     {
@@ -142,21 +161,21 @@ function EventPage() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 4
+      flex: 4,
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
     },
     {
       field: "assignTo",
@@ -172,74 +191,128 @@ function EventPage() {
             ))}
           </AvatarGroup>
         );
-      }
-    }
+      },
+    },
+    {
+      field: "view",
+      headerName: "צפייה",
+      width: 80,
+      align: "center",
+      flex: 0.5,
+      renderCell: (params) => (
+        <IconButton aria-label="view" /*onClick={() => navigate(``)}*/>
+          <VisibilityIcon />
+        </IconButton>
+      ),
+    },
   ];
 
   return (
     <div className="event-page">
-      <div className="event-details">
-        {event && (
-          <>
-            <h1>{event.eventName}</h1>
-            <div>
-              <p>מיקום: {event.eventLocation}</p>
-              <p>תאריך התחלה: {event.eventStartDate}</p>
-              <p>תאריך יעד: {event.eventEndDate}</p>
-              <p>סטטוס: {event.eventStatus}</p>
-              <p>שעת סיום: {event.eventTime}</p>
-            </div>
-            {userPrivileges >= 2 && (
-              <IconButton aria-label="edit" onClick={handleEditClick}>
-                <EditIcon />
-              </IconButton>
-            )}
-          </>
-        )}
-      </div>
-      <div className="event-tasks">
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <ThemeProvider theme={theme}>
-            <DataGrid
-              rows={tasks}
-              columns={taskColumns}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 }
-                }
-              }}
-              pageSizeOptions={[10, 25, 50]}
-              localeText={{
-                MuiTablePagination: {
-                  labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${
-                      count !== -1 ? count : `יותר מ ${to}`
-                    }`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
-              }}
-            />
-          </ThemeProvider>
-        )}
-      </div>
-      <Modal
-        open={isEditing}
-        onClose={handleCloseEdit}
-        aria-labelledby="edit-event-modal-title"
-        aria-describedby="edit-event-modal-description"
-      >
-        <div className="modal-content">
+      <div className="event-page-style">
+        <div className="event-details">
           {event && (
-            <EditEvent
-              eventDetails={event}
-              onClose={handleCloseEdit}
-              onSave={handleSaveEdit}
-            />
+            <div className="event-box">
+              <h1>{event.eventName}</h1>
+              <div>
+                <p>
+                  <strong>מיקום: </strong>
+                  {event.eventLocation}
+                </p>
+                <p>
+                  <strong>תאריך התחלה: </strong>
+                  {event.eventStartDate}
+                </p>
+                <p>
+                  <strong>תאריך יעד: </strong>
+                  {event.eventEndDate}
+                </p>
+                <p>
+                  <strong>סטטוס: </strong>
+                  {event.eventStatus}
+                </p>
+                <p>
+                  <strong>שעת סיום: </strong>
+                  {event.eventTime}
+                </p>
+              </div>
+              {userPrivileges >= 2 && (
+                <IconButton
+                  className="event-page-edit-icon"
+                  aria-label="edit"
+                  onClick={handleEditClick}>
+                  <EditIcon />
+                </IconButton>
+              )}
+            </div>
           )}
         </div>
-      </Modal>
+        <div className="event-tasks">
+          {!loading && (
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                rows={tasks}
+                columns={taskColumns}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5 },
+                  },
+                }}
+                pageSizeOptions={[5, 25, 50]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
+                }}
+              />
+            </ThemeProvider>
+          )}
+        </div>
+      </div>
+
+      {isEditing && event && (
+        <div className="edit-event-popup">
+          <div className="edit-event-popup-content" ref={createEventRef}>
+            <div className="action-close" onClick={handleCloseEdit}>
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor">
+                <line
+                  x1="17"
+                  y1="7"
+                  x2="7"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="7"
+                  y1="7"
+                  x2="17"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <EditEvent eventDetails={event} onSave={handleSaveEdit} />
+          </div>
+        </div>
+      )}
+      <div className="lower-event-page-content">
+        <div className="event-page-participants">
+          <h2>משתתפים</h2>
+        </div>
+        <div className="event-page-comments"></div>
+      </div>
+      <div className="footer"></div>
     </div>
   );
 }

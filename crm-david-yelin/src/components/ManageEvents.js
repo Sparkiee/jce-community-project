@@ -154,7 +154,7 @@ function ManageEvents() {
   };
 
   const columns =
-    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+    user && user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -255,7 +255,7 @@ function ManageEvents() {
       <div className="manage-events-styles">
         <h1>אירועים</h1>
         <div ref={createEventRef} className="display-create">
-          {user.privileges > 1 && showCreateEvent && (
+          {user && user.privileges > 1 && showCreateEvent && (
             <div>
               <div
                 className="action-close"
@@ -294,7 +294,7 @@ function ManageEvents() {
             </div>
           )}
         </div>
-        {user.privileges > 1 && (
+        {user && user.privileges > 1 && (
           <div
             className="action-button add-events-button add-events-manage-events"
             onClick={handleShowCreateEvents}

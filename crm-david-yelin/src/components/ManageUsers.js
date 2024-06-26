@@ -2,10 +2,19 @@ import React, { useEffect, useState, useRef } from "react";
 import "../styles/Styles.css";
 import "../styles/ManageUser.css";
 import { heIL } from "@mui/material/locale";
+import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { db } from "../firebase";
-import { updateDoc, doc, query, collection, getDocs, where, deleteDoc } from "firebase/firestore";
+import {
+  updateDoc,
+  doc,
+  query,
+  collection,
+  getDocs,
+  where,
+  deleteDoc
+} from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
@@ -14,6 +23,7 @@ import EditUser from "./EditUser";
 import CreateUser from "./CreateUser";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmAction from "./ConfirmAction";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function ManageUsers() {
   const [fullActiveMembers, setFullActiveMembers] = useState([]);
@@ -35,6 +45,8 @@ function ManageUsers() {
   const editUserRef = useRef(null);
   const createUserRef = useRef(null);
 
+  const navigate = useNavigate();
+
   const handleDeleteClick = (email) => {
     setDeleteTarget(email);
   };
@@ -51,8 +63,8 @@ function ManageUsers() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -62,25 +74,25 @@ function ManageUsers() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "edit",
@@ -95,12 +107,13 @@ function ManageUsers() {
             title="מחיקה"
             onClick={() => {
               handleDeleteClick(params.row.email);
-            }}>
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const columns = [
@@ -109,52 +122,52 @@ function ManageUsers() {
       headerName: "אינדקס",
       align: "right",
       flex: 1,
-      edittable: true,
+      edittable: true
     },
     {
       field: "firstName",
       headerName: "שם פרטי",
       align: "right",
       flex: 2,
-      edittable: true,
+      edittable: true
     },
     {
       field: "lastName",
       headerName: "שם משפחה",
       align: "right",
       flex: 2,
-      edittable: true,
+      edittable: true
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "phone",
       headerName: "טלפון",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "privileges",
       headerName: "הרשאות",
       align: "right",
-      flex: 2,
-    },
+      flex: 2
+    }
   ];
 
   const editEnabled = [
@@ -173,7 +186,8 @@ function ManageUsers() {
             onClick={() => {
               setEditUser(params.row);
               setEditUserForm(true);
-            }}>
+            }}
+          >
             <EditIcon />
           </IconButton>
           <IconButton
@@ -181,12 +195,30 @@ function ManageUsers() {
             title="הסר גישה לאתר"
             onClick={() => {
               setRemovePermmisionTarget(params.row);
-            }}>
+            }}
+          >
             <PersonOffIcon />
           </IconButton>
         </div>
-      ),
+      )
     },
+    {
+      field: "view",
+      headerName: "הצגה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <div>
+          <IconButton
+            aria-label="edit"
+            title="הצגה"
+            onClick={() => navigate(`/profile/${params.row.email}`)}
+          >
+            <VisibilityIcon />
+          </IconButton>
+        </div>
+      )
+    }
   ];
 
   async function handleRemovePermissions() {
@@ -210,7 +242,7 @@ function ManageUsers() {
       }
       const targetUserRef = doc(usersRef, removePermmisionTarget.email);
       await updateDoc(targetUserRef, {
-        privileges: 0,
+        privileges: 0
       });
       fetchUsers();
     } catch (error) {
@@ -234,12 +266,30 @@ function ManageUsers() {
             onClick={() => {
               setEditUser(params.row);
               setEditUserForm(true);
-            }}>
+            }}
+          >
             <EditIcon />
           </IconButton>
         </div>
-      ),
+      )
     },
+    {
+      field: "view",
+      headerName: "הצגה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <div>
+          <IconButton
+            aria-label="edit"
+            title="הצגה"
+            onClick={() => navigate(`/profile/${params.row.email}`)}
+          >
+            <VisibilityIcon />
+          </IconButton>
+        </div>
+      )
+    }
   ];
   async function deleteUser(email) {
     try {
@@ -256,8 +306,12 @@ function ManageUsers() {
       const membersRef = collection(db, "members");
       const membersSnapshot = await getDocs(membersRef);
       const membersList = membersSnapshot.docs.map((doc) => doc.data());
-      const disabledMembers = membersList.filter((member) => member.privileges === 0);
-      const enabledMembers = membersList.filter((member) => member.privileges > 0);
+      const disabledMembers = membersList.filter(
+        (member) => member.privileges === 0
+      );
+      const enabledMembers = membersList.filter(
+        (member) => member.privileges > 0
+      );
       const disabledMembersFormatted = disabledMembers.map((member, index) => {
         return {
           id: index + 1,
@@ -267,7 +321,7 @@ function ManageUsers() {
           phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
-          privileges: member.privileges || 0,
+          privileges: member.privileges || 0
         };
       });
       const enabledMembersFormatted = enabledMembers.map((member, index) => {
@@ -279,7 +333,7 @@ function ManageUsers() {
           phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
-          privileges: member.privileges || 0,
+          privileges: member.privileges || 0
         };
       });
       setDisabledMemberRows(disabledMembersFormatted);
@@ -300,7 +354,7 @@ function ManageUsers() {
           id: index + 1,
           email: member.email || "",
           department: member.department || "",
-          role: member.role || "",
+          role: member.role || ""
         };
       });
       setPendingMemberRows(membersFormatted);
@@ -312,130 +366,95 @@ function ManageUsers() {
 
   useEffect(() => {
     fetchUsers();
-  
+
     const handleClickOutside = (event) => {
       if (editUserRef.current && !editUserRef.current.contains(event.target)) {
         setEditUserForm(false);
       }
 
-      if(createUserRef.current && !createUserRef.current.contains(event.target)) {
+      if (
+        createUserRef.current &&
+        !createUserRef.current.contains(event.target)
+      ) {
         setShowCreateUser(false);
       }
     };
     // Add the event listener when the component mounts
     document.addEventListener("mousedown", handleClickOutside);
-  
+
     // Return a cleanup function to remove the event listener when the component unmounts
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const handleCloseForm = () => {
+    setEditUserForm(false);
+    setShowCreateUser(false);
+  };
+
   return (
     <div>
+      {editUserForm && (
+        <div className="popup-overlay">
+          <div ref={editUserRef} className="popup-content">
+            <EditUser target={editUser} onClose={handleCloseForm} />
+          </div>
+        </div>
+      )}
+      {showCreateUser && (
+        <div className="popup-overlay">
+          <div ref={createUserRef} className="popup-content">
+            <CreateUser onClose={handleCloseForm} />
+          </div>
+        </div>
+      )}
       {removePermmisionTarget && (
-        <ConfirmAction
-          onConfirm={() => handleRemovePermissions()}
-          onCancel={() => setRemovePermmisionTarget("")}
-        />
+        <div className="popup-overlay">
+          <ConfirmAction
+            className="popup-content"
+            onConfirm={() => handleRemovePermissions()}
+            onCancel={() => setRemovePermmisionTarget("")}
+          />
+        </div>
       )}
       {deleteTarget && (
-        <ConfirmAction
-          onConfirm={() => handleConfirmDelete()}
-          onCancel={() => handleCancelDelete()}
-        />
+        <div className="popup-overlay">
+          <ConfirmAction
+            className="popup-content"
+            onConfirm={() => handleConfirmDelete()}
+            onCancel={() => handleCancelDelete()}
+          />
+        </div>
       )}
       <div className="manage-users-container">
-        {editUserForm && (
-          <div ref={editUserRef} className="display-edit-user">
-            <div
-              className="action-close"
-              onClick={() => {
-                setEditUserForm(false);
-              }}>
-              <svg
-                width="24px"
-                height="24px"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor">
-                <line
-                  x1="17"
-                  y1="7"
-                  x2="7"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="7"
-                  y1="7"
-                  x2="17"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <EditUser target={editUser}/>
-          </div>
-        )}
-        {showCreateUser && (
-          <div ref={createUserRef} className="display-create-user">
-            <div
-              className="action-close"
-              onClick={() => {
-                setShowCreateUser(false);
-              }}>
-              <svg
-                width="24px"
-                height="24px"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor">
-                <line
-                  x1="17"
-                  y1="7"
-                  x2="7"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="7"
-                  y1="7"
-                  x2="17"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <CreateUser />
-          </div>
-        )}
         <div className="page-title">ניהול משתמשים</div>
         <div className="pending-actions">
-          <div className="action-button add-task-button" onClick={() => setShowCreateUser(true)}>
+          <div
+            className="action-button add-task-button"
+            onClick={() => setShowCreateUser(true)}
+          >
             <svg
               width="24px"
               height="24px"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
                 <path
                   d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                   stroke="white"
                   strokeWidth="2"
                   strokeLinecap="round"
-                  strokeLinejoin="round"></path>
+                  strokeLinejoin="round"
+                ></path>
               </g>
             </svg>
             הוסף משתמש
@@ -443,18 +462,38 @@ function ManageUsers() {
         </div>
         <div className="table-title">משתמשים פעילים</div>
         <div className="search-users-table">
-          <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <svg
+            viewBox="0 0 32 32"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
+          >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
             <g id="SVGRepo_iconCarrier">
               <title>search</title>
               <desc>Created with Sketch Beta.</desc>
               <defs></defs>
-              <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                <g id="Icon-Set" transform="translate(-256.000000, -1139.000000)" fill="#000000">
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <g
+                  id="Icon-Set"
+                  transform="translate(-256.000000, -1139.000000)"
+                  fill="#000000"
+                >
                   <path
                     d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
-                    id="search"></path>
+                    id="search"
+                  ></path>
                 </g>
               </g>
             </g>
@@ -474,7 +513,10 @@ function ManageUsers() {
           />
         </div>
         {removeLastAdminAlert && (
-          <Alert className="feedback-alert user-data-feedback" severity="warning">
+          <Alert
+            className="feedback-alert user-data-feedback"
+            severity="warning"
+          >
             לא ניתן להסיר מנהל ראשי אחרון מהמערכת
           </Alert>
         )}
@@ -486,16 +528,18 @@ function ManageUsers() {
               columns={editEnabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
             />
           </ThemeProvider>
@@ -503,18 +547,38 @@ function ManageUsers() {
         <hr className="divider" />
         <div className="table-title">משתמשים לא פעילים</div>
         <div className="search-users-table">
-          <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <svg
+            viewBox="0 0 32 32"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
+          >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
             <g id="SVGRepo_iconCarrier">
               <title>search</title>
               <desc>Created with Sketch Beta.</desc>
               <defs></defs>
-              <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                <g id="Icon-Set" transform="translate(-256.000000, -1139.000000)" fill="#000000">
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <g
+                  id="Icon-Set"
+                  transform="translate(-256.000000, -1139.000000)"
+                  fill="#000000"
+                >
                   <path
                     d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
-                    id="search"></path>
+                    id="search"
+                  ></path>
                 </g>
               </g>
             </g>
@@ -541,16 +605,18 @@ function ManageUsers() {
               columns={editDisabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
             />
           </ThemeProvider>
@@ -558,18 +624,38 @@ function ManageUsers() {
         <hr className="divider" />
         <div className="table-title">משתמשים שמחכים להרשמה</div>
         <div className="search-users-table">
-          <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <svg
+            viewBox="0 0 32 32"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
+          >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
             <g id="SVGRepo_iconCarrier">
               <title>search</title>
               <desc>Created with Sketch Beta.</desc>
               <defs></defs>
-              <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                <g id="Icon-Set" transform="translate(-256.000000, -1139.000000)" fill="#000000">
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <g
+                  id="Icon-Set"
+                  transform="translate(-256.000000, -1139.000000)"
+                  fill="#000000"
+                >
                   <path
                     d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
-                    id="search"></path>
+                    id="search"
+                  ></path>
                 </g>
               </g>
             </g>
@@ -595,16 +681,18 @@ function ManageUsers() {
               columns={awaitingColumns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                    `${from}-${to} מתוך ${
+                      count !== -1 ? count : `יותר מ ${to}`
+                    }`,
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
             />
           </ThemeProvider>

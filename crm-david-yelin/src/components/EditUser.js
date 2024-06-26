@@ -7,22 +7,23 @@ import {
   getDocs,
   collection,
   where,
-  query,
+  query
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
 import "../styles/EditUser.css";
 import PhoneInput from "react-phone-number-input/input";
 import { Alert } from "@mui/material";
+import LockIcon from "@mui/icons-material/Lock";
 
-function EditUser(params) {
-  const [firstName, setFirstName] = useState(params.target.firstName || "");
-  const [lastName, setLastName] = useState(params.target.lastName || "");
-  const [email, setEmail] = useState(params.target.email || "");
-  const [phone, setPhone] = useState(params.target.phone || "");
-  const [role, setRole] = useState(params.target.role || "");
-  const [department, setDepartment] = useState(params.target.department || "");
-  const [privileges, setPrivileges] = useState(params.target.privileges) || "";
+function EditUser(props) {
+  const [firstName, setFirstName] = useState(props.target.firstName || "");
+  const [lastName, setLastName] = useState(props.target.lastName || "");
+  const [email, setEmail] = useState(props.target.email || "");
+  const [phone, setPhone] = useState(props.target.phone || "");
+  const [role, setRole] = useState(props.target.role || "");
+  const [department, setDepartment] = useState(props.target.department || "");
+  const [privileges, setPrivileges] = useState(props.target.privileges) || "";
 
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
@@ -31,13 +32,12 @@ function EditUser(params) {
   const [isNoLevel3, setIsNoLevel3] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
 
-  let navigate = useNavigate();
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (params.target.privileges > 2 && privileges !== 3) {
-
+    if (props.target.privileges > 2 && privileges !== 3) {
       // Reference to the Firestore "members" collection
       const memberRef = collection(db, "members");
 
@@ -67,7 +67,7 @@ function EditUser(params) {
       }
     }
     const docRef = doc(db, "members", email);
-    
+
     try {
       setDoc(docRef, {
         firstName: firstName,
@@ -78,16 +78,17 @@ function EditUser(params) {
         role: role,
         department: department,
         privileges: privileges,
-        lastUpdate: serverTimestamp(),
+        lastUpdate: serverTimestamp()
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {
         setEdittedSuccessfully(false);
       }, 1000);
+
+      props.onClose();
     } catch (e) {
       console.error("Error updating document: ", e);
     }
-    navigate("/users");
   }
 
   function addDepartment() {
@@ -97,7 +98,7 @@ function EditUser(params) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment,
+          name: newDepartment
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -124,9 +125,37 @@ function EditUser(params) {
 
   return (
     <div className="edit-user">
+      <div className="action-close" onClick={props.onClose}>
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+        >
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
       <form className="edit-user-form" onSubmit={handleSubmit}>
         <h2 className="title extra-registration-form-title">
-          עריכת משתמש, {params.target.firstName} {params.target.lastName}
+          עריכת משתמש, {props.target.firstName} {props.target.lastName}
         </h2>
         <div className="edit-user-input-box">
           <input
@@ -147,86 +176,101 @@ function EditUser(params) {
             onChange={(event) => setLastName(event.target.value)}
           />
           <PhoneInput
-              defaultCountry="IL"
-              placeholder="טלפון"
-              className="forms-input"
-              maxLength="12"
-              value={phone}
-              onChange={(value) => setPhone(value)}
-              style={{ textAlign: "right" }}
-            />
+            defaultCountry="IL"
+            placeholder="טלפון"
+            className="forms-input"
+            maxLength="12"
+            value={phone}
+            onChange={(value) => setPhone(value)}
+            style={{ textAlign: "right" }}
+          />
+          <LockIcon className="mail-lock-icon" />
           <input
             readOnly
             type="email"
             placeholder="אימייל"
-            className="forms-input"
+            className="forms-input email-input"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          <select
-            name="department"
-            value={department}
-            onChange={(event) => {
-              const value = event.target.value;
-              if (value === "other") {
-                setIsOtherSelected(true);
-                setDepartment("");
-              } else {
-                setIsOtherSelected(false);
-                setDepartment(value);
-              }
-            }}
-            className="forms-input">
-            <option value="" disabled>
-              בחר מחלקה
-            </option>
-            {departmentList.map((dept, index) => (
-              <option key={index} value={dept}>
-                {dept}
-              </option>
-            ))}
-            <option value="other">הוסף מחלקה חדשה</option>
-          </select>
-          {isOtherSelected && (
-            <div className="new-department">
+          {user && user.privileges > 2 && (
+            <>
+              <select
+                id="department-select"
+                name="department"
+                value={department}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setIsOtherSelected(value === "other");
+                  setDepartment(value === "other" ? "" : value);
+                }}
+                className="forms-input"
+              >
+                <option value="" disabled>
+                  בחר מחלקה
+                </option>
+                {departmentList.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
+                <option value="other">הוסף מחלקה חדשה</option>
+              </select>
+              {isOtherSelected && (
+                <div className="new-department">
+                  <input
+                    type="text"
+                    value={newDepartment}
+                    placeholder="שם מחלקה חדשה"
+                    onChange={(event) => setNewDepartment(event.target.value)}
+                    className="forms-input"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addDepartment(newDepartment);
+                      setNewDepartment("");
+                    }}
+                    className="primary-button extra-create-user-button"
+                  >
+                    הוסף מחלקה חדשה
+                  </button>
+                </div>
+              )}
               <input
+                id="role-input"
                 type="text"
-                value={newDepartment}
-                placeholder="שם מחלקה חדשה"
-                onChange={(event) => setNewDepartment(event.target.value)}
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+                placeholder="תפקיד"
                 className="forms-input"
               />
-              <button
-                type="button"
-                onClick={addDepartment}
-                className="primary-button extra-create-user-button">
-                הוסף מחלקה חדשה
-              </button>
-            </div>
+              <select
+                id="privileges-select"
+                value={privileges}
+                onChange={(event) => setPrivileges(Number(event.target.value))}
+                className="forms-input"
+              >
+                <option value={3}>יו"ר</option>
+                <option value={2}>ראש מחלקה</option>
+                <option value={1}>חבר מועצה</option>
+                <option value={0}>משתמש מושהה</option>
+              </select>
+            </>
           )}
-          <input
-            type="text"
-            value={role}
-            onChange={(event) => setRole(event.target.value)}
-            placeholder="תפקיד"
-            className="forms-input"
-          />
-          <select
-            value={privileges}
-            onChange={(event) => setPrivileges(Number(event.target.value))}
-            className="forms-input">
-            <option value={3}>יו"ר</option>
-            <option value={2}>ראש מחלקה</option>
-            <option value={1}>חבר מועצה</option>
-            <option value={0}>משתמש מושהה</option>
-          </select>
           {isNoLevel3 && (
-            <Alert severity="warning" className="feedback-alert feedback-edituser">
+            <Alert
+              severity="warning"
+              className="feedback-alert feedback-edituser"
+            >
               חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
             </Alert>
           )}
           {edittedSuccessfully && (
-            <Alert severity="success" className="feedback-alert feedback-edituser">
+            <Alert
+              severity="success"
+              className="feedback-alert feedback-edituser"
+            >
               פרטי המשתמש עודכנו בהצלחה
             </Alert>
           )}

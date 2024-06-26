@@ -76,7 +76,9 @@
 }
 
 .action-close {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .action-close svg {

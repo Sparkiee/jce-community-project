@@ -164,7 +164,7 @@ function ManageTasks() {
   };
 
   const columns =
-    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+    user && user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -281,7 +281,7 @@ function ManageTasks() {
       <div className="manage-tasks-styles">
         <h1>משימות</h1>
         <div ref={createTaskRef} className="display-create">
-          {user.privileges > 1 && showCreateTask && (
+          {user && user.privileges > 1 && showCreateTask && (
             <div>
               <div
                 className="action-close"
@@ -320,7 +320,7 @@ function ManageTasks() {
             </div>
           )}
         </div>
-        {user.privileges > 1 && (
+        {user && user.privileges > 1 && (
           <div
             className="action-button add-tasks-button add-tasks-manage-tasks"
             onClick={handleShowCreateTask}

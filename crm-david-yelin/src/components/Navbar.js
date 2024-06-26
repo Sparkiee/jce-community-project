@@ -21,7 +21,7 @@ import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
-
+import Profile from "./Profile.js";
 
 function Navbar() {
   function stringToColor(string) {
@@ -64,26 +64,31 @@ function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  const member = JSON.parse(sessionStorage.getItem("user"));
+  const user = JSON.parse(sessionStorage.getItem("user"));
   const notificationsRef = useRef(null);
 
   useEffect(() => {
+    const member = JSON.parse(sessionStorage.getItem("user"));
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
-    const unsubscribeSnapshot = onSnapshot(
-      doc(db, "members", member.email),
-      (doc) => {
-        const data = doc.data();
-        sessionStorage.setItem("user", JSON.stringify(data));
-        // Directly update notifications from the document data
-        setNotifications(data?.Notifications?.length || 0);
-        setFullName(data?.fullName || "");
-
-        if (member.privileges < 1 || !member || !member.email) {
-          disconnect();
-          navigate("/");
+    if (member && member.email && member.privileges >= 1) {
+      const unsubscribeSnapshot = onSnapshot(
+        doc(db, "members", member.email),
+        (doc) => {
+          const data = doc.data();
+          sessionStorage.setItem("user", JSON.stringify(data));
+          // Assuming setNotifications and setFullName are state setters from useState
+          setNotifications(data?.Notifications?.length || 0);
+          setFullName(data?.fullName || "");
+        },
+        (error) => {
+          console.error("Error fetching document: ", error);
+          // Handle the error appropriately
         }
-      }
-    );
+      );
+
+      // Cleanup function to unsubscribe from the snapshot when the component unmounts
+      return () => unsubscribeSnapshot();
+    }
     const handleClickOutside = (event) => {
       if (
         notificationsRef.current &&
@@ -97,12 +102,8 @@ function Navbar() {
 
     // Return the unsubscribe function for the Firestore listener
     return () => {
-      unsubscribeSnapshot();
       document.removeEventListener("mousedown", handleClickOutside);
     };
-
-    // Return the unsubscribe function for the Firestore listener
-    return () => unsubscribeSnapshot();
   });
 
   const disconnect = () => {
@@ -118,8 +119,8 @@ function Navbar() {
     }
     setDisplayNotifications([]);
     setNotificationsVisible(true);
-    if (!member || !member.email) return;
-    const docRef = doc(db, "members", member.email);
+    if (!user || !user.email) return;
+    const docRef = doc(db, "members", user.email);
     try {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -163,6 +164,10 @@ function Navbar() {
     setSearchResults(results);
   };
 
+  function handleProfileClick() {
+    navigate(`/profile/${user.email}`);
+  }
+
   return (
     <header>
       <div className="navbar-container">
@@ -196,7 +201,7 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
-              {member.privileges >= 3 && (
+              {user && user.privileges >= 3 && (
                 <li>
                   <a to="#" onClick={() => navigate("/users")}>
                     ניהול משתמשים
@@ -246,6 +251,12 @@ function Navbar() {
                   className="search-input-nav"
                   value={searchQuery}
                   onChange={handleSearch}
+                  onBlur={() => {
+                    setTimeout(() => {
+                      setSearchQuery("");
+                      setSearchResults([]);
+                    }, 200);
+                  }}
                 />
                 {searchQuery && (
                   <div className="search-results">
@@ -255,6 +266,9 @@ function Navbar() {
                           <React.Fragment key={index}>
                             {index > 0 && <Divider />}
                             <div
+                              onClick={() =>
+                                navigate(`/profile/${result.email}`)
+                              }
                               className={`search-result-item ${
                                 result.privileges === 0 ? "strikethrough" : ""
                               }`}
@@ -315,7 +329,11 @@ function Navbar() {
                   </div>
                 </div>
               )}
-              <Avatar {...stringAvatar(fullName)} title={fullName} />
+              <Avatar
+                {...stringAvatar(fullName)}
+                title={fullName}
+                onClick={() => handleProfileClick()}
+              />
               <a
                 className="logout-button"
                 to="/logout"

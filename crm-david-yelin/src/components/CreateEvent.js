@@ -19,7 +19,7 @@ import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
-function CreateEvent() {
+function CreateEvent(props) {
   const [search, setSearch] = useState("");
   const [eventExists, setEventExists] = useState(false);
   const [formWarning, setFormWarning] = useState(false);
@@ -165,6 +165,37 @@ function CreateEvent() {
 
   return (
     <div className="create-event">
+      <div
+        className="action-close"
+        onClick={props.onClose}
+      >
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+        >
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
       <form className="create-event-form" onSubmit={handleSubmit}>
         <h2 className="title extra-create-event-title">צור אירוע</h2>
         <div className="create-event-input-box">

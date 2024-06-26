@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { signInWithEmailAndPassword, setPersistence, Persistence } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  Persistence,
+  sendEmailVerification
+} from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
@@ -13,6 +18,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const [wrongCredentials, setWrongCredentials] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [verificationSent, setVerificationSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   async function handleSubmit(event) {
@@ -27,7 +33,7 @@ function LoginForm() {
       if (!userCredential.user.emailVerified) {
         setIsEmailVerified(false);
         return;
-      } 
+      }
 
       // Signed in
       const user = userCredential.user;
@@ -75,8 +81,36 @@ function LoginForm() {
             </Alert>
           )}
           {!isEmailVerified && (
-            <Alert className="feedback-alert login-alert" severity="error">
-              אימייל לא אומת
+            <Alert
+              className="feedback-alert login-alert"
+              severity="error"
+              onClick={() => {
+                setIsEmailVerified(true);
+                setVerificationSent(true);
+                async function sendVerificationEmail() {
+                  try {
+                    const userCredential = await signInWithEmailAndPassword(
+                      auth,
+                      email,
+                      password
+                    );
+                    await sendEmailVerification(userCredential.user);
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }
+                sendVerificationEmail();
+                setTimeout(() => {
+                  setVerificationSent(false);
+                }, 5000);
+              }}
+            >
+              אימייל לא אומת, לחץ כאן בכדי לשלוח חדש
+            </Alert>
+          )}
+          {verificationSent && (
+            <Alert className="feedback-alert login-alert" severity="info">
+              אימייל חדש נשלח לאימות
             </Alert>
           )}
         </div>
@@ -114,9 +148,10 @@ function LoginForm() {
               id="input-checkbox"
               type="checkbox"
               name="remember-me"
-              onChange={(event) => {setRememberMe(event.target.checked)
-                console.log(event.target.checked);}
-              }
+              onChange={(event) => {
+                setRememberMe(event.target.checked);
+                console.log(event.target.checked);
+              }}
             ></input>
             <label className="label-checkbox" htmlFor="input-checkbox">
               זכור אותי
@@ -126,7 +161,11 @@ function LoginForm() {
             התחברות
           </button>
           <div className="extra-options">
-            <a href="#" className="forgot-password" onClick={() => navigate("forgot-password")}>
+            <a
+              href="#"
+              className="forgot-password"
+              onClick={() => navigate("forgot-password")}
+            >
               שכחת סיסמה?
             </a>
           </div>

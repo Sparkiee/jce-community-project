@@ -28,6 +28,7 @@ import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
+import ChangePassword from "./ChangePassword";
 
 function Profile() {
   const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
@@ -43,6 +44,7 @@ function Profile() {
   const [eventPercentage, setEventPercentage] = useState(0);
 
   const [profile, setProfile] = useState();
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -394,6 +396,44 @@ function Profile() {
 
   return (
     <div>
+      {showResetPassword && (
+        <div>
+          <div
+            className="action-close reset-password-close"
+            onClick={() => {
+              setShowResetPassword(false);
+            }}
+          >
+            <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+            >
+              <line
+                x1="17"
+                y1="7"
+                x2="7"
+                y2="17"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+              <line
+                x1="7"
+                y1="7"
+                x2="17"
+                y2="17"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+          <ChangePassword />
+        </div>
+      )}
       {profile ? (
         <div className="profile-page-container">
           <div className="profile-information right-side">
@@ -457,7 +497,10 @@ function Profile() {
             {user && profile && user.email === profile.email ? (
               <div className="profile-stats actions">
                 <h2 className="title-info">פעולות משתמש</h2>
-                <div className="profile-stats-row profile-personal-info">
+                <div
+                  className="profile-stats-row profile-personal-info"
+                  onClick={() => setShowResetPassword(true)}
+                >
                   <VpnKeyIcon />
                   <h3 className="profile-phone">שינוי סיסמה נוכחית</h3>
                 </div>

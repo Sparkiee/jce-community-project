@@ -48,6 +48,5 @@
 
 .email-input:hover {
   cursor: not-allowed;
-  background-color: #D0D0D0;
-  border: 1px solid rgba(114, 114, 114, 0.3)
+  background-color: #d0d0d0;
 }

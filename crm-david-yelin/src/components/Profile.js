@@ -473,14 +473,14 @@ function Profile() {
               />
             </svg>
           </div>
-          <EditUser target={profile} />
+          <EditUser target={profile}/>
         </div>
       )}
       {profile ? (
         <div className="profile-page-container">
           <div className="profile-information right-side">
             {user.privileges > 2 && (
-              <IconButton color="primary" className="profile-edit-icon">
+              <IconButton color="primary" className="profile-edit-icon" onClick={() => setShowEditProfile(true)}>
                 <EditIcon color="default" className="edit-button" />
               </IconButton>
             )}

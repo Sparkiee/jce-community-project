@@ -34,7 +34,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 function Profile() {
-  const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
+  const pages = ["משימות פתוחות", "אירועים קרובים", "היסטוריה"];
 
   const [menuSelected, setMenuSelected] = useState(pages[0]);
   const [rowsTasks, setRowsTasks] = useState([]);
@@ -397,10 +397,6 @@ function Profile() {
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
-        return <div>פה יהיה תוכן של פניות</div>;
-      case pages[1]:
-        return <div>פה יהיה תוכן של היסטוריה</div>;
-      case pages[2]:
         return (
           <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
@@ -429,7 +425,7 @@ function Profile() {
             </ThemeProvider>
           </div>
         );
-      case pages[3]:
+      case pages[1]:
         return (
           <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
@@ -456,6 +452,9 @@ function Profile() {
             </ThemeProvider>
           </div>
         );
+
+      case pages[2]:
+        return <div>פה יהיה תוכן של היסטוריה</div>;
       default:
         return <div>Page Not Found</div>;
     }

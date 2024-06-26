@@ -26,6 +26,8 @@ import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function Profile() {
   const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
@@ -35,6 +37,10 @@ function Profile() {
   const [rowsEvents, setRowsEvents] = useState([]);
   const [numTasks, setNumTasks] = useState(0);
   const [numEvents, setNumEvents] = useState(0);
+  const [numCompletedTasks, setNumCompletedTasks] = useState(0);
+  const [numCompletedEvents, setNumCompletedEvents] = useState(0);
+  const [taskPercentage, setTaskPercentage] = useState(0);
+  const [eventPercentage, setEventPercentage] = useState(0);
 
   const [profile, setProfile] = useState();
 
@@ -201,7 +207,7 @@ function Profile() {
   ];
 
   async function grabMyTasks() {
-    if(!profile) return;
+    if (!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
       const q = query(
@@ -209,13 +215,18 @@ function Profile() {
         where("assignees", "array-contains", "members/" + profile.email)
       );
       const querySnapshot = await getDocs(q);
-      const taskArray = querySnapshot.docs
-        .map((doc, index) => ({
-          ...doc.data(),
-          id: index + 1,
-          docRef: doc.ref
-        }))
-        .filter((task) => task.taskStatus !== "הושלמה");
+      const taskAll = querySnapshot.docs.map((doc, index) => ({
+        ...doc.data(),
+        id: index + 1,
+        docRef: doc.ref
+      }));
+
+      let completeNum = taskAll.filter(
+        (task) => task.taskStatus === "הושלמה"
+      ).length;
+      setNumCompletedTasks(completeNum); // Update completed task count
+      setTaskPercentage(Math.round((completeNum / taskAll.length) * 100)); // Update task percentage
+      const taskArray = taskAll.filter((task) => task.taskStatus !== "הושלמה");
 
       setNumTasks(taskArray.length); // Update task count
 
@@ -244,13 +255,20 @@ function Profile() {
         where("assignees", "array-contains", "members/" + profile.email)
       );
       const querySnapshot = await getDocs(q);
-      const eventsArray = querySnapshot.docs
-        .map((doc, index) => ({
-          ...doc.data(),
-          id: index + 1,
-          docRef: doc.ref
-        }))
-        .filter((event) => event.eventStatus !== "הסתיים");
+      const eventAll = querySnapshot.docs.map((doc, index) => ({
+        ...doc.data(),
+        id: index + 1,
+        docRef: doc.ref
+      }));
+      // .filter((event) => event.eventStatus !== "הסתיים");
+      let completeNum = eventAll.filter(
+        (event) => event.eventStatus === "הסתיים"
+      ).length;
+      setNumCompletedEvents(completeNum); // Update completed event count
+      setEventPercentage(Math.round((completeNum / eventAll.length) * 100)); // Update event percentage
+      const eventsArray = eventAll.filter(
+        (event) => event.eventStatus !== "הסתיים"
+      );
       setNumEvents(eventsArray.length); // Update event count
 
       // Map the events to the format expected by DataGrid
@@ -378,84 +396,109 @@ function Profile() {
   };
 
   return (
-    <div className="profile-page-container">
-      <div className="profile-information right-side">
-        {user.privileges > 2 && (
-          <IconButton color="primary" className="profile-edit-icon">
-            <EditIcon color="default" className="edit-button" />
-          </IconButton>
-        )}
-        <h1>{profile && profile.fullName}</h1>
-        <h2>
-          {profile && profile.department} • {profile && profile.role}
-        </h2>
-        <Avatar className="profile-avatar" {...stringAvatar(`${profile.fullName}`)} />
-        <div className="profile-stats">
-          <div className="profile-stats-row profile-stats-contact profile-personal-info">
-            <SendIcon />
-            <h3>צור קשר עם {profile && profile.fullName}</h3>
-          </div>
-          <h2 className="title-info">התקדמות אישית</h2>
-          <div className="profile-stats-row">
-            <AssignmentIcon />
-            <h3>{numTasks} משימות פתוחות</h3>
-          </div>
-          <div className="profile-stats-row">
-            <AssignmentIcon />
-            <h3>{numEvents} אירועים קרובים</h3>
-          </div>
-          <div className="profile-stats-row">
-            <TaskIcon />
-            <h3>משימות שהושלמו</h3>
-            <h3>(אחוז השלמה)</h3>
-          </div>
-          <div className="profile-stats-row">
-            <TaskIcon />
-            <h3>אירועים שהושלמו</h3>
-            <h3>(אחוז השלמה)</h3>
-          </div>
-        </div>
-        <div className="profile-stats">
-          <h2 className="title-info">פרטים אישיים</h2>
-          <div
-            className="profile-stats-row profile-personal-info"
-            onClick={() =>
-              window.open(`https://wa.me/${profile && profile.phone}`, "_blank")
-            }
-          >
-            <PhoneIphoneIcon />
-            <h3 className="profile-phone">{profile && profile.phone}</h3>
-          </div>
-          <div className="profile-stats-row profile-personal-info">
-            <AlternateEmailIcon />
-            <h3>{profile && profile.email}</h3>
-          </div>
-        </div>
-      </div>
-      <div className="profile-data left-side">
-        <div className="profile-navbar">
-          <ul>
-            {pages.map((page, index) => (
-              <Button
-                key={index}
-                variant="contained"
-                size="large"
-                className={
-                  menuSelected === page
-                    ? "selected profile-navbar-buttons"
-                    : "profile-navbar-buttons"
+    <div>
+      {profile ? (
+        <div className="profile-page-container">
+          <div className="profile-information right-side">
+            {user.privileges > 2 && (
+              <IconButton color="primary" className="profile-edit-icon">
+                <EditIcon color="default" className="edit-button" />
+              </IconButton>
+            )}
+            <h1>{profile && profile.fullName}</h1>
+            <h2>
+              {profile && profile.department} • {profile && profile.role}
+            </h2>
+            <Avatar
+              className="profile-avatar"
+              {...stringAvatar(`${profile && profile.fullName}`)}
+            />
+            <div className="profile-stats">
+              <div className="profile-stats-row profile-stats-contact profile-personal-info">
+                <SendIcon />
+                <h3>צור קשר עם {profile && profile.fullName}</h3>
+              </div>
+              <h2 className="title-info">התקדמות אישית</h2>
+              <div className="profile-stats-row">
+                <AssignmentIcon />
+                <h3>{numTasks} משימות פתוחות</h3>
+              </div>
+              <div className="profile-stats-row">
+                <AssignmentIcon />
+                <h3>{numEvents} אירועים קרובים</h3>
+              </div>
+              <div className="profile-stats-row">
+                <TaskIcon />
+                <h3>{numCompletedTasks} משימות שהושלמו</h3>
+                <h3>({taskPercentage}%)</h3>
+              </div>
+              <div className="profile-stats-row">
+                <TaskIcon />
+                <h3>{numCompletedEvents} אירועים שהושלמו</h3>
+                <h3>({eventPercentage}%)</h3>
+              </div>
+            </div>
+            <div className="profile-stats">
+              <h2 className="title-info">פרטים אישיים</h2>
+              <div
+                className="profile-stats-row profile-personal-info"
+                onClick={() =>
+                  window.open(
+                    `https://wa.me/${profile && profile.phone}`,
+                    "_blank"
+                  )
                 }
-                onClick={() => setMenuSelected(page)}
               >
-                {page}
-              </Button>
-            ))}
-          </ul>
+                <PhoneIphoneIcon />
+                <h3 className="profile-phone">{profile && profile.phone}</h3>
+              </div>
+              <div className="profile-stats-row profile-personal-info">
+                <AlternateEmailIcon />
+                <h3>{profile && profile.email}</h3>
+              </div>
+            </div>
+            {user && profile && user.email === profile.email ? (
+              <div className="profile-stats actions">
+                <h2 className="title-info">פעולות משתמש</h2>
+                <div className="profile-stats-row profile-personal-info">
+                  <VpnKeyIcon />
+                  <h3 className="profile-phone">שינוי סיסמה נוכחית</h3>
+                </div>
+                <div className="profile-stats-row profile-personal-info">
+                  <AlternateEmailIcon />
+                  <h3>{profile && profile.email}</h3>
+                </div>
+              </div>
+            ) : null}
+          </div>
+          <div className="profile-data left-side">
+            <div className="profile-navbar">
+              <ul>
+                {pages.map((page, index) => (
+                  <Button
+                    key={index}
+                    variant="contained"
+                    size="large"
+                    className={
+                      menuSelected === page
+                        ? "selected profile-navbar-buttons"
+                        : "profile-navbar-buttons"
+                    }
+                    onClick={() => setMenuSelected(page)}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </ul>
+            </div>
+            <div className="profile-content">
+              <PageContent pageName={menuSelected} />
+            </div>
+          </div>
         </div>
-        <div className="profile-content">
-          <PageContent pageName={menuSelected} />
-        </div>
-      </div>
+      ) : (
+        <CircularProgress color="success" value={98} />
+      )}
     </div>
   );
 }

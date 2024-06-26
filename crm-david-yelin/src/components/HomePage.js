@@ -13,6 +13,7 @@ import CreateEvent from "./CreateEvent";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
+import { useNavigate } from "react-router-dom";
 import "../styles/Styles.css";
 
 function HomePage() {
@@ -22,6 +23,8 @@ function HomePage() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
+
+  const navigate = useNavigate();
 
   const theme = createTheme(
     {
@@ -155,7 +158,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.ref
+          docRef: doc.id
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
 
@@ -164,6 +167,7 @@ function HomePage() {
       // Map the tasks to the format expected by DataGrid
       const rowsTasksData = taskArray.map((task, index) => ({
         id: index + 1,
+        taskDoc: task.docRef,
         taskName: task.taskName,
         taskDescription: task.taskDescription,
         taskStartDate: task.taskStartDate,
@@ -189,7 +193,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.ref
+          docRef: doc.id
         }))
         .filter((event) => event.eventStatus !== "הסתיים");
       setNumEvents(eventsArray.length); // Update event count
@@ -197,6 +201,7 @@ function HomePage() {
       // Map the events to the format expected by DataGrid
       const rowsEventsData = eventsArray.map((event, index) => ({
         id: index + 1,
+        eventDoc: event.docRef,
         eventName: event.eventName,
         eventLocation: event.eventLocation,
         eventStartDate: event.eventStartDate,
@@ -401,6 +406,9 @@ function HomePage() {
                 labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
               }
             }}
+            onRowDoubleClick={(params) => {
+              navigate(`/task/${params.row.taskDoc}`);
+            }}
           />
         </ThemeProvider>
       </div>
@@ -430,6 +438,9 @@ function HomePage() {
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
                 labelRowsPerPage: "שורות בכל עמוד:"
               }
+            }}
+            onRowDoubleClick={(params) => {
+              navigate(`/event/${params.row.eventDoc}`);
             }}
           />
         </ThemeProvider>

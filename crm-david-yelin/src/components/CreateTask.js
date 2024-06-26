@@ -72,7 +72,7 @@ function CreateTask(props) {
       taskEndDate: taskDetails.taskEndDate,
       taskTime: taskDetails.taskTime,
       taskCreated: serverTimestamp(),
-      taskStatus: "טרם החלה",
+      taskStatus: "טרם החלה"
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -127,6 +127,9 @@ function CreateTask(props) {
           });
         })
       );
+      setTimeout(() => {
+        props.onClose();
+      }, 1000);
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -227,10 +230,7 @@ function CreateTask(props) {
   };
   return (
     <div className="create-task">
-      <div
-        className="action-close"
-        onClick={props.onClose}
-      >
+      <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
           height="24px"

@@ -103,7 +103,9 @@ function CreateEvent(props) {
           });
         })
       );
-
+      setTimeout(() => {
+        props.onClose();
+      }, 1000);
       console.log("Notifications updated for all members.");
     } catch (e) {
       console.error("Error adding document: ", e);

@@ -139,6 +139,7 @@ function HomePage() {
   ];
 
   const user = JSON.parse(sessionStorage.getItem("user"));
+
   const createTaskRef = useRef(null);
   const createEventRef = useRef(null);
 
@@ -247,32 +248,6 @@ function HomePage() {
     };
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        createTaskRef.current &&
-        !createTaskRef.current.contains(event.target)
-      ) {
-        setShowCreateTask(false);
-      }
-      if (
-        createEventRef.current &&
-        !createEventRef.current.contains(event.target)
-      ) {
-        setShowCreateEvent(false);
-      }
-    };
-
-    if (showCreateTask || showCreateEvent) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showCreateTask, showCreateEvent]);
 
   const handleShowCreateTask = () => {
     setShowCreateEvent(false);
@@ -289,19 +264,42 @@ function HomePage() {
     setShowCreateEvent(false);
   };
 
+  useEffect(() => {
+
+    const handleClickOutside = (event) => {
+      if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
+        setShowCreateTask(false);
+      }
+
+      if (
+        createEventRef.current &&
+        !createEventRef.current.contains(event.target)
+      ) {
+        setShowCreateEvent(false);
+      }
+    };
+    // Add the event listener when the component mounts
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Return a cleanup function to remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="home-content">
       <div className="display-create">
         {user.privileges > 1 && showCreateTask && (
-          <div className="popup-overlay" ref={createTaskRef}>
-            <div className="popup-content">
+          <div className="popup-overlay">
+            <div ref={createTaskRef} className="popup-content">
               <CreateTask onClose={handleCloseForms} />
             </div>
           </div>
         )}
         {user.privileges > 1 && showCreateEvent && (
-          <div ref={createEventRef} className="popup-overlay">
-            <div className="popup-content">
+          <div className="popup-overlay">
+            <div ref={createEventRef} className="popup-content">
               <CreateEvent onClose={handleCloseForms} />
             </div>
           </div>

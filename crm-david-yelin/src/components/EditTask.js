@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { doc, updateDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
+import { doc, updateDoc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
 import "../styles/Styles.css";
 import "../styles/EditTask.css";
 import { Alert } from "@mui/material";
@@ -12,21 +12,21 @@ import Stack from "@mui/material/Stack";
 function EditTask({ task, onClose, onTaskUpdated }) {
   const [taskName, setTaskName] = useState(task.taskName);
   const [taskDescription, setTaskDescription] = useState(task.taskDescription);
-  const [relatedEvent, setRelatedEvent] = useState(task.relatedEvent);
+  const [relatedEvent, setRelatedEvent] = useState(task.relatedEvent ? task.relatedEvent.split("/")[1] : ""); // Initialize relatedEvent correctly
   const [taskStartDate, setTaskStartDate] = useState(task.taskStartDate.split("T")[0]);
   const [taskEndDate, setTaskEndDate] = useState(task.taskEndDate.split("T")[0]);
   const [taskTime, setTaskTime] = useState(task.taskTime);
   const [taskStatus, setTaskStatus] = useState(task.taskStatus);
-  const [assignTo, setAssignTo] = useState(task.assignTo);
-  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [assignTo, setAssignTo] = useState([]);
   const [events, setEvents] = useState([]);
   const [members, setMembers] = useState([]);
   const [editedSuccessfully, setEditedSuccessfully] = useState(false);
-  const [searchMember, setSearchMember] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchEvents();
     fetchMembers();
+    loadExistingAssignees();
   }, []);
 
   const fetchEvents = async () => {
@@ -47,39 +47,46 @@ function EditTask({ task, onClose, onTaskUpdated }) {
     setMembers(membersList);
   };
 
-  async function handleSearchMember(event) {
-    if (event.target.value.length >= 2) {
+  const loadExistingAssignees = async () => {
+    if (task.assignees) {
+      const assigneeEmails = task.assignees.map((email) => email.split("/")[1]);
+      const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
+      const assigneeDocs = await Promise.all(assigneePromises);
+      const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
+      setAssignTo(assigneeData.map((assignee) => ({ value: assignee.email, label: assignee.fullName })));
+    }
+  };
+
+  const handleSearchMember = async (inputValue) => {
+    setSearch(inputValue);
+    if (inputValue.length >= 2) {
       const membersRef = collection(db, "members");
       const q = query(
         membersRef,
-        where("fullName", ">=", searchMember),
-        where("fullName", "<=", searchMember + "\uf8ff")
+        where("fullName", ">=", inputValue),
+        where("fullName", "<=", inputValue + "\uf8ff")
       );
       const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter(
-          (member) =>
-            member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
-        );
+      const results = querySnapshot.docs.map((doc) => ({
+        value: doc.id,
+        label: doc.data().fullName,
+      }));
       setMembers(results);
     } else {
       setMembers([]);
     }
-  }
+  };
 
-  function handleSelectMember(value) {
-    const selectedMember = members.find((member) => member.fullName === value);
-    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
-      setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearchMember(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+  const handleSelectMember = (selectedOption) => {
+    if (selectedOption) {
+      const selectedMember = members.find((member) => member.value === selectedOption.value);
+      if (selectedMember && !assignTo.some((member) => member.value === selectedMember.value)) {
+        setAssignTo((prevMembers) => [...prevMembers, selectedMember]);
+        setSearch(""); // Clear the search input after selection
+        setMembers([]); // Clear the dropdown options
+      }
     }
-  }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -89,7 +96,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
       await updateDoc(taskRef, {
         taskName,
         taskDescription,
-        relatedEvent,
+        relatedEvent: relatedEvent ? `events/${relatedEvent}` : "", // Ensure relatedEvent is in the correct format
         taskStartDate,
         taskEndDate,
         taskTime,
@@ -109,7 +116,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
   };
 
   const handleRemoveMember = (emailToRemove) => {
-    setAssignTo(assignTo.filter((member) => member.email !== emailToRemove));
+    setAssignTo((prevAssignTo) => prevAssignTo.filter((member) => member.value !== emailToRemove));
   };
 
   return (
@@ -133,16 +140,17 @@ function EditTask({ task, onClose, onTaskUpdated }) {
           <Select
             options={events}
             value={events.find((event) => event.value === relatedEvent)}
-            onChange={(selectedOption) => setRelatedEvent(selectedOption.value)}
-            placeholder="בחר אירוע קשור"
+            onChange={(selectedOption) => setRelatedEvent(selectedOption ? selectedOption.value : "")}
+            placeholder="בחר אירוע קשור (לא חובה)"
             className="edit-task-input extra-edit-task-input"
+            isClearable // Allows clearing the selection
           />
           <div className="edit-task-date-inputs">
             <div className="edit-task-start-date">
               <label htmlFor="start">תאריך התחלה</label>
               <input
                 type="date"
-                value={taskStartDate.split("T")[0]}
+                value={taskStartDate}
                 onChange={(e) => setTaskStartDate(e.target.value)}
                 className="edit-task-input"
               />
@@ -151,7 +159,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
               <label htmlFor="due">תאריך יעד (חובה*)</label>
               <input
                 type="date"
-                value={taskEndDate.split("T")[0]}
+                value={taskEndDate}
                 onChange={(e) => setTaskEndDate(e.target.value)}
                 id="due"
                 className="edit-task-input"
@@ -167,29 +175,33 @@ function EditTask({ task, onClose, onTaskUpdated }) {
           <select
             value={taskStatus}
             onChange={(e) => setTaskStatus(e.target.value)}
-            className="edit-task-input extra-edit-task-input">
+            className="edit-task-input extra-edit-task-input"
+          >
             <option value="טרם החל">טרם החל</option>
             <option value="בתהליך">בתהליך</option>
             <option value="הושלם">הושלם</option>
           </select>
           <Select
-            onInputChange={(inputValue) => {
-              handleSearchMember({ target: { value: inputValue } });
-            }}
-            onChange={(e) => {
-              handleSelectMember(e.value);
-            }}
-            placeholder="בחר משתמשים לשיוך"
-            className="forms-input extra-edit-task-input"
+            placeholder="הוסף חבר וועדה"
+            className="create-event-input extra-create-event-input"
+            onInputChange={(inputValue) => handleSearchMember(inputValue)}
+            onChange={(selectedOption) => handleSelectMember(selectedOption)}
+            inputValue={search}
+            options={members.map((member) => ({
+              value: member.value,
+              label: member.label,
+            }))}
+            noOptionsMessage={() => "לא נמצאו אפשרויות"}
+            isClearable
           />
           <div className="edit-task-selected-members">
             <Stack direction="row" spacing={1} flexWrap="wrap">
               {assignTo.map((member) => (
                 <Chip
-                  key={member.email}
-                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
-                  label={member.fullName}
-                  onDelete={() => handleRemoveMember(member.email)}
+                  key={member.value}
+                  avatar={<Avatar alt={member.label} src={require("../assets/profile.jpg")} />}
+                  label={member.label}
+                  onDelete={() => handleRemoveMember(member.value)}
                   variant="outlined"
                   style={{ margin: "5px" }}
                 />

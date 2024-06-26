@@ -15,6 +15,8 @@ import ManageTasks from "./components/ManageTasks";
 import ForgotPassword from "./components/ForgotPassword";
 import ManageEvents from "./components/ManageEvents";
 import Profile from "./components/Profile";
+import TaskPage from "./components/TaskPage";
+import EventPage from "./components/EventPage";
 
 import Navbar from "./components/Navbar";
 
@@ -52,12 +54,22 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/task/:taskId"
+          element={
+            <TaskPage />
+          }
+        />
         <Route
           path="/events"
           element={
             <ProtectedRoute privilegeLevel={1}>
               <ManageEvents />
             </ProtectedRoute>
+          }
+        />
+        <Route path="/event/:id"
+          element={
+            <EventPage />
           }
         />
         <Route

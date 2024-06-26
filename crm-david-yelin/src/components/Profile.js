@@ -23,7 +23,6 @@ import { Avatar } from "@mui/material";
 import TaskIcon from "@mui/icons-material/Task";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
-import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
@@ -32,7 +31,7 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
 import SettingsIcon from "@mui/icons-material/Settings";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 function Profile() {
   const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
@@ -53,6 +52,8 @@ function Profile() {
 
   const user = JSON.parse(sessionStorage.getItem("user"));
   const editUserRef = useRef(null);
+
+  const changePasswordRef = useRef(null);
 
   const { email } = useParams();
 
@@ -367,6 +368,32 @@ function Profile() {
     grabMyEvents();
   }, [profile]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        changePasswordRef.current &&
+        !changePasswordRef.current.contains(event.target) &&
+        showResetPassword
+      ) {
+        setShowResetPassword(false);
+      }
+      if (
+        editUserRef.current &&
+        !editUserRef.current.contains(event.target) &&
+        showEditProfile
+      ) {
+        setShowEditProfile(false);
+      }
+    };
+
+    // Add event listener when the component mounts
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Return a cleanup function to remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showResetPassword, showEditProfile]);
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
@@ -443,7 +470,7 @@ function Profile() {
     <div>
       {showResetPassword && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div ref={changePasswordRef} className="popup-content">
             <ChangePassword onClose={handleCloseForm} />
           </div>
         </div>
@@ -451,7 +478,7 @@ function Profile() {
       {showEditProfile && (
         <div className="popup-overlay">
           <div ref={editUserRef} className="popup-content">
-            <EditUser target={profile} onClose={handleCloseForm}/>
+            <EditUser target={profile} onClose={handleCloseForm} />
           </div>
         </div>
       )}

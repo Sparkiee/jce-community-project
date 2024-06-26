@@ -8,6 +8,33 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditTask from "./EditTask";
 
+function stringToColor(string) {
+  let hash = 0;
+  for (let i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = "#";
+  for (let i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
+
+function stringAvatar(name) {
+  const nameParts = name.split(" ");
+  let initials = nameParts[0][0];
+  if (nameParts.length > 1) {
+    initials += nameParts[1][0];
+  }
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: initials,
+  };
+}
+
 function TaskPage() {
   const { taskId } = useParams();
   const [task, setTask] = useState(null);
@@ -154,7 +181,7 @@ function TaskPage() {
         <div className="assignees-list">
           {assignees.map((assignee, index) => (
             <div key={index} className="assignee-item">
-              <Avatar alt={assignee.fullName} src={assignee.avatarUrl || "/defaultAvatar.png"} />
+              <Avatar {...stringAvatar(assignee.fullName)} />
               <p>{assignee.fullName}</p>
             </div>
           ))}

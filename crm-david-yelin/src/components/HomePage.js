@@ -248,7 +248,6 @@ function HomePage() {
     };
   }, []);
 
-
   const handleShowCreateTask = () => {
     setShowCreateEvent(false);
     setShowCreateTask(true);
@@ -265,9 +264,11 @@ function HomePage() {
   };
 
   useEffect(() => {
-
     const handleClickOutside = (event) => {
-      if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
+      if (
+        createTaskRef.current &&
+        !createTaskRef.current.contains(event.target)
+      ) {
         setShowCreateTask(false);
       }
 
@@ -306,9 +307,7 @@ function HomePage() {
         )}
       </div>
 
-      <div className="page-title-home">
-        <h1>היי {user.fullName}</h1>
-      </div>
+      <h1 className="page-title-home">היי {user.fullName}</h1>
       <div className="page-subtitle">
         כאן תוכל להתעדכן עם האירועים והמשימות שלך
       </div>
@@ -381,7 +380,7 @@ function HomePage() {
       ) : (
         <h2 className="title-home">יש לך {numTasks} משימות פתוחות</h2>
       )}
-      <div style={{ height: 371, width: "80%" }}>
+      <div style={{ height: 371, width: "90%" }}>
         <ThemeProvider theme={theme}>
           <DataGrid
             direction="rtl"
@@ -413,7 +412,7 @@ function HomePage() {
       ) : (
         <h2 className="title-home">יש לך {numEvents} אירועים בקרוב</h2>
       )}
-      <div style={{ height: 372, width: "80%" }}>
+      <div style={{ height: 372, width: "90%" }}>
         <ThemeProvider theme={theme}>
           <DataGrid
             className="data-grid"

@@ -520,7 +520,7 @@ function ManageUsers() {
             לא ניתן להסיר מנהל ראשי אחרון מהמערכת
           </Alert>
         )}
-        <div className="datagrid-table" style={{ height: 371, width: "80%" }}>
+        <div className="datagrid-table" style={{ height: 371, width: "90%" }}>
           <ThemeProvider theme={theme}>
             <DataGrid
               className="data-grid"
@@ -597,7 +597,7 @@ function ManageUsers() {
             }}
           />
         </div>
-        <div className="datagrid-table" style={{ height: 371, width: "80%" }}>
+        <div className="datagrid-table" style={{ height: 371, width: "90%" }}>
           <ThemeProvider theme={theme}>
             <DataGrid
               className="data-grid"
@@ -673,7 +673,7 @@ function ManageUsers() {
             }}
           />
         </div>
-        <div className="datagrid-table" style={{ height: 371, width: "80%" }}>
+        <div className="datagrid-table" style={{ height: 371, width: "90%" }}>
           <ThemeProvider theme={theme}>
             <DataGrid
               className="data-grid"

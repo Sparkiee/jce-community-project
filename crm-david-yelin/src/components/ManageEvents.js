@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import {
@@ -15,12 +15,14 @@ import "../styles/Styles.css";
 import "../styles/ManageEvents.css";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateEvent from "./CreateEvent";
 import ConfirmAction from "./ConfirmAction";
-import { Alert } from "@mui/material";
+import { Alert, Modal } from "@mui/material";
+import EditEvent from "./EditEvent";
 
 function stringToColor(string) {
   let hash = 0;
@@ -61,7 +63,8 @@ function ManageEvents() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState("");
   const [alert, setAlert] = useState(false);
-
+  const [editEventDetails, setEditEventDetails] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const createEventRef = useRef(null);
   const navigate = useNavigate();
@@ -75,7 +78,6 @@ function ManageEvents() {
     },
     heIL
   );
-
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -139,6 +141,18 @@ function ManageEvents() {
           </AvatarGroup>
         );
       }
+    },
+    {
+      field: 'view', 
+      headerName: 'צפייה',
+      width: 80,
+      align: 'center',
+      flex: 1.5,
+      renderCell: (params) => (
+        <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>  
+          <VisibilityIcon />
+          </IconButton >
+      )
     }
   ];
 
@@ -150,7 +164,7 @@ function ManageEvents() {
     flex: 1.5,
     renderCell: (params) => (
       <div>
-        <IconButton aria-label="edit">
+        <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
           <EditIcon />
         </IconButton>
         <IconButton
@@ -183,7 +197,7 @@ function ManageEvents() {
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        doc: doc.id
+        eventDoc: doc.id
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
@@ -199,7 +213,7 @@ function ManageEvents() {
           );
           return {
             id: index + 1,
-            eventDoc: event.doc,
+            eventDoc: event.eventDoc,
             eventName: event.eventName,
             eventLocation: event.eventLocation,
             eventStartDate: event.eventStartDate,
@@ -256,6 +270,30 @@ function ManageEvents() {
 
   const handleRowDoubleClick = (params) => {
     navigate(`/event/${params.row.eventDoc}`);
+  };
+
+  const handleEditClick = async (row) => {
+    try {
+      const eventDoc = await getDoc(doc(db, "events", row.eventDoc));
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        setEditEventDetails({ ...eventData, id: eventDoc.id });
+        setIsEditing(true);
+      } else {
+        console.error("No such document!");
+      }
+    } catch (e) {
+      console.error("Error fetching event: ", e);
+    }
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = () => {
+    setIsEditing(false);
+    getEvents(); // Refresh event details
   };
 
   return (
@@ -370,6 +408,22 @@ function ManageEvents() {
         )}
       </div>
       <div className="footer"></div>
+      <Modal
+        open={isEditing}
+        onClose={handleCloseEdit}
+        aria-labelledby="edit-event-modal-title"
+        aria-describedby="edit-event-modal-description"
+      >
+        <div className="modal-content">
+          {editEventDetails && (
+            <EditEvent
+              eventDetails={editEventDetails}
+              onClose={handleCloseEdit}
+              onSave={handleSaveEdit}
+            />
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }

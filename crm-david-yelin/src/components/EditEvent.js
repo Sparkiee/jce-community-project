@@ -55,24 +55,27 @@ function EditEvent({ eventDetails, onClose, onSave }) {
     fetchMembers();
   }, [fetchMembers]);
 
-  const handleSubmit = async (e) => {
+
+const handleSubmit = async (e) => {
     e.preventDefault();
     setFormWarning(false);
     setWarningText("");
-
+  
     if (!event.eventName || !event.eventEndDate || !event.eventTime || !event.eventLocation) {
       setFormWarning(true);
       let warning = "אנא מלא את כל השדות";
       setWarningText(warning);
       return;
     }
-
+  
     const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
     const updatedEventDetails = {
       ...event,
       assignees: assigneeRefs
     };
-
+  
+    console.log("Updated Event Details:", updatedEventDetails); // Print the event object to the console
+  
     try {
       const eventRef = doc(db, "events", eventDetails.id);
       await updateDoc(eventRef, updatedEventDetails);
@@ -81,6 +84,7 @@ function EditEvent({ eventDetails, onClose, onSave }) {
       console.error("Error updating document: ", error);
     }
   };
+  
 
   const handleSearchMember = async (event) => {
     if (event.target.value.length >= 2) {

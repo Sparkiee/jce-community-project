@@ -70,7 +70,14 @@ function EventPage() {
       const eventDoc = await getDoc(doc(db, "events", id));
       if (eventDoc.exists()) {
         const eventData = eventDoc.data();
-        setEvent({ ...eventData, id: eventDoc.id });
+        const assigneesData = await Promise.all(
+          (eventData.assignees || []).map(async (assigneePath) => {
+            const email = assigneePath.split("/")[1];
+            const fullName = await getMemberFullName(email);
+            return { email, fullName };
+          })
+        );
+        setEvent({ ...eventData, id: eventDoc.id, assigneesData });
       } else {
         console.error("No such document!");
       }
@@ -153,6 +160,19 @@ function EventPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isEditing]);
+
+  const Participants = ({ assignees }) => {
+    return (
+      <div className="participants-list">
+        {assignees.map((assignee, index) => (
+          <div key={index} className="participant-item">
+            <Avatar {...stringAvatar(assignee.fullName)} />
+            <p className="participant-name">{assignee.fullName}</p>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const taskColumns = [
     { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
@@ -309,8 +329,14 @@ function EventPage() {
       <div className="lower-event-page-content">
         <div className="event-page-participants">
           <h2>משתתפים</h2>
+          {event && event.assigneesData && <Participants assignees={event.assigneesData} />}
         </div>
-        <div className="event-page-comments"></div>
+        <div className="event-page-files">
+          <h2>This is where the files will be</h2>
+        </div>
+      </div>
+      <div className="event-page-comments">
+        <h2>The is where the chat will be</h2>
       </div>
       <div className="footer"></div>
     </div>

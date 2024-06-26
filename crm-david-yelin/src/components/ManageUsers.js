@@ -410,16 +410,22 @@ function ManageUsers() {
         </div>
       )}
       {removePermmisionTarget && (
-        <ConfirmAction
-          onConfirm={() => handleRemovePermissions()}
-          onCancel={() => setRemovePermmisionTarget("")}
-        />
+        <div className="popup-overlay">
+          <ConfirmAction
+            className="popup-content"
+            onConfirm={() => handleRemovePermissions()}
+            onCancel={() => setRemovePermmisionTarget("")}
+          />
+        </div>
       )}
       {deleteTarget && (
-        <ConfirmAction
-          onConfirm={() => handleConfirmDelete()}
-          onCancel={() => handleCancelDelete()}
-        />
+        <div className="popup-overlay">
+          <ConfirmAction
+            className="popup-content"
+            onConfirm={() => handleConfirmDelete()}
+            onCancel={() => handleCancelDelete()}
+          />
+        </div>
       )}
       <div className="manage-users-container">
         <div className="page-title">ניהול משתמשים</div>

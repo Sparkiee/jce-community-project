@@ -137,7 +137,7 @@ function ManageEvents() {
         return (
           <AvatarGroup className="manage-task-avatar-group" max={3}>
             {assignees.map((user, index) => (
-              <Avatar key={index} {...stringAvatar(user.fullName)} title={user.fullName}/>
+              <Avatar key={index} {...stringAvatar(user.fullName)} title={user.fullName} onClick={()=> navigate(`/profile/${user.email}`)}/>
             ))}
           </AvatarGroup>
         );

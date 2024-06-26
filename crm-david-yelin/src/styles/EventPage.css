@@ -1,5 +1,10 @@
 .event-page {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .event-page-style {
@@ -13,7 +18,7 @@
 .event-details {
   width: 20%;
   padding: 2rem;
-  background-color: #f9f9f9;
+  background-color: rgb(252, 202, 71, 0.15);
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -29,6 +34,27 @@
 .event-details p {
   font-size: 2rem;
   padding: 1rem 0;
+}
+
+.lower-event-page-content {
+  padding: 5rem 10rem 5rem 0;
+  display: flex;
+  justify-content: center;
+  width: 85%;
+  gap: 5rem;
+}
+
+.event-page-participants {
+  width: 23%;
+  padding: 2rem;
+  background-color: rgb(252, 202, 71, 0.15);
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-page-files {
+  border: 2px solid red;
+  width: 80%;
 }
 
 .event-box {
@@ -55,8 +81,29 @@
   direction: ltr;
 }
 
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.participant-item p {
+  font-size: 2rem;
+}
+
+.event-page-participants h2 {
+  font-size: 3rem;
+  margin: 0;
+  padding-bottom: 1rem;
+}
+
 .edit-event-popup {
   position: absolute;
   top: -2rem;
   left: 36.5%;
+}
+
+.event-page-comments {
+  width: 60%;
+  border: 2px solid red;
 }

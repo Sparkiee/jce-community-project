@@ -1,0 +1,58 @@
+.discussion-list {
+    margin: 20px;
+  }
+  
+  .discussion-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .discussion-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .discussion-author {
+    font-weight: bold;
+  }
+  
+  .discussion-timestamp {
+    color: #888;
+    font-size: 0.9em;
+  }
+  
+  .discussion-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .new-comment {
+    margin-top: 20px;
+  }
+  
+  .new-comment textarea {
+    width: 100%;
+    height: 60px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .new-comment button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .new-comment button:hover {
+    background-color: #0056b3;
+  }
+  

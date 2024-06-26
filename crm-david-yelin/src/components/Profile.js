@@ -31,6 +31,7 @@ import SendIcon from "@mui/icons-material/Send";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
 import SettingsIcon from "@mui/icons-material/Settings";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function Profile() {
   const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
@@ -112,7 +113,7 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1
+      flex: 0.8
     },
     {
       field: "taskName",
@@ -155,6 +156,23 @@ function Profile() {
       width: 150,
       align: "right",
       flex: 2
+    },
+    {
+      field: "view",
+      headerName: "הצגה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <div>
+          <IconButton
+            aria-label="edit"
+            title="הצגה"
+            // onClick={() => navigate(`/profile/${params.row.email}`)}
+          >
+            <VisibilityIcon />
+          </IconButton>
+        </div>
+      )
     }
   ];
 
@@ -163,7 +181,7 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1.2
+      flex: 0.8
     },
     {
       field: "eventName",
@@ -206,6 +224,23 @@ function Profile() {
       width: 150,
       align: "right",
       flex: 2
+    },
+    {
+      field: "view",
+      headerName: "הצגה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <div>
+          <IconButton
+            aria-label="edit"
+            title="הצגה"
+            // onClick={() => navigate(`/profile/${params.row.email}`)}
+          >
+            <VisibilityIcon />
+          </IconButton>
+        </div>
+      )
     }
   ];
 
@@ -398,89 +433,37 @@ function Profile() {
     }
   };
 
+  const handleCloseForm = () => { 
+    console.log("CLICK!");
+    setShowEditProfile(false);
+    setShowResetPassword(false);
+  };
+
   return (
     <div>
       {showResetPassword && (
-        <div>
-          <div
-            className="action-close reset-password-close"
-            onClick={() => {
-              setShowResetPassword(false);
-            }}
-          >
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-            >
-              <line
-                x1="17"
-                y1="7"
-                x2="7"
-                y2="17"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <line
-                x1="7"
-                y1="7"
-                x2="17"
-                y2="17"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <ChangePassword onClose={handleCloseForm} />
           </div>
-          <ChangePassword />
         </div>
       )}
       {showEditProfile && (
-        <div ref={editUserRef} className="display-edit-user">
-          <div
-            className="action-close"
-            onClick={() => {
-              setShowEditProfile(false);
-            }}
-          >
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-            >
-              <line
-                x1="17"
-                y1="7"
-                x2="7"
-                y2="17"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <line
-                x1="7"
-                y1="7"
-                x2="17"
-                y2="17"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+        <div className="popup-overlay">
+          <div ref={editUserRef} className="popup-content">
+            <EditUser target={profile} onClose={handleCloseForm}/>
           </div>
-          <EditUser target={profile}/>
         </div>
       )}
       {profile ? (
         <div className="profile-page-container">
           <div className="profile-information right-side">
             {user.privileges > 2 && (
-              <IconButton color="primary" className="profile-edit-icon" onClick={() => setShowEditProfile(true)}>
+              <IconButton
+                color="primary"
+                className="profile-edit-icon"
+                onClick={() => setShowEditProfile(true)}
+              >
                 <EditIcon color="default" className="edit-button" />
               </IconButton>
             )}

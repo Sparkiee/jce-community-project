@@ -26,11 +26,7 @@
   margin: 1rem;
 }
 
-.display-edit-user {
-  top: 7%;
-  position: fixed;
-  z-index: 1;
-}
+
 
 .pending-actions {
   top: 0;

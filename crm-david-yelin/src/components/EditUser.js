@@ -16,14 +16,15 @@ import PhoneInput from "react-phone-number-input/input";
 import { Alert } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 
-function EditUser(params) {
-  const [firstName, setFirstName] = useState(params.target.firstName || "");
-  const [lastName, setLastName] = useState(params.target.lastName || "");
-  const [email, setEmail] = useState(params.target.email || "");
-  const [phone, setPhone] = useState(params.target.phone || "");
-  const [role, setRole] = useState(params.target.role || "");
-  const [department, setDepartment] = useState(params.target.department || "");
-  const [privileges, setPrivileges] = useState(params.target.privileges) || "";
+function EditUser(props) {
+  console.log(props);
+  const [firstName, setFirstName] = useState(props.target.firstName || "");
+  const [lastName, setLastName] = useState(props.target.lastName || "");
+  const [email, setEmail] = useState(props.target.email || "");
+  const [phone, setPhone] = useState(props.target.phone || "");
+  const [role, setRole] = useState(props.target.role || "");
+  const [department, setDepartment] = useState(props.target.department || "");
+  const [privileges, setPrivileges] = useState(props.target.privileges) || "";
 
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
@@ -39,7 +40,7 @@ function EditUser(params) {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (params.target.privileges > 2 && privileges !== 3) {
+    if (props.target.privileges > 2 && privileges !== 3) {
       // Reference to the Firestore "members" collection
       const memberRef = collection(db, "members");
 
@@ -126,9 +127,40 @@ function EditUser(params) {
 
   return (
     <div className="edit-user">
+      <div
+        className="action-close"
+        onClick={props.onClose}
+      >
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+        >
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
       <form className="edit-user-form" onSubmit={handleSubmit}>
         <h2 className="title extra-registration-form-title">
-          עריכת משתמש, {params.target.firstName} {params.target.lastName}
+          עריכת משתמש, {props.target.firstName} {props.target.lastName}
         </h2>
         <div className="edit-user-input-box">
           <input

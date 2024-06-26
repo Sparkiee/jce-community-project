@@ -388,8 +388,27 @@ function ManageUsers() {
     };
   }, []);
 
+  const handleCloseForm = () => {
+    setEditUserForm(false);
+    setShowCreateUser(false);
+  };
+
   return (
     <div>
+      {editUserForm && (
+        <div className="popup-overlay">
+          <div ref={editUserRef} className="popup-content">
+            <EditUser target={editUser} onClose={handleCloseForm} />
+          </div>
+        </div>
+      )}
+      {showCreateUser && (
+        <div className="popup-overlay">
+          <div ref={createUserRef} className="popup-content">
+            <CreateUser onClose={handleCloseForm} />
+          </div>
+        </div>
+      )}
       {removePermmisionTarget && (
         <ConfirmAction
           onConfirm={() => handleRemovePermissions()}
@@ -403,82 +422,6 @@ function ManageUsers() {
         />
       )}
       <div className="manage-users-container">
-        {editUserForm && (
-          <div ref={editUserRef} className="display-edit-user">
-            <div
-              className="action-close"
-              onClick={() => {
-                setEditUserForm(false);
-              }}
-            >
-              <svg
-                width="24px"
-                height="24px"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-              >
-                <line
-                  x1="17"
-                  y1="7"
-                  x2="7"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="7"
-                  y1="7"
-                  x2="17"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <EditUser target={editUser} />
-          </div>
-        )}
-        {showCreateUser && (
-          <div ref={createUserRef} className="display-create-user">
-            <div
-              className="action-close"
-              onClick={() => {
-                setShowCreateUser(false);
-              }}
-            >
-              <svg
-                width="24px"
-                height="24px"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-              >
-                <line
-                  x1="17"
-                  y1="7"
-                  x2="7"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="7"
-                  y1="7"
-                  x2="17"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <CreateUser />
-          </div>
-        )}
         <div className="page-title">ניהול משתמשים</div>
         <div className="pending-actions">
           <div

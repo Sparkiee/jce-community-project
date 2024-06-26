@@ -4,12 +4,14 @@ import {
   query,
   where,
   getDocs,
-  onSnapshot
+  onSnapshot,
+  doc,
+  getDoc
 } from "firebase/firestore";
 import { db } from "../firebase";
-
+import { useParams } from "react-router-dom";
 import "../styles/Styles.css";
-import "../styles/DisplayProfile.css";
+import "../styles/Profile.css";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
@@ -25,24 +27,31 @@ import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { CardActionArea } from "@mui/material";
-import CardActions from '@mui/material/CardActions';
-
-function DisplayProfile(params) {
-  // const [profile, setProfile] = useState();
-  const profile = JSON.parse(sessionStorage.getItem("profileView"));
-  const user = JSON.parse(sessionStorage.getItem("user"));
-
+function Profile() {
   const pages = ["פניות", "היסטוריה", "משימות פתוחות", "אירועים קרובים"];
+
   const [menuSelected, setMenuSelected] = useState(pages[0]);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
   const [numTasks, setNumTasks] = useState(0);
   const [numEvents, setNumEvents] = useState(0);
+
+  const [profile, setProfile] = useState();
+
+  const user = JSON.parse(sessionStorage.getItem("user"));
+
+  const { email } = useParams();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const docRef = doc(db, "members", email);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setProfile(docSnap.data());
+      }
+    };
+    fetchProfile();
+  }, [email]);
 
   function stringToColor(string) {
     let hash = 0;
@@ -192,6 +201,7 @@ function DisplayProfile(params) {
   ];
 
   async function grabMyTasks() {
+    if(!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
       const q = query(
@@ -226,6 +236,7 @@ function DisplayProfile(params) {
   }
 
   async function grabMyEvents() {
+    if (!profile) return;
     try {
       const eventsRef = collection(db, "events");
       const q = query(
@@ -259,9 +270,7 @@ function DisplayProfile(params) {
   }
 
   useEffect(() => {
-    grabMyTasks();
-    grabMyEvents();
-
+    if (!profile) return;
     const eventsRef = collection(db, "events");
     const eventsQuery = query(
       eventsRef,
@@ -295,6 +304,11 @@ function DisplayProfile(params) {
       unsubscribeTasks();
     };
   }, []);
+
+  useEffect(() => {
+    grabMyTasks();
+    grabMyEvents();
+  }, [profile]);
 
   const PageContent = ({ pageName }) => {
     switch (pageName) {
@@ -371,15 +385,15 @@ function DisplayProfile(params) {
             <EditIcon color="default" className="edit-button" />
           </IconButton>
         )}
-        <h1>{profile.fullName}</h1>
+        <h1>{profile && profile.fullName}</h1>
         <h2>
-          {profile.department} • {profile.role}
+          {profile && profile.department} • {profile && profile.role}
         </h2>
         <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />
         <div className="profile-stats">
           <div className="profile-stats-row profile-stats-contact profile-personal-info">
             <SendIcon />
-            <h3>צור קשר עם {profile.fullName}</h3>
+            <h3>צור קשר עם {profile && profile.fullName}</h3>
           </div>
           <h2 className="title-info">התקדמות אישית</h2>
           <div className="profile-stats-row">
@@ -406,70 +420,18 @@ function DisplayProfile(params) {
           <div
             className="profile-stats-row profile-personal-info"
             onClick={() =>
-              window.open(`https://wa.me/${profile.phone}`, "_blank")
+              window.open(`https://wa.me/${profile && profile.phone}`, "_blank")
             }
           >
             <PhoneIphoneIcon />
-            <h3 className="profile-phone">{profile.phone}</h3>
+            <h3 className="profile-phone">{profile && profile.phone}</h3>
           </div>
           <div className="profile-stats-row profile-personal-info">
             <AlternateEmailIcon />
-            <h3>{profile.email}</h3>
+            <h3>{profile && profile.email}</h3>
           </div>
         </div>
       </div>
-      {/* <Card sx={{ maxWidth: 345 }} style={{ backgroundColor: "#FAF9F6" }} variant="outlined">
-        <CardActionArea>
-          <CardContent>
-            <h1>{profile.fullName}</h1>
-            <h2>
-              {profile.department} • {profile.role}
-            </h2>
-            <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />
-            <div className="profile-stats">
-              <div className="profile-stats-row profile-stats-contact profile-personal-info">
-                <SendIcon />
-                <h3>צור קשר עם {profile.fullName}</h3>
-              </div>
-              <h2 className="title-info">התקדמות אישית</h2>
-              <div className="profile-stats-row">
-                <AssignmentIcon />
-                <h3>{numTasks} משימות פתוחות</h3>
-              </div>
-              <div className="profile-stats-row">
-                <AssignmentIcon />
-                <h3>{numEvents} אירועים קרובים</h3>
-              </div>
-              <div className="profile-stats-row">
-                <TaskIcon />
-                <h3>משימות שהושלמו</h3>
-                <h3>(אחוז השלמה)</h3>
-              </div>
-              <div className="profile-stats-row">
-                <TaskIcon />
-                <h3>אירועים שהושלמו</h3>
-                <h3>(אחוז השלמה)</h3>
-              </div>
-            </div>
-            <div className="profile-stats">
-              <h2 className="title-info">פרטים אישיים</h2>
-              <div
-                className="profile-stats-row profile-personal-info"
-                onClick={() =>
-                  window.open(`https://wa.me/${profile.phone}`, "_blank")
-                }
-              >
-                <PhoneIphoneIcon />
-                <h3 className="profile-phone">{profile.phone}</h3>
-              </div>
-              <div className="profile-stats-row profile-personal-info">
-                <AlternateEmailIcon />
-                <h3>{profile.email}</h3>
-              </div>
-            </div>
-          </CardContent>
-        </CardActionArea>
-      </Card> */}
       <div className="profile-data left-side">
         <div className="profile-navbar">
           <ul>
@@ -498,4 +460,4 @@ function DisplayProfile(params) {
   );
 }
 
-export default DisplayProfile;
+export default Profile;

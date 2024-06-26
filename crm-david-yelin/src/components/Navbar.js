@@ -21,7 +21,7 @@ import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
-import DisplayProfile from "./DisplayProfile.js";
+import Profile from "./Profile.js";
 
 
 function Navbar() {
@@ -165,8 +165,7 @@ function Navbar() {
   };
 
   function handleProfileClick() {
-    sessionStorage.setItem("profileView", JSON.stringify(user));
-    navigate("/profile");
+    navigate(`/profile/${user.email}`);
   }
 
   return (

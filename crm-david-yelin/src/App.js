@@ -14,7 +14,7 @@ import ManageUsers from "./components/ManageUsers";
 import ManageTasks from "./components/ManageTasks";
 import ForgotPassword from "./components/ForgotPassword";
 import ManageEvents from "./components/ManageEvents";
-import DisplayProfile from "./components/DisplayProfile";
+import Profile from "./components/Profile";
 
 import Navbar from "./components/Navbar";
 
@@ -61,10 +61,10 @@ const App = () => {
           }
         />
         <Route
-          path="/profile"
+          path="/profile/:email"
           element={
             <ProtectedRoute privilegeLevel={1}>
-              <DisplayProfile />
+              <Profile />
             </ProtectedRoute>
           }
         />

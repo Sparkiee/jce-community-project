@@ -430,7 +430,7 @@ function HomePage() {
       ) : (
         <h2 className="title-home">יש לך {numEvents} אירועים בקרוב</h2>
       )}
-      <div style={{ height: 371, width: "80%" }}>
+      <div style={{ height: 372, width: "80%" }}>
         <ThemeProvider theme={theme}>
           <DataGrid
             className="data-grid"

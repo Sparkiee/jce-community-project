@@ -105,7 +105,6 @@ function Profile() {
     {
       field: "id",
       headerName: "אינדקס",
-      width: "3%",
       align: "right",
       flex: 1
     },
@@ -157,10 +156,8 @@ function Profile() {
     {
       field: "id",
       headerName: "אינדקס",
-      width: "3%",
       align: "right",
-      colors: "red",
-      flex: 1
+      flex: 1.2
     },
     {
       field: "eventName",
@@ -365,7 +362,7 @@ function Profile() {
         );
       case pages[3]:
         return (
-          <div style={{ height: 371, width: "100%" }}>
+          <div style={{ height: 372, width: "100%" }}>
             <ThemeProvider theme={theme}>
               <DataGrid
                 className="data-grid"

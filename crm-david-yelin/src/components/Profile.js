@@ -434,8 +434,7 @@ function Profile() {
     }
   };
 
-  const handleCloseForm = () => { 
-    console.log("CLICK!");
+  const handleCloseForm = () => {
     setShowEditProfile(false);
     setShowResetPassword(false);
   };

@@ -93,7 +93,7 @@ function EventPage() {
       const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`));
       const querySnapshot = await getDocs(q);
       const tasksArray = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
+        querySnapshot.docs.map(async (doc,index) => {
           const taskData = doc.data();
           const assignees = Array.isArray(taskData.assignees) ? taskData.assignees : [];
           const assigneeData = await Promise.all(
@@ -107,6 +107,7 @@ function EventPage() {
             ...taskData,
             id: doc.id,
             assignTo: assigneeData,
+            index: index + 1,
           };
         })
       );
@@ -177,7 +178,7 @@ function EventPage() {
   };
 
   const taskColumns = [
-    { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
+    { field: "index", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
     {
       field: "taskName",
       headerName: "שם המשימה",

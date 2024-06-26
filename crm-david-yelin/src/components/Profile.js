@@ -389,7 +389,7 @@ function Profile() {
         <h2>
           {profile && profile.department} • {profile && profile.role}
         </h2>
-        <Avatar className="profile-avatar" {...stringAvatar("לוזר גדול")} />
+        <Avatar className="profile-avatar" {...stringAvatar(`${profile.fullName}`)} />
         <div className="profile-stats">
           <div className="profile-stats-row profile-stats-contact profile-personal-info">
             <SendIcon />

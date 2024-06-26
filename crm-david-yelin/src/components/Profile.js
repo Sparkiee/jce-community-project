@@ -529,7 +529,7 @@ function Profile() {
               </div>
               <div className="profile-stats-row">
                 <TaskIcon />
-                <h3>{numCompletedEvents} אירועים שהושלמו</h3>
+                <h3>{numCompletedEvents} אירועים שהסתיימו</h3>
                 <h3>({eventPercentage}%)</h3>
               </div>
             </div>

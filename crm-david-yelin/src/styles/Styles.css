@@ -54,7 +54,7 @@ body {
   background: rgba(0, 0, 0, 0.4);
   opacity: 0;
   z-index: 666;
-  animation: fadeIn 0.5s forwards;
+  animation: fadeIn 0.2s forwards;
 }
 
 .popup-content {

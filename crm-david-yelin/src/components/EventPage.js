@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -43,6 +44,7 @@ function EventPage() {
   const [userPrivileges, setUserPrivileges] = useState(1);
   const [loading, setLoading] = useState(true);
   const createEventRef = useRef(null);
+  const navigate = useNavigate();
 
   const theme = createTheme(
     {
@@ -91,7 +93,7 @@ function EventPage() {
       const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`));
       const querySnapshot = await getDocs(q);
       const tasksArray = await Promise.all(
-        querySnapshot.docs.map(async (doc, index) => {
+        querySnapshot.docs.map(async (doc) => {
           const taskData = doc.data();
           const assignees = Array.isArray(taskData.assignees) ? taskData.assignees : [];
           const assigneeData = await Promise.all(
@@ -103,7 +105,7 @@ function EventPage() {
           );
           return {
             ...taskData,
-            id: index + 1,
+            id: doc.id,
             assignTo: assigneeData,
           };
         })
@@ -220,7 +222,10 @@ function EventPage() {
       align: "center",
       flex: 0.5,
       renderCell: (params) => (
-        <IconButton aria-label="view" /*onClick={() => navigate(``)}*/>
+        <IconButton
+          aria-label="view"
+          onClick={() => navigate(`/task/${params.row.id}`)}
+        >
           <VisibilityIcon />
         </IconButton>
       ),
@@ -260,7 +265,8 @@ function EventPage() {
                 <IconButton
                   className="event-page-edit-icon"
                   aria-label="edit"
-                  onClick={handleEditClick}>
+                  onClick={handleEditClick}
+                >
                   <EditIcon />
                 </IconButton>
               )}
@@ -301,7 +307,8 @@ function EventPage() {
                 height="24px"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor">
+                fill="currentColor"
+              >
                 <line
                   x1="17"
                   y1="7"
@@ -344,3 +351,4 @@ function EventPage() {
 }
 
 export default EventPage;
+

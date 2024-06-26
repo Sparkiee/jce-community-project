@@ -104,7 +104,7 @@ function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
+
   const disconnect = () => {
     navigate("/");
     sessionStorage.removeItem("user");

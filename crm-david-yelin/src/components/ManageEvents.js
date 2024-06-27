@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import {
@@ -61,11 +61,13 @@ function stringAvatar(name) {
 
 function ManageEvents() {
   const [rows, setRows] = useState([]);
+  const [allRows, setAllRows] = useState([]);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState("");
   const [alert, setAlert] = useState(false);
   const [editEventDetails, setEditEventDetails] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const createEventRef = useRef(null);
   const navigate = useNavigate();
@@ -137,7 +139,7 @@ function ManageEvents() {
         return (
           <AvatarGroup className="manage-task-avatar-group" max={3}>
             {assignees.map((user, index) => (
-              <Avatar key={index} {...stringAvatar(user.fullName)} title={user.fullName} onClick={()=> navigate(`/profile/${user.email}`)}/>
+              <Avatar key={index} {...stringAvatar(user.fullName)} title={user.fullName} onClick={() => navigate(`/profile/${user.email}`)} />
             ))}
           </AvatarGroup>
         );
@@ -198,7 +200,7 @@ function ManageEvents() {
     }
   }
 
-  async function getEvents() {
+  const getEvents = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "events"));
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
@@ -231,11 +233,12 @@ function ManageEvents() {
           };
         })
       );
+      setAllRows(rowsEventsData);
       setRows(rowsEventsData);
     } catch (e) {
       console.error("Error getting documents: ", e);
     }
-  }
+  };
 
   useEffect(() => {
     getEvents();
@@ -264,7 +267,7 @@ function ManageEvents() {
     setShowCreateEvent(false);
   };
 
-  async function handleDeleteEvent() {
+  const handleDeleteEvent = async () => {
     try {
       const docRef = doc(db, "events", deleteTarget.eventDoc);
       await deleteDoc(docRef);
@@ -277,7 +280,7 @@ function ManageEvents() {
     } catch (e) {
       console.error("Error deleting document: ", e);
     }
-  }
+  };
 
   const handleRowDoubleClick = (params) => {
     navigate(`/event/${params.row.eventDoc}`);
@@ -305,6 +308,16 @@ function ManageEvents() {
   const handleSaveEdit = () => {
     setIsEditing(false);
     getEvents(); // Refresh event details
+  };
+
+  const handleSearchChange = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchValue(value);
+
+    const filteredRows = allRows.filter(row =>
+      row.eventName.toLowerCase().includes(value)
+    );
+    setRows(filteredRows);
   };
 
   return (
@@ -357,6 +370,51 @@ function ManageEvents() {
             הוסף אירוע
           </div>
         )}
+        <div className="search-events-bar">
+          <svg
+            viewBox="0 0 32 32"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#000000"
+          >
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <title>search</title>
+              <desc>Created with Sketch Beta.</desc>
+              <defs></defs>
+              <g
+                id="Page-1"
+                stroke="none"
+                strokeWidth="1"
+                fill="none"
+                fillRule="evenodd"
+              >
+                <g
+                  id="Icon-Set"
+                  transform="translate(-256.000000, -1139.000000)"
+                  fill="#000000"
+                >
+                  <path
+                    d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
+                    id="search"
+                  ></path>
+                </g>
+              </g>
+            </g>
+          </svg>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="חיפוש אירועים"
+            value={searchValue}
+            onChange={handleSearchChange}
+          />
+        </div>
         <div style={{ height: 995, width: "90%" }}>
           <ThemeProvider theme={theme}>
             <DataGrid
@@ -371,8 +429,7 @@ function ManageEvents() {
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${
-                      count !== -1 ? count : `יותר מ ${to}`
+                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`
                     }`,
                   labelRowsPerPage: "שורות בכל עמוד:"
                 }

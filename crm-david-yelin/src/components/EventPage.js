@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -93,7 +92,7 @@ function EventPage() {
       const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`));
       const querySnapshot = await getDocs(q);
       const tasksArray = await Promise.all(
-        querySnapshot.docs.map(async (doc,index) => {
+        querySnapshot.docs.map(async (doc, index) => {
           const taskData = doc.data();
           const assignees = Array.isArray(taskData.assignees) ? taskData.assignees : [];
           const assigneeData = await Promise.all(
@@ -125,7 +124,7 @@ function EventPage() {
     if (user && user.privileges) {
       setUserPrivileges(user.privileges);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchEvent();
@@ -169,8 +168,12 @@ function EventPage() {
       <div className="participants-list">
         {assignees.map((assignee, index) => (
           <div key={index} className="participant-item">
-            <Avatar {...stringAvatar(assignee.fullName)} />
-            <p className="participant-name">{assignee.fullName}</p>
+            <Link to={`/profile/${assignee.email}`}>
+              <Avatar {...stringAvatar(assignee.fullName)} />
+            </Link>
+            <Link to={`/profile/${assignee.email}`} className="participant-name">
+              {assignee.fullName}
+            </Link>
           </div>
         ))}
       </div>
@@ -352,4 +355,3 @@ function EventPage() {
 }
 
 export default EventPage;
-

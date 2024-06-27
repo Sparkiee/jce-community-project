@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Avatar from "@mui/material/Avatar";
@@ -40,6 +40,7 @@ function TaskPage() {
   const [task, setTask] = useState(null);
   const [assignees, setAssignees] = useState([]);
   const [eventName, setEventName] = useState("");
+  const [eventId, setEventId] = useState("");
   const [userPrivileges, setUserPrivileges] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const editTaskRef = useRef(null);
@@ -70,6 +71,7 @@ function TaskPage() {
           if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
             const eventPathSegments = taskData.relatedEvent.split("/");
             const eventId = eventPathSegments[eventPathSegments.length - 1];
+            setEventId(eventId);
             const eventDoc = await getDoc(doc(db, "events", eventId));
             if (eventDoc.exists()) {
               setEventName(eventDoc.data().eventName);
@@ -118,6 +120,7 @@ function TaskPage() {
           if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
             const eventPathSegments = taskData.relatedEvent.split("/");
             const eventId = eventPathSegments[eventPathSegments.length - 1];
+            setEventId(eventId);
             const eventDoc = await getDoc(doc(db, "events", eventId));
             if (eventDoc.exists()) {
               setEventName(eventDoc.data().eventName);
@@ -164,7 +167,7 @@ function TaskPage() {
         <h1>{task.taskName}</h1>
         <div className="task-info">
           <p><strong>תיאור:</strong> {task.taskDescription}</p>
-          <p><strong>אירוע משוייך:</strong> {eventName}</p>
+          <p><strong>אירוע משוייך:</strong> <Link to={`/event/${eventId}`}>{eventName}</Link></p>
           <p><strong>תאריך התחלה:</strong> {task.taskStartDate}</p>
           <p><strong>תאריך יעד:</strong> {task.taskEndDate}</p>
           <p><strong>סטטוס:</strong> {task.taskStatus}</p>
@@ -177,12 +180,14 @@ function TaskPage() {
         )}
       </div>
       <div className="task-assignees">
-        <h2>משוייכים</h2>
+        <h2>משתתפים</h2>
         <div className="assignees-list">
           {assignees.map((assignee, index) => (
             <div key={index} className="assignee-item">
-              <Avatar {...stringAvatar(assignee.fullName)} />
-              <p>{assignee.fullName}</p>
+              <Link className="profile-link" to={`/profile/${assignee.email}`}>
+                <Avatar {...stringAvatar(assignee.fullName)} />
+                <p>{assignee.fullName}</p>
+              </Link>
             </div>
           ))}
         </div>
@@ -227,4 +232,3 @@ function TaskPage() {
 }
 
 export default TaskPage;
-

@@ -107,3 +107,13 @@
   width: 60%;
   border: 2px solid red;
 }
+
+.participant-name{    
+  font-size: large;
+  text-decoration: none;
+  color: black;
+}
+
+.participant-avatar{
+  text-decoration: none;
+}

@@ -50,5 +50,10 @@
     font-size: large;
     margin-right: 20px;
   }
+
+  .participants-list{
+    text-decoration: none;
+    color: black;
+  }
   
   

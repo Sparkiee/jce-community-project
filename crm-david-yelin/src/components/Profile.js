@@ -596,7 +596,6 @@ function Profile() {
           </div>
           <div className="profile-data left-side">
             <div className="profile-navbar">
-              {/* <PageContent pageName={menuSelected} /> */}
               <ThemeProvider theme={navbarTheme}>
                 <Box sx={{ width: "100%" }}>
                   <TabContext value={page}>

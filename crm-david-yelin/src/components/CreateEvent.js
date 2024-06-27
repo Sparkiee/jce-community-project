@@ -31,6 +31,7 @@ function CreateEvent(props) {
     eventStartDate: "",
     eventEndDate: "",
     eventTime: "",
+    eventBudget: 0,
     eventLocation: "",
     assignees: selectedMembers
   });
@@ -60,14 +61,16 @@ function CreateEvent(props) {
 
     if (!eventDetails.eventStartDate) {
       const date = new Date();
-      const formattedDate = date
-        .toLocaleDateString("he-IL")
-        .replaceAll("/", "-");
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+      const day = date.getDate().toString().padStart(2, "0");
+
+      const formattedDate = `${year}-${month}-${day}`;
       eventDetails.eventStartDate = formattedDate;
     }
+    const user = JSON.parse(sessionStorage.getItem("user"));
     const assigneeRefs = selectedMembers.map(
       (member) =>
-        // doc(db, "members", member.id)
         `members/${member.id}`
     );
     const updatedEventDetails = {
@@ -76,16 +79,15 @@ function CreateEvent(props) {
       eventEndDate: eventDetails.eventEndDate,
       eventTime: eventDetails.eventTime,
       eventLocation: eventDetails.eventLocation,
+      eventBudget: eventDetails.eventBudget,
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
+      eventCreator: "members/" + user.email,
       eventStatus: "טרם החל"
     };
 
     try {
-      const docRef = await addDoc(
-        collection(db, "events"),
-        updatedEventDetails
-      );
+      const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
       console.log("Event recorded with ID: ", docRef.id);
       setEventExists(true);
 
@@ -139,9 +141,7 @@ function CreateEvent(props) {
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some(
-              (selectedMember) => selectedMember.fullName === member.fullName
-            )
+            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
         );
       setMembers(results);
     } else {
@@ -151,10 +151,7 @@ function CreateEvent(props) {
 
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
-    if (
-      selectedMember &&
-      !selectedMembers.some((member) => member.id === selectedMember.id)
-    ) {
+    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
       setSearch(""); // Clear the search input after selection
       setMembers([]); // Clear the dropdown options
@@ -167,17 +164,13 @@ function CreateEvent(props) {
 
   return (
     <div className="create-event">
-      <div
-        className="action-close"
-        onClick={props.onClose}
-      >
+      <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -206,9 +199,7 @@ function CreateEvent(props) {
             placeholder="שם האירוע (חובה*)"
             name="eventName"
             className="create-event-input"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, eventName: e.target.value })
-            }
+            onChange={(e) => setEventDetails({ ...eventDetails, eventName: e.target.value })}
           />
           <div className="start-due-date-event">
             <div className="start-date-event">
@@ -219,14 +210,10 @@ function CreateEvent(props) {
                 id="start"
                 className="create-event-input"
                 onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  const formattedDate = date
-                    .toLocaleDateString("he-IL")
-                    .replaceAll("/", "-");
                   //change the start date
                   setEventDetails({
                     ...eventDetails,
-                    eventStartDate: formattedDate
+                    eventStartDate: e.target.value
                   });
                 }}
               />
@@ -239,30 +226,40 @@ function CreateEvent(props) {
                 id="due"
                 className="create-event-input"
                 onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  const formattedDate = date
-                    .toLocaleDateString("he-IL")
-                    .replaceAll("/", "-");
                   //change the due date
                   setEventDetails({
                     ...eventDetails,
-                    eventEndDate: formattedDate
+                    eventEndDate: e.target.value
                   });
                 }}
               />
             </div>
           </div>
-          <label htmlFor="time" className="event-time-label">
-            שעת האירוע (חובה*)
-          </label>
-          <input
-            type="time"
-            name="eventTime"
-            className="create-event-input"
-            onChange={(e) =>
-              setEventDetails({ ...eventDetails, eventTime: e.target.value })
-            }
-          />
+          <div className="time-budget-event">
+            <div className="event-time">
+              <label htmlFor="time" className="event-time-label">
+                שעת האירוע (חובה*)
+              </label>
+              <input
+                type="time"
+                name="eventTime"
+                className="create-event-input"
+                onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value })}
+              />
+            </div>
+            <div className="event-budget">
+              <label htmlFor="time" className="event-time-label">
+                תקציב אירוע
+              </label>
+              <input
+                type="number"
+                name="eventBudget"
+                placeholder="תקציב משימה"
+                className="create-event-input"
+                onChange={(e) => setEventDetails({ ...eventDetails, eventBudget: Number(e.target.value) })}
+              />
+            </div>
+          </div>
           <input
             type="text"
             placeholder="מיקום האירוע"
@@ -294,12 +291,7 @@ function CreateEvent(props) {
               <Stack direction="row" spacing={1}>
                 <Chip
                   key={member.id}
-                  avatar={
-                    <Avatar
-                      alt={member.fullName}
-                      src={require("../assets/profile.jpg")}
-                    />
-                  }
+                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"

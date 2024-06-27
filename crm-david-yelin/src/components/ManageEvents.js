@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import {
-  collection,
-  getDoc,
-  doc,
-  getDocs,
-  deleteDoc
-} from "firebase/firestore";
+import { collection, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -49,8 +43,7 @@ function stringAvatar(name) {
     return { sx: { bgcolor: "#000000" }, children: "?" }; // Default values if name is undefined or null
   }
   const nameParts = name.split(" ");
-  const initials =
-    nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
+  const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
       bgcolor: stringToColor(name)
@@ -107,11 +100,7 @@ function ManageEvents() {
       renderCell: (params) => {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
+        return <div>{formattedDate}</div>;
       }
     },
     {
@@ -123,11 +112,7 @@ function ManageEvents() {
       renderCell: (params) => {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
+        return <div>{formattedDate}</div>;
       }
     },
     {
@@ -155,7 +140,12 @@ function ManageEvents() {
         return (
           <AvatarGroup className="manage-task-avatar-group" max={3}>
             {assignees.map((user, index) => (
-              <Avatar key={index} {...stringAvatar(user.fullName)} title={user.fullName} onClick={()=> navigate(`/profile/${user.email}`)}/>
+              <Avatar
+                key={index}
+                {...stringAvatar(user.fullName)}
+                title={user.fullName}
+                onClick={() => navigate(`/profile/${user.email}`)}
+              />
             ))}
           </AvatarGroup>
         );
@@ -168,10 +158,7 @@ function ManageEvents() {
       align: "center",
       flex: 0.5,
       renderCell: (params) => (
-        <IconButton
-          aria-label="view"
-          onClick={() => navigate(`/event/${params.row.eventDoc}`)}
-        >
+        <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
           <VisibilityIcon />
         </IconButton>
       )
@@ -186,24 +173,17 @@ function ManageEvents() {
     flex: 1.5,
     renderCell: (params) => (
       <div>
-        <IconButton
-          aria-label="edit"
-          onClick={() => handleEditClick(params.row)}
-        >
+        <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
           <EditIcon />
         </IconButton>
-        <IconButton
-          aria-label="delete"
-          onClick={() => setDeleteTarget(params.row)}
-        >
+        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
           <DeleteForeverIcon />
         </IconButton>
       </div>
     )
   };
 
-  const columns =
-    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -226,9 +206,7 @@ function ManageEvents() {
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
-          const assignees = Array.isArray(event.assignees)
-            ? event.assignees
-            : [];
+          const assignees = Array.isArray(event.assignees) ? event.assignees : [];
           const assigneeData = await Promise.all(
             assignees.map(async (assignee) => {
               const email = assignee.split("/")[1];
@@ -243,6 +221,7 @@ function ManageEvents() {
             eventLocation: event.eventLocation,
             eventStartDate: event.eventStartDate,
             eventEndDate: event.eventEndDate,
+            eventBudget: event.eventBudget,
             eventTime: event.eventTime,
             eventStatus: event.eventStatus,
             assignTo: assigneeData || []
@@ -259,10 +238,7 @@ function ManageEvents() {
     getEvents();
 
     const handleClickOutside = (event) => {
-      if (
-        createEventRef.current &&
-        !createEventRef.current.contains(event.target)
-      ) {
+      if (createEventRef.current && !createEventRef.current.contains(event.target)) {
         setShowCreateEvent(false);
       }
     };
@@ -322,16 +298,24 @@ function ManageEvents() {
 
   const handleSaveEdit = () => {
     setIsEditing(false);
-    getEvents(); // Refresh event details
+    getEvents();
   };
 
   return (
     <div>
+      {editEventDetails && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <EditEvent
+              eventDetails={editEventDetails}
+              onClose={handleCloseEdit}
+              onSave={handleSaveEdit}
+            />
+          </div>
+        </div>
+      )}
       {deleteTarget && (
-        <ConfirmAction
-          onConfirm={() => handleDeleteEvent()}
-          onCancel={() => setDeleteTarget("")}
-        />
+        <ConfirmAction onConfirm={() => handleDeleteEvent()} onCancel={() => setDeleteTarget("")} />
       )}
       <div className="manage-events-styles">
         <h1>אירועים</h1>
@@ -347,29 +331,22 @@ function ManageEvents() {
         {user && user.privileges > 1 && (
           <div
             className="action-button add-events-button add-events-manage-events"
-            onClick={handleShowCreateEvents}
-          >
+            onClick={handleShowCreateEvents}>
             <svg
               width="24px"
               height="24px"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></g>
+              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
                 <path
                   d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                   stroke="white"
                   strokeWidth="2"
                   strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
+                  strokeLinejoin="round"></path>
               </g>
             </svg>
             הוסף אירוע
@@ -389,9 +366,7 @@ function ManageEvents() {
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${
-                      count !== -1 ? count : `יותר מ ${to}`
-                    }`,
+                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
                   labelRowsPerPage: "שורות בכל עמוד:"
                 }
               }}
@@ -406,22 +381,6 @@ function ManageEvents() {
         )}
       </div>
       <div className="footer"></div>
-      <Modal
-        open={isEditing}
-        onClose={handleCloseEdit}
-        aria-labelledby="edit-event-modal-title"
-        aria-describedby="edit-event-modal-description"
-      >
-        <div className="modal-content">
-          {editEventDetails && (
-            <EditEvent
-              eventDetails={editEventDetails}
-              onClose={handleCloseEdit}
-              onSave={handleSaveEdit}
-            />
-          )}
-        </div>
-      </Modal>
     </div>
   );
 }

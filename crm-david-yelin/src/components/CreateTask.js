@@ -57,7 +57,11 @@ function CreateTask(props) {
     }
     if (!taskDetails.taskStartDate) {
       const date = new Date();
-      const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+      const day = date.getDate().toString().padStart(2, "0");
+
+      const formattedDate = `${year}-${month}-${day}`;
       taskDetails.taskStartDate = formattedDate;
     }
     const assigneeRefs = selectedMembers.map((member) => doc(db, "members", member.id));

@@ -59,8 +59,7 @@
 .due-date-event {
   width: 50%;
 }
-
-.due-date-event label {
+.time-budget-event label, .due-date-event label {
   font-size: 1.8rem;
 }
 
@@ -103,4 +102,14 @@
 .feedback-create-event {
   position: absolute;
   bottom: 2%;
+}
+
+.time-budget-event {
+  display: flex;
+  width: 92%;
+  gap: 1rem;
+}
+
+.event-time, .event-budget {
+  width: 50%;
 }

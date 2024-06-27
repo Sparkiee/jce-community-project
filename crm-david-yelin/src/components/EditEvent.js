@@ -23,7 +23,8 @@ function EditEvent({ eventDetails = {}, onSave }) {
     eventEndDate: eventDetails.eventEndDate || "",
     eventTime: eventDetails.eventTime || "",
     eventLocation: eventDetails.eventLocation || "",
-    assignees: eventDetails.assignees || [],
+    eventBudget: eventDetails.eventBudget || 0,
+    assignees: eventDetails.assignees || []
   });
 
   const fetchMembers = useCallback(async () => {
@@ -31,7 +32,7 @@ function EditEvent({ eventDetails = {}, onSave }) {
     const membersSnapshot = await getDocs(membersRef);
     const membersList = membersSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data()
     }));
     setMembers(membersList);
 
@@ -70,7 +71,7 @@ function EditEvent({ eventDetails = {}, onSave }) {
     const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
     const updatedEventDetails = {
       ...event,
-      assignees: assigneeRefs,
+      assignees: assigneeRefs
     };
 
     console.log("Updated Event Details:", updatedEventDetails); // Print the event object to the console
@@ -96,7 +97,7 @@ function EditEvent({ eventDetails = {}, onSave }) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter(
           (member) =>
@@ -148,11 +149,9 @@ function EditEvent({ eventDetails = {}, onSave }) {
                   className="create-event-input"
                   value={event.eventStartDate}
                   onChange={(e) => {
-                    const date = new Date(e.target.value);
-                    const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
                     setEvent({
                       ...event,
-                      eventStartDate: formattedDate,
+                      eventStartDate: e.target.value
                     });
                   }}
                 />
@@ -166,26 +165,41 @@ function EditEvent({ eventDetails = {}, onSave }) {
                   className="create-event-input"
                   value={event.eventEndDate}
                   onChange={(e) => {
-                    const date = new Date(e.target.value);
-                    const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
                     setEvent({
                       ...event,
-                      eventEndDate: formattedDate,
+                      eventEndDate: e.target.value
                     });
                   }}
                 />
               </div>
             </div>
-            <label htmlFor="time" className="event-time-label">
-              שעת האירוע (חובה*)
-            </label>
-            <input
-              type="time"
-              name="eventTime"
-              className="create-event-input"
-              value={event.eventTime}
-              onChange={(e) => setEvent({ ...event, eventTime: e.target.value })}
-            />
+            <div className="time-budget-event">
+              <div className="event-time">
+                <label htmlFor="time" className="event-time-label">
+                  שעת האירוע (חובה*)
+                </label>
+                <input
+                  type="time"
+                  name="eventTime"
+                  className="create-event-input"
+                  value={event.eventTime}
+                  onChange={(e) => setEvent({ ...event, eventTime: e.target.value })}
+                />
+              </div>
+              <div className="event-budget">
+                <label htmlFor="time" className="event-time-label">
+                  תקציב אירוע
+                </label>
+                <input
+                  type="number"
+                  name="eventBudget"
+                  placeholder="תקציב משימה"
+                  className="create-event-input"
+                  value={event.eventBudget}
+                  onChange={(e) => setEvent({ ...event, eventBudget: Number(e.target.value) })}
+                />
+              </div>
+            </div>
             <input
               type="text"
               placeholder="מיקום האירוע"
@@ -195,7 +209,7 @@ function EditEvent({ eventDetails = {}, onSave }) {
               onChange={(e) =>
                 setEvent({
                   ...event,
-                  eventLocation: e.target.value,
+                  eventLocation: e.target.value
                 })
               }
             />
@@ -210,7 +224,7 @@ function EditEvent({ eventDetails = {}, onSave }) {
               }}
               options={members.map((member) => ({
                 value: member.fullName,
-                label: member.fullName,
+                label: member.fullName
               }))}
             />
             <div className="create-task-selected-members">

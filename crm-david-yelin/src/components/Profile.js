@@ -276,25 +276,37 @@ function Profile() {
       align: "right",
       flex: 0.8
     },
-  {
-    field: "subject",
-    headerName: "נושא",
-    flex: 2,
-    align: "right"
-  },
-  {
-    field: "description",
-    headerName: "תיאור",
-    flex: 3,
-    align: "right"
-  },
-  {
-    field: "notes",
-    headerName: "הערות",
-    flex: 3,
-    align: "right"
-  },
-];
+    {
+      field: "subject",
+      headerName: "נושא",
+      flex: 2,
+      align: "right"
+    },
+    {
+      field: "description",
+      headerName: "תיאור",
+      flex: 3,
+      align: "right"
+    },
+    {
+      field: "notes",
+      headerName: "הערות",
+      flex: 3,
+      align: "right"
+    },
+    {
+      field: "timestamp",
+      headerName: "תאריך",
+      flex: 2,
+      align: "right"
+    },
+    {
+      field: "sourceFullName",
+      headerName: "פותח פניה",
+      flex: 2,
+      align: "right"
+    }
+  ];
 
   async function grabMyTasks() {
     if (!profile) return;
@@ -415,10 +427,9 @@ function Profile() {
         notes: log.notes,
         timestamp: log.timestamp,
         srcMember: log.srcMember,
-        sourceFullName: log.srcFullName, // Use the full name instead of the reference
+        sourceFullName: log.srcFullName // Use the full name instead of the reference
       }));
       setRowContact(logArray);
-
     } catch (error) {
       console.error("Failed to fetch contact log:", error);
     }
@@ -498,11 +509,38 @@ function Profile() {
         return (
           <div>
             <button
-              className="button-test"
+              className="create-contact-log-button"
               onClick={() => setShowContact(true)}
             >
               תעד פנייה
             </button>
+            <div style={{ height: 631, width: "100%" }}>
+              <ThemeProvider theme={theme}>
+                <DataGrid
+                  className="data-grid"
+                  rows={rowContact}
+                  columns={columnsContact}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 10 }
+                    }
+                  }}
+                  pageSizeOptions={[10, 20, 50]}
+                  localeText={{
+                    MuiTablePagination: {
+                      labelDisplayedRows: ({ from, to, count }) =>
+                        `${from}-${to} מתוך ${
+                          count !== -1 ? count : `יותר מ ${to}`
+                        }`,
+                      labelRowsPerPage: "שורות בכל עמוד:"
+                    }
+                  }}
+                  onRowDoubleClick={(params) =>
+                    navigate(`/event/${params.row.eventDoc}`)
+                  }
+                />
+              </ThemeProvider>
+            </div>
           </div>
         );
       case pages[1]:

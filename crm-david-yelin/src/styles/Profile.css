@@ -137,13 +137,13 @@ div .profile-avatar:hover {
 }
 
 .profile-content {
-  margin-top: 3.5rem;
+  margin-top: 2rem;
 }
 
-.button-test {
-  position: absolute;
+.create-contact-log-button {
   color: white;
   border: 1px solid rgba(2, 5, 79, 0.582);
+  margin-bottom: 2rem;
   background: rgb(2, 5, 79);
   padding: 0.8rem 2rem;
   border-radius: 1rem;
@@ -151,24 +151,9 @@ div .profile-avatar:hover {
   transition: all 0.2s linear;
 }
 
-.button-test:hover {
+.create-contact-log-button:hover {
   cursor: pointer;
   background-color: rgb(18, 21, 116);
   transform: scale(1.03);
 }
-
-/* .button-test::after {
-  left: 0.2rem;
-  position: absolute;
-  right: -0.2rem;
-  transition: 0.5s;
-}
-
-.button-test:hover {
-  padding-left: 0.2rem;
-}
-
-.button:hover span {
-  padding-right: 25px;
-} */
 

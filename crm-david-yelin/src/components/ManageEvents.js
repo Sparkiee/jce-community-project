@@ -46,9 +46,9 @@ function stringAvatar(name) {
   const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: initials
+    children: initials,
   };
 }
 
@@ -67,8 +67,8 @@ function ManageEvents() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -82,14 +82,24 @@ function ManageEvents() {
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "eventLocation",
       headerName: "מיקום",
       width: 150,
       align: "right",
-      flex: 4
+      flex: 4,
+    },
+    {
+      field: "taskBudget",
+      headerName: "תקציב",
+      width: 150,
+      align: "right",
+      flex: 1,
+      renderCell: (params) => {
+        return <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>;
+      },
     },
     {
       field: "eventStartDate",
@@ -101,7 +111,7 @@ function ManageEvents() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventEndDate",
@@ -113,21 +123,21 @@ function ManageEvents() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
     },
     {
       field: "assignTo",
@@ -149,7 +159,7 @@ function ManageEvents() {
             ))}
           </AvatarGroup>
         );
-      }
+      },
     },
     {
       field: "view",
@@ -161,8 +171,8 @@ function ManageEvents() {
         <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const editColumn = {
@@ -180,7 +190,7 @@ function ManageEvents() {
           <DeleteForeverIcon />
         </IconButton>
       </div>
-    )
+    ),
   };
 
   const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
@@ -202,7 +212,7 @@ function ManageEvents() {
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        eventDoc: doc.id
+        eventDoc: doc.id,
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
@@ -224,7 +234,7 @@ function ManageEvents() {
             eventBudget: event.eventBudget,
             eventTime: event.eventTime,
             eventStatus: event.eventStatus,
-            assignTo: assigneeData || []
+            assignTo: assigneeData || [],
           };
         })
       );
@@ -359,16 +369,16 @@ function ManageEvents() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 }
-                }
+                  paginationModel: { page: 0, pageSize: 17 },
+                },
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />

@@ -308,7 +308,7 @@ function ManageEvents() {
           <div className="popup-content">
             <EditEvent
               eventDetails={editEventDetails}
-              onClose={handleCloseEdit}
+              onClose={() => setEditEventDetails(false)}
               onSave={handleSaveEdit}
             />
           </div>

@@ -535,6 +535,10 @@ function Profile() {
                       labelRowsPerPage: "שורות בכל עמוד:"
                     }
                   }}
+                  onCellDoubleClick={(params) => {
+                    if (params.field === "sourceFullName")
+                      navigate(`/profile/${params.row.srcMember.split("/")[1]}`);
+                  }}
                 />
               </ThemeProvider>
             </div> : <div className="no-logs">אין תיעודים למשתמש זה</div>}

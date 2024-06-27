@@ -20,7 +20,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
 
-import { Avatar } from "@mui/material";
+import { Avatar, Tab } from "@mui/material";
 import TaskIcon from "@mui/icons-material/Task";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
@@ -34,8 +34,16 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
+import Box from "@mui/material/Box";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+
 function Profile() {
   const pages = ["משימות פתוחות", "אירועים קרובים", "היסטוריה"];
+  const [page, setPage] = useState(pages[0]);
+  const handlePageSwitch = (event, newValue) => {
+    setPage(newValue);
+  };
 
   const [menuSelected, setMenuSelected] = useState(pages[0]);
   const [rowsTasks, setRowsTasks] = useState([]);
@@ -108,6 +116,16 @@ function Profile() {
       direction: "rtl",
       typography: {
         fontSize: 24
+      }
+    },
+    heIL
+  );
+
+  const navbarTheme = createTheme(
+    {
+      direction: "rtl",
+      typography: {
+        fontSize: 36
       }
     },
     heIL
@@ -426,7 +444,9 @@ function Profile() {
                     labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
                   }
                 }}
-                onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
+                onRowDoubleClick={(params) =>
+                  navigate(`/task/${params.row.taskDoc}`)
+                }
               />
             </ThemeProvider>
           </div>
@@ -454,7 +474,9 @@ function Profile() {
                     labelRowsPerPage: "שורות בכל עמוד:"
                   }
                 }}
-                onRowDoubleClick={(params) => navigate(`/event/${params.row.eventDoc}`)}
+                onRowDoubleClick={(params) =>
+                  navigate(`/event/${params.row.eventDoc}`)
+                }
               />
             </ThemeProvider>
           </div>
@@ -574,26 +596,26 @@ function Profile() {
           </div>
           <div className="profile-data left-side">
             <div className="profile-navbar">
-              <ul>
-                {pages.map((page, index) => (
-                  <Button
-                    key={index}
-                    variant="contained"
-                    size="large"
-                    className={
-                      menuSelected === page
-                        ? "selected profile-navbar-buttons"
-                        : "profile-navbar-buttons"
-                    }
-                    onClick={() => setMenuSelected(page)}
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </ul>
+              {/* <PageContent pageName={menuSelected} /> */}
+              <ThemeProvider theme={navbarTheme}>
+                <Box sx={{ width: "100%" }}>
+                  <TabContext value={page}>
+                    <TabList
+                      onChange={handlePageSwitch}
+                      aria-label="lab API tabs example"
+                    >
+                      {pages.map(
+                        (page, index) => (
+                          (<Tab key={index} label={page} value={page} />)
+                        )
+                      )}
+                    </TabList>
+                  </TabContext>
+                </Box>
+              </ThemeProvider>
             </div>
             <div className="profile-content">
-              <PageContent pageName={menuSelected} />
+              <PageContent pageName={page} />
             </div>
           </div>
         </div>

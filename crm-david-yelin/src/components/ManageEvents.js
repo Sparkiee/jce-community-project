@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
@@ -15,7 +15,7 @@ import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateEvent from "./CreateEvent";
 import ConfirmAction from "./ConfirmAction";
-import { Alert, Modal } from "@mui/material";
+import { Alert } from "@mui/material";
 import EditEvent from "./EditEvent";
 
 function stringToColor(string) {

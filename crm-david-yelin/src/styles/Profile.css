@@ -52,12 +52,16 @@ div .profile-avatar:hover {
 }
 
 .profile-stats-row h3 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 400;
 }
 
 .profile-stats-row h3 {
   margin: 0;
+}
+
+.profile-stats-row svg {
+  font-size: 2rem;
 }
 
 .profile-data {
@@ -66,11 +70,8 @@ div .profile-avatar:hover {
 
 .profile-edit-icon {
   position: absolute !important;
-  padding: 2rem !important;
-  border-radius: 50% !important;
-  /* background-color: #e6e4e4d5 !important; */
-  right: 27rem !important;
-  top: -1.5rem !important;
+  right: 26rem !important;
+  top: 0.5rem !important;
 }
 
 .profile-edit-icon:hover {
@@ -78,6 +79,8 @@ div .profile-avatar:hover {
 }
 
 .edit-button {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
   color: black;
 }
 
@@ -156,4 +159,3 @@ div .profile-avatar:hover {
   background-color: rgb(18, 21, 116);
   transform: scale(1.03);
 }
-

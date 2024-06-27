@@ -58,6 +58,12 @@ function EditEvent(props) {
       setWarningText(warning);
       return;
     }
+    if(event.eventBudget < 0) {
+      setFormWarning(true);
+      let warning = "תקציב לא יכול להיות שלילי";
+      setWarningText(warning);
+      return;
+    }
 
     const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
     const updatedEventDetails = {

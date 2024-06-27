@@ -23,6 +23,8 @@ const DiscussionList = ({ eventId }) => {
   const [replyCommentId, setReplyCommentId] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [editComment, setEditComment] = useState("");
+  const [expandedCommentId, setExpandedCommentId] = useState(null); // Состояние отслеживания для раскрытого коммента 
+
 
   useEffect(() => {
     fetchComments();
@@ -72,8 +74,13 @@ const DiscussionList = ({ eventId }) => {
   };
 
   const handleShowFullDiscussion = (commentId) => {
-    // Реализовать функциональность для отображения полного обсуждения
+    if (expandedCommentId === commentId) {
+      setExpandedCommentId(null); // Если комментарий уже раскрыт, закрыть его
+    } else {
+      setExpandedCommentId(commentId); // Иначе раскрыть новый комментарий
+    }
   };
+  
 
   return (
     <div className="discussion-list">
@@ -85,14 +92,21 @@ const DiscussionList = ({ eventId }) => {
               {new Date(comment.timestamp.toDate()).toLocaleString()}
             </span>
           </div>
-          {editingCommentId === comment.id ? (
-            <textarea
-              value={editComment}
-              onChange={(e) => setEditComment(e.target.value)}
-            />
-          ) : (
-            <p>{comment.text}</p>
-          )}
+          <div>
+            {editingCommentId === comment.id ? (
+              <textarea
+                value={editComment}
+                onChange={(e) => setEditComment(e.target.value)}
+              />
+            ) : (
+              <p>{comment.text}</p>
+            )}
+            {expandedCommentId === comment.id && (
+              <div className="full-discussion">
+                <p>Additional details about the comment or related replies...</p>
+              </div>
+            )}
+          </div>
           <div className="discussion-actions">
             <IconButton onClick={() => handleReplyComment(comment.id)}>
               <ReplyIcon />

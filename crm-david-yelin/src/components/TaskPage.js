@@ -7,6 +7,8 @@ import "../styles/TaskPage.css";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditTask from "./EditTask";
+import DiscussionList from "./DiscussionList";
+
 
 function stringToColor(string) {
   let hash = 0;
@@ -42,6 +44,7 @@ function TaskPage() {
   const [eventName, setEventName] = useState("");
   const [userPrivileges, setUserPrivileges] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
+  const [fullDiscussion, setFullDiscussion] = useState(null);
   const editTaskRef = useRef(null);
 
   const fetchUserPrivileges = useCallback(() => {
@@ -153,6 +156,20 @@ function TaskPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isEditing]);
+    
+  const handleShowFullDiscussion = async (commentId) => {
+    try {
+      const commentDoc = await getDoc(doc(db, "discussions", commentId));
+      if (commentDoc.exists()) {
+        setFullDiscussion(commentDoc.data());
+      } else {
+        console.error("No such discussion document!");
+      }
+    } catch (error) {
+      console.error("Error fetching discussion:", error);
+    }
+  };
+
 
   if (!task) {
     return <div>טוען...</div>;
@@ -186,6 +203,14 @@ function TaskPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className = "task-discussion">
+        <DiscussionList
+        taskId = {taskId}
+        userPrivileges = {userPrivileges}
+        onShowFullDiscussion = {handleShowFullDiscussion}
+        />
       </div>
 
       {isEditing && task && (

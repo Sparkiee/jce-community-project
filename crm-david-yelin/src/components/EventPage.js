@@ -13,6 +13,8 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DiscussionList from "./DiscussionList"; // Убедитесь, что путь к компоненту верный
+
 
 function stringToColor(string) {
   let hash = 0;
@@ -344,7 +346,8 @@ function EventPage() {
         </div>
       </div>
       <div className="event-page-comments">
-        <h2>The is where the chat will be</h2>
+        <h2>Chat for knigass</h2>
+        {event && <DiscussionList eventId={event.id} />} // Передайте ID события в DiscussionList
       </div>
       <div className="footer"></div>
     </div>

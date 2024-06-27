@@ -70,9 +70,11 @@ function Profile() {
   const navigate = useNavigate();
 
   const user = JSON.parse(sessionStorage.getItem("user"));
-  const editUserRef = useRef(null);
 
+  const editUserRef = useRef(null);
   const changePasswordRef = useRef(null);
+  const contactLogRef = useRef(null);
+  const editContactLogRef = useRef(null);
 
   const { email } = useParams();
 
@@ -472,7 +474,7 @@ function Profile() {
           const srcMemberData = srcMemberDoc.data();
           return {
             ...log,
-            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown" 
+            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown"
           };
         })
       );
@@ -540,19 +542,32 @@ function Profile() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      console.log("im here");
+      console.log(showContact);
+      console.log(editLog);
       if (
         changePasswordRef.current &&
-        !changePasswordRef.current.contains(event.target) &&
-        showResetPassword
+        !changePasswordRef.current.contains(event.target)
       ) {
         setShowResetPassword(false);
       }
       if (
         editUserRef.current &&
-        !editUserRef.current.contains(event.target) &&
-        showEditProfile
+        !editUserRef.current.contains(event.target)
       ) {
         setShowEditProfile(false);
+      }
+      if (
+        contactLogRef.current &&
+        !contactLogRef.current.contains(event.target)
+      ) {
+        setShowContact(false);
+      }
+      if (
+        editContactLogRef.current &&
+        !editContactLogRef.current.contains(event.target)
+      ) {
+        setEditLog("");
       }
     };
 
@@ -693,10 +708,11 @@ function Profile() {
     <div>
       {editLog !== "" && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div ref={editContactLogRef} className="popup-content">
             <EditContactLog
               target={editLog}
-              onClose={() => {setEditLog("")
+              onClose={() => {
+                setEditLog("");
                 fetchContact();
               }}
             />
@@ -728,14 +744,13 @@ function Profile() {
       )}
       {showContact && (
         <div className="popup-overlay">
-          <div ref={editUserRef} className="popup-content">
+          <div ref={contactLogRef} className="popup-content">
             <ContactUser
               target={profile}
               source={user}
               onClose={() => {
                 handleCloseForm();
                 fetchContact();
-              
               }}
             />
           </div>

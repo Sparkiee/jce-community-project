@@ -7,7 +7,6 @@ import { db } from "../firebase";
 import { setDoc, doc } from "firebase/firestore";
 
 function EditContactLog(props) {
-  console.log(props.target);
   const [subject, setSubject] = useState(props.target.subject || "");
   const [description, setDescription] = useState(
     props.target.description || ""

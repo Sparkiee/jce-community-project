@@ -740,12 +740,12 @@ function Profile() {
               <div className="profile-stats-row">
                 <TaskIcon />
                 <h3>{numCompletedTasks} משימות שהושלמו</h3>
-                <h3>({taskPercentage}%)</h3>
+                <h3>({taskPercentage ? taskPercentage : 0}%)</h3>
               </div>
               <div className="profile-stats-row">
                 <TaskIcon />
                 <h3>{numCompletedEvents} אירועים שהסתיימו</h3>
-                <h3>({eventPercentage}%)</h3>
+                <h3>({eventPercentage ? eventPercentage : 0}%)</h3>
               </div>
             </div>
             <div className="profile-stats">

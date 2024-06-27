@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -12,7 +14,7 @@ body {
   color: #212529;
 }
 
-@media (max-width: 1440px) {
+@media (max-width: 1860px) {
   html {
     font-size: 7px;
   }
@@ -21,7 +23,7 @@ body {
   }
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1333px) {
   html {
     font-size: 6px;
   }

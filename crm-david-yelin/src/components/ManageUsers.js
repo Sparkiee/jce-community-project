@@ -432,7 +432,7 @@ function ManageUsers() {
         </div>
       )}
       <div className="manage-users-container">
-        <div className="page-title">ניהול משתמשים</div>
+        <div className="page-title-manage-users">ניהול משתמשים</div>
         <div
           className="action-button add-user-button"
           onClick={() => setShowCreateUser(true)}

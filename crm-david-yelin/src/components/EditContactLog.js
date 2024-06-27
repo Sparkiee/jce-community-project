@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import "../styles/ContactUser.css";
 import "../styles/Styles.css";
+import "../styles/ContactUser.css";
+
+import React, { useState } from "react";
 import { Alert } from "@mui/material";
 import { db } from "../firebase";
-import { addDoc, collection, serverTimestamp, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 
-function ContactUser(props) {
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [notes, setNotes] = useState("");
+function EditContactLog(props) {
+  console.log(props.target);
+  const [subject, setSubject] = useState(props.target.subject || "");
+  const [description, setDescription] = useState(
+    props.target.description || ""
+  );
+  const [notes, setNotes] = useState(props.target.notes || "");
 
   const [warning, setWarning] = useState(false);
   const [contactSubmitted, setContactSubmitted] = useState(false);
@@ -20,31 +24,22 @@ function ContactUser(props) {
       return;
     }
     try {
-        const docRef = await addDoc(collection(db, "contact_log"), {
-            subject: subject,
-            description: description,
-            notes: notes,
-            timestamp: serverTimestamp(),
-            srcMember: "members/" + props.source.email,
-            destMember: "members/" + props.target.email,
-        });
-
-        const memberRef = doc(db, "members", props.target.email);
-          await updateDoc(memberRef, {
-            Notifications: arrayUnion({
-              contactID: docRef,
-              message: `התקבל עדכון חדש בפרופילך: ${subject}`
-            })
-          });
-
-        setContactSubmitted(true);
-        setTimeout(() => {
-            setContactSubmitted(false);
-            props.onClose();
-        }, 1000);
-        console.log("Document written with ID: ", docRef.id);
+      const docRef = await doc(db, "contact_log", props.target.logDoc);
+      setDoc(docRef, {
+        subject: subject,
+        description: description,
+        notes: notes,
+        timestamp: props.target.timestamp,
+        srcMember: props.target.srcMember,
+        destMember: props.target.destMember,
+      });
+      setContactSubmitted(true);
+      setTimeout(() => {
+        setContactSubmitted(false);
+        props.onClose();
+      }, 1000);
     } catch (e) {
-        console.error("Error adding document: ", e);
+      console.error("Error updating document: ", e);
     }
   }
 
@@ -79,7 +74,9 @@ function ContactUser(props) {
         </svg>
       </div>
       <form className="contact-user-form" onSubmit={handleSubmit}>
-        <h2 className="title extra-registration-form-title">תעד פניה חדשה</h2>
+        <h2 className="title extra-registration-form-title">
+          עדכן תיעוד לפניה קיימת
+        </h2>
         <div className="contact-user-input-box">
           <input
             type="text"
@@ -110,18 +107,32 @@ function ContactUser(props) {
             maxLength={46}
             value={notes}
             onChange={(event) => {
-                setNotes(event.target.value);
-                setWarning(false);
+              setNotes(event.target.value);
+              setWarning(false);
             }}
           />
         </div>
-        {warning && <Alert className="feedback-alert feedback-contactuser" severity="warning">נא למלא את כל השדות</Alert>}
-        {contactSubmitted && <Alert className="feedback-alert feedback-contactuser" severity="success">תיעוד הושלם בהצלחה</Alert>}
+        {warning && (
+          <Alert
+            className="feedback-alert feedback-contactuser"
+            severity="warning"
+          >
+            נא למלא את כל השדות
+          </Alert>
+        )}
+        {contactSubmitted && (
+          <Alert
+            className="feedback-alert feedback-contactuser"
+            severity="success"
+          >
+            תיעוד עודכן בהצלחה
+          </Alert>
+        )}
         <button type="submit" className="primary-button extra-reg">
-          שלח פניה
+          עדכן פניה
         </button>
       </form>
     </div>
   );
 }
-export default ContactUser;
+export default EditContactLog;

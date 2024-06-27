@@ -6,7 +6,8 @@ import {
   getDocs,
   onSnapshot,
   doc,
-  getDoc
+  getDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useParams } from "react-router-dom";
@@ -14,6 +15,8 @@ import "../styles/Styles.css";
 import "../styles/Profile.css";
 import ChangePassword from "./ChangePassword";
 import EditUser from "./EditUser";
+import ConfirmAction from "./ConfirmAction";
+import EditContactLog from "./EditContactLog";
 import { useNavigate } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -26,7 +29,6 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -38,6 +40,7 @@ import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import ContactUser from "./ContactUser";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 function Profile() {
   const pages = ["פניות", "משימות פתוחות", "אירועים קרובים", "היסטוריה"];
@@ -60,6 +63,9 @@ function Profile() {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showContact, setShowContact] = useState(false);
+
+  const [deleteContact, setDeleteContact] = useState("");
+  const [editLog, setEditLog] = useState("");
 
   const navigate = useNavigate();
 
@@ -298,7 +304,12 @@ function Profile() {
       field: "timestamp",
       headerName: "תאריך",
       flex: 2,
-      align: "right"
+      align: "right",
+      renderCell: (params) => (
+        <div style={{ direction: "ltr" }}>
+          {params.row.date} • {params.row.time}
+        </div>
+      )
     },
     {
       field: "sourceFullName",
@@ -306,15 +317,54 @@ function Profile() {
       flex: 2,
       align: "right",
       renderCell: (params) => (
-        <div className="contact-src-log" style={{ cursor: 'pointer' }}>
-          <Avatar
-              {...stringAvatar(`${params.value}`)}
-            />
+        <div className="contact-src-log" style={{ cursor: "pointer" }}>
+          <Avatar {...stringAvatar(`${params.value}`)} />
           {params.value}
         </div>
-      ),
+      )
     }
   ];
+
+  const columnsContactAdmin = [
+    ...columnsContact,
+    {
+      field: "edit",
+      headerName: "עריכה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <div>
+          <IconButton
+            aria-label="edit"
+            title="עריכה"
+            onClick={() => setEditLog(params.row)}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            aria-label="delete"
+            title="מחיקה"
+            onClick={() => setDeleteContact(params.row.logDoc)}
+          >
+            <DeleteForeverIcon />
+          </IconButton>
+        </div>
+      )
+    }
+  ];
+
+  async function handleDeleteContact() {
+    setDeleteContact("");
+    const targetLog = deleteContact;
+    // Delete the contact log
+    const logRef = doc(db, "contact_log", targetLog);
+    try {
+      await deleteDoc(logRef);
+      fetchContact();
+    } catch (error) {
+      console.error("Error deleting contact log:", error);
+    }
+  }
 
   async function grabMyTasks() {
     if (!profile) return;
@@ -417,24 +467,27 @@ function Profile() {
       // Fetch full names for each srcMember
       const logsWithFullNames = await Promise.all(
         logAll.map(async (log) => {
-          const srcMemberRef = doc(db, log.srcMember); // Assuming srcMember is a path to a document
+          const srcMemberRef = doc(db, log.srcMember);
           const srcMemberDoc = await getDoc(srcMemberRef);
           const srcMemberData = srcMemberDoc.data();
           return {
             ...log,
-            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown" // Assuming the member's full name is stored under fullName
+            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown" 
           };
         })
       );
 
       const logArray = logsWithFullNames.map((log, index) => ({
         id: index + 1,
-        logDoc: log.id,
+        logDoc: log.docRef,
         subject: log.subject,
         description: log.description,
         notes: log.notes,
         timestamp: log.timestamp,
+        date: log.timestamp.toDate().toLocaleDateString("de-DE"),
+        time: log.timestamp.toDate().toLocaleTimeString("de-DE"),
         srcMember: log.srcMember,
+        destMember: log.destMember,
         sourceFullName: log.srcFullName // Use the full name instead of the reference
       }));
       setRowContact(logArray);
@@ -522,34 +575,42 @@ function Profile() {
             >
               תעד פנייה
             </button>
-            {rowContact.length > 0 ? <div style={{ height: 631, width: "100%" }}>
-              <ThemeProvider theme={theme}>
-                <DataGrid
-                  className="data-grid"
-                  rows={rowContact}
-                  columns={columnsContact}
-                  initialState={{
-                    pagination: {
-                      paginationModel: { page: 0, pageSize: 10 }
+            {rowContact.length > 0 ? (
+              <div style={{ height: 631, width: "100%" }}>
+                <ThemeProvider theme={theme}>
+                  <DataGrid
+                    className="data-grid"
+                    rows={rowContact}
+                    columns={
+                      user.privileges > 1 ? columnsContactAdmin : columnsContact
                     }
-                  }}
-                  pageSizeOptions={[10, 20, 50]}
-                  localeText={{
-                    MuiTablePagination: {
-                      labelDisplayedRows: ({ from, to, count }) =>
-                        `${from}-${to} מתוך ${
-                          count !== -1 ? count : `יותר מ ${to}`
-                        }`,
-                      labelRowsPerPage: "שורות בכל עמוד:"
-                    }
-                  }}
-                  onCellDoubleClick={(params) => {
-                    if (params.field === "sourceFullName")
-                      navigate(`/profile/${params.row.srcMember.split("/")[1]}`);
-                  }}
-                />
-              </ThemeProvider>
-            </div> : <div className="no-logs">אין תיעודים למשתמש זה</div>}
+                    initialState={{
+                      pagination: {
+                        paginationModel: { page: 0, pageSize: 10 }
+                      }
+                    }}
+                    pageSizeOptions={[10, 20, 50]}
+                    localeText={{
+                      MuiTablePagination: {
+                        labelDisplayedRows: ({ from, to, count }) =>
+                          `${from}-${to} מתוך ${
+                            count !== -1 ? count : `יותר מ ${to}`
+                          }`,
+                        labelRowsPerPage: "שורות בכל עמוד:"
+                      }
+                    }}
+                    onCellDoubleClick={(params) => {
+                      if (params.field === "sourceFullName")
+                        navigate(
+                          `/profile/${params.row.srcMember.split("/")[1]}`
+                        );
+                    }}
+                  />
+                </ThemeProvider>
+              </div>
+            ) : (
+              <div className="no-logs">אין תיעודים למשתמש זה</div>
+            )}
           </div>
         );
       case pages[1]: // Open Tasks
@@ -630,6 +691,27 @@ function Profile() {
 
   return (
     <div>
+      {editLog !== "" && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <EditContactLog
+              target={editLog}
+              onClose={() => {setEditLog("")
+                fetchContact();
+              }}
+            />
+          </div>
+        </div>
+      )}
+      {deleteContact !== "" && (
+        <div className="popup-overlay">
+          <ConfirmAction
+            className="popup-content"
+            onConfirm={() => handleDeleteContact()}
+            onCancel={() => setDeleteContact("")}
+          />
+        </div>
+      )}
       {showResetPassword && (
         <div className="popup-overlay">
           <div ref={changePasswordRef} className="popup-content">
@@ -650,7 +732,11 @@ function Profile() {
             <ContactUser
               target={profile}
               source={user}
-              onClose={handleCloseForm}
+              onClose={() => {
+                handleCloseForm();
+                fetchContact();
+              
+              }}
             />
           </div>
         </div>

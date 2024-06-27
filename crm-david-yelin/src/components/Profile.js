@@ -304,7 +304,15 @@ function Profile() {
       field: "sourceFullName",
       headerName: "פותח פניה",
       flex: 2,
-      align: "right"
+      align: "right",
+      renderCell: (params) => (
+        <div className="contact-src-log" style={{ cursor: 'pointer' }}>
+          <Avatar
+              {...stringAvatar(`${params.value}`)}
+            />
+          {params.value}
+        </div>
+      ),
     }
   ];
 

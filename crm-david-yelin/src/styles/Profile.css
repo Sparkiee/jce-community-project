@@ -157,3 +157,7 @@ div .profile-avatar:hover {
   transform: scale(1.03);
 }
 
+.contact-src-log {
+  display: flex;
+  gap: 1.2rem;
+}

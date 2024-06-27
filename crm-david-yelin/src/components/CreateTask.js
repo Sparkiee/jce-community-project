@@ -331,9 +331,9 @@ function CreateTask(props) {
             value={taskStatus}
             onChange={(e) => setTaskStatus(e.target.value)}
             className="create-task-input extra-create-task-status-input">
-            <option value="טרם החל">טרם החלה</option>
+            <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>
-            <option value="הושלם">הושלמה</option>
+            <option value="הושלמה">הושלמה</option>
           </select>
           <Select
             name="relatedEvent"

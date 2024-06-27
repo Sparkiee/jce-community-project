@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import Select from "react-select";
 import "../styles/CreateTask.css";
@@ -25,6 +25,7 @@ function CreateTask(props) {
   const [members, setMembers] = useState([]);
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState();
+  const [taskStatus, setTaskStatus] = useState("טרם החלה");
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [taskDetails, setTaskDetails] = useState({
     taskName: "",
@@ -33,8 +34,9 @@ function CreateTask(props) {
     taskEndDate: "",
     taskTime: "",
     taskBudget: 0,
+    taskStatus: "טרם החלה",
     relatedEvent: selectedEvent,
-    assignees: selectedMembers
+    assignees: selectedMembers,
   });
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
@@ -65,6 +67,7 @@ function CreateTask(props) {
       taskDetails.taskStartDate = formattedDate;
     }
     const assigneeRefs = selectedMembers.map((member) => doc(db, "members", member.id));
+    const user = JSON.parse(sessionStorage.getItem("user"));
 
     let updatedTaskDetails = {
       taskName: taskDetails.taskName,
@@ -74,7 +77,8 @@ function CreateTask(props) {
       taskTime: taskDetails.taskTime,
       taskBudget: Number(taskDetails.taskBudget),
       taskCreated: serverTimestamp(),
-      taskStatus: "טרם החלה"
+      taskCreator: "members/" + user.email,
+      taskStatus: "טרם החלה",
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -115,8 +119,8 @@ function CreateTask(props) {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               taskID: docRef,
-              message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`
-            })
+              message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
+            }),
           });
         })
       );
@@ -162,7 +166,7 @@ function CreateTask(props) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setEvents(results);
     } else setEvents([]);
@@ -179,7 +183,7 @@ function CreateTask(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
@@ -262,7 +266,7 @@ function CreateTask(props) {
             onChange={(e) =>
               setTaskDetails({
                 ...taskDetails,
-                taskDescription: e.target.value
+                taskDescription: e.target.value,
               })
             }
           />
@@ -278,7 +282,7 @@ function CreateTask(props) {
                   //change the start date
                   setTaskDetails({
                     ...taskDetails,
-                    taskStartDate: e.target.value
+                    taskStartDate: e.target.value,
                   });
                 }}
               />
@@ -291,33 +295,46 @@ function CreateTask(props) {
                 id="due"
                 className="create-task-input"
                 onChange={(e) => {
-                  // const date = new Date(e.target.value);
-                  // const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-                  //change the due date
                   setTaskDetails({
                     ...taskDetails,
-                    taskEndDate: e.target.value
+                    taskEndDate: e.target.value,
                   });
                 }}
               />
             </div>
           </div>
           <div className="time-budget-task">
-            <input
-              type="time"
-              name="taskTime"
-              className="create-task-input"
-              min="0"
-              onChange={(e) => setTaskDetails({ ...taskDetails, taskTime: e.target.value })}
-            />
-            <input
-              type="number"
-              name="taskBudget"
-              placeholder="תקציב משימה"
-              className="create-task-input"
-              onChange={(e) => setTaskDetails({ ...taskDetails, taskBudget: e.target.value })}
-            />
+            <div className="create-task-time-input">
+              <label htmlFor="time">שעת סיום (חובה*)</label>
+              <input
+                type="time"
+                name="taskTime"
+                id="time"
+                className="create-task-input"
+                min="0"
+                onChange={(e) => setTaskDetails({ ...taskDetails, taskTime: e.target.value })}
+              />
+            </div>
+            <div className="create-task-budget-input">
+              <label htmlFor="budget">תקציב משימה</label>
+              <input
+                type="number"
+                name="taskBudget"
+                placeholder="תקציב משימה"
+                id="budget"
+                className="create-task-input"
+                onChange={(e) => setTaskDetails({ ...taskDetails, taskBudget: e.target.value })}
+              />
+            </div>
           </div>
+          <select
+            value={taskStatus}
+            onChange={(e) => setTaskStatus(e.target.value)}
+            className="create-task-input extra-create-task-status-input">
+            <option value="טרם החל">טרם החלה</option>
+            <option value="בתהליך">בתהליך</option>
+            <option value="הושלם">הושלמה</option>
+          </select>
           <Select
             name="relatedEvent"
             placeholder="שייך לאירוע"
@@ -330,7 +347,7 @@ function CreateTask(props) {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName
+              label: event.eventName,
             }))}
           />
           <div className="create-task-selected-task">
@@ -355,7 +372,7 @@ function CreateTask(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
           <div className="create-task-selected-members">

@@ -1,11 +1,6 @@
 import "./App.css";
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
@@ -54,11 +49,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/task/:taskId"
-          element={
-            <TaskPage />
-          }
-        />
+        <Route path="/task/:taskId" element={<TaskPage />} />
         <Route
           path="/events"
           element={
@@ -67,11 +58,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/event/:id"
-          element={
-            <EventPage />
-          }
-        />
+        <Route path="/event/:id" element={<EventPage />} />
         <Route
           path="/profile/:email"
           element={

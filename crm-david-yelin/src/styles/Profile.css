@@ -156,8 +156,3 @@ div .profile-avatar:hover {
   background-color: rgb(18, 21, 116);
   transform: scale(1.03);
 }
-
-.contact-src-log {
-  display: flex;
-  gap: 1.2rem;
-}

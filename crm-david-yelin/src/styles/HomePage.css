@@ -14,11 +14,11 @@
 }
 
 .pending-actions {
-  right: 12rem;
-  top: 12rem;
-  position: absolute;
   display: flex;
-  width: 80%;
+  justify-content: flex-start;
+  right: 13rem;
+  top: 15rem;
+  position: absolute;
   gap: 0.5rem;
 }
 
@@ -93,7 +93,7 @@
 
 .page-title-home {
   font-size: 4rem;
-  font-weight: bold;
+  margin-bottom: 0;
 }
 .page-subtitle {
   font-size: 2rem;

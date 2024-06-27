@@ -59,13 +59,25 @@
 .due-date-event {
   width: 50%;
 }
-.time-budget-event label, .due-date-event label {
+
+.due-date-event label {
   font-size: 1.8rem;
 }
 
-.event-time-label {
+.time-budget-create-event {
+  display: flex;
+  width: 92%;
+  gap: 1rem;
+}
+
+.create-event-time,
+.create-event-budget {
+  width: 50%;
+}
+
+.create-event-time label,
+.create-event-budget label {
   font-size: 1.8rem;
-  margin-left: 30rem;
 }
 
 .extra-create-event-button {
@@ -110,6 +122,11 @@
   gap: 1rem;
 }
 
-.event-time, .event-budget {
+.event-time,
+.event-budget {
   width: 50%;
+}
+
+.extra-create-event-status-input {
+  width: 92%;
 }

@@ -1,0 +1,101 @@
+.edit-event-style {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
+  background-color: rgb(255, 255, 255);
+  gap: 5rem;
+  padding: 5rem 5rem 7rem;
+  width: 60rem;
+}
+
+.extra-edit-event-title {
+  margin: 0 0 1rem 0;
+  font-size: 4rem;
+}
+
+.edit-event-input-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.8rem;
+}
+
+.edit-event-input {
+  width: 85%;
+  padding: 1.5rem;
+  border: 2px solid #e6ecf8;
+  border-radius: 1.7rem;
+  font-size: 1.8rem;
+  color: #141c3a;
+  outline: 0;
+}
+
+.start-due-date-edit-event {
+  display: flex;
+  width: 92%;
+  gap: 1rem;
+  margin-right: 1rem;
+}
+
+.start-date-edit-event {
+  width: 50%;
+}
+
+.start-date-edit-event label {
+  font-size: 1.8rem;
+}
+
+.due-date-edit-event {
+  width: 50%;
+}
+
+.due-date-edit-event label {
+  font-size: 1.8rem;
+}
+
+.time-budget-edit-event {
+  display: flex;
+  width: 92%;
+  gap: 1rem;
+  margin-right: 1rem;
+}
+
+.edit-event-time-budget {
+  width: 50%;
+}
+
+.edit-event-time label {
+  font-size: 1.8rem;
+}
+
+.edit-event-budget {
+  width: 50%;
+}
+
+.edit-event-budget label {
+  font-size: 1.8rem;
+}
+
+.extra-edit-event-input {
+  width: 92%;
+}
+
+.edit-task-selected-members {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 92%;
+  margin: 2rem 0;
+}
+
+.feedback-edit-event {
+  position: absolute;
+  bottom: 2rem;
+}

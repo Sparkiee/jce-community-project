@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
-import "../styles/CreateEvent.css";
+import "../styles/EditEvent.css";
 import Select from "react-select";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
-import CircularProgress from "@mui/material/CircularProgress";
 
 function EditEvent(props) {
   const [search, setSearch] = useState("");
@@ -24,7 +23,7 @@ function EditEvent(props) {
     const membersSnapshot = await getDocs(membersRef);
     const membersList = membersSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
     setMembers(membersList);
 
@@ -58,7 +57,7 @@ function EditEvent(props) {
       setWarningText(warning);
       return;
     }
-    if(event.eventBudget < 0) {
+    if (event.eventBudget < 0) {
       setFormWarning(true);
       let warning = "תקציב לא יכול להיות שלילי";
       setWarningText(warning);
@@ -68,7 +67,7 @@ function EditEvent(props) {
     const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
     const updatedEventDetails = {
       ...event,
-      assignees: assigneeRefs
+      assignees: assigneeRefs,
     };
 
     console.log("Updated Event Details:", updatedEventDetails); // Print the event object to the console
@@ -94,7 +93,7 @@ function EditEvent(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
@@ -121,7 +120,7 @@ function EditEvent(props) {
   };
 
   return (
-    <div className="create-event">
+    <div className="edit-event-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -149,73 +148,73 @@ function EditEvent(props) {
           />
         </svg>
       </div>
-      <form className="create-event-form" onSubmit={handleSubmit}>
-        <h2 className="title extra-create-event-title">ערוך אירוע</h2>
-        <div className="create-event-input-box">
+      <form className="edit-event-form" onSubmit={handleSubmit}>
+        <h2 className="title extra-edit-event-title">ערוך אירוע: {event.eventName}</h2>
+        <div className="edit-event-input-box">
           <input
             type="text"
             placeholder="שם האירוע (חובה*)"
             name="eventName"
-            className="create-event-input"
+            className="edit-event-input"
             value={event.eventName}
             onChange={(e) => setEvent({ ...event, eventName: e.target.value })}
           />
-          <div className="start-due-date-event">
-            <div className="start-date-event">
+          <div className="start-due-date-edit-event">
+            <div className="start-date-edit-event">
               <label htmlFor="start">תאריך התחלה</label>
               <input
                 type="date"
                 name="eventStartDate"
                 id="start"
-                className="create-event-input"
+                className="edit-event-input"
                 value={event.eventStartDate}
                 onChange={(e) => {
                   setEvent({
                     ...event,
-                    eventStartDate: e.target.value
+                    eventStartDate: e.target.value,
                   });
                 }}
               />
             </div>
-            <div className="due-date-event">
+            <div className="due-date-edit-event">
               <label htmlFor="due">תאריך יעד (חובה*)</label>
               <input
                 type="date"
                 name="eventEndDate"
                 id="due"
-                className="create-event-input"
+                className="edit-event-input"
                 value={event.eventEndDate}
                 onChange={(e) => {
                   setEvent({
                     ...event,
-                    eventEndDate: e.target.value
+                    eventEndDate: e.target.value,
                   });
                 }}
               />
             </div>
           </div>
-          <div className="time-budget-event">
-            <div className="event-time">
-              <label htmlFor="time" className="event-time-label">
+          <div className="time-budget-edit-event">
+            <div className="edit-event-time">
+              <label htmlFor="time" className="edit-event-time-label">
                 שעת האירוע (חובה*)
               </label>
               <input
                 type="time"
                 name="eventTime"
-                className="create-event-input"
+                className="edit-event-input"
                 value={event.eventTime}
                 onChange={(e) => setEvent({ ...event, eventTime: e.target.value })}
               />
             </div>
-            <div className="event-budget">
-              <label htmlFor="time" className="event-time-label">
+            <div className="edit-event-budget">
+              <label htmlFor="time" className="edit-event-time-label">
                 תקציב אירוע
               </label>
               <input
                 type="number"
                 name="eventBudget"
                 placeholder="תקציב משימה"
-                className="create-event-input"
+                className="edit-event-input"
                 value={event.eventBudget}
                 onChange={(e) => setEvent({ ...event, eventBudget: Number(e.target.value) })}
               />
@@ -225,18 +224,18 @@ function EditEvent(props) {
             type="text"
             placeholder="מיקום האירוע"
             name="eventLocation"
-            className="create-event-input"
+            className="edit-event-input"
             value={event.eventLocation}
             onChange={(e) =>
               setEvent({
                 ...event,
-                eventLocation: e.target.value
+                eventLocation: e.target.value,
               })
             }
           />
           <Select
             placeholder="הוסף חבר וועדה"
-            className="create-event-input extra-create-event-input"
+            className="edit-event-input extra-edit-event-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });
             }}
@@ -245,10 +244,10 @@ function EditEvent(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
-          <div className="create-task-selected-members">
+          <div className="edit-task-selected-members">
             {selectedMembers.map((member) => (
               <Stack direction="row" spacing={1} key={member.id}>
                 <Chip
@@ -262,14 +261,14 @@ function EditEvent(props) {
           </div>
         </div>
         <input type="submit" value="שמור שינויים" className="primary-button" />
-        <div className="feedback-create-event">
-          {formWarning && (
-            <Alert className="feedback-alert" severity="error">
-              {warningText}
-            </Alert>
-          )}
-        </div>
       </form>
+      <div className="feedback-edit-event">
+        {formWarning && (
+          <Alert className="feedback-alert" severity="error">
+            {warningText}
+          </Alert>
+        )}
+      </div>
     </div>
   );
 }

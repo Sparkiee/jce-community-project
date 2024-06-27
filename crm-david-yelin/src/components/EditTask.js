@@ -36,7 +36,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
     const eventsSnapshot = await getDocs(collection(db, "events"));
     const eventsList = eventsSnapshot.docs.map((doc) => ({
       value: doc.id,
-      label: doc.data().eventName
+      label: doc.data().eventName,
     }));
     setEvents(eventsList);
   };
@@ -45,7 +45,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
     const membersSnapshot = await getDocs(collection(db, "members"));
     const membersList = membersSnapshot.docs.map((doc) => ({
       value: doc.id,
-      label: doc.data().fullName
+      label: doc.data().fullName,
     }));
     setMembers(membersList);
   };
@@ -76,7 +76,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         value: doc.id,
-        label: doc.data().fullName
+        label: doc.data().fullName,
       }));
       setMembers(results);
     } else {
@@ -103,13 +103,13 @@ function EditTask({ task, onClose, onTaskUpdated }) {
       await updateDoc(taskRef, {
         taskName,
         taskDescription,
-        relatedEvent: relatedEvent ? `events/${relatedEvent}` : "", // Ensure relatedEvent is in the correct format
+        relatedEvent: relatedEvent ? `events/${relatedEvent}` : "",
         taskStartDate,
         taskEndDate,
         taskTime,
         taskBudget,
         taskStatus,
-        assignees: assignTo.map((user) => `members/${user.value}`)
+        assignees: assignTo.map((user) => `members/${user.value}`),
       });
 
       setEditedSuccessfully(true);
@@ -194,29 +194,36 @@ function EditTask({ task, onClose, onTaskUpdated }) {
             </div>
           </div>
           <div className="time-budget-task">
-            <input
-              type="time"
-              className="edit-task-input"
-              value={taskTime}
-              onChange={(e) => setTaskTime(e.target.value)}
-            />
-            <input
-              type="number"
-              name="taskBudget"
-              placeholder="תקציב משימה"
-              className="edit-task-input"
-              value={taskBudget}
-              onChange={(e) => setTaskBudget(Number(e.target.value))}
-            />
+            <div className="edit-task-input-time">
+              <label htmlFor="time">שעת התחלה</label>
+              <input
+                type="time"
+                className="edit-task-input"
+                id="time"
+                value={taskTime}
+                onChange={(e) => setTaskTime(e.target.value)}
+              />
+            </div>
+            <div className="edit-task-input-budget">
+              <label htmlFor="budget">תקציב משימה</label>
+              <input
+                type="number"
+                name="taskBudget"
+                placeholder="תקציב משימה"
+                className="edit-task-input"
+                id="budget"
+                value={taskBudget}
+                onChange={(e) => setTaskBudget(Number(e.target.value))}
+              />
+            </div>
           </div>
-
           <select
             value={taskStatus}
             onChange={(e) => setTaskStatus(e.target.value)}
             className="edit-task-input extra-edit-task-input">
-            <option value="טרם החל">טרם החל</option>
+            <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>
-            <option value="הושלם">הושלם</option>
+            <option value="הושלמה">הושלמה</option>
           </select>
           <Select
             options={events}
@@ -236,7 +243,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
             inputValue={search}
             options={members.map((member) => ({
               value: member.value,
-              label: member.label
+              label: member.label,
             }))}
             noOptionsMessage={() => "לא נמצאו אפשרויות"}
             isClearable
@@ -255,14 +262,14 @@ function EditTask({ task, onClose, onTaskUpdated }) {
               ))}
             </Stack>
           </div>
-          {editedSuccessfully && (
-            <Alert severity="success" className="feedback-alert feedback-edittask">
-              פרטי המשימה עודכנו בהצלחה
-            </Alert>
-          )}
           <button type="submit" className="primary-button extra-reg">
             עדכן פרטים
           </button>
+          {editedSuccessfully && (
+            <Alert severity="success" className="feedback-alert feedback-edit-task">
+              פרטי המשימה עודכנו בהצלחה
+            </Alert>
+          )}
         </div>
       </form>
     </div>

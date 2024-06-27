@@ -14,6 +14,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
 import { useNavigate } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import IconButton from "@mui/material/IconButton";
 import "../styles/Styles.css";
 
 function HomePage() {
@@ -85,6 +87,21 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2
+    },
+    {
+      field: "view",
+      headerName: "צפייה",
+      width: 80,
+      align: "center",
+      flex: 0.5,
+      renderCell: (params) => (
+        <IconButton
+          aria-label="view"
+          onClick={() => navigate(`/task/${params.row.taskDoc}`)}
+        >
+          <VisibilityIcon />
+        </IconButton>
+      )
     }
   ];
 
@@ -138,6 +155,21 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2
+    },
+    {
+      field: "view",
+      headerName: "צפייה",
+      width: 80,
+      align: "center",
+      flex: 0.5,
+      renderCell: (params) => (
+        <IconButton
+          aria-label="view"
+          onClick={() => navigate(`/event/${params.row.eventDoc}`)}
+        >
+          <VisibilityIcon />
+        </IconButton>
+      )
     }
   ];
 

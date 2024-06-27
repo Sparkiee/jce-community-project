@@ -23,7 +23,7 @@ function EditContactLog(props) {
       return;
     }
     try {
-      const docRef = await doc(db, "contact_log", props.target.logDoc);
+      const docRef = await doc(db, "log_contact", props.target.logDoc);
       setDoc(docRef, {
         subject: subject,
         description: description,

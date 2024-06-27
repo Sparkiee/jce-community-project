@@ -56,7 +56,6 @@ function stringAvatar(name) {
 function ManageTasks() {
   const [rows, setRows] = useState([]);
   const [showCreateTask, setShowCreateTask] = useState(false);
-  const [alert, setAlert] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState("");
 
@@ -326,10 +325,6 @@ function ManageTasks() {
       await deleteDoc(docRef);
       setDeleteTarget("");
       getTasks();
-      setAlert(true);
-      setTimeout(() => {
-        setAlert(false);
-      }, 5000);
     } catch (e) {
       console.error("Error deleting document: ", e);
     }
@@ -408,11 +403,6 @@ function ManageTasks() {
             />
           </ThemeProvider>
         </div>
-        {alert && (
-          <Alert className="feedback-alert" severity="info">
-            משימה הוסרה בהצלחה!
-          </Alert>
-        )}
       </div>
       <div className="footer"></div>
     </div>

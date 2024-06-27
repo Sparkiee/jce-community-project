@@ -70,8 +70,6 @@ function EditEvent(props) {
       assignees: assigneeRefs,
     };
 
-    console.log("Updated Event Details:", updatedEventDetails); // Print the event object to the console
-
     try {
       const eventRef = doc(db, "events", eventDetails.id);
       await updateDoc(eventRef, updatedEventDetails);

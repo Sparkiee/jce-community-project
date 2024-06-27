@@ -20,7 +20,7 @@ function ContactUser(props) {
       return;
     }
     try {
-        const docRef = await addDoc(collection(db, "contact_log"), {
+        const docRef = await addDoc(collection(db, "log_contact"), {
             subject: subject,
             description: description,
             notes: notes,

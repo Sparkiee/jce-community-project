@@ -388,7 +388,7 @@ function Profile() {
     setDeleteContact("");
     const targetLog = deleteContact;
     // Delete the contact log
-    const logRef = doc(db, "contact_log", targetLog);
+    const logRef = doc(db, "log_contact", targetLog);
     try {
       await deleteDoc(logRef);
       fetchContact();
@@ -471,7 +471,7 @@ function Profile() {
   async function fetchContact() {
     if (!profile) return;
     try {
-      const logRef = collection(db, "contact_log");
+      const logRef = collection(db, "log_contact");
       const q = query(logRef, where("destMember", "==", "members/" + profile.email));
       const querySnapshot = await getDocs(q);
       const logAll = querySnapshot.docs.map((doc, index) => ({

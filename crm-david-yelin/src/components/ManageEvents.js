@@ -56,9 +56,7 @@ function ManageEvents() {
   const [rows, setRows] = useState([]);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState("");
-  const [alert, setAlert] = useState(false);
   const [editEventDetails, setEditEventDetails] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
 
   const createEventRef = useRef(null);
   const navigate = useNavigate();
@@ -98,7 +96,7 @@ function ManageEvents() {
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}</div>;
+        return <div>₪{params.row.eventBudget ? params.row.eventBudget : "אין"}</div>;
       },
     },
     {
@@ -274,10 +272,6 @@ function ManageEvents() {
       await deleteDoc(docRef);
       setDeleteTarget("");
       getEvents();
-      setAlert(true);
-      setTimeout(() => {
-        setAlert(false);
-      }, 5000);
     } catch (e) {
       console.error("Error deleting document: ", e);
     }
@@ -293,22 +287,12 @@ function ManageEvents() {
       if (eventDoc.exists()) {
         const eventData = eventDoc.data();
         setEditEventDetails({ ...eventData, id: eventDoc.id });
-        setIsEditing(true);
       } else {
         console.error("No such document!");
       }
     } catch (e) {
       console.error("Error fetching event: ", e);
     }
-  };
-
-  const handleCloseEdit = () => {
-    setIsEditing(false);
-  };
-
-  const handleSaveEdit = () => {
-    setIsEditing(false);
-    getEvents();
   };
 
   return (
@@ -318,8 +302,9 @@ function ManageEvents() {
           <div className="popup-content">
             <EditEvent
               eventDetails={editEventDetails}
-              onClose={() => setEditEventDetails(false)}
-              onSave={handleSaveEdit}
+              onClose={() => {setEditEventDetails(false);
+                getEvents();
+              }}
             />
           </div>
         </div>
@@ -384,11 +369,6 @@ function ManageEvents() {
             />
           </ThemeProvider>
         </div>
-        {alert && (
-          <Alert className="feedback-alert" severity="info">
-            אירוע הוסר בהצלחה!
-          </Alert>
-        )}
       </div>
       <div className="footer"></div>
     </div>

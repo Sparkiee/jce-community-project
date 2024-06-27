@@ -37,17 +37,18 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
+import ContactUser from "./ContactUser";
 
 function Profile() {
-  const pages = ["משימות פתוחות", "אירועים קרובים", "היסטוריה"];
-  const [page, setPage] = useState(pages[0]);
+  const pages = ["פניות", "משימות פתוחות", "אירועים קרובים", "היסטוריה"];
   const handlePageSwitch = (event, newValue) => {
     setPage(newValue);
   };
 
-  const [menuSelected, setMenuSelected] = useState(pages[0]);
+  const [page, setPage] = useState(pages[0]);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
+  const [rowContact, setRowContact] = useState([]);
   const [numTasks, setNumTasks] = useState(0);
   const [numEvents, setNumEvents] = useState(0);
   const [numCompletedTasks, setNumCompletedTasks] = useState(0);
@@ -58,6 +59,7 @@ function Profile() {
   const [profile, setProfile] = useState();
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   const navigate = useNavigate();
 
@@ -267,6 +269,33 @@ function Profile() {
     }
   ];
 
+  const columnsContact = [
+    {
+      field: "id",
+      headerName: "אינדקס",
+      align: "right",
+      flex: 0.8
+    },
+  {
+    field: "subject",
+    headerName: "נושא",
+    flex: 2,
+    align: "right"
+  },
+  {
+    field: "description",
+    headerName: "תיאור",
+    flex: 3,
+    align: "right"
+  },
+  {
+    field: "notes",
+    headerName: "הערות",
+    flex: 3,
+    align: "right"
+  },
+];
+
   async function grabMyTasks() {
     if (!profile) return;
     try {
@@ -350,6 +379,51 @@ function Profile() {
     }
   }
 
+  async function fetchContact() {
+    if (!profile) return;
+    try {
+      const logRef = collection(db, "contact_log");
+      const q = query(
+        logRef,
+        where("destMember", "==", "members/" + profile.email)
+      );
+      const querySnapshot = await getDocs(q);
+      const logAll = querySnapshot.docs.map((doc, index) => ({
+        ...doc.data(),
+        id: index + 1,
+        docRef: doc.id
+      }));
+
+      // Fetch full names for each srcMember
+      const logsWithFullNames = await Promise.all(
+        logAll.map(async (log) => {
+          const srcMemberRef = doc(db, log.srcMember); // Assuming srcMember is a path to a document
+          const srcMemberDoc = await getDoc(srcMemberRef);
+          const srcMemberData = srcMemberDoc.data();
+          return {
+            ...log,
+            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown" // Assuming the member's full name is stored under fullName
+          };
+        })
+      );
+
+      const logArray = logsWithFullNames.map((log, index) => ({
+        id: index + 1,
+        logDoc: log.id,
+        subject: log.subject,
+        description: log.description,
+        notes: log.notes,
+        timestamp: log.timestamp,
+        srcMember: log.srcMember,
+        sourceFullName: log.srcFullName, // Use the full name instead of the reference
+      }));
+      setRowContact(logArray);
+
+    } catch (error) {
+      console.error("Failed to fetch contact log:", error);
+    }
+  }
+
   useEffect(() => {
     if (!profile) return;
     const eventsRef = collection(db, "events");
@@ -389,6 +463,7 @@ function Profile() {
   useEffect(() => {
     grabMyTasks();
     grabMyEvents();
+    fetchContact();
   }, [profile]);
 
   useEffect(() => {
@@ -421,6 +496,17 @@ function Profile() {
     switch (pageName) {
       case pages[0]:
         return (
+          <div>
+            <button
+              className="button-test"
+              onClick={() => setShowContact(true)}
+            >
+              תעד פנייה
+            </button>
+          </div>
+        );
+      case pages[1]:
+        return (
           <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
               <DataGrid
@@ -451,7 +537,7 @@ function Profile() {
             </ThemeProvider>
           </div>
         );
-      case pages[1]:
+      case pages[2]:
         return (
           <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
@@ -482,7 +568,7 @@ function Profile() {
           </div>
         );
 
-      case pages[2]:
+      case pages[3]:
         return <div>פה יהיה תוכן של היסטוריה</div>;
       default:
         return <div>Page Not Found</div>;
@@ -492,6 +578,7 @@ function Profile() {
   const handleCloseForm = () => {
     setShowEditProfile(false);
     setShowResetPassword(false);
+    setShowContact(false);
   };
 
   return (
@@ -507,6 +594,17 @@ function Profile() {
         <div className="popup-overlay">
           <div ref={editUserRef} className="popup-content">
             <EditUser target={profile} onClose={handleCloseForm} />
+          </div>
+        </div>
+      )}
+      {showContact && (
+        <div className="popup-overlay">
+          <div ref={editUserRef} className="popup-content">
+            <ContactUser
+              target={profile}
+              source={user}
+              onClose={handleCloseForm}
+            />
           </div>
         </div>
       )}
@@ -603,11 +701,9 @@ function Profile() {
                       onChange={handlePageSwitch}
                       aria-label="lab API tabs example"
                     >
-                      {pages.map(
-                        (page, index) => (
-                          (<Tab key={index} label={page} value={page} />)
-                        )
-                      )}
+                      {pages.map((page, index) => (
+                        <Tab key={index} label={page} value={page} />
+                      ))}
                     </TabList>
                   </TabContext>
                 </Box>

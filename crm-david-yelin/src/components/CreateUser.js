@@ -118,7 +118,7 @@ function CreateUser(props) {
       setAccountCreated(true);
       setTimeout(() => {
         setAccountCreated(false);
-        navigate(0);
+        props.onClose();
       }, 1000);
     } catch (e) {
       console.error("Error adding document: ", e);

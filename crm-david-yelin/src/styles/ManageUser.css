@@ -26,15 +26,6 @@
   margin: 1rem;
 }
 
-
-
-.pending-actions {
-  top: 0;
-  position: absolute;
-  display: flex;
-  flex-direction: row-reverse;
-}
-
 .display-create-user {
   top: 7%;
   position: fixed;
@@ -56,4 +47,10 @@
   height: 100%;
   width: 10%;
   right: 4%;
+}
+
+.add-user-button {
+  position: absolute;
+  right: 15rem;
+  top: 7rem;
 }

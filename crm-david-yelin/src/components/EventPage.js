@@ -168,7 +168,7 @@ function EventPage() {
       <div className="participants-list">
         {assignees.map((assignee, index) => (
           <div key={index} className="participant-item">
-            <Link to={`/profile/${assignee.email}`}>
+            <Link to={`/profile/${assignee.email}`} className="participant-avatar">
               <Avatar {...stringAvatar(assignee.fullName)} />
             </Link>
             <Link to={`/profile/${assignee.email}`} className="participant-name">

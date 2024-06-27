@@ -24,11 +24,12 @@ div .profile-avatar:hover {
   display: flex;
   width: 90%;
   margin-top: 5rem;
-  margin-right: auto;
+  margin-right: 17rem;
   margin-left: auto;
 }
 
 .profile-information {
+  width: 25rem;
   border-radius: 0.25rem;
   border: 0.5px solid #ccc;
   position: relative;
@@ -64,7 +65,7 @@ div .profile-avatar:hover {
 }
 
 .profile-data {
-  width: 100%;
+  width: 80%;
 }
 
 .profile-edit-icon {
@@ -131,7 +132,6 @@ div .profile-avatar:hover {
 .profile-navbar .selected {
   text-decoration: underline;
   background-color: rgb(2, 4, 79) !important;
-  /* Or any other styles for the selected state */
 }
 
 .profile-navbar-buttons {

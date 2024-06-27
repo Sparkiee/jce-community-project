@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
@@ -24,6 +24,7 @@ function CreateEvent(props) {
   const [eventExists, setEventExists] = useState(false);
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
+  const [eventStatus, setEventStatus] = useState("טרם החל");
   const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [eventDetails, setEventDetails] = useState({
@@ -33,7 +34,8 @@ function CreateEvent(props) {
     eventTime: "",
     eventBudget: 0,
     eventLocation: "",
-    assignees: selectedMembers
+    taskStatus: "טרם החל",
+    assignees: selectedMembers,
   });
 
   async function handleSubmit(event) {
@@ -69,10 +71,7 @@ function CreateEvent(props) {
       eventDetails.eventStartDate = formattedDate;
     }
     const user = JSON.parse(sessionStorage.getItem("user"));
-    const assigneeRefs = selectedMembers.map(
-      (member) =>
-        `members/${member.id}`
-    );
+    const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
     const updatedEventDetails = {
       eventName: eventDetails.eventName,
       eventStartDate: eventDetails.eventStartDate,
@@ -83,7 +82,7 @@ function CreateEvent(props) {
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
       eventCreator: "members/" + user.email,
-      eventStatus: "טרם החל"
+      eventStatus: "טרם החל",
     };
 
     try {
@@ -100,8 +99,8 @@ function CreateEvent(props) {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               eventID: docRef,
-              message: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`
-            })
+              message: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`,
+            }),
           });
         })
       );
@@ -136,7 +135,7 @@ function CreateEvent(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
@@ -213,7 +212,7 @@ function CreateEvent(props) {
                   //change the start date
                   setEventDetails({
                     ...eventDetails,
-                    eventStartDate: e.target.value
+                    eventStartDate: e.target.value,
                   });
                 }}
               />
@@ -229,15 +228,15 @@ function CreateEvent(props) {
                   //change the due date
                   setEventDetails({
                     ...eventDetails,
-                    eventEndDate: e.target.value
+                    eventEndDate: e.target.value,
                   });
                 }}
               />
             </div>
           </div>
-          <div className="time-budget-event">
-            <div className="event-time">
-              <label htmlFor="time" className="event-time-label">
+          <div className="time-budget-create-event">
+            <div className="create-event-time">
+              <label htmlFor="time" className="create-event-time-label">
                 שעת האירוע (חובה*)
               </label>
               <input
@@ -247,8 +246,8 @@ function CreateEvent(props) {
                 onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value })}
               />
             </div>
-            <div className="event-budget">
-              <label htmlFor="time" className="event-time-label">
+            <div className="create-event-budget">
+              <label htmlFor="time" className="create-event-time-label">
                 תקציב אירוע
               </label>
               <input
@@ -256,7 +255,9 @@ function CreateEvent(props) {
                 name="eventBudget"
                 placeholder="תקציב משימה"
                 className="create-event-input"
-                onChange={(e) => setEventDetails({ ...eventDetails, eventBudget: Number(e.target.value) })}
+                onChange={(e) =>
+                  setEventDetails({ ...eventDetails, eventBudget: Number(e.target.value) })
+                }
               />
             </div>
           </div>
@@ -268,10 +269,18 @@ function CreateEvent(props) {
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
-                eventLocation: e.target.value
+                eventLocation: e.target.value,
               })
             }
           />
+          <select
+            value={eventStatus}
+            onChange={(e) => setEventStatus(e.target.value)}
+            className="create-event-input extra-create-event-status-input">
+            <option value="טרם החל">טרם החל</option>
+            <option value="בתהליך">בתהליך</option>
+            <option value="הסתיים">הסתיים</option>
+          </select>
           <Select
             placeholder="הוסף חבר וועדה"
             className="create-event-input extra-create-event-input"
@@ -283,7 +292,7 @@ function CreateEvent(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
           <div className="create-task-selected-members">

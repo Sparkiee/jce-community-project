@@ -34,7 +34,7 @@ div .profile-avatar:hover {
   border: 0.5px solid #ccc;
   position: relative;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-  background-color: rgba(252, 202, 71, 0.15);
+  background-color: rgb(64, 142, 198, 0.35);
   padding: 3rem;
 }
 
@@ -99,7 +99,7 @@ div .profile-avatar:hover {
 }
 
 .profile-stats-contact {
-  color: #1976d2;
+  color: rgb(2, 4, 79);
 }
 
 .profile-phone {
@@ -155,7 +155,7 @@ div .profile-avatar:hover {
   border: 1px solid rgba(2, 5, 79, 0.582);
   background: rgb(2, 5, 79);
   padding: 0.8rem 2rem;
-  border-radius: 1rem;
+  border-radius: 2.5rem;
   text-align: center;
   transition: all 0.2s linear;
 }
@@ -171,7 +171,6 @@ div .profile-avatar:hover {
   padding: 0.8rem 2rem;
   padding-left: 0.5rem;
 }
-
 
 .contact-src-log {
   display: flex;

@@ -7,7 +7,7 @@ import {
   onSnapshot,
   doc,
   getDoc,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useParams } from "react-router-dom";
@@ -52,7 +52,6 @@ function Profile() {
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
   const [rowContact, setRowContact] = useState([]);
-  const [rowContactFull, setRowContactFull] = useState([]);
   const [numTasks, setNumTasks] = useState(0);
   const [numEvents, setNumEvents] = useState(0);
   const [numCompletedTasks, setNumCompletedTasks] = useState(0);
@@ -116,9 +115,9 @@ function Profile() {
     const secondInitial = names[1] ? names[1][0] : "";
     return {
       sx: {
-        bgcolor: stringToColor(name)
+        bgcolor: stringToColor(name),
       },
-      children: `${firstInitial}${secondInitial}`
+      children: `${firstInitial}${secondInitial}`,
     };
   }
 
@@ -126,8 +125,8 @@ function Profile() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -136,8 +135,8 @@ function Profile() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36
-      }
+        fontSize: 36,
+      },
     },
     heIL
   );
@@ -147,49 +146,49 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 0.8
+      flex: 0.8,
     },
     {
       field: "taskName",
       headerName: "משימה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "view",
@@ -201,13 +200,12 @@ function Profile() {
           <IconButton
             aria-label="edit"
             title="הצגה"
-            onClick={() => navigate(`/task/${params.row.taskDoc}`)}
-          >
+            onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
             <VisibilityIcon />
           </IconButton>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const columnsEvents = [
@@ -215,49 +213,49 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 0.8
+      flex: 0.8,
     },
     {
       field: "eventName",
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "view",
@@ -269,13 +267,12 @@ function Profile() {
           <IconButton
             aria-label="edit"
             title="הצגה"
-            onClick={() => navigate(`/event/${params.row.eventDoc}`)}
-          >
+            onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
             <VisibilityIcon />
           </IconButton>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const columnsContact = [
@@ -283,25 +280,25 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 0.8
+      flex: 0.8,
     },
     {
       field: "subject",
       headerName: "נושא",
       flex: 2,
-      align: "right"
+      align: "right",
     },
     {
       field: "description",
       headerName: "תיאור",
       flex: 3,
-      align: "right"
+      align: "right",
     },
     {
       field: "notes",
       headerName: "הערות",
       flex: 3,
-      align: "right"
+      align: "right",
     },
     {
       field: "timestamp",
@@ -312,7 +309,7 @@ function Profile() {
         <div style={{ direction: "ltr" }}>
           {params.row.date} • {params.row.time}
         </div>
-      )
+      ),
     },
     {
       field: "sourceFullName",
@@ -324,8 +321,8 @@ function Profile() {
           <Avatar {...stringAvatar(`${params.value}`)} />
           {params.value}
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const columnsContactAdmin = [
@@ -337,23 +334,18 @@ function Profile() {
       flex: 0.8,
       renderCell: (params) => (
         <div>
-          <IconButton
-            aria-label="edit"
-            title="עריכה"
-            onClick={() => setEditLog(params.row)}
-          >
+          <IconButton aria-label="edit" title="עריכה" onClick={() => setEditLog(params.row)}>
             <EditIcon />
           </IconButton>
           <IconButton
             aria-label="delete"
             title="מחיקה"
-            onClick={() => setDeleteContact(params.row.logDoc)}
-          >
+            onClick={() => setDeleteContact(params.row.logDoc)}>
             <DeleteForeverIcon />
           </IconButton>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   async function handleDeleteContact() {
@@ -373,20 +365,15 @@ function Profile() {
     if (!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(
-        tasksRef,
-        where("assignees", "array-contains", "members/" + profile.email)
-      );
+      const q = query(tasksRef, where("assignees", "array-contains", "members/" + profile.email));
       const querySnapshot = await getDocs(q);
       const taskAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.id
+        docRef: doc.id,
       }));
 
-      let completeNum = taskAll.filter(
-        (task) => task.taskStatus === "הושלמה"
-      ).length;
+      let completeNum = taskAll.filter((task) => task.taskStatus === "הושלמה").length;
       setNumCompletedTasks(completeNum); // Update completed task count
       setTaskPercentage(Math.round((completeNum / taskAll.length) * 100)); // Update task percentage
       const taskArray = taskAll.filter((task) => task.taskStatus !== "הושלמה");
@@ -402,7 +389,7 @@ function Profile() {
         taskStartDate: task.taskStartDate,
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
-        taskStatus: task.taskStatus
+        taskStatus: task.taskStatus,
       }));
       setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
@@ -414,25 +401,18 @@ function Profile() {
     if (!profile) return;
     try {
       const eventsRef = collection(db, "events");
-      const q = query(
-        eventsRef,
-        where("assignees", "array-contains", "members/" + profile.email)
-      );
+      const q = query(eventsRef, where("assignees", "array-contains", "members/" + profile.email));
       const querySnapshot = await getDocs(q);
       const eventAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.id
+        docRef: doc.id,
       }));
       // .filter((event) => event.eventStatus !== "הסתיים");
-      let completeNum = eventAll.filter(
-        (event) => event.eventStatus === "הסתיים"
-      ).length;
+      let completeNum = eventAll.filter((event) => event.eventStatus === "הסתיים").length;
       setNumCompletedEvents(completeNum); // Update completed event count
       setEventPercentage(Math.round((completeNum / eventAll.length) * 100)); // Update event percentage
-      const eventsArray = eventAll.filter(
-        (event) => event.eventStatus !== "הסתיים"
-      );
+      const eventsArray = eventAll.filter((event) => event.eventStatus !== "הסתיים");
       setNumEvents(eventsArray.length); // Update event count
 
       // Map the events to the format expected by DataGrid
@@ -444,7 +424,7 @@ function Profile() {
         eventStartDate: event.eventStartDate,
         eventEndDate: event.eventEndDate,
         eventTime: event.eventTime,
-        eventStatus: event.eventStatus
+        eventStatus: event.eventStatus,
       }));
       setRowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
@@ -456,15 +436,12 @@ function Profile() {
     if (!profile) return;
     try {
       const logRef = collection(db, "contact_log");
-      const q = query(
-        logRef,
-        where("destMember", "==", "members/" + profile.email)
-      );
+      const q = query(logRef, where("destMember", "==", "members/" + profile.email));
       const querySnapshot = await getDocs(q);
       const logAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.id
+        docRef: doc.id,
       }));
 
       // Fetch full names for each srcMember
@@ -475,7 +452,7 @@ function Profile() {
           const srcMemberData = srcMemberDoc.data();
           return {
             ...log,
-            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown"
+            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown",
           };
         })
       );
@@ -491,10 +468,9 @@ function Profile() {
         time: log.timestamp.toDate().toLocaleTimeString("de-DE"),
         srcMember: log.srcMember,
         destMember: log.destMember,
-        sourceFullName: log.srcFullName // Use the full name instead of the reference
+        sourceFullName: log.srcFullName, // Use the full name instead of the reference
       }));
       setRowContact(logArray);
-      setRowContactFull(logArray);
     } catch (error) {
       console.error("Failed to fetch contact log:", error);
     }
@@ -544,25 +520,16 @@ function Profile() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        changePasswordRef.current &&
-        !changePasswordRef.current.contains(event.target)
-      ) {
+      if (changePasswordRef.current && !changePasswordRef.current.contains(event.target)) {
         setShowResetPassword(false);
       }
       if (editUserRef.current && !editUserRef.current.contains(event.target)) {
         setShowEditProfile(false);
       }
-      if (
-        contactLogRef.current &&
-        !contactLogRef.current.contains(event.target)
-      ) {
+      if (contactLogRef.current && !contactLogRef.current.contains(event.target)) {
         setShowContact(false);
       }
-      if (
-        editContactLogRef.current &&
-        !editContactLogRef.current.contains(event.target)
-      ) {
+      if (editContactLogRef.current && !editContactLogRef.current.contains(event.target)) {
         setEditLog("");
       }
     };
@@ -581,29 +548,9 @@ function Profile() {
         return (
           <div>
             <div className="user-profile-action-div">
-              <button
-                className="create-contact-log-button"
-                onClick={() => setShowContact(true)}
-              >
-                תעד פנייה
+              <button className="create-contact-log-button" onClick={() => setShowContact(true)}>
+                תיעוד פנייה חדשה
               </button>
-              <input
-                type="text"
-                className="search-input-contact-logs"
-                placeholder="חיפוש משתמש"
-                onChange={(event) => {
-                  const search = event.target.value;
-                  const filteredLogs = rowContactFull.filter((log) => {
-                    return (
-                      log.sourceFullName.includes(search) ||
-                      log.subject.includes(search) ||
-                      log.description.includes(search) ||
-                      log.notes.includes(search)
-                    );
-                  });
-                  setRowContact(filteredLogs);
-                }}
-              />
             </div>
             {rowContact.length > 0 ? (
               <div style={{ height: 631, width: "100%" }}>
@@ -611,29 +558,23 @@ function Profile() {
                   <DataGrid
                     className="data-grid"
                     rows={rowContact}
-                    columns={
-                      user.privileges > 1 ? columnsContactAdmin : columnsContact
-                    }
+                    columns={user.privileges > 1 ? columnsContactAdmin : columnsContact}
                     initialState={{
                       pagination: {
-                        paginationModel: { page: 0, pageSize: 10 }
-                      }
+                        paginationModel: { page: 0, pageSize: 10 },
+                      },
                     }}
                     pageSizeOptions={[10, 20, 50]}
                     localeText={{
                       MuiTablePagination: {
                         labelDisplayedRows: ({ from, to, count }) =>
-                          `${from}-${to} מתוך ${
-                            count !== -1 ? count : `יותר מ ${to}`
-                          }`,
-                        labelRowsPerPage: "שורות בכל עמוד:"
-                      }
+                          `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                        labelRowsPerPage: "שורות בכל עמוד:",
+                      },
                     }}
                     onCellDoubleClick={(params) => {
                       if (params.field === "sourceFullName")
-                        navigate(
-                          `/profile/${params.row.srcMember.split("/")[1]}`
-                        );
+                        navigate(`/profile/${params.row.srcMember.split("/")[1]}`);
                     }}
                   />
                 </ThemeProvider>
@@ -654,23 +595,19 @@ function Profile() {
                 columns={columnsTasks}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 }
-                  }
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   // Customizing displayed rows text
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
-                      `${from}-${to} מתוך ${
-                        count !== -1 ? count : `יותר מ-${to}`
-                      }`,
-                    labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
-                  }
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:", // Optional: customize other texts
+                  },
                 }}
-                onRowDoubleClick={(params) =>
-                  navigate(`/task/${params.row.taskDoc}`)
-                }
+                onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
               />
             </ThemeProvider>
           </div>
@@ -685,22 +622,18 @@ function Profile() {
                 columns={columnsEvents}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 }
-                  }
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
-                      `${from}-${to} מתוך ${
-                        count !== -1 ? count : `יותר מ ${to}`
-                      }`,
-                    labelRowsPerPage: "שורות בכל עמוד:"
-                  }
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
                 }}
-                onRowDoubleClick={(params) =>
-                  navigate(`/event/${params.row.eventDoc}`)
-                }
+                onRowDoubleClick={(params) => navigate(`/event/${params.row.eventDoc}`)}
               />
             </ThemeProvider>
           </div>
@@ -778,8 +711,7 @@ function Profile() {
               <IconButton
                 color="primary"
                 className="profile-edit-icon"
-                onClick={() => setShowEditProfile(true)}
-              >
+                onClick={() => setShowEditProfile(true)}>
                 <EditIcon color="default" className="edit-button" />
               </IconButton>
             )}
@@ -820,13 +752,7 @@ function Profile() {
               <h2 className="title-info">פרטים אישיים</h2>
               <div
                 className="profile-stats-row profile-personal-info"
-                onClick={() =>
-                  window.open(
-                    `https://wa.me/${profile && profile.phone}`,
-                    "_blank"
-                  )
-                }
-              >
+                onClick={() => window.open(`https://wa.me/${profile && profile.phone}`, "_blank")}>
                 <WhatsAppIcon />
                 <h3 className="profile-phone">{profile && profile.phone}</h3>
               </div>
@@ -840,15 +766,13 @@ function Profile() {
                 <h2 className="title-info">פעולות משתמש</h2>
                 <div
                   className="profile-stats-row profile-personal-info"
-                  onClick={() => setShowResetPassword(true)}
-                >
+                  onClick={() => setShowResetPassword(true)}>
                   <VpnKeyIcon />
                   <h3 className="profile-phone">שינוי סיסמה נוכחית</h3>
                 </div>
                 <div
                   className="profile-stats-row profile-personal-info"
-                  onClick={() => setShowEditProfile(true)}
-                >
+                  onClick={() => setShowEditProfile(true)}>
                   <SettingsIcon />
                   <h3>עדכן פרטים אישיים</h3>
                 </div>
@@ -860,10 +784,7 @@ function Profile() {
               <ThemeProvider theme={navbarTheme}>
                 <Box sx={{ width: "100%" }}>
                   <TabContext value={page}>
-                    <TabList
-                      onChange={handlePageSwitch}
-                      aria-label="lab API tabs example"
-                    >
+                    <TabList onChange={handlePageSwitch} aria-label="lab API tabs example">
                       {pages.map((page, index) => (
                         <Tab key={index} label={page} value={page} />
                       ))}

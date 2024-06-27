@@ -2,13 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { db } from "../firebase";
-import {
-  collection,
-  getDocs,
-  getDoc,
-  doc,
-  deleteDoc
-} from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, deleteDoc } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -49,8 +43,7 @@ function stringAvatar(name) {
     return { sx: { bgcolor: "#000000" }, children: "?" }; // Default values if name is undefined or null
   }
   const nameParts = name.split(" ");
-  const initials =
-    nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
+  const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
       bgcolor: stringToColor(name)
@@ -109,14 +102,32 @@ function ManageTasks() {
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
+      renderCell: (params) => {
+        const date = new Date(params.row.taskStartDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
+      renderCell: (params) => {
+        const date = new Date(params.row.taskEndDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "taskTime",
@@ -142,7 +153,12 @@ function ManageTasks() {
         return (
           <AvatarGroup className="manage-task-avatar-group" max={3}>
             {params.value.map((user, index) => (
-              <Avatar key={index} {...stringAvatar(user.fullName)} title={user.fullName} onClick={()=> navigate(`/profile/${user.email}`)}/>
+              <Avatar
+                key={index}
+                {...stringAvatar(user.fullName)}
+                title={user.fullName}
+                onClick={() => navigate(`/profile/${user.email}`)}
+              />
             ))}
           </AvatarGroup>
         );
@@ -155,10 +171,7 @@ function ManageTasks() {
       align: "center",
       flex: 0.5,
       renderCell: (params) => (
-        <IconButton
-          aria-label="view"
-          onClick={() => navigate(`/task/${params.row.taskDoc}`)}
-        >
+        <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
           <VisibilityIcon />
         </IconButton>
       )
@@ -173,24 +186,17 @@ function ManageTasks() {
     flex: 1.5,
     renderCell: (params) => (
       <div>
-        <IconButton
-          aria-label="edit"
-          onClick={() => handleEditClick(params.row)}
-        >
+        <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
           <EditIcon />
         </IconButton>
-        <IconButton
-          aria-label="delete"
-          onClick={() => setDeleteTarget(params.row)}
-        >
+        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
           <DeleteForeverIcon />
         </IconButton>
       </div>
     )
   };
 
-  const columns =
-    user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -247,6 +253,7 @@ function ManageTasks() {
             taskStartDate: task.taskStartDate,
             taskEndDate: task.taskEndDate,
             taskTime: task.taskTime,
+            taskBudget: task.taskBudget,
             taskStatus: task.taskStatus,
             assignTo: assigneeData
           };
@@ -263,12 +270,8 @@ function ManageTasks() {
     const taskDoc = await getDoc(doc(db, "tasks", row.taskDoc));
     if (taskDoc.exists()) {
       const taskData = taskDoc.data();
-      const assigneeEmails = taskData.assignees.map(
-        (email) => email.split("/")[1]
-      );
-      const assigneePromises = assigneeEmails.map((email) =>
-        getDoc(doc(db, "members", email))
-      );
+      const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
+      const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
       const assigneeDocs = await Promise.all(assigneePromises);
       const assigneeData = assigneeDocs
         .map((doc) => (doc.exists() ? doc.data() : null))
@@ -290,10 +293,7 @@ function ManageTasks() {
     getTasks();
 
     const handleClickOutside = (event) => {
-      if (
-        createTaskRef.current &&
-        !createTaskRef.current.contains(event.target)
-      ) {
+      if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
         setShowCreateTask(false);
       }
     };
@@ -330,11 +330,19 @@ function ManageTasks() {
 
   return (
     <div>
+      {editingTask && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <EditTask
+              task={editingTask}
+              onClose={() => setEditingTask(null)}
+              onTaskUpdated={getTasks}
+            />
+          </div>
+        </div>
+      )}
       {deleteTarget && (
-        <ConfirmAction
-          onConfirm={handleDeleteTask}
-          onCancel={() => setDeleteTarget("")}
-        />
+        <ConfirmAction onConfirm={handleDeleteTask} onCancel={() => setDeleteTarget("")} />
       )}
       <div className="manage-tasks-styles">
         <h1>משימות</h1>
@@ -350,29 +358,22 @@ function ManageTasks() {
         {user.privileges > 1 && (
           <div
             className="action-button add-tasks-button add-tasks-manage-tasks"
-            onClick={handleShowCreateTask}
-          >
+            onClick={handleShowCreateTask}>
             <svg
               width="24px"
               height="24px"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></g>
+              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
                 <path
                   d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
                   stroke="white"
                   strokeWidth="2"
                   strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
+                  strokeLinejoin="round"></path>
               </g>
             </svg>
             הוסף משימה
@@ -392,15 +393,11 @@ function ManageTasks() {
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
-                    `${from}-${to} מתוך ${
-                      count !== -1 ? count : `יותר מ ${to}`
-                    }`,
+                    `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
                   labelRowsPerPage: "שורות בכל עמוד:"
                 }
               }}
-              onRowDoubleClick={(params) =>
-                navigate(`/task/${params.row.taskDoc}`)
-              }
+              onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
             />
           </ThemeProvider>
         </div>
@@ -411,22 +408,6 @@ function ManageTasks() {
         )}
       </div>
       <div className="footer"></div>
-      <Modal
-        open={!!editingTask}
-        onClose={() => setEditingTask(null)}
-        aria-labelledby="edit-task-modal-title"
-        aria-describedby="edit-task-modal-description"
-      >
-        <div className="modal-content">
-          {editingTask && (
-            <EditTask
-              task={editingTask}
-              onClose={() => setEditingTask(null)}
-              onTaskUpdated={getTasks}
-            />
-          )}
-        </div>
-      </Modal>
     </div>
   );
 }

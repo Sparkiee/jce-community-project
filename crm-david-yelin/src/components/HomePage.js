@@ -58,6 +58,15 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.taskStartDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "taskEndDate",
@@ -65,6 +74,15 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.taskEndDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "taskTime",

@@ -12,10 +12,13 @@ import Stack from "@mui/material/Stack";
 function EditTask({ task, onClose, onTaskUpdated }) {
   const [taskName, setTaskName] = useState(task.taskName);
   const [taskDescription, setTaskDescription] = useState(task.taskDescription);
-  const [relatedEvent, setRelatedEvent] = useState(task.relatedEvent ? task.relatedEvent.split("/")[1] : ""); // Initialize relatedEvent correctly
-  const [taskStartDate, setTaskStartDate] = useState(task.taskStartDate.split("T")[0]);
-  const [taskEndDate, setTaskEndDate] = useState(task.taskEndDate.split("T")[0]);
+  const [relatedEvent, setRelatedEvent] = useState(
+    task.relatedEvent ? task.relatedEvent.split("/")[1] : ""
+  ); // Initialize relatedEvent correctly
+  const [taskStartDate, setTaskStartDate] = useState(task.taskStartDate);
+  const [taskEndDate, setTaskEndDate] = useState(task.taskEndDate);
   const [taskTime, setTaskTime] = useState(task.taskTime);
+  const [taskBudget, setTaskBudget] = useState(task.taskBudget);
   const [taskStatus, setTaskStatus] = useState(task.taskStatus);
   const [assignTo, setAssignTo] = useState([]);
   const [events, setEvents] = useState([]);
@@ -33,7 +36,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
     const eventsSnapshot = await getDocs(collection(db, "events"));
     const eventsList = eventsSnapshot.docs.map((doc) => ({
       value: doc.id,
-      label: doc.data().eventName,
+      label: doc.data().eventName
     }));
     setEvents(eventsList);
   };
@@ -42,7 +45,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
     const membersSnapshot = await getDocs(collection(db, "members"));
     const membersList = membersSnapshot.docs.map((doc) => ({
       value: doc.id,
-      label: doc.data().fullName,
+      label: doc.data().fullName
     }));
     setMembers(membersList);
   };
@@ -52,8 +55,12 @@ function EditTask({ task, onClose, onTaskUpdated }) {
       const assigneeEmails = task.assignees.map((email) => email.split("/")[1]);
       const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
       const assigneeDocs = await Promise.all(assigneePromises);
-      const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
-      setAssignTo(assigneeData.map((assignee) => ({ value: assignee.email, label: assignee.fullName })));
+      const assigneeData = assigneeDocs
+        .map((doc) => (doc.exists() ? doc.data() : null))
+        .filter((data) => data);
+      setAssignTo(
+        assigneeData.map((assignee) => ({ value: assignee.email, label: assignee.fullName }))
+      );
     }
   };
 
@@ -69,7 +76,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         value: doc.id,
-        label: doc.data().fullName,
+        label: doc.data().fullName
       }));
       setMembers(results);
     } else {
@@ -100,8 +107,9 @@ function EditTask({ task, onClose, onTaskUpdated }) {
         taskStartDate,
         taskEndDate,
         taskTime,
+        taskBudget,
         taskStatus,
-        assignees: assignTo.map((user) => `members/${user.value}`),
+        assignees: assignTo.map((user) => `members/${user.value}`)
       });
 
       setEditedSuccessfully(true);
@@ -121,6 +129,33 @@ function EditTask({ task, onClose, onTaskUpdated }) {
 
   return (
     <div className="edit-task-style">
+      <div className="action-close" onClick={onClose}>
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
       <form className="edit-task-form" onSubmit={handleSubmit}>
         <h2 className="edit-task-title">עריכת משימה: {task.taskName}</h2>
         <div className="edit-task-input-box">
@@ -136,14 +171,6 @@ function EditTask({ task, onClose, onTaskUpdated }) {
             className="edit-task-input"
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
-          />
-          <Select
-            options={events}
-            value={events.find((event) => event.value === relatedEvent)}
-            onChange={(selectedOption) => setRelatedEvent(selectedOption ? selectedOption.value : "")}
-            placeholder="בחר אירוע קשור (לא חובה)"
-            className="edit-task-input extra-edit-task-input"
-            isClearable // Allows clearing the selection
           />
           <div className="edit-task-date-inputs">
             <div className="edit-task-start-date">
@@ -166,21 +193,41 @@ function EditTask({ task, onClose, onTaskUpdated }) {
               />
             </div>
           </div>
-          <input
-            type="time"
-            className="edit-task-input"
-            value={taskTime}
-            onChange={(e) => setTaskTime(e.target.value)}
-          />
+          <div className="time-budget-task">
+            <input
+              type="time"
+              className="edit-task-input"
+              value={taskTime}
+              onChange={(e) => setTaskTime(e.target.value)}
+            />
+            <input
+              type="number"
+              name="taskBudget"
+              placeholder="תקציב משימה"
+              className="edit-task-input"
+              value={taskBudget}
+              onChange={(e) => setTaskBudget(Number(e.target.value))}
+            />
+          </div>
+
           <select
             value={taskStatus}
             onChange={(e) => setTaskStatus(e.target.value)}
-            className="edit-task-input extra-edit-task-input"
-          >
+            className="edit-task-input extra-edit-task-input">
             <option value="טרם החל">טרם החל</option>
             <option value="בתהליך">בתהליך</option>
             <option value="הושלם">הושלם</option>
           </select>
+          <Select
+            options={events}
+            value={events.find((event) => event.value === relatedEvent)}
+            onChange={(selectedOption) =>
+              setRelatedEvent(selectedOption ? selectedOption.value : "")
+            }
+            placeholder="בחר אירוע קשור (לא חובה)"
+            className="edit-task-input extra-edit-task-input"
+            isClearable // Allows clearing the selection
+          />
           <Select
             placeholder="הוסף חבר וועדה"
             className="create-event-input extra-create-event-input"
@@ -189,7 +236,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
             inputValue={search}
             options={members.map((member) => ({
               value: member.value,
-              label: member.label,
+              label: member.label
             }))}
             noOptionsMessage={() => "לא נמצאו אפשרויות"}
             isClearable

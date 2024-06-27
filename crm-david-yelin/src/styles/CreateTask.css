@@ -56,6 +56,13 @@
   margin-right: 1rem;
 }
 
+.time-budget-task {
+  display: flex;
+  width: 92%;
+  gap: 1rem;
+  margin-right: 1rem;
+}
+
 .start-date-task {
   width: 50%;
 }

@@ -103,14 +103,32 @@ function ManageEvents() {
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
+      renderCell: (params) => {
+        const date = new Date(params.row.eventStartDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "eventEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 1.5
+      flex: 1.5,
+      renderCell: (params) => {
+        const date = new Date(params.row.eventEndDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "eventTime",

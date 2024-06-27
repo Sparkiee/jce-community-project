@@ -168,14 +168,32 @@ function Profile() {
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.taskStartDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.taskEndDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "taskTime",
@@ -236,14 +254,32 @@ function Profile() {
       headerName: "תאריך התחלה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.eventStartDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "eventEndDate",
       headerName: "תאריך יעד",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.eventEndDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return (
+          <div>
+            {formattedDate}
+          </div>
+        );
+      }
     },
     {
       field: "eventTime",

@@ -65,7 +65,7 @@ function TaskPage() {
           const assigneeDocs = await Promise.all(assigneePromises);
           const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
           setAssignees(assigneeData);
-
+          
           // Extract event ID from the full path and fetch event data
           if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
             const eventPathSegments = taskData.relatedEvent.split("/");
@@ -169,6 +169,7 @@ function TaskPage() {
           <p><strong>תאריך יעד:</strong> {task.taskEndDate}</p>
           <p><strong>סטטוס:</strong> {task.taskStatus}</p>
           <p><strong>שעת סיום:</strong> {task.taskTime}</p>
+          <p><strong>תקציב:</strong> {task.taskBudget}</p> {/* display currency only to admins and task related members */}
         </div>
         {userPrivileges >= 2 && (
           <IconButton aria-label="edit" onClick={handleEditClick}>

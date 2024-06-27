@@ -32,6 +32,7 @@ function CreateTask(props) {
     taskStartDate: "",
     taskEndDate: "",
     taskTime: "",
+    taskBudget: 0,
     relatedEvent: selectedEvent,
     assignees: selectedMembers
   });
@@ -56,14 +57,10 @@ function CreateTask(props) {
     }
     if (!taskDetails.taskStartDate) {
       const date = new Date();
-      const formattedDate = date
-        .toLocaleDateString("he-IL")
-        .replaceAll("/", "-");
+      const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
       taskDetails.taskStartDate = formattedDate;
     }
-    const assigneeRefs = selectedMembers.map((member) =>
-      doc(db, "members", member.id)
-    );
+    const assigneeRefs = selectedMembers.map((member) => doc(db, "members", member.id));
 
     let updatedTaskDetails = {
       taskName: taskDetails.taskName,
@@ -71,8 +68,9 @@ function CreateTask(props) {
       taskStartDate: taskDetails.taskStartDate,
       taskEndDate: taskDetails.taskEndDate,
       taskTime: taskDetails.taskTime,
+      taskBudget: Number(taskDetails.taskBudget),
       taskCreated: serverTimestamp(),
-      taskStatus: "טרם החלה",
+      taskStatus: "טרם החלה"
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -80,12 +78,7 @@ function CreateTask(props) {
       updatedTaskDetails.relatedEvent = "events/" + selectedEvent.id;
     }
 
-    if (
-      await taskExistsAndOpen(
-        updatedTaskDetails.taskName,
-        updatedTaskDetails.relatedEvent
-      )
-    ) {
+    if (await taskExistsAndOpen(updatedTaskDetails.taskName, updatedTaskDetails.relatedEvent)) {
       setFormWarning(true);
       if (updatedTaskDetails.relatedEvent)
         setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
@@ -95,16 +88,12 @@ function CreateTask(props) {
 
     // Conditionally add assignees if the array is not empty
     if (assigneeRefs.length > 0) {
-      updatedTaskDetails.assignees = selectedMembers.map(
-        (member) => `members/${member.id}`
-      );
+      updatedTaskDetails.assignees = selectedMembers.map((member) => `members/${member.id}`);
     }
 
     if (!updatedTaskDetails.taskStartDate) {
       const date = new Date().toDateString();
-      const formattedDate = date
-        .toLocaleDateString("he-IL")
-        .replaceAll("/", "-");
+      const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
       updatedTaskDetails.taskStartDate = formattedDate;
     }
 
@@ -191,9 +180,7 @@ function CreateTask(props) {
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some(
-              (selectedMember) => selectedMember.fullName === member.fullName
-            )
+            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
         );
       setMembers(results);
     } else {
@@ -211,10 +198,7 @@ function CreateTask(props) {
   }
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
-    if (
-      selectedMember &&
-      !selectedMembers.some((member) => member.id === selectedMember.id)
-    ) {
+    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
       setSearchMember(""); // Clear the search input after selection
       setMembers([]); // Clear the dropdown options
@@ -230,17 +214,13 @@ function CreateTask(props) {
   };
   return (
     <div className="create-task">
-      <div
-        className="action-close"
-        onClick={props.onClose}
-      >
+      <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -269,9 +249,7 @@ function CreateTask(props) {
             placeholder="שם המשימה (חובה*)"
             name="taskName "
             className="create-task-input"
-            onChange={(e) =>
-              setTaskDetails({ ...taskDetails, taskName: e.target.value })
-            }
+            onChange={(e) => setTaskDetails({ ...taskDetails, taskName: e.target.value })}
           />
           <textarea
             placeholder="תיאור המשימה (חובה*)"
@@ -293,14 +271,10 @@ function CreateTask(props) {
                 id="start"
                 className="create-task-input"
                 onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  const formattedDate = date
-                    .toLocaleDateString("he-IL")
-                    .replaceAll("/", "-");
                   //change the start date
                   setTaskDetails({
                     ...taskDetails,
-                    taskStartDate: formattedDate
+                    taskStartDate: e.target.value
                   });
                 }}
               />
@@ -313,27 +287,33 @@ function CreateTask(props) {
                 id="due"
                 className="create-task-input"
                 onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  const formattedDate = date
-                    .toLocaleDateString("he-IL")
-                    .replaceAll("/", "-");
+                  // const date = new Date(e.target.value);
+                  // const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
                   //change the due date
                   setTaskDetails({
                     ...taskDetails,
-                    taskEndDate: formattedDate
+                    taskEndDate: e.target.value
                   });
                 }}
               />
             </div>
           </div>
-          <input
-            type="time"
-            name="taskTime"
-            className="create-task-input"
-            onChange={(e) =>
-              setTaskDetails({ ...taskDetails, taskTime: e.target.value })
-            }
-          />
+          <div className="time-budget-task">
+            <input
+              type="time"
+              name="taskTime"
+              className="create-task-input"
+              min="0"
+              onChange={(e) => setTaskDetails({ ...taskDetails, taskTime: e.target.value })}
+            />
+            <input
+              type="number"
+              name="taskBudget"
+              placeholder="תקציב משימה"
+              className="create-task-input"
+              onChange={(e) => setTaskDetails({ ...taskDetails, taskBudget: e.target.value })}
+            />
+          </div>
           <Select
             name="relatedEvent"
             placeholder="שייך לאירוע"
@@ -379,12 +359,7 @@ function CreateTask(props) {
               <Stack direction="row" spacing={1}>
                 <Chip
                   key={member.id}
-                  avatar={
-                    <Avatar
-                      alt={member.fullName}
-                      src={require("../assets/profile.jpg")}
-                    />
-                  }
+                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"

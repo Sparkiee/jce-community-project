@@ -32,7 +32,7 @@ function ContactUser(props) {
         setTimeout(() => {
             setContactSubmitted(false);
             props.onClose();
-        }, 3000);
+        }, 1000);
         console.log("Document written with ID: ", docRef.id);
     } catch (e) {
         console.error("Error adding document: ", e);
@@ -87,6 +87,7 @@ function ContactUser(props) {
             type="text"
             className="forms-input text-area"
             placeholder="תיאור פניה"
+            maxLength={50}
             rows={3}
             value={description}
             onChange={(event) => {
@@ -98,6 +99,7 @@ function ContactUser(props) {
             type="text"
             className="forms-input"
             placeholder="הערות (אופציונאלי)"
+            maxLength={50}
             value={notes}
             onChange={(event) => {
                 setNotes(event.target.value);

@@ -505,7 +505,7 @@ function Profile() {
   }, [showResetPassword, showEditProfile]);
   const PageContent = ({ pageName }) => {
     switch (pageName) {
-      case pages[0]:
+      case pages[0]: // Contact Logs
         return (
           <div>
             <button
@@ -514,7 +514,7 @@ function Profile() {
             >
               תעד פנייה
             </button>
-            <div style={{ height: 631, width: "100%" }}>
+            {rowContact.length > 0 ? <div style={{ height: 631, width: "100%" }}>
               <ThemeProvider theme={theme}>
                 <DataGrid
                   className="data-grid"
@@ -535,15 +535,12 @@ function Profile() {
                       labelRowsPerPage: "שורות בכל עמוד:"
                     }
                   }}
-                  onRowDoubleClick={(params) =>
-                    navigate(`/event/${params.row.eventDoc}`)
-                  }
                 />
               </ThemeProvider>
-            </div>
+            </div> : <div className="no-logs">אין תיעודים למשתמש זה</div>}
           </div>
         );
-      case pages[1]:
+      case pages[1]: // Open Tasks
         return (
           <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
@@ -575,7 +572,7 @@ function Profile() {
             </ThemeProvider>
           </div>
         );
-      case pages[2]:
+      case pages[2]: // Upcoming Events
         return (
           <div style={{ height: 631, width: "100%" }}>
             <ThemeProvider theme={theme}>
@@ -606,9 +603,9 @@ function Profile() {
           </div>
         );
 
-      case pages[3]:
+      case pages[3]: // History
         return <div>פה יהיה תוכן של היסטוריה</div>;
-      default:
+      default: // Default case
         return <div>Page Not Found</div>;
     }
   };

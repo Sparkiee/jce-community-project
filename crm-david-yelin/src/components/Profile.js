@@ -52,6 +52,7 @@ function Profile() {
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
   const [rowContact, setRowContact] = useState([]);
+  const [rowContactFull, setRowContactFull] = useState([]);
   const [numTasks, setNumTasks] = useState(0);
   const [numEvents, setNumEvents] = useState(0);
   const [numCompletedTasks, setNumCompletedTasks] = useState(0);
@@ -493,6 +494,7 @@ function Profile() {
         sourceFullName: log.srcFullName // Use the full name instead of the reference
       }));
       setRowContact(logArray);
+      setRowContactFull(logArray);
     } catch (error) {
       console.error("Failed to fetch contact log:", error);
     }
@@ -542,19 +544,13 @@ function Profile() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log("im here");
-      console.log(showContact);
-      console.log(editLog);
       if (
         changePasswordRef.current &&
         !changePasswordRef.current.contains(event.target)
       ) {
         setShowResetPassword(false);
       }
-      if (
-        editUserRef.current &&
-        !editUserRef.current.contains(event.target)
-      ) {
+      if (editUserRef.current && !editUserRef.current.contains(event.target)) {
         setShowEditProfile(false);
       }
       if (
@@ -584,12 +580,31 @@ function Profile() {
       case pages[0]: // Contact Logs
         return (
           <div>
-            <button
-              className="create-contact-log-button"
-              onClick={() => setShowContact(true)}
-            >
-              תעד פנייה
-            </button>
+            <div className="user-profile-action-div">
+              <button
+                className="create-contact-log-button"
+                onClick={() => setShowContact(true)}
+              >
+                תעד פנייה
+              </button>
+              <input
+                type="text"
+                className="search-input-contact-logs"
+                placeholder="חיפוש משתמש"
+                onChange={(event) => {
+                  const search = event.target.value;
+                  const filteredLogs = rowContactFull.filter((log) => {
+                    return (
+                      log.sourceFullName.includes(search) ||
+                      log.subject.includes(search) ||
+                      log.description.includes(search) ||
+                      log.notes.includes(search)
+                    );
+                  });
+                  setRowContact(filteredLogs);
+                }}
+              />
+            </div>
             {rowContact.length > 0 ? (
               <div style={{ height: 631, width: "100%" }}>
                 <ThemeProvider theme={theme}>

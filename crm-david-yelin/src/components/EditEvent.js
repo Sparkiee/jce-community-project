@@ -70,7 +70,7 @@ function EditEvent(props) {
     try {
       const eventRef = doc(db, "events", eventDetails.id);
       await updateDoc(eventRef, updatedEventDetails);
-      props.onSave();
+      props.onClose();
     } catch (error) {
       console.error("Error updating document: ", error);
     }

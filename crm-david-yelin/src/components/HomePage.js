@@ -314,7 +314,7 @@ function HomePage() {
 
       <h1 className="page-title-home">היי {user.fullName}</h1>
       <div className="page-subtitle">
-        כאן תוכל להתעדכן עם האירועים והמשימות שלך
+        כאן תוכל/י להתעדכן עם האירועים והמשימות שלך
       </div>
       {user.privileges > 1 && (
         <div className="pending-actions">

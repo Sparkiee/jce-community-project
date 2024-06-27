@@ -59,6 +59,8 @@ function ManageEvents() {
   const [editEventDetails, setEditEventDetails] = useState(null);
 
   const createEventRef = useRef(null);
+  const editEventRef = useRef(null);
+
   const navigate = useNavigate();
 
   const theme = createTheme(
@@ -249,6 +251,9 @@ function ManageEvents() {
       if (createEventRef.current && !createEventRef.current.contains(event.target)) {
         setShowCreateEvent(false);
       }
+      if (editEventRef.current && !editEventRef.current.contains(event.target)) {
+        setEditEventDetails(null);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -299,7 +304,7 @@ function ManageEvents() {
     <div>
       {editEventDetails && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div ref={editEventRef} className="popup-content">
             <EditEvent
               eventDetails={editEventDetails}
               onClose={() => {setEditEventDetails(false);

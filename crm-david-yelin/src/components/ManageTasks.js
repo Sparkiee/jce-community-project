@@ -60,6 +60,7 @@ function ManageTasks() {
   const [deleteTarget, setDeleteTarget] = useState("");
 
   const createTaskRef = useRef(null);
+  const editTaskRef = useRef(null);
   const navigate = useNavigate();
 
   const theme = createTheme(
@@ -302,6 +303,9 @@ function ManageTasks() {
       if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
         setShowCreateTask(false);
       }
+      if(editTaskRef.current && !editTaskRef.current.contains(event.target)) {
+        setEditingTask(null);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -334,7 +338,7 @@ function ManageTasks() {
     <div>
       {editingTask && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div ref={editTaskRef} className="popup-content">
             <EditTask
               task={editingTask}
               onClose={() => setEditingTask(null)}

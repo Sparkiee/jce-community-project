@@ -46,6 +46,7 @@ function ManageUsers() {
   const handleConfirmDelete = () => {
     deleteUser(deleteTarget);
     setDeleteTarget("");
+    fetchUsers();
   };
   const handleCancelDelete = () => {
     setDeleteTarget("");
@@ -370,6 +371,7 @@ function ManageUsers() {
   const handleCloseForm = () => {
     setEditUserForm(false);
     setShowCreateUser(false);
+    fetchUsers();
   };
 
   const handleRowDoubleClick = (params) => {

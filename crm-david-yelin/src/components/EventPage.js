@@ -90,6 +90,10 @@ function EventPage() {
       const eventDoc = await getDoc(doc(db, "events", id));
       if (eventDoc.exists()) {
         const eventData = eventDoc.data();
+        
+        // Fetch event creator's full name
+        const eventCreatorFullName = await getMemberFullName(eventData.eventCreator.split("/")[1]);
+        
         const assigneesData = await Promise.all(
           (eventData.assignees || []).map(async (assigneePath) => {
             const email = assigneePath.split("/")[1];
@@ -99,7 +103,7 @@ function EventPage() {
         );
         const userIsAssignee = assigneesData.some((assignee) => assignee.email === user.email);
 
-        setEvent({ ...eventData, id: eventDoc.id, assigneesData });
+        setEvent({ ...eventData, id: eventDoc.id, assigneesData, eventCreatorFullName });
         setIsUserAnAssignee(userIsAssignee);
       } else {
         console.error("No such document!");
@@ -313,6 +317,10 @@ function EventPage() {
                     <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}
                   </p>
                 )}
+                <p>
+                  <strong>יוצר האירוע: </strong>
+                  {event.eventCreatorFullName}
+                </p>
               </div>
               {userPrivileges >= 2 && (
                 <IconButton

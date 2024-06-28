@@ -44,6 +44,7 @@ function TaskPage() {
   const [isEditing, setIsEditing] = useState(false);
   const editTaskRef = useRef(null);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
+  const [taskCreatorFullName, setTaskCreatorFullName] = useState("");
 
   const getStatusColorClass = (status) => {
     switch (status) {
@@ -69,6 +70,17 @@ function TaskPage() {
     }
   }, []);
 
+  const getMemberFullName = async (email) => {
+    try {
+      const memberDoc = await getDoc(doc(db, "members", email));
+      if (memberDoc.exists()) {
+        return memberDoc.data().fullName;
+      }
+    } catch (e) {
+      console.error("Error getting member document: ", e);
+    }
+  };
+
   useEffect(() => {
     const fetchTask = async () => {
       try {
@@ -76,6 +88,10 @@ function TaskPage() {
         if (taskDoc.exists()) {
           const taskData = taskDoc.data();
           setTask({ ...taskData, taskDoc: taskId }); // Ensure taskDoc is included in the task object
+
+          // Fetch task creator's full name
+          const taskCreatorFullName = await getMemberFullName(taskData.taskCreator.split("/")[1]);
+          setTaskCreatorFullName(taskCreatorFullName);
 
           // Fetch assignee data
           const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
@@ -219,7 +235,10 @@ function TaskPage() {
                   <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
                 </p>
               )}
-              {/* display currency only to admins and task related members */}
+              <p>
+                <strong>יוצר המשימה: </strong>
+                {taskCreatorFullName}
+              </p>
             </div>
             {userPrivileges >= 2 && (
               <IconButton

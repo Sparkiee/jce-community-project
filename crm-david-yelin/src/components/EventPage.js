@@ -330,7 +330,7 @@ function EventPage() {
                 />
               </svg>
             </div>
-            <EditEvent eventDetails={event} onSave={handleSaveEdit} />
+            <EditEvent eventDetails={event} onClose={handleSaveEdit} />
           </div>
         </div>
       )}

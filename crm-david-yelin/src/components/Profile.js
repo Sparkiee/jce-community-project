@@ -163,6 +163,16 @@ function Profile() {
       flex: 3,
     },
     {
+      field: "taskBudget",
+      headerName: "תקציב",
+      width: 150,
+      align: "right",
+      flex: 1,
+      renderCell: (params) => {
+        return <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>;
+      },
+    },
+    {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
       width: 150,
@@ -171,12 +181,8 @@ function Profile() {
       renderCell: (params) => {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
-      }
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "taskEndDate",
@@ -187,12 +193,8 @@ function Profile() {
       renderCell: (params) => {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
-      }
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "taskTime",
@@ -248,6 +250,18 @@ function Profile() {
       flex: 3,
     },
     {
+      field: "eventBudget",
+      headerName: "תקציב",
+      width: 150,
+      align: "right",
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <div>₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}</div>
+        );
+      },
+    },
+    {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
       width: 150,
@@ -256,12 +270,8 @@ function Profile() {
       renderCell: (params) => {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
-      }
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "eventEndDate",
@@ -272,12 +282,8 @@ function Profile() {
       renderCell: (params) => {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
-      }
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "eventTime",
@@ -367,7 +373,7 @@ function Profile() {
       field: "edit",
       headerName: "עריכה",
       align: "right",
-      flex: 0.8,
+      flex: 1,
       renderCell: (params) => (
         <div>
           <IconButton aria-label="edit" title="עריכה" onClick={() => setEditLog(params.row)}>
@@ -425,6 +431,7 @@ function Profile() {
         taskStartDate: task.taskStartDate,
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
+        taskBudget: task.taskBudget,
         taskStatus: task.taskStatus,
       }));
       setRowsTasks(rowsTasksData); // Update rows state
@@ -460,6 +467,7 @@ function Profile() {
         eventStartDate: event.eventStartDate,
         eventEndDate: event.eventEndDate,
         eventTime: event.eventTime,
+        eventBudget: event.eventBudget,
         eventStatus: event.eventStatus,
       }));
       setRowsEvents(rowsEventsData); // Update event rows state

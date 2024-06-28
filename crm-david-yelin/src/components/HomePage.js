@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { db } from "../firebase";
 import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import "../styles/HomePage.css";
@@ -17,6 +17,7 @@ function HomePage() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
+  const [userPrivileges, setUserPrivileges] = useState(1);
 
   const navigate = useNavigate();
 
@@ -52,6 +53,22 @@ function HomePage() {
       align: "right",
       flex: 3,
     },
+    ...(userPrivileges >= 2
+      ? [
+          {
+            field: "taskBudget",
+            headerName: "תקציב",
+            width: 150,
+            align: "right",
+            flex: 1,
+            renderCell: (params) => {
+              return (
+                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+              );
+            },
+          },
+        ]
+      : []),
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
@@ -61,12 +78,8 @@ function HomePage() {
       renderCell: (params) => {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
-      }
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "taskEndDate",
@@ -77,12 +90,8 @@ function HomePage() {
       renderCell: (params) => {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
-        return (
-          <div>
-            {formattedDate}
-          </div>
-        );
-      }
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "taskTime",
@@ -123,6 +132,24 @@ function HomePage() {
       align: "right",
       flex: 3,
     },
+    ...(userPrivileges >= 2
+      ? [
+          {
+            field: "eventBudget",
+            headerName: "תקציב",
+            width: 150,
+            align: "right",
+            flex: 1,
+            renderCell: (params) => {
+              return (
+                <div>
+                  ₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
@@ -155,6 +182,12 @@ function HomePage() {
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
+  const fetchUserPrivileges = useCallback(() => {
+    if (user && user.privileges) {
+      setUserPrivileges(user.privileges);
+    }
+  }, []);
+
   const createTaskRef = useRef(null);
   const createEventRef = useRef(null);
 
@@ -182,6 +215,7 @@ function HomePage() {
         taskStartDate: task.taskStartDate,
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
+        taskBudget: task.taskBudget,
         taskStatus: task.taskStatus,
       }));
       setRowsTasks(rowsTasksData); // Update rows state
@@ -213,6 +247,7 @@ function HomePage() {
         eventStartDate: event.eventStartDate,
         eventEndDate: event.eventEndDate,
         eventTime: event.eventTime,
+        eventBudget: event.eventBudget,
         eventStatus: event.eventStatus,
       }));
       setRowsEvents(rowsEventsData); // Update event rows state
@@ -224,6 +259,7 @@ function HomePage() {
   useEffect(() => {
     grabMyTasks();
     grabMyEvents();
+    fetchUserPrivileges();
 
     const eventsRef = collection(db, "events");
     const eventsQuery = query(

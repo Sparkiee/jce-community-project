@@ -193,6 +193,22 @@ function EventPage() {
       align: "right",
       flex: 4,
     },
+    ...(userPrivileges >= 2
+      ? [
+          {
+            field: "taskBudget",
+            headerName: "תקציב",
+            width: 150,
+            align: "right",
+            flex: 1,
+            renderCell: (params) => {
+              return (
+                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+              );
+            },
+          },
+        ]
+      : []),
     {
       field: "taskStatus",
       headerName: "סטטוס",
@@ -223,10 +239,7 @@ function EventPage() {
       align: "center",
       flex: 0.5,
       renderCell: (params) => (
-        <IconButton
-          aria-label="view"
-          onClick={() => navigate(`/task/${params.row.id}`)}
-        >
+        <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
           <VisibilityIcon />
         </IconButton>
       ),
@@ -261,13 +274,17 @@ function EventPage() {
                   <strong>שעת סיום: </strong>
                   {event.eventTime}
                 </p>
+                {userPrivileges >= 2 && (
+                  <p>
+                    <strong>תקציב: </strong>₪{event.eventBudget}
+                  </p>
+                )}
               </div>
               {userPrivileges >= 2 && (
                 <IconButton
                   className="event-page-edit-icon"
                   aria-label="edit"
-                  onClick={handleEditClick}
-                >
+                  onClick={handleEditClick}>
                   <EditIcon />
                 </IconButton>
               )}
@@ -308,8 +325,7 @@ function EventPage() {
                 height="24px"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-              >
+                fill="currentColor">
                 <line
                   x1="17"
                   y1="7"

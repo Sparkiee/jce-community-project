@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { db } from "../firebase";
@@ -15,9 +15,7 @@ import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateTask from "./CreateTask";
 import ConfirmAction from "./ConfirmAction";
-import { Alert, Modal } from "@mui/material";
 import EditTask from "./EditTask";
-import { render } from "@testing-library/react";
 
 function stringToColor(string) {
   let hash = 0;
@@ -58,6 +56,7 @@ function ManageTasks() {
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState("");
+  const [userPrivileges, setUserPrivileges] = useState(1);
 
   const createTaskRef = useRef(null);
   const editTaskRef = useRef(null);
@@ -74,6 +73,12 @@ function ManageTasks() {
   );
 
   const user = JSON.parse(sessionStorage.getItem("user"));
+
+  const fetchUserPrivileges = useCallback(() => {
+    if (user && user.privileges) {
+      setUserPrivileges(user.privileges);
+    }
+  }, []);
 
   const baseColumns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 1 },
@@ -98,16 +103,22 @@ function ManageTasks() {
       align: "right",
       flex: 2,
     },
-    {
-      field: "taskBudget",
-      headerName: "תקציב",
-      width: 150,
-      align: "right",
-      flex: 1,
-      renderCell: (params) => {
-        return <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>;
-      },
-    },
+    ...(userPrivileges >= 2
+      ? [
+          {
+            field: "taskBudget",
+            headerName: "תקציב",
+            width: 150,
+            align: "right",
+            flex: 1,
+            renderCell: (params) => {
+              return (
+                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+              );
+            },
+          },
+        ]
+      : []),
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
@@ -298,12 +309,13 @@ function ManageTasks() {
 
   useEffect(() => {
     getTasks();
+    fetchUserPrivileges();
 
     const handleClickOutside = (event) => {
       if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
         setShowCreateTask(false);
       }
-      if(editTaskRef.current && !editTaskRef.current.contains(event.target)) {
+      if (editTaskRef.current && !editTaskRef.current.contains(event.target)) {
         setEditingTask(null);
       }
     };

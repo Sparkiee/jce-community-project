@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
@@ -15,7 +15,6 @@ import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateEvent from "./CreateEvent";
 import ConfirmAction from "./ConfirmAction";
-import { Alert } from "@mui/material";
 import EditEvent from "./EditEvent";
 
 function stringToColor(string) {
@@ -57,6 +56,7 @@ function ManageEvents() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState("");
   const [editEventDetails, setEditEventDetails] = useState(null);
+  const [userPrivileges, setUserPrivileges] = useState(1);
 
   const createEventRef = useRef(null);
   const editEventRef = useRef(null);
@@ -75,6 +75,12 @@ function ManageEvents() {
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
+  const fetchUserPrivileges = useCallback(() => {
+    if (user && user.privileges) {
+      setUserPrivileges(user.privileges);
+    }
+  }, []);
+
   const baseColumns = [
     { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
     {
@@ -91,16 +97,24 @@ function ManageEvents() {
       align: "right",
       flex: 4,
     },
-    {
-      field: "taskBudget",
-      headerName: "תקציב",
-      width: 150,
-      align: "right",
-      flex: 1,
-      renderCell: (params) => {
-        return <div>₪{params.row.eventBudget ? params.row.eventBudget : "אין"}</div>;
-      },
-    },
+    ...(userPrivileges >= 2
+      ? [
+          {
+            field: "eventBudget",
+            headerName: "תקציב",
+            width: 150,
+            align: "right",
+            flex: 1,
+            renderCell: (params) => {
+              return (
+                <div>
+                  ₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
@@ -246,6 +260,7 @@ function ManageEvents() {
 
   useEffect(() => {
     getEvents();
+    fetchUserPrivileges();
 
     const handleClickOutside = (event) => {
       if (createEventRef.current && !createEventRef.current.contains(event.target)) {
@@ -314,7 +329,8 @@ function ManageEvents() {
           <div ref={editEventRef} className="popup-content">
             <EditEvent
               eventDetails={editEventDetails}
-              onClose={() => {setEditEventDetails(false);
+              onClose={() => {
+                setEditEventDetails(false);
                 getEvents();
               }}
             />

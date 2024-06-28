@@ -43,6 +43,7 @@ function EventPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [userPrivileges, setUserPrivileges] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const createEventRef = useRef(null);
   const navigate = useNavigate();
 
@@ -79,7 +80,10 @@ function EventPage() {
             return { email, fullName };
           })
         );
+        const userIsAssignee = assigneesData.some((assignee) => assignee.email === user.email);
+
         setEvent({ ...eventData, id: eventDoc.id, assigneesData });
+        setIsUserAnAssignee(userIsAssignee);
       } else {
         console.error("No such document!");
       }
@@ -193,7 +197,7 @@ function EventPage() {
       align: "right",
       flex: 4,
     },
-    ...(userPrivileges >= 2
+    ...(userPrivileges >= 2 || isUserAnAssignee
       ? [
           {
             field: "taskBudget",
@@ -274,7 +278,7 @@ function EventPage() {
                   <strong>שעת סיום: </strong>
                   {event.eventTime}
                 </p>
-                {userPrivileges >= 2 && (
+                {(userPrivileges >= 2 || isUserAnAssignee) && (
                   <p>
                     <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}
                   </p>

@@ -43,6 +43,7 @@ function TaskPage() {
   const [userPrivileges, setUserPrivileges] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const editTaskRef = useRef(null);
+  const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
 
   const fetchUserPrivileges = useCallback(() => {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -67,6 +68,11 @@ function TaskPage() {
             .map((doc) => (doc.exists() ? doc.data() : null))
             .filter((data) => data);
           setAssignees(assigneeData);
+
+          const user = JSON.parse(sessionStorage.getItem("user"));
+          if (user && assigneeEmails.includes(user.email)) {
+            setIsUserAnAssignee(true);
+          }
 
           // Extract event ID from the full path and fetch event data
           if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
@@ -187,7 +193,7 @@ function TaskPage() {
               <p>
                 <strong>שעת סיום:</strong> {task.taskTime}
               </p>
-              {userPrivileges >= 2 && (
+              {(userPrivileges >= 2 || isUserAnAssignee) && (
                 <p>
                   <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
                 </p>

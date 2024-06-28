@@ -187,7 +187,7 @@ function TaskPage() {
           </p>
           {userPrivileges >= 2 && (
             <p>
-              <strong>תקציב: </strong>₪{task.taskBudget}
+              <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
             </p>
           )}
           {/* display currency only to admins and task related members */}

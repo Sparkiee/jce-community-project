@@ -18,7 +18,7 @@
 .event-details {
   width: 20%;
   padding: 2rem;
-  background-color: rgb(252, 202, 71, 0.15);
+  background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -47,7 +47,7 @@
 .event-page-participants {
   width: 23%;
   padding: 2rem;
-  background-color: rgb(252, 202, 71, 0.15);
+  background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

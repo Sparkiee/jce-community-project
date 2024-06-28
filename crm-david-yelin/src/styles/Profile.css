@@ -34,7 +34,7 @@ div .profile-avatar:hover {
   border: 0.5px solid #ccc;
   position: relative;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-  background-color: rgb(64, 142, 198, 0.35);
+  background-color: rgb(64, 142, 198, 0.25);
   padding: 3rem;
 }
 

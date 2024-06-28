@@ -276,7 +276,7 @@ function EventPage() {
                 </p>
                 {userPrivileges >= 2 && (
                   <p>
-                    <strong>תקציב: </strong>₪{event.eventBudget}
+                    <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}
                   </p>
                 )}
               </div>

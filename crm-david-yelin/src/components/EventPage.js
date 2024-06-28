@@ -93,7 +93,7 @@ function EventPage() {
       const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`));
       const querySnapshot = await getDocs(q);
       const tasksArray = await Promise.all(
-        querySnapshot.docs.map(async (doc,index) => {
+        querySnapshot.docs.map(async (doc, index) => {
           const taskData = doc.data();
           const assignees = Array.isArray(taskData.assignees) ? taskData.assignees : [];
           const assigneeData = await Promise.all(
@@ -299,7 +299,7 @@ function EventPage() {
         </div>
       </div>
 
-      {isEditing && event && (
+      {isEditing && event && event.assigneesData && (
         <div className="edit-event-popup">
           <div className="edit-event-popup-content" ref={createEventRef}>
             <div className="action-close" onClick={handleCloseEdit}>
@@ -352,4 +352,3 @@ function EventPage() {
 }
 
 export default EventPage;
-

@@ -291,7 +291,14 @@ function ManageEvents() {
       const eventDoc = await getDoc(doc(db, "events", row.eventDoc));
       if (eventDoc.exists()) {
         const eventData = eventDoc.data();
-        setEditEventDetails({ ...eventData, id: eventDoc.id });
+        const assignees = await Promise.all(
+          eventData.assignees.map(async (assigneePath) => {
+            const email = assigneePath.split("/")[1];
+            const fullName = await getMemberFullName(email);
+            return { email, fullName };
+          })
+        );
+        setEditEventDetails({ ...eventData, id: eventDoc.id, assigneesData: assignees });
       } else {
         console.error("No such document!");
       }

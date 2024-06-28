@@ -15,8 +15,7 @@ function EditEvent(props) {
   const [warningText, setWarningText] = useState("");
   const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const [event, setEvent] = useState(props.eventDetails);
-  const eventDetails = props.eventDetails;
+  const [event, setEvent] = useState(props.eventDetails || {});
 
   const fetchMembers = useCallback(async () => {
     const membersRef = collection(db, "members");
@@ -26,25 +25,14 @@ function EditEvent(props) {
       ...doc.data(),
     }));
     setMembers(membersList);
-
-    // Fetch full names of the assigned members
-    const assignedMembers = await Promise.all(
-      eventDetails.assignees.map(async (assigneePath) => {
-        const email = assigneePath.split("/")[1];
-        const memberDoc = await getDoc(doc(membersRef, email));
-        if (memberDoc.exists()) {
-          return { id: email, ...memberDoc.data() };
-        }
-        return null;
-      })
-    );
-
-    setSelectedMembers(assignedMembers.filter((member) => member !== null));
-  }, [eventDetails.assignees]);
+  }, []);
 
   useEffect(() => {
     fetchMembers();
-  }, [fetchMembers]);
+
+    // Use the passed member data to set the selected members
+    setSelectedMembers(props.eventDetails?.assigneesData || []);
+  }, [fetchMembers, props.eventDetails]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,14 +52,14 @@ function EditEvent(props) {
       return;
     }
 
-    const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
+    const assigneeRefs = selectedMembers.map((member) => `members/${member.email}`);
     const updatedEventDetails = {
       ...event,
       assignees: assigneeRefs,
     };
 
     try {
-      const eventRef = doc(db, "events", eventDetails.id);
+      const eventRef = doc(db, "events", event.id);
       await updateDoc(eventRef, updatedEventDetails);
       props.onClose();
     } catch (error) {
@@ -154,7 +142,7 @@ function EditEvent(props) {
             placeholder="שם האירוע (חובה*)"
             name="eventName"
             className="edit-event-input"
-            value={event.eventName}
+            value={event.eventName || ""}
             onChange={(e) => setEvent({ ...event, eventName: e.target.value })}
           />
           <div className="start-due-date-edit-event">
@@ -165,7 +153,7 @@ function EditEvent(props) {
                 name="eventStartDate"
                 id="start"
                 className="edit-event-input"
-                value={event.eventStartDate}
+                value={event.eventStartDate || ""}
                 onChange={(e) => {
                   setEvent({
                     ...event,
@@ -181,7 +169,7 @@ function EditEvent(props) {
                 name="eventEndDate"
                 id="due"
                 className="edit-event-input"
-                value={event.eventEndDate}
+                value={event.eventEndDate || ""}
                 onChange={(e) => {
                   setEvent({
                     ...event,
@@ -200,7 +188,7 @@ function EditEvent(props) {
                 type="time"
                 name="eventTime"
                 className="edit-event-input"
-                value={event.eventTime}
+                value={event.eventTime || ""}
                 onChange={(e) => setEvent({ ...event, eventTime: e.target.value })}
               />
             </div>
@@ -213,7 +201,7 @@ function EditEvent(props) {
                 name="eventBudget"
                 placeholder="תקציב משימה"
                 className="edit-event-input"
-                value={event.eventBudget}
+                value={event.eventBudget || 0}
                 onChange={(e) => setEvent({ ...event, eventBudget: Number(e.target.value) })}
               />
             </div>
@@ -223,7 +211,7 @@ function EditEvent(props) {
             placeholder="מיקום האירוע"
             name="eventLocation"
             className="edit-event-input"
-            value={event.eventLocation}
+            value={event.eventLocation || ""}
             onChange={(e) =>
               setEvent({
                 ...event,

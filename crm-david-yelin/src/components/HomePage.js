@@ -53,22 +53,16 @@ function HomePage() {
       align: "right",
       flex: 3,
     },
-    ...(userPrivileges >= 2
-      ? [
-          {
-            field: "taskBudget",
-            headerName: "תקציב",
-            width: 150,
-            align: "right",
-            flex: 1,
-            renderCell: (params) => {
-              return (
-                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
-              );
-            },
-          },
-        ]
-      : []),
+    {
+      field: "taskBudget",
+      headerName: "תקציב",
+      width: 150,
+      align: "right",
+      flex: 1,
+      renderCell: (params) => {
+        return <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>;
+      },
+    },
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
@@ -132,24 +126,18 @@ function HomePage() {
       align: "right",
       flex: 3,
     },
-    ...(userPrivileges >= 2
-      ? [
-          {
-            field: "eventBudget",
-            headerName: "תקציב",
-            width: 150,
-            align: "right",
-            flex: 1,
-            renderCell: (params) => {
-              return (
-                <div>
-                  ₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}
-                </div>
-              );
-            },
-          },
-        ]
-      : []),
+    {
+      field: "eventBudget",
+      headerName: "תקציב",
+      width: 150,
+      align: "right",
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <div>₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}</div>
+        );
+      },
+    },
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",

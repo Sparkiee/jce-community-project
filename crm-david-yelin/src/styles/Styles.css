@@ -75,3 +75,28 @@ body {
     opacity: 1;
   }
 }
+
+.status-cell {
+  display: flex;
+  align-items: center;
+}
+
+.status-circle {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1px solid black;
+  border-radius: 50%;
+  margin-left: 1rem;
+}
+
+.status-not-started {
+  background-color: red;
+}
+
+.status-in-progress {
+  background-color: yellow;
+}
+
+.status-finished {
+  background-color: green;
+}

@@ -164,86 +164,100 @@ function TaskPage() {
 
   return (
     <div className="task-page">
-      <div className="task-details">
-        <h1>{task.taskName}</h1>
-        <div className="task-info">
-          <p>
-            <strong>תיאור:</strong> {task.taskDescription}
-          </p>
-          <p>
-            <strong>אירוע משוייך:</strong> {eventName}
-          </p>
-          <p>
-            <strong>תאריך התחלה:</strong> {task.taskStartDate}
-          </p>
-          <p>
-            <strong>תאריך יעד:</strong> {task.taskEndDate}
-          </p>
-          <p>
-            <strong>סטטוס:</strong> {task.taskStatus}
-          </p>
-          <p>
-            <strong>שעת סיום:</strong> {task.taskTime}
-          </p>
-          {userPrivileges >= 2 && (
-            <p>
-              <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
-            </p>
-          )}
-          {/* display currency only to admins and task related members */}
+      <div className="task-page-style">
+        <div className="task-page-details">
+          <h1>{task.taskName}</h1>
+          <div className="task-page-info">
+            <div>
+              <p>
+                <strong>תיאור:</strong> {task.taskDescription}
+              </p>
+              <p>
+                <strong>אירוע משוייך:</strong> {eventName}
+              </p>
+              <p>
+                <strong>תאריך התחלה:</strong> {task.taskStartDate}
+              </p>
+              <p>
+                <strong>תאריך יעד:</strong> {task.taskEndDate}
+              </p>
+              <p>
+                <strong>סטטוס:</strong> {task.taskStatus}
+              </p>
+              <p>
+                <strong>שעת סיום:</strong> {task.taskTime}
+              </p>
+              {userPrivileges >= 2 && (
+                <p>
+                  <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
+                </p>
+              )}
+              {/* display currency only to admins and task related members */}
+            </div>
+            {userPrivileges >= 2 && (
+              <IconButton
+                className="task-page-edit-icon"
+                aria-label="edit"
+                onClick={handleEditClick}>
+                <EditIcon />
+              </IconButton>
+            )}
+          </div>
         </div>
-        {userPrivileges >= 2 && (
-          <IconButton aria-label="edit" onClick={handleEditClick}>
-            <EditIcon />
-          </IconButton>
+
+        {isEditing && task && (
+          <div className="edit-task-page-popup">
+            <div className="edit-task-page-popup-content" ref={editTaskRef}>
+              <div className="action-close" onClick={handleCloseEdit}>
+                <svg
+                  width="24px"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor">
+                  <line
+                    x1="17"
+                    y1="7"
+                    x2="7"
+                    y2="17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="7"
+                    y1="7"
+                    x2="17"
+                    y2="17"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+              <EditTask task={task} onClose={handleCloseEdit} onTaskUpdated={handleSaveEdit} />
+            </div>
+          </div>
         )}
       </div>
-      <div className="task-assignees">
-        <h2>משוייכים</h2>
-        <div className="assignees-list">
+      <div className="lower-task-page-content">
+        <div className="task-page-participants">
+          <h2>משתתפים</h2>
           {assignees.map((assignee, index) => (
-            <div key={index} className="assignee-item">
+            <div key={index} className="assignee-task-page-item">
               <Avatar {...stringAvatar(assignee.fullName)} />
               <p>{assignee.fullName}</p>
             </div>
           ))}
         </div>
-      </div>
-
-      {isEditing && task && (
-        <div className="edit-task-popup">
-          <div className="edit-task-popup-content" ref={editTaskRef}>
-            <div className="action-close" onClick={handleCloseEdit}>
-              <svg
-                width="24px"
-                height="24px"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor">
-                <line
-                  x1="17"
-                  y1="7"
-                  x2="7"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="7"
-                  y1="7"
-                  x2="17"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <EditTask task={task} onClose={handleCloseEdit} onTaskUpdated={handleSaveEdit} />
-          </div>
+        <div className="task-page-files">
+          <h2>This is where the files will be</h2>
         </div>
-      )}
+      </div>
+      <div className="task-page-comments">
+        <h2>The is where the chat will be</h2>
+      </div>
+      <div className="footer"></div>
     </div>
   );
 }

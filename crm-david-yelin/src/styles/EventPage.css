@@ -101,6 +101,7 @@
   position: absolute;
   top: -2rem;
   left: 36.5%;
+  z-index: 1;
 }
 
 .event-page-comments {

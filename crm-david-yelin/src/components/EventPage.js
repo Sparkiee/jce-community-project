@@ -350,6 +350,7 @@ function EventPage() {
           </div>
         </div>
       )}
+
       <div className="lower-event-page-content">
         <div className="event-page-participants">
           <h2>משתתפים</h2>

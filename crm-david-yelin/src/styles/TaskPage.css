@@ -1,54 +1,98 @@
 .task-page {
-    position: absolute;
-    right: 5%;
-    top: 10%;
-    display: flex;
-    justify-content: center;
-    width: 90%;
-    gap: 5rem;
-  }
-  
-  .task-details {
-    width: 20%;
-    padding: 2rem;
-    background-color: #f9f9f9;
-    border-radius: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .task-details h1 {
-    margin: 0;
-    padding-bottom: 2rem;
-    font-size: 5rem;
-  }
-  
-  .task-info p {
-    padding-top: 10px;
-    font-size: medium;
-  }
-  
-  .task-assignees {
-    width: 20%;
-    padding: 2rem;
-    background-color: #f9f9f9;
-    border-radius: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 
-  .assignees-list {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .assignee-item {
-    display: flex;
-    align-items: center;
-    margin: 10px;
-  }
-  
-  .assignee-item p {
-    font-size: large;
-    margin-right: 20px;
-  }
-  
-  
+.task-page-style {
+  padding: 5rem 10rem 0 0;
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  gap: 5rem;
+}
+
+.task-page-details {
+  position: relative;
+  width: 20%;
+  padding: 2rem;
+  background-color: rgb(64, 142, 198, 0.25);
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-page-details h1 {
+  width: 87%;
+  word-wrap: break-word;
+  margin: 0;
+  padding-bottom: 2rem;
+  font-size: 5rem;
+}
+
+.task-page-info p {
+  font-size: 2rem;
+  padding: 1rem 0;
+}
+
+.task-page-edit-icon {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+}
+
+.task-page-edit-icon .MuiSvgIcon-root {
+  width: 3rem !important;
+  height: 3rem !important;
+}
+
+.edit-task-page-popup {
+  position: absolute;
+  top: -2rem;
+  left: 36.5%;
+  z-index: 1;
+}
+
+.lower-task-page-content {
+  padding: 5rem 10rem 5rem 0;
+  display: flex;
+  justify-content: center;
+  width: 85%;
+  gap: 5rem;
+}
+
+.task-page-participants {
+  width: 23%;
+  padding: 2rem;
+  background-color: rgb(64, 142, 198, 0.25);
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-page-participants h2 {
+  font-size: 3rem;
+  margin: 0;
+  padding-bottom: 1rem;
+}
+
+.assignee-task-page-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.assignee-task-page-item p {
+  font-size: 2rem;
+}
+
+.task-page-files {
+  border: 2px solid red;
+  width: 80%;
+}
+
+.task-page-comments {
+  width: 60%;
+  border: 2px solid red;
+}

@@ -57,6 +57,23 @@ function EventPage() {
     heIL
   );
 
+  const getStatusColorClass = (status) => {
+    switch (status) {
+      case "טרם החלה":
+        return "status-not-started";
+      case "טרם החל":
+        return "status-not-started";
+      case "בתהליך":
+        return "status-in-progress";
+      case "הושלמה":
+        return "status-finished";
+      case "הסתיים":
+        return "status-finished";
+      default:
+        return "";
+    }
+  };
+
   async function getMemberFullName(email) {
     try {
       const memberDoc = await getDoc(doc(collection(db, "members"), email));
@@ -219,6 +236,15 @@ function EventPage() {
       width: 150,
       align: "right",
       flex: 1.5,
+      renderCell: (params) => {
+        const colorClass = getStatusColorClass(params.row.taskStatus);
+        return (
+          <div className="status-cell">
+            <span className={`status-circle ${colorClass}`}></span>
+            {params.row.taskStatus}
+          </div>
+        );
+      },
     },
     {
       field: "assignTo",
@@ -271,8 +297,12 @@ function EventPage() {
                   {event.eventEndDate}
                 </p>
                 <p>
-                  <strong>סטטוס: </strong>
-                  {event.eventStatus}
+                  <span className="status-cell">
+                    <strong>סטטוס: </strong>
+                    <span
+                      className={`status-circle ${getStatusColorClass(event.eventStatus)}`}></span>
+                    {event.eventStatus}
+                  </span>
                 </p>
                 <p>
                   <strong>שעת סיום: </strong>

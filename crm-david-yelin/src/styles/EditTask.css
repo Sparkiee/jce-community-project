@@ -91,6 +91,15 @@
   font-size: 1.8rem;
 }
 
+.edit-task-selected-members {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 92%;
+}
+
 .feedback-edit-task {
   position: absolute;
   bottom: 2rem;

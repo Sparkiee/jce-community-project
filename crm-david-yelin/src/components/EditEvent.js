@@ -233,7 +233,7 @@ function EditEvent(props) {
               label: member.fullName,
             }))}
           />
-          <div className="edit-task-selected-members">
+          <div className="edit-event-selected-members">
             {selectedMembers.map((member) => (
               <Stack direction="row" spacing={1} key={member.id}>
                 <Chip

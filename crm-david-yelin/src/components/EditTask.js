@@ -262,7 +262,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
               ))}
             </Stack>
           </div>
-          <button type="submit" className="primary-button extra-reg">
+          <button type="submit" className="primary-button">
             עדכן פרטים
           </button>
           {editedSuccessfully && (

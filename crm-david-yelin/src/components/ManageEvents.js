@@ -73,6 +73,23 @@ function ManageEvents() {
     heIL
   );
 
+  const getStatusColorClass = (status) => {
+    switch (status) {
+      case "טרם החלה":
+        return "status-not-started";
+      case "טרם החל":
+        return "status-not-started";
+      case "בתהליך":
+        return "status-in-progress";
+      case "הושלמה":
+        return "status-finished";
+      case "הסתיים":
+        return "status-finished";
+      default:
+        return "";
+    }
+  };
+
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   const fetchUserPrivileges = useCallback(() => {
@@ -152,6 +169,15 @@ function ManageEvents() {
       width: 150,
       align: "right",
       flex: 1.5,
+      renderCell: (params) => {
+        const colorClass = getStatusColorClass(params.row.eventStatus);
+        return (
+          <div className="status-cell">
+            <span className={`status-circle ${colorClass}`}></span>
+            {params.row.eventStatus}
+          </div>
+        );
+      },
     },
     {
       field: "assignTo",

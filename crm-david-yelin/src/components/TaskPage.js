@@ -45,6 +45,23 @@ function TaskPage() {
   const editTaskRef = useRef(null);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
 
+  const getStatusColorClass = (status) => {
+    switch (status) {
+      case "טרם החלה":
+        return "status-not-started";
+      case "טרם החל":
+        return "status-not-started";
+      case "בתהליך":
+        return "status-in-progress";
+      case "הושלמה":
+        return "status-finished";
+      case "הסתיים":
+        return "status-finished";
+      default:
+        return "";
+    }
+  };
+
   const fetchUserPrivileges = useCallback(() => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     if (user && user.privileges) {
@@ -188,7 +205,11 @@ function TaskPage() {
                 <strong>תאריך יעד:</strong> {task.taskEndDate}
               </p>
               <p>
-                <strong>סטטוס:</strong> {task.taskStatus}
+                <span className="status-cell">
+                  <strong>סטטוס: </strong>
+                  <span className={`status-circle ${getStatusColorClass(task.taskStatus)}`}></span>
+                  {task.taskStatus}
+                </span>
               </p>
               <p>
                 <strong>שעת סיום:</strong> {task.taskTime}

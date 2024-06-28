@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { db } from "../firebase";
 import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
 import "../styles/HomePage.css";
@@ -17,7 +17,6 @@ function HomePage() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
-  const [userPrivileges, setUserPrivileges] = useState(1);
 
   const navigate = useNavigate();
 
@@ -30,6 +29,23 @@ function HomePage() {
     },
     heIL
   );
+
+  const getStatusColorClass = (status) => {
+    switch (status) {
+      case "טרם החלה":
+        return "status-not-started";
+      case "טרם החל":
+        return "status-not-started";
+      case "בתהליך":
+        return "status-in-progress";
+      case "הושלמה":
+        return "status-finished";
+      case "הסתיים":
+        return "status-finished";
+      default:
+        return "";
+    }
+  };
 
   const columnsTasks = [
     {
@@ -100,6 +116,15 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const colorClass = getStatusColorClass(params.row.taskStatus);
+        return (
+          <div className="status-cell">
+            <span className={`status-circle ${colorClass}`}></span>
+            {params.row.taskStatus}
+          </div>
+        );
+      },
     },
   ];
 
@@ -165,16 +190,19 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const colorClass = getStatusColorClass(params.row.eventStatus);
+        return (
+          <div className="status-cell">
+            <span className={`status-circle ${colorClass}`}></span>
+            {params.row.eventStatus}
+          </div>
+        );
+      },
     },
   ];
 
   const user = JSON.parse(sessionStorage.getItem("user"));
-
-  const fetchUserPrivileges = useCallback(() => {
-    if (user && user.privileges) {
-      setUserPrivileges(user.privileges);
-    }
-  }, []);
 
   const createTaskRef = useRef(null);
   const createEventRef = useRef(null);
@@ -247,7 +275,6 @@ function HomePage() {
   useEffect(() => {
     grabMyTasks();
     grabMyEvents();
-    fetchUserPrivileges();
 
     const eventsRef = collection(db, "events");
     const eventsQuery = query(

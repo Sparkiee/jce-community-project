@@ -204,15 +204,15 @@ function TaskPage() {
           ))}
         </div>
       </div>
-
-      <div className = "task-discussion">
+  
+      <div className="task-discussion">
         <DiscussionList
-        taskId = {taskId}
-        userPrivileges = {userPrivileges}
-        onShowFullDiscussion = {handleShowFullDiscussion}
+          eventId={taskId}
+          userPrivileges={userPrivileges}
+          onShowFullDiscussion={handleShowFullDiscussion}
         />
       </div>
-
+  
       {isEditing && task && (
         <div className="edit-task-popup">
           <div className="edit-task-popup-content" ref={editTaskRef}>
@@ -252,4 +252,3 @@ function TaskPage() {
 }
 
 export default TaskPage;
-

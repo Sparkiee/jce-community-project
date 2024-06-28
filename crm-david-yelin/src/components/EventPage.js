@@ -13,7 +13,7 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import DiscussionList from "./DiscussionList"; // Убедитесь, что путь к компоненту верный
+import DiscussionList from "./DiscussionList"; 
 
 
 function stringToColor(string) {

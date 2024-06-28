@@ -9,13 +9,14 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  getDoc
 } from "firebase/firestore";
 import "../styles/Discussion.css";
 import IconButton from "@mui/material/IconButton";
 import ReplyIcon from "@mui/icons-material/Reply";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SendIcon from "@mui/icons-material/Send";
 
 const DiscussionList = ({ eventId }) => {
   const [comments, setComments] = useState([]);
@@ -23,8 +24,7 @@ const DiscussionList = ({ eventId }) => {
   const [replyCommentId, setReplyCommentId] = useState(null);
   const [newComment, setNewComment] = useState("");
   const [editComment, setEditComment] = useState("");
-  const [expandedCommentId, setExpandedCommentId] = useState(null); // Состояние отслеживания для раскрытого коммента 
-
+  const [newReply, setNewReply] = useState("");
 
   useEffect(() => {
     fetchComments();
@@ -38,7 +38,8 @@ const DiscussionList = ({ eventId }) => {
       ...doc.data(),
       id: doc.id,
     }));
-    setComments(commentsList);
+    // Инвертировать массив, чтобы последние комментарии были внизу
+    setComments(commentsList.sort((a, b) => a.timestamp - b.timestamp));
   };
 
   const handleAddComment = async () => {
@@ -60,6 +61,7 @@ const DiscussionList = ({ eventId }) => {
       timestamp: new Date(),
     });
     setEditingCommentId(null);
+    setEditComment("");
     fetchComments();
   };
 
@@ -69,18 +71,25 @@ const DiscussionList = ({ eventId }) => {
     fetchComments();
   };
 
-  const handleReplyComment = (commentId) => {
-    setReplyCommentId(commentId);
-  };
-
-  const handleShowFullDiscussion = (commentId) => {
-    if (expandedCommentId === commentId) {
-      setExpandedCommentId(null); // Если комментарий уже раскрыт, закрыть его
-    } else {
-      setExpandedCommentId(commentId); // Иначе раскрыть новый комментарий
+  const handleReply = async (commentId) => {
+    if (newReply.trim() === "") return;
+    const commentRef = doc(db, "comments", commentId);
+    const commentSnap = await getDoc(commentRef);
+    if (commentSnap.exists()) {
+      const commentData = commentSnap.data();
+      const updatedReplies = commentData.replies || [];
+      updatedReplies.push({
+        text: newReply,
+        timestamp: new Date(),
+        author: "Current User",  // Update accordingly with actual user data
+      });
+      await updateDoc(commentRef, {
+        replies: updatedReplies
+      });
+      setNewReply("");
+      fetchComments();
     }
   };
-  
 
   return (
     <div className="discussion-list">
@@ -92,40 +101,52 @@ const DiscussionList = ({ eventId }) => {
               {new Date(comment.timestamp.toDate()).toLocaleString()}
             </span>
           </div>
-          <div>
+          {editingCommentId === comment.id ? (
+            <textarea
+              value={editComment}
+              onChange={(e) => setEditComment(e.target.value)}
+            />
+          ) : (
+            <p>{comment.text}</p>
+          )}
+          <div className="discussion-actions">
             {editingCommentId === comment.id ? (
-              <textarea
-                value={editComment}
-                onChange={(e) => setEditComment(e.target.value)}
-              />
+              <button onClick={() => handleEditComment(comment.id)}>Save</button>
             ) : (
-              <p>{comment.text}</p>
+              <>
+                <IconButton onClick={() => setEditingCommentId(comment.id)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton onClick={() => handleDeleteComment(comment.id)}>
+                  <DeleteIcon />
+                </IconButton>
+                <IconButton onClick={() => setReplyCommentId(comment.id)}>
+                  <ReplyIcon />
+                </IconButton>
+              </>
             )}
-            {expandedCommentId === comment.id && (
-              <div className="full-discussion">
-                <p>Additional details about the comment or related replies...</p>
+            {comment.replies && comment.replies.map((reply, index) => (
+              <div key={index} className="discussion-reply">
+                <span className="reply-author">{reply.author}:</span>
+                <span>{reply.text}</span>
+                <span className="discussion-timestamp">
+                  {new Date(reply.timestamp.toDate()).toLocaleString()}
+                </span>
+              </div>
+            ))}
+            {replyCommentId === comment.id && (
+              <div>
+                <textarea
+                  value={newReply}
+                  onChange={(e) => setNewReply(e.target.value)}
+                  placeholder="Type your reply here..."
+                />
+                <IconButton onClick={() => handleReply(comment.id)}>
+                  <SendIcon />
+                </IconButton>
               </div>
             )}
           </div>
-          <div className="discussion-actions">
-            <IconButton onClick={() => handleReplyComment(comment.id)}>
-              <ReplyIcon />
-            </IconButton>
-            <IconButton onClick={() => setEditingCommentId(comment.id)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDeleteComment(comment.id)}>
-              <DeleteIcon />
-            </IconButton>
-            <IconButton onClick={() => handleShowFullDiscussion(comment.id)}>
-              <ExpandMoreIcon />
-            </IconButton>
-          </div>
-          {editingCommentId === comment.id && (
-            <button onClick={() => handleEditComment(comment.id)}>
-              Save Comment
-            </button>
-          )}
         </div>
       ))}
       <div className="new-comment">

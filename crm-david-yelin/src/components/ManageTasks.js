@@ -172,7 +172,7 @@ function ManageTasks() {
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1.5,
       renderCell: (params) => {
         const colorClass = getStatusColorClass(params.row.taskStatus);
         return (

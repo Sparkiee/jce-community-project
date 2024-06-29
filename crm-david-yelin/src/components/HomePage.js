@@ -76,7 +76,7 @@ function HomePage() {
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>;
+        return <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>;
       },
     },
     {
@@ -159,7 +159,7 @@ function HomePage() {
       flex: 1,
       renderCell: (params) => {
         return (
-          <div>₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}</div>
+          <div>{params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}</div>
         );
       },
     },

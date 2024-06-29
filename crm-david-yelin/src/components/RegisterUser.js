@@ -45,6 +45,7 @@ function RegisterUser() {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [pendingAccount, setPendingAccount] = useState(false);
   const [accountExists, setAccountExists] = useState(false);
+  const [passwordLength, setPasswordLength] = useState(false);
 
   useEffect(() => {
     const session = sessionStorage.getItem("user");
@@ -70,6 +71,10 @@ function RegisterUser() {
     }
     if (password !== verifyPassword) {
       setPasswordsMatch(false);
+      return;
+    }
+    if (password.length < 6) {
+      setPasswordLength(true);
       return;
     }
     try {
@@ -117,6 +122,7 @@ function RegisterUser() {
     setPasswordsMatch(true);
     setPendingAccount(false);
     setAccountExists(false);
+    setPasswordLength(false);
   }
 
   return (
@@ -221,6 +227,11 @@ function RegisterUser() {
             {!passwordsMatch && (
               <Alert className="feedback-alert" severity="warning">
                 הסיסמאות אינן תואמות
+              </Alert>
+            )}
+            {passwordLength && (
+              <Alert className="feedback-alert" severity="warning">
+                הסיסמה צריכה להכיל לפחות 6 תווים
               </Alert>
             )}
           </div>

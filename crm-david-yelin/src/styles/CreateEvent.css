@@ -75,6 +75,10 @@
   width: 50%;
 }
 
+.create-event-time input {
+  padding: 1.35rem 1.5rem;
+}
+
 .create-event-time label,
 .create-event-budget label {
   font-size: 1.8rem;

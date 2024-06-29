@@ -92,3 +92,16 @@
 .reply-item {
   padding-left: 20px;
 }
+
+.comment-content {
+  border: 1px solid #ccc; /* рамка вокруг комментария */
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.author-email {
+  font-size: 0.85rem;
+  color: #007bff;
+  margin-bottom: 5px; /* отступ между email и текстом комментария */
+}

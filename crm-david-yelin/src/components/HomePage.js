@@ -169,6 +169,11 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.eventStartDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "eventEndDate",
@@ -176,6 +181,11 @@ function HomePage() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const date = new Date(params.row.eventEndDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       field: "eventTime",

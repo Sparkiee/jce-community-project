@@ -37,6 +37,10 @@
   padding: 1rem 0;
 }
 
+.task-page-info .circle-space {
+  margin-right: 1rem;
+}
+
 .task-page-edit-icon {
   position: absolute !important;
   top: 0;

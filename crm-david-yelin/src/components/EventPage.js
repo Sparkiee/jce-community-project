@@ -237,7 +237,6 @@ function EventPage() {
     {
       field: "taskStatus",
       headerName: "סטטוס",
-      width: 150,
       align: "right",
       flex: 1.5,
       renderCell: (params) => {
@@ -253,7 +252,6 @@ function EventPage() {
     {
       field: "assignTo",
       headerName: "משוייכים",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -302,9 +300,9 @@ function EventPage() {
                 </p>
                 <p>
                   <span className="status-cell">
-                    <strong>סטטוס: </strong>
+                    <strong>סטטוס:</strong>
                     <span
-                      className={`status-circle ${getStatusColorClass(event.eventStatus)}`}></span>
+                      className={`status-circle ${getStatusColorClass(event.eventStatus)} circle-space`}></span>
                     {event.eventStatus}
                   </span>
                 </p>

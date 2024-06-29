@@ -36,6 +36,10 @@
   padding: 1rem 0;
 }
 
+.event-details .circle-space {
+  margin-right: 1rem;
+}
+
 .lower-event-page-content {
   padding: 5rem 10rem 5rem 0;
   display: flex;

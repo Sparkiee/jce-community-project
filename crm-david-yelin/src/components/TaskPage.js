@@ -223,7 +223,7 @@ function TaskPage() {
               <p>
                 <span className="status-cell">
                   <strong>סטטוס: </strong>
-                  <span className={`status-circle ${getStatusColorClass(task.taskStatus)}`}></span>
+                  <span className={`status-circle ${getStatusColorClass(task.taskStatus)} circle-space`}></span>
                   {task.taskStatus}
                 </span>
               </p>

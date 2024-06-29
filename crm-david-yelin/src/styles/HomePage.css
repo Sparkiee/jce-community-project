@@ -16,7 +16,7 @@
 .pending-actions {
   display: flex;
   justify-content: flex-start;
-  right: 13rem;
+  right: 5%;
   top: 15rem;
   position: absolute;
   gap: 0.5rem;

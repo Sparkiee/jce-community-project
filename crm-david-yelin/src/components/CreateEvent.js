@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion,
+  arrayUnion
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
@@ -33,8 +33,8 @@ function CreateEvent(props) {
     eventTime: "",
     eventBudget: 0,
     eventLocation: "",
-    taskStatus: "טרם החל",
-    assignees: selectedMembers,
+    eventStatus: "טרם החל",
+    assignees: selectedMembers
   });
 
   async function handleSubmit(event) {
@@ -53,13 +53,12 @@ function CreateEvent(props) {
       setWarningText(warning);
       return; // Exit the function to prevent further execution
     }
-    if(eventDetails.eventBudget < 0)
-      {
-        setFormWarning(true);
-        let warning = "אנא הכנס תקציב חוקי";
-        setWarningText(warning);
-        return; 
-      }
+    if (eventDetails.eventBudget < 0) {
+      setFormWarning(true);
+      let warning = "אנא הכנס תקציב חוקי";
+      setWarningText(warning);
+      return;
+    }
 
     if (await eventExistsAndOpen(eventDetails.eventName)) {
       setFormWarning(true);
@@ -70,7 +69,7 @@ function CreateEvent(props) {
     if (!eventDetails.eventStartDate) {
       const date = new Date();
       const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, "0"); 
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
       const day = date.getDate().toString().padStart(2, "0");
 
       const formattedDate = `${year}-${month}-${day}`;
@@ -88,7 +87,7 @@ function CreateEvent(props) {
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
       eventCreator: "members/" + user.email,
-      eventStatus: eventDetails.eventStatus,
+      eventStatus: eventDetails.eventStatus
     };
 
     try {
@@ -105,8 +104,8 @@ function CreateEvent(props) {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               eventID: docRef,
-              message: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`,
-            }),
+              message: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`
+            })
           });
         })
       );
@@ -141,7 +140,7 @@ function CreateEvent(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter(
           (member) =>
@@ -218,7 +217,7 @@ function CreateEvent(props) {
                   //change the start date
                   setEventDetails({
                     ...eventDetails,
-                    eventStartDate: e.target.value,
+                    eventStartDate: e.target.value
                   });
                 }}
               />
@@ -234,7 +233,7 @@ function CreateEvent(props) {
                   //change the due date
                   setEventDetails({
                     ...eventDetails,
-                    eventEndDate: e.target.value,
+                    eventEndDate: e.target.value
                   });
                 }}
               />
@@ -275,12 +274,14 @@ function CreateEvent(props) {
             onChange={(e) =>
               setEventDetails({
                 ...eventDetails,
-                eventLocation: e.target.value,
+                eventLocation: e.target.value
               })
             }
           />
           <select
-            onChange={(e) => setEventDetails({ ...eventDetails, eventStatus: e.target.value })}
+            onChange={(e) => {
+              setEventDetails({ ...eventDetails, eventStatus: e.target.value });
+            }}
             className="create-event-input extra-create-event-status-input">
             <option value="טרם החל">טרם החל</option>
             <option value="בתהליך">בתהליך</option>
@@ -297,7 +298,7 @@ function CreateEvent(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="create-task-selected-members">

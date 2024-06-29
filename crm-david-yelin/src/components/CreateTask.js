@@ -25,7 +25,6 @@ function CreateTask(props) {
   const [members, setMembers] = useState([]);
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState();
-  const [taskStatus, setTaskStatus] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [taskDetails, setTaskDetails] = useState({
     taskName: "",

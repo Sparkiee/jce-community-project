@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { doc, updateDoc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
+import { doc, updateDoc, getDocs, collection, query, where, getDoc, addDoc, serverTimestamp } from "firebase/firestore";
 import "../styles/Styles.css";
 import "../styles/EditTask.css";
 import { Alert } from "@mui/material";
@@ -9,22 +9,27 @@ import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
-function EditTask({ task, onClose, onTaskUpdated }) {
-  const [taskName, setTaskName] = useState(task.taskName);
-  const [taskDescription, setTaskDescription] = useState(task.taskDescription);
-  const [relatedEvent, setRelatedEvent] = useState(
-    task.relatedEvent ? task.relatedEvent.split("/")[1] : ""
-  ); // Initialize relatedEvent correctly
-  const [taskStartDate, setTaskStartDate] = useState(task.taskStartDate);
-  const [taskEndDate, setTaskEndDate] = useState(task.taskEndDate);
-  const [taskTime, setTaskTime] = useState(task.taskTime);
-  const [taskBudget, setTaskBudget] = useState(task.taskBudget);
-  const [taskStatus, setTaskStatus] = useState(task.taskStatus);
+function EditTask(props) {
   const [assignTo, setAssignTo] = useState([]);
   const [events, setEvents] = useState([]);
   const [members, setMembers] = useState([]);
   const [editedSuccessfully, setEditedSuccessfully] = useState(false);
   const [search, setSearch] = useState("");
+  
+  const [task, setTask] = useState(props.task);
+  const [originalTask, setOriginalTask] = useState(props.task);
+
+  function getUpdatedFields(task, originalTask) {
+    const updatedFields = {};
+    Object.keys(task).forEach((key) => {
+      if (task[key] !== originalTask[key]) {
+        updatedFields[key] = { oldValue: originalTask[key], newValue: task[key] };
+      }
+    });
+    return updatedFields;
+  }
+
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     fetchEvents();
@@ -97,26 +102,28 @@ function EditTask({ task, onClose, onTaskUpdated }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    if(Object.keys(getUpdatedFields(task, originalTask)).length === 0)
+    {
+      console.log("No changes were made to the task");
+      props.onClose();
+      return;
+    }
     const taskRef = doc(db, "tasks", task.taskDoc);
     try {
-      await updateDoc(taskRef, {
-        taskName,
-        taskDescription,
-        relatedEvent: relatedEvent ? `events/${relatedEvent}` : "",
-        taskStartDate,
-        taskEndDate,
-        taskTime,
-        taskBudget,
-        taskStatus,
-        assignees: assignTo.map((user) => `members/${user.value}`),
+      await updateDoc(taskRef, task);
+
+      const docRef = await addDoc(collection(db, "log_tasks"), {
+        task: "tasks/" + task.taskDoc,
+        timestamp: serverTimestamp(),
+        member: "members/" + user.email,
+        updatedFields: getUpdatedFields(task, originalTask),
       });
 
       setEditedSuccessfully(true);
       setTimeout(() => {
         setEditedSuccessfully(false);
-        onClose();
-        onTaskUpdated();
+        props.onClose();
+        props.onTaskUpdated();
       }, 2000);
     } catch (error) {
       console.error("Error updating task: ", error);
@@ -129,7 +136,7 @@ function EditTask({ task, onClose, onTaskUpdated }) {
 
   return (
     <div className="edit-task-style">
-      <div className="action-close" onClick={onClose}>
+      <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
           height="24px"
@@ -163,22 +170,22 @@ function EditTask({ task, onClose, onTaskUpdated }) {
             type="text"
             placeholder="שם המשימה (חובה*)"
             className="edit-task-input"
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
+            value={task.taskName}
+            onChange={(e) => setTask({ ...task, taskName: e.target.value})}
           />
           <textarea
             placeholder="תיאור המשימה (חובה*)"
             className="edit-task-input"
-            value={taskDescription}
-            onChange={(e) => setTaskDescription(e.target.value)}
+            value={task.taskDescription}
+            onChange={(e) => setTask({ ...task, taskDescription: e.target.value })}
           />
           <div className="edit-task-date-inputs">
             <div className="edit-task-start-date">
               <label htmlFor="start">תאריך התחלה</label>
               <input
                 type="date"
-                value={taskStartDate}
-                onChange={(e) => setTaskStartDate(e.target.value)}
+                value={task.taskStartDate}
+                onChange={(e) => setTask({ ...task, taskStartDate: e.target.value })}
                 className="edit-task-input"
               />
             </div>
@@ -186,8 +193,8 @@ function EditTask({ task, onClose, onTaskUpdated }) {
               <label htmlFor="due">תאריך יעד (חובה*)</label>
               <input
                 type="date"
-                value={taskEndDate}
-                onChange={(e) => setTaskEndDate(e.target.value)}
+                value={task.taskEndDate}
+                onChange={(e) => setTask({ ...task, taskEndDate: e.target.value })}
                 id="due"
                 className="edit-task-input"
               />
@@ -200,8 +207,8 @@ function EditTask({ task, onClose, onTaskUpdated }) {
                 type="time"
                 className="edit-task-input"
                 id="time"
-                value={taskTime}
-                onChange={(e) => setTaskTime(e.target.value)}
+                value={task.taskTime}
+                onChange={(e) => setTask({ ...task, taskTime: e.target.value })}
               />
             </div>
             <div className="edit-task-input-budget">
@@ -212,14 +219,14 @@ function EditTask({ task, onClose, onTaskUpdated }) {
                 placeholder="תקציב משימה"
                 className="edit-task-input"
                 id="budget"
-                value={taskBudget}
-                onChange={(e) => setTaskBudget(Number(e.target.value))}
+                value={task.taskBudget}
+                onChange={(e) => setTask({ ...task, taskBudget: e.target.value })}
               />
             </div>
           </div>
           <select
-            value={taskStatus}
-            onChange={(e) => setTaskStatus(e.target.value)}
+            value={task.taskStatus}
+            onChange={(e) => setTask({ ...task, taskStatus: e.target.value })}
             className="edit-task-input extra-edit-task-input">
             <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>
@@ -227,9 +234,9 @@ function EditTask({ task, onClose, onTaskUpdated }) {
           </select>
           <Select
             options={events}
-            value={events.find((event) => event.value === relatedEvent)}
+            value={events.find((event) => event.value === task.relatedEvent)}
             onChange={(selectedOption) =>
-              setRelatedEvent(selectedOption ? selectedOption.value : "")
+              setTask({ ...task, relatedEvent: selectedOption ? selectedOption.value : "" })
             }
             placeholder="בחר אירוע קשור (לא חובה)"
             className="edit-task-input extra-edit-task-input"

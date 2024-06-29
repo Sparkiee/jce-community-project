@@ -80,6 +80,13 @@ function EditEvent(props) {
       assignees: assigneeRefs
     };
 
+    if(Object.keys(getUpdatedFields(event, originalEvent)).length === 0)
+      {
+        console.log("No changes were made to the event");
+        props.onClose();
+        return;
+      }
+
     try {
       const eventRef = doc(db, "events", event.id);
       await updateDoc(eventRef, updatedEventDetails);

@@ -29,7 +29,7 @@ function CreateUser(props) {
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [newDepartment, setNewDepartment] = useState("");
-  const [missingFields, setMissingFields] = useState(true);
+  const [missingFields, setMissingFields] = useState(false);
 
   let navigate = useNavigate();
 

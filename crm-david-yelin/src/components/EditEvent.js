@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { db } from "../firebase";
-import { doc, updateDoc, getDocs, collection, query, where, getDoc } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  getDocs,
+  collection,
+  query,
+  where,
+  addDoc,
+  serverTimestamp
+} from "firebase/firestore";
 import "../styles/EditEvent.css";
 import Select from "react-select";
 import "../styles/Styles.css";
@@ -16,13 +25,26 @@ function EditEvent(props) {
   const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [event, setEvent] = useState(props.eventDetails || {});
+  const [originalEvent, setOriginalEvent] = useState(props.eventDetails || {});
+
+  function getUpdatedFields(event, originalEvent) {
+    const updatedFields = {};
+    Object.keys(event).forEach(key => {
+      if (event[key] !== originalEvent[key]) {
+        updatedFields[key] = { oldValue: originalEvent[key], newValue: event[key] };
+      }
+    });
+    return updatedFields;
+}
+
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   const fetchMembers = useCallback(async () => {
     const membersRef = collection(db, "members");
     const membersSnapshot = await getDocs(membersRef);
     const membersList = membersSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data()
     }));
     setMembers(membersList);
   }, []);
@@ -55,12 +77,20 @@ function EditEvent(props) {
     const assigneeRefs = selectedMembers.map((member) => `members/${member.email}`);
     const updatedEventDetails = {
       ...event,
-      assignees: assigneeRefs,
+      assignees: assigneeRefs
     };
 
     try {
       const eventRef = doc(db, "events", event.id);
       await updateDoc(eventRef, updatedEventDetails);
+
+      const docRef = await addDoc(collection(db, "log_events"), {
+        event: "events/" + event.id,
+        timestamp: serverTimestamp(),
+        member: "members/" + user.email,
+        updatedFields: getUpdatedFields(event, originalEvent)
+      });
+
       props.onClose();
     } catch (error) {
       console.error("Error updating document: ", error);
@@ -79,7 +109,7 @@ function EditEvent(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter(
           (member) =>
@@ -157,7 +187,7 @@ function EditEvent(props) {
                 onChange={(e) => {
                   setEvent({
                     ...event,
-                    eventStartDate: e.target.value,
+                    eventStartDate: e.target.value
                   });
                 }}
               />
@@ -173,7 +203,7 @@ function EditEvent(props) {
                 onChange={(e) => {
                   setEvent({
                     ...event,
-                    eventEndDate: e.target.value,
+                    eventEndDate: e.target.value
                   });
                 }}
               />
@@ -215,7 +245,7 @@ function EditEvent(props) {
             onChange={(e) =>
               setEvent({
                 ...event,
-                eventLocation: e.target.value,
+                eventLocation: e.target.value
               })
             }
           />
@@ -230,12 +260,12 @@ function EditEvent(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="edit-event-selected-members">
-            {selectedMembers.map((member) => (
-              <Stack direction="row" spacing={1} key={member.id}>
+            {selectedMembers.map((member, index) => (
+              <Stack direction="row" spacing={1} key={index}>
                 <Chip
                   avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
                   label={member.fullName}

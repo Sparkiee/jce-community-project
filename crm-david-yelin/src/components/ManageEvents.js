@@ -125,7 +125,7 @@ function ManageEvents() {
             renderCell: (params) => {
               return (
                 <div>
-                  ₪{params.row.eventBudget ? params.row.eventBudget.toLocaleString() : "אין"}
+                  {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
                 </div>
               );
             },

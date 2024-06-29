@@ -130,7 +130,7 @@ function ManageTasks() {
             flex: 1,
             renderCell: (params) => {
               return (
-                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+                <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
               );
             },
           },

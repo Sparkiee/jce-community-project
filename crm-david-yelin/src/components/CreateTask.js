@@ -57,6 +57,12 @@ function CreateTask(props) {
       setWarningText(warning);
       return;
     }
+    if(taskDetails.taskBudget < 0) {
+      setFormWarning(true);
+      let warning = "אנא הכנס תקציב חוקי";
+      setWarningText(warning);
+      return;
+    }
     if (!taskDetails.taskStartDate) {
       const date = new Date();
       const year = date.getFullYear();

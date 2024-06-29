@@ -53,6 +53,13 @@ function CreateEvent(props) {
       setWarningText(warning);
       return; // Exit the function to prevent further execution
     }
+    if(eventDetails.eventBudget < 0)
+      {
+        setFormWarning(true);
+        let warning = "אנא הכנס תקציב חוקי";
+        setWarningText(warning);
+        return; 
+      }
 
     if (await eventExistsAndOpen(eventDetails.eventName)) {
       setFormWarning(true);

@@ -7,7 +7,8 @@ import {
   onSnapshot,
   doc,
   getDoc,
-  deleteDoc
+  deleteDoc,
+  orderBy
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useParams } from "react-router-dom";
@@ -519,7 +520,7 @@ function Profile() {
     if (!profile) return;
     try {
       const logRef = collection(db, "log_contact");
-      const q = query(logRef, where("destMember", "==", "members/" + profile.email));
+      const q = query(logRef, where("destMember", "==", "members/" + profile.email), orderBy("timestamp", "desc"));
       const querySnapshot = await getDocs(q);
       const logAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),

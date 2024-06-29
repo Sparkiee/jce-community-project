@@ -383,7 +383,13 @@ function ManageUsers() {
       {editUserForm && (
         <div className="popup-overlay">
           <div ref={editUserRef} className="popup-content">
-            <EditUser target={editUser} onClose={handleCloseForm} />
+            <EditUser
+              target={editUser}
+              onClose={() => {
+                handleCloseForm();
+                fetchUsers();
+              }}
+            />
           </div>
         </div>
       )}

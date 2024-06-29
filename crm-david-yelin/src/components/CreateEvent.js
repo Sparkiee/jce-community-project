@@ -24,7 +24,6 @@ function CreateEvent(props) {
   const [eventExists, setEventExists] = useState(false);
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
-  const [eventStatus, setEventStatus] = useState("טרם החל");
   const [members, setMembers] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [eventDetails, setEventDetails] = useState({
@@ -82,7 +81,7 @@ function CreateEvent(props) {
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
       eventCreator: "members/" + user.email,
-      eventStatus: "טרם החל",
+      eventStatus: eventDetails.eventStatus,
     };
 
     try {
@@ -274,8 +273,7 @@ function CreateEvent(props) {
             }
           />
           <select
-            value={eventStatus}
-            onChange={(e) => setEventStatus(e.target.value)}
+            onChange={(e) => setEventDetails({ ...eventDetails, eventStatus: e.target.value })}
             className="create-event-input extra-create-event-status-input">
             <option value="טרם החל">טרם החל</option>
             <option value="בתהליך">בתהליך</option>

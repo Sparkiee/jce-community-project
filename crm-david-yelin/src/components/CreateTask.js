@@ -78,7 +78,7 @@ function CreateTask(props) {
       taskBudget: Number(taskDetails.taskBudget),
       taskCreated: serverTimestamp(),
       taskCreator: "members/" + user.email,
-      taskStatus: "טרם החלה",
+      taskStatus: taskDetails.taskStatus,
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -332,8 +332,7 @@ function CreateTask(props) {
             </div>
           </div>
           <select
-            value={taskStatus}
-            onChange={(e) => setTaskStatus(e.target.value)}
+            onChange={(e) => setTaskDetails({ ...taskDetails, taskStatus: e.target.value})}
             className="create-task-input extra-create-task-status-input">
             <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>

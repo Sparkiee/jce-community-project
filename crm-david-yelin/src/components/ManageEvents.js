@@ -274,6 +274,8 @@ function ManageEvents() {
             eventBudget: event.eventBudget,
             eventTime: event.eventTime,
             eventStatus: event.eventStatus,
+            assignees: event.assignees,
+            eventCreator: event.eventCreator,
             assignTo: assigneeData || [],
           };
         })

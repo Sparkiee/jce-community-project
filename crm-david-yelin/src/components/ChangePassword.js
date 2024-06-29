@@ -18,8 +18,6 @@ function ChangePassword(props) {
   const handleChangePassword = async () => {
     try {
       if (!passwordsMatch) return;
-      // Assuming you have the current user logged in
-      console.log(user.email, currentPassword, newPassword, confirmNewPassword);
       const userCredential = await signInWithEmailAndPassword(
         auth,
         user.email,

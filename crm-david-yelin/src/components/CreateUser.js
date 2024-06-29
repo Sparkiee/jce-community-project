@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import {
-  getDoc,
-  doc,
-  serverTimestamp,
-  setDoc,
-  getDocs,
-  collection
-} from "firebase/firestore";
+import { getDoc, doc, serverTimestamp, setDoc, getDocs, collection } from "firebase/firestore";
 import "../styles/CreateUser.css";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
@@ -29,15 +22,14 @@ const checkExistingAccount = async (email) => {
 function CreateUser(props) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [emailPendingRegistration, setEmailPendingRegistration] =
-    useState(false);
+  const [emailPendingRegistration, setEmailPendingRegistration] = useState(false);
   const [emailExists, setEmailExists] = useState(false);
   const [accountCreated, setAccountCreated] = useState(false);
   const [department, setDepartment] = useState("");
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [newDepartment, setNewDepartment] = useState("");
-  const [missingFields, setMissingFields] = useState(false);
+  const [missingFields, setMissingFields] = useState(true);
 
   let navigate = useNavigate();
 
@@ -48,7 +40,7 @@ function CreateUser(props) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment
+          name: newDepartment,
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -94,9 +86,7 @@ function CreateUser(props) {
       return;
     }
     try {
-      const isPendingRegistration = await checkPendingRegistration(
-        email.toLowerCase()
-      );
+      const isPendingRegistration = await checkPendingRegistration(email.toLowerCase());
       const isExistingAccount = await checkExistingAccount(email.toLowerCase());
       if (isPendingRegistration) {
         setEmailPendingRegistration(true);
@@ -113,7 +103,7 @@ function CreateUser(props) {
         email: email,
         department: department,
         role: role,
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
       });
       setAccountCreated(true);
       setTimeout(() => {
@@ -126,16 +116,13 @@ function CreateUser(props) {
   }
   return (
     <div className="user-creation-style">
-      <div
-        className="action-close"
-        onClick={props.onClose}>
+      <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -158,9 +145,7 @@ function CreateUser(props) {
       </div>
       <form className="extra-create-user-form" onSubmit={handleSubmit}>
         <div className="create-user-form">
-          <h2 className="title extra-create-user-form-title">
-            יצירת משתמש חדש
-          </h2>
+          <h2 className="title extra-create-user-form-title">יצירת משתמש חדש</h2>
           <div className="create-user-input-box">
             <input
               type="email"
@@ -182,8 +167,7 @@ function CreateUser(props) {
                   setDepartment(value);
                 }
               }}
-              className="forms-input"
-            >
+              className="forms-input">
               <option value="" disabled>
                 בחר מחלקה
               </option>
@@ -206,8 +190,7 @@ function CreateUser(props) {
                 <button
                   type="button"
                   onClick={addDepartment}
-                  className="primary-button extra-create-user-button"
-                >
+                  className="primary-button extra-create-user-button">
                   הוסף מחלקה חדשה
                 </button>
               </div>
@@ -217,8 +200,7 @@ function CreateUser(props) {
               value={role}
               onChange={(event) => setRole(event.target.value)}
               placeholder="תפקיד"
-              className="forms-input"
-            ></input>
+              className="forms-input"></input>
           </div>
           <button type="submit" className="primary-button">
             צור משתמש חדש

@@ -384,7 +384,7 @@ function Profile() {
     },
     {
       field: "timestamp",
-      headerName: "תאריך",
+      headerName: "תאריך וזמן",
       flex: 2,
       align: "right",
       renderCell: (params) => (

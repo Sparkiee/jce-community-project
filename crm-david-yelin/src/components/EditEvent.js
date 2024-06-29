@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import {
   doc,
@@ -9,7 +9,7 @@ import {
   where,
   getDoc,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
 import "../styles/EditEvent.css";
 import Select from "react-select";
@@ -128,16 +128,15 @@ function EditEvent(props) {
         eventBudget: eventDetails.eventBudget,
         eventCreator: eventDetails.eventCreator,
         eventCreated: eventDetails.eventCreated,
-        eventStatus: eventDetails.eventStatus, 
+        eventStatus: eventDetails.eventStatus,
         assignees: assigneeRefs,
-        
       });
 
       const docRef = await addDoc(collection(db, "log_events"), {
         event: "events/" + eventDetails.id,
         timestamp: serverTimestamp(),
         member: "members/" + user.email,
-        updatedFields: getUpdatedFields(eventDetails, originalEvent)
+        updatedFields: getUpdatedFields(eventDetails, originalEvent),
       });
 
       props.onClose();
@@ -158,7 +157,7 @@ function EditEvent(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
@@ -236,7 +235,7 @@ function EditEvent(props) {
                 onChange={(e) => {
                   setEvent({
                     ...eventDetails,
-                    eventStartDate: e.target.value
+                    eventStartDate: e.target.value,
                   });
                 }}
               />
@@ -252,7 +251,7 @@ function EditEvent(props) {
                 onChange={(e) => {
                   setEvent({
                     ...eventDetails,
-                    eventEndDate: e.target.value
+                    eventEndDate: e.target.value,
                   });
                 }}
               />
@@ -272,7 +271,7 @@ function EditEvent(props) {
               />
             </div>
             <div className="edit-event-budget">
-              <label htmlFor="time" className="edit-event-time-label">
+              <label htmlFor="time" className="edit-event-budget-label">
                 תקציב אירוע
               </label>
               <input
@@ -287,17 +286,26 @@ function EditEvent(props) {
           </div>
           <input
             type="text"
-            placeholder="מיקום האירוע"
+            placeholder="מיקום האירוע (חובה*)"
             name="eventLocation"
             className="edit-event-input"
             value={eventDetails.eventLocation || ""}
             onChange={(e) =>
               setEvent({
                 ...eventDetails,
-                eventLocation: e.target.value
+                eventLocation: e.target.value,
               })
             }
           />
+          <select
+            onChange={(e) => {
+              setEvent({ ...eventDetails, eventStatus: e.target.value });
+            }}
+            className="edit-event-input extra-edit-event-status-input">
+            <option value="טרם החל">טרם החל</option>
+            <option value="בתהליך">בתהליך</option>
+            <option value="הסתיים">הסתיים</option>
+          </select>
           <Select
             placeholder="הוסף חבר וועדה"
             className="edit-event-input extra-edit-event-input"
@@ -309,7 +317,7 @@ function EditEvent(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
           <div className="edit-event-selected-members">

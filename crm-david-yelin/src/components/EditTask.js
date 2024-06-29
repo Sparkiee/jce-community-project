@@ -94,6 +94,7 @@ function EditTask(props) {
       const selectedMember = members.find((member) => member.value === selectedOption.value);
       if (selectedMember && !assignTo.some((member) => member.value === selectedMember.value)) {
         setAssignTo((prevMembers) => [...prevMembers, selectedMember]);
+        setTask({ ...task, assignees: [...task.assignees, "members/" + selectedMember.value] });
         setSearch(""); // Clear the search input after selection
         setMembers([]); // Clear the dropdown options
       }
@@ -132,6 +133,7 @@ function EditTask(props) {
 
   const handleRemoveMember = (emailToRemove) => {
     setAssignTo((prevAssignTo) => prevAssignTo.filter((member) => member.value !== emailToRemove));
+    setTask({...task, assignees: task.assignees.filter((email) => email !== "members/" + emailToRemove)})
   };
 
   return (

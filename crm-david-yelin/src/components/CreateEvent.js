@@ -25,6 +25,7 @@ function CreateEvent(props) {
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
   const [members, setMembers] = useState([]);
+
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [eventDetails, setEventDetails] = useState({
     eventName: "",
@@ -302,8 +303,8 @@ function CreateEvent(props) {
             }))}
           />
           <div className="create-task-selected-members">
-            {selectedMembers.map((member) => (
-              <Stack direction="row" spacing={1}>
+            {selectedMembers.map((member, index) => (
+              <Stack direction="row" spacing={1} key={index}> 
                 <Chip
                   key={member.id}
                   avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}

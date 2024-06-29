@@ -73,13 +73,13 @@ function EditEvent(props) {
       setWarningText(warning);
       return;
     }
-
-    const assigneeRefs = selectedMembers.map((member) => `members/${member.email}`);
-    const updatedEventDetails = {
-      ...event,
-      assignees: assigneeRefs
-    };
-
+    if (event.eventEndDate < event.eventStartDate) {
+      setFormWarning(true);
+      let warning = "תאריך יעד חייב להיות לאחר תאריך ההתחלה";
+      setWarningText(warning);
+      return;
+    }
+    
     if(Object.keys(getUpdatedFields(event, originalEvent)).length === 0)
       {
         console.log("No changes were made to the event");
@@ -89,7 +89,7 @@ function EditEvent(props) {
 
     try {
       const eventRef = doc(db, "events", event.id);
-      await updateDoc(eventRef, updatedEventDetails);
+      await updateDoc(eventRef, event);
 
       const docRef = await addDoc(collection(db, "log_events"), {
         event: "events/" + event.id,
@@ -133,13 +133,18 @@ function EditEvent(props) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearch(""); // Clear the search input after selection
+      setEvent({...event, assignees: [...event.assignees, selectedMember.id]});
+      setSearch(""); // Clear the search input after selectionhandleRemoveMember
       setMembers([]); // Clear the dropdown options
     }
   };
 
-  const handleRemoveMember = (id) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+  const handleRemoveMember = (emailToRemove) => {
+    console.log(emailToRemove);
+    console.log(selectedMembers);
+    setSelectedMembers((prevMembers) => prevMembers.filter((member) => member.email !== emailToRemove));
+    console.log(selectedMembers);
+    setEvent({...event, assignees: event.assignees.filter((member) => member !== emailToRemove)});
   };
 
   return (
@@ -276,7 +281,7 @@ function EditEvent(props) {
                 <Chip
                   avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
                   label={member.fullName}
-                  onDelete={() => handleRemoveMember(member.id)}
+                  onDelete={() => handleRemoveMember(member.email)}
                   variant="outlined"
                 />
               </Stack>

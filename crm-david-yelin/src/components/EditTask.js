@@ -132,6 +132,7 @@ function EditTask(props) {
   };
 
   const handleRemoveMember = (emailToRemove) => {
+    console.log(assignTo);
     setAssignTo((prevAssignTo) => prevAssignTo.filter((member) => member.value !== emailToRemove));
     setTask({...task, assignees: task.assignees.filter((email) => email !== "members/" + emailToRemove)})
   };

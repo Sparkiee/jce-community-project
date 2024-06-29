@@ -7,7 +7,7 @@ import {
   onSnapshot,
   doc,
   getDoc,
-  deleteDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useParams } from "react-router-dom";
@@ -115,18 +115,35 @@ function Profile() {
     const secondInitial = names[1] ? names[1][0] : "";
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: stringToColor(name)
       },
-      children: `${firstInitial}${secondInitial}`,
+      children: `${firstInitial}${secondInitial}`
     };
   }
+
+  const getStatusColorClass = (status) => {
+    switch (status) {
+      case "טרם החלה":
+        return "status-not-started";
+      case "טרם החל":
+        return "status-not-started";
+      case "בתהליך":
+        return "status-in-progress";
+      case "הושלמה":
+        return "status-finished";
+      case "הסתיים":
+        return "status-finished";
+      default:
+        return "";
+    }
+  };
 
   const theme = createTheme(
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -135,8 +152,8 @@ function Profile() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36,
-      },
+        fontSize: 36
+      }
     },
     heIL
   );
@@ -146,21 +163,21 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 0.8,
+      flex: 0.8
     },
     {
       field: "taskName",
       headerName: "משימה",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "taskBudget",
@@ -169,8 +186,10 @@ function Profile() {
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>;
-      },
+        return (
+          <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
+        );
+      }
     },
     {
       field: "taskStartDate",
@@ -182,7 +201,7 @@ function Profile() {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "taskEndDate",
@@ -194,14 +213,14 @@ function Profile() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskStatus",
@@ -209,6 +228,15 @@ function Profile() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const colorClass = getStatusColorClass(params.row.taskStatus);
+        return (
+          <div className="status-cell">
+            <span className={`status-circle ${colorClass}`}></span>
+            {params.row.taskStatus}
+          </div>
+        );
+      },
     },
     {
       field: "view",
@@ -224,8 +252,8 @@ function Profile() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const columnsEvents = [
@@ -233,21 +261,21 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 0.8,
+      flex: 0.8
     },
     {
       field: "eventName",
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "eventBudget",
@@ -257,9 +285,11 @@ function Profile() {
       flex: 1,
       renderCell: (params) => {
         return (
-          <div>{params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}</div>
+          <div>
+            {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
+          </div>
         );
-      },
+      }
     },
     {
       field: "eventStartDate",
@@ -271,7 +301,7 @@ function Profile() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventEndDate",
@@ -283,14 +313,14 @@ function Profile() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventStatus",
@@ -298,6 +328,15 @@ function Profile() {
       width: 150,
       align: "right",
       flex: 2,
+      renderCell: (params) => {
+        const colorClass = getStatusColorClass(params.row.eventStatus);
+        return (
+          <div className="status-cell">
+            <span className={`status-circle ${colorClass}`}></span>
+            {params.row.eventStatus}
+          </div>
+        );
+      }
     },
     {
       field: "view",
@@ -313,8 +352,8 @@ function Profile() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const columnsContact = [
@@ -322,25 +361,25 @@ function Profile() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 0.8,
+      flex: 0.8
     },
     {
       field: "subject",
       headerName: "נושא",
       flex: 2,
-      align: "right",
+      align: "right"
     },
     {
       field: "description",
       headerName: "תיאור",
       flex: 3,
-      align: "right",
+      align: "right"
     },
     {
       field: "notes",
       headerName: "הערות",
       flex: 3,
-      align: "right",
+      align: "right"
     },
     {
       field: "timestamp",
@@ -351,7 +390,7 @@ function Profile() {
         <div style={{ direction: "ltr" }}>
           {params.row.date} • {params.row.time}
         </div>
-      ),
+      )
     },
     {
       field: "sourceFullName",
@@ -363,8 +402,8 @@ function Profile() {
           <Avatar {...stringAvatar(`${params.value}`)} />
           {params.value}
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const columnsContactAdmin = [
@@ -386,8 +425,8 @@ function Profile() {
             <DeleteForeverIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   async function handleDeleteContact() {
@@ -412,7 +451,7 @@ function Profile() {
       const taskAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.id,
+        docRef: doc.id
       }));
 
       let completeNum = taskAll.filter((task) => task.taskStatus === "הושלמה").length;
@@ -432,7 +471,7 @@ function Profile() {
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
         taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus,
+        taskStatus: task.taskStatus
       }));
       setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
@@ -449,7 +488,7 @@ function Profile() {
       const eventAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.id,
+        docRef: doc.id
       }));
       // .filter((event) => event.eventStatus !== "הסתיים");
       let completeNum = eventAll.filter((event) => event.eventStatus === "הסתיים").length;
@@ -468,7 +507,7 @@ function Profile() {
         eventEndDate: event.eventEndDate,
         eventTime: event.eventTime,
         eventBudget: event.eventBudget,
-        eventStatus: event.eventStatus,
+        eventStatus: event.eventStatus
       }));
       setRowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
@@ -485,7 +524,7 @@ function Profile() {
       const logAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        docRef: doc.id,
+        docRef: doc.id
       }));
 
       // Fetch full names for each srcMember
@@ -496,7 +535,7 @@ function Profile() {
           const srcMemberData = srcMemberDoc.data();
           return {
             ...log,
-            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown",
+            srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown"
           };
         })
       );
@@ -512,7 +551,7 @@ function Profile() {
         time: log.timestamp.toDate().toLocaleTimeString("de-DE"),
         srcMember: log.srcMember,
         destMember: log.destMember,
-        sourceFullName: log.srcFullName, // Use the full name instead of the reference
+        sourceFullName: log.srcFullName // Use the full name instead of the reference
       }));
       setRowContact(logArray);
     } catch (error) {
@@ -605,16 +644,16 @@ function Profile() {
                     columns={user.privileges > 1 ? columnsContactAdmin : columnsContact}
                     initialState={{
                       pagination: {
-                        paginationModel: { page: 0, pageSize: 10 },
-                      },
+                        paginationModel: { page: 0, pageSize: 10 }
+                      }
                     }}
                     pageSizeOptions={[10, 20, 50]}
                     localeText={{
                       MuiTablePagination: {
                         labelDisplayedRows: ({ from, to, count }) =>
                           `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                        labelRowsPerPage: "שורות בכל עמוד:",
-                      },
+                        labelRowsPerPage: "שורות בכל עמוד:"
+                      }
                     }}
                     onCellDoubleClick={(params) => {
                       if (params.field === "sourceFullName")
@@ -639,8 +678,8 @@ function Profile() {
                 columns={columnsTasks}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 },
-                  },
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
@@ -648,8 +687,8 @@ function Profile() {
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:", // Optional: customize other texts
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
+                  }
                 }}
                 onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
               />
@@ -666,16 +705,16 @@ function Profile() {
                 columns={columnsEvents}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 },
-                  },
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
                 }}
                 onRowDoubleClick={(params) => navigate(`/event/${params.row.eventDoc}`)}
               />

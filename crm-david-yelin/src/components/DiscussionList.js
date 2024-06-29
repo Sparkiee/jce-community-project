@@ -42,7 +42,9 @@ const DiscussionList = ({ eventId }) => {
     const commentsList = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
+      timestamp: doc.data().timestamp ? doc.data().timestamp.toDate() : new Date(), // Преобразуем timestamp в Date объект
     }));
+    commentsList.sort((a, b) => a.timestamp - b.timestamp); // Сортировка комментариев по timestamp
     setComments(commentsList);
   };
 
@@ -110,7 +112,7 @@ const DiscussionList = ({ eventId }) => {
           <div className="discussion-header">
             <span className="discussion-author">{comment.author}</span>
             <span className="discussion-timestamp">
-              {new Date(comment.timestamp.toDate()).toLocaleString()}
+              {new Date(comment.timestamp).toLocaleString()}
             </span>
           </div>
           {editingCommentId === comment.id ? (
@@ -146,7 +148,7 @@ const DiscussionList = ({ eventId }) => {
                 <span className="reply-author">{reply.author}:</span>
                 <span>{reply.text}</span>
                 <span className="discussion-timestamp">
-                  {new Date(reply.timestamp.toDate()).toLocaleString()}
+                  {new Date(reply.timestamp).toLocaleString()}
                 </span>
               </div>
             ))}

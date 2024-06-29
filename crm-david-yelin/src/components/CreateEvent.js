@@ -269,7 +269,7 @@ function CreateEvent(props) {
           </div>
           <input
             type="text"
-            placeholder="מיקום האירוע"
+            placeholder="מיקום האירוע (חובה*)"
             name="eventLocation"
             className="create-event-input"
             onChange={(e) =>

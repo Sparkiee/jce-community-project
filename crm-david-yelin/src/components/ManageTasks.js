@@ -143,7 +143,7 @@ function ManageTasks() {
       align: "right",
       flex: 1.5,
       renderCell: (params) => {
-        const date = new Date(params.row.taskEndDate);
+        const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
       },

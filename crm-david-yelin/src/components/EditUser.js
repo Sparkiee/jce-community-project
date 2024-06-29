@@ -7,7 +7,7 @@ import {
   getDocs,
   collection,
   where,
-  query
+  query,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
@@ -24,7 +24,7 @@ function EditUser(props) {
   const [role, setRole] = useState(props.target.role || "");
   const [department, setDepartment] = useState(props.target.department || "");
   const [privileges, setPrivileges] = useState(props.target.privileges) || "";
-
+  const [formWarning, setFormWarning] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [newDepartment, setNewDepartment] = useState("");
@@ -36,6 +36,12 @@ function EditUser(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    if (!firstName || !lastName || !phone || phone.length !== 13) {
+      // fields are empty
+      setFormWarning(true);
+      return;
+    }
 
     if (props.target.privileges > 2 && privileges !== 3) {
       // Reference to the Firestore "members" collection
@@ -78,7 +84,7 @@ function EditUser(props) {
         role: role,
         department: department,
         privileges: privileges,
-        lastUpdate: serverTimestamp()
+        lastUpdate: serverTimestamp(),
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {
@@ -98,7 +104,7 @@ function EditUser(props) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment
+          name: newDepartment,
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -131,8 +137,7 @@ function EditUser(props) {
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -154,9 +159,7 @@ function EditUser(props) {
         </svg>
       </div>
       <form className="edit-user-form" onSubmit={handleSubmit}>
-        <h2 className="title extra-registration-form-title">
-          עריכת משתמש
-        </h2>
+        <h2 className="title extra-registration-form-title">עריכת משתמש</h2>
         <div className="edit-user-input-box">
           <input
             type="text"
@@ -204,8 +207,7 @@ function EditUser(props) {
                   setIsOtherSelected(value === "other");
                   setDepartment(value === "other" ? "" : value);
                 }}
-                className="forms-input"
-              >
+                className="forms-input">
                 <option value="" disabled>
                   בחר מחלקה
                 </option>
@@ -231,8 +233,7 @@ function EditUser(props) {
                       addDepartment(newDepartment);
                       setNewDepartment("");
                     }}
-                    className="primary-button extra-create-user-button"
-                  >
+                    className="primary-button extra-create-user-button">
                     הוסף מחלקה חדשה
                   </button>
                 </div>
@@ -249,8 +250,7 @@ function EditUser(props) {
                 id="privileges-select"
                 value={privileges}
                 onChange={(event) => setPrivileges(Number(event.target.value))}
-                className="forms-input"
-              >
+                className="forms-input">
                 <option value={3}>יו"ר</option>
                 <option value={2}>ראש מחלקה</option>
                 <option value={1}>חבר מועצה</option>
@@ -259,18 +259,17 @@ function EditUser(props) {
             </>
           )}
           {isNoLevel3 && (
-            <Alert
-              severity="warning"
-              className="feedback-alert feedback-edituser"
-            >
+            <Alert severity="warning" className="feedback-alert feedback-edituser">
               חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
             </Alert>
           )}
+          {formWarning && (
+            <Alert className="feedback-alert" severity="error">
+              אנא מלא את כל השדות
+            </Alert>
+          )}
           {edittedSuccessfully && (
-            <Alert
-              severity="success"
-              className="feedback-alert feedback-edituser"
-            >
+            <Alert severity="success" className="feedback-alert feedback-edituser">
               פרטי המשתמש עודכנו בהצלחה
             </Alert>
           )}

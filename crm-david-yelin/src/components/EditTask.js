@@ -69,10 +69,6 @@ function EditTask(props) {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("updated", selectedEvent);
-  }, [selectedEvent]);
-
   async function handleSearchMember(event) {
     if (event.target.value.length >= 2) {
       const membersRef = collection(db, "members");

@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { doc, updateDoc, getDocs, collection, query, where, getDoc, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  getDocs,
+  collection,
+  query,
+  where,
+  getDoc,
+  addDoc,
+  serverTimestamp
+} from "firebase/firestore";
 import "../styles/Styles.css";
 import "../styles/EditTask.css";
 import { Alert } from "@mui/material";
@@ -10,20 +20,23 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
 function EditTask(props) {
-  const [assignTo, setAssignTo] = useState([]);
-  const [events, setEvents] = useState([]);
+  const [taskExists, setTaskExists] = useState(false);
+  const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState();
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [formWarning, setFormWarning] = useState(false);
+  const [warningText, setWarningText] = useState("");
   const [editedSuccessfully, setEditedSuccessfully] = useState(false);
-  const [search, setSearch] = useState("");
-  
-  const [task, setTask] = useState(props.task);
-  const [originalTask, setOriginalTask] = useState(props.task);
+  const [taskDetails, setTask] = useState(props.task || {});
+  const [originalTask, setOriginalTask] = useState(props.task || {});
 
-  function getUpdatedFields(task, originalTask) {
+  function getUpdatedFields(taskDetails, originalTask) {
     const updatedFields = {};
-    Object.keys(task).forEach((key) => {
-      if (task[key] !== originalTask[key]) {
-        updatedFields[key] = { oldValue: originalTask[key], newValue: task[key] };
+    Object.keys(taskDetails).forEach((key) => {
+      if (taskDetails[key] !== originalTask[key]) {
+        updatedFields[key] = { oldValue: originalTask[key], newValue: taskDetails[key] };
       }
     });
     return updatedFields;
@@ -32,92 +45,164 @@ function EditTask(props) {
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
-    fetchEvents();
-    fetchMembers();
-    loadExistingAssignees();
+    if (selectedMembers.length == 0 && taskDetails.assignees) {
+      const selected = taskDetails.assignees.map((member) => {
+        return member.split("/")[1];
+      });
+      selected.forEach((member) => {
+        const memberRef = doc(db, "members", member);
+        getDoc(memberRef).then((doc) => {
+          if (doc.exists()) {
+            setSelectedMembers((prevMembers) => [...prevMembers, { id: doc.id, ...doc.data() }]);
+          }
+        });
+      });
+    }
+
+    if (taskDetails.relatedEvent) {
+      const eventRef = doc(db, "events", taskDetails.relatedEvent.split("/")[1]);
+      getDoc(eventRef).then((doc) => {
+        if (doc.exists()) {
+          setSelectedEvent({ id: doc.id, ...doc.data() });
+        }
+      });
+    }
   }, []);
 
-  const fetchEvents = async () => {
-    const eventsSnapshot = await getDocs(collection(db, "events"));
-    const eventsList = eventsSnapshot.docs.map((doc) => ({
-      value: doc.id,
-      label: doc.data().eventName,
-    }));
-    setEvents(eventsList);
-  };
+  useEffect(() => {
+    console.log("updated", selectedEvent);
+  }, [selectedEvent]);
 
-  const fetchMembers = async () => {
-    const membersSnapshot = await getDocs(collection(db, "members"));
-    const membersList = membersSnapshot.docs.map((doc) => ({
-      value: doc.id,
-      label: doc.data().fullName,
-    }));
-    setMembers(membersList);
-  };
-
-  const loadExistingAssignees = async () => {
-    if (task.assignees) {
-      const assigneeEmails = task.assignees.map((email) => email.split("/")[1]);
-      const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
-      const assigneeDocs = await Promise.all(assigneePromises);
-      const assigneeData = assigneeDocs
-        .map((doc) => (doc.exists() ? doc.data() : null))
-        .filter((data) => data);
-      setAssignTo(
-        assigneeData.map((assignee) => ({ value: assignee.email, label: assignee.fullName }))
-      );
-    }
-  };
-
-  const handleSearchMember = async (inputValue) => {
-    setSearch(inputValue);
-    if (inputValue.length >= 2) {
+  async function handleSearchMember(event) {
+    if (event.target.value.length >= 2) {
       const membersRef = collection(db, "members");
       const q = query(
         membersRef,
-        where("fullName", ">=", inputValue),
-        where("fullName", "<=", inputValue + "\uf8ff")
+        where("fullName", ">=", searchMember),
+        where("fullName", "<=", searchMember + "\uf8ff")
       );
       const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs.map((doc) => ({
-        value: doc.id,
-        label: doc.data().fullName,
-      }));
+      const results = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter(
+          (member) =>
+            member.privileges >= 1 &&
+            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
+        );
       setMembers(results);
     } else {
       setMembers([]);
     }
-  };
+  }
 
-  const handleSelectMember = (selectedOption) => {
-    if (selectedOption) {
-      const selectedMember = members.find((member) => member.value === selectedOption.value);
-      if (selectedMember && !assignTo.some((member) => member.value === selectedMember.value)) {
-        setAssignTo((prevMembers) => [...prevMembers, selectedMember]);
-        setTask({ ...task, assignees: [...task.assignees, "members/" + selectedMember.value] });
-        setSearch(""); // Clear the search input after selection
-        setMembers([]); // Clear the dropdown options
-      }
+  function handleSelectMember(value) {
+    const selectedMember = members.find((member) => member.fullName === value);
+    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
+      setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
+      setSearchMember(""); // Clear the search input after selection
+      setMembers([]); // Clear the dropdown options
     }
-  };
+  }
+
+  async function handleSearchEvent(event) {
+    if (event.target.value.length >= 2) {
+      const eventRef = collection(db, "events");
+      const q = query(
+        eventRef,
+        where("eventStatus", "!=", "הסתיים"),
+        where("eventName", ">=", event.target.value),
+        where("eventName", "<=", event.target.value + "\uf8ff")
+      );
+      const querySnapshot = await getDocs(q);
+      const results = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEvents(results);
+    } else setEvents([]);
+  }
+
+  function handleSelectEvent(value) {
+    const selectedEvent = events.find((event) => event.eventName === value);
+
+    if (selectedEvent) {
+      setSelectedEvent(selectedEvent);
+      setEvents([]); // Clear the dropdown options
+    }
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if(Object.keys(getUpdatedFields(task, originalTask)).length === 0)
-    {
-      console.log("No changes were made to the task");
-      props.onClose();
+    delete taskDetails.assignTo;
+    setFormWarning(false);
+    setTaskExists(false);
+    setWarningText("");
+    if (
+      !taskDetails.taskName ||
+      !taskDetails.taskDescription ||
+      !taskDetails.taskEndDate ||
+      !taskDetails.taskTime
+    ) {
+      setFormWarning(true);
+      let warning = "אנא מלא את כל השדות";
+      setWarningText(warning);
       return;
     }
-    const taskRef = doc(db, "tasks", task.taskDoc);
+    if (taskDetails.taskBudget < 0) {
+      setFormWarning(true);
+      let warning = "אנא הכנס תקציב חוקי";
+      setWarningText(warning);
+      return;
+    }
+    if (!taskDetails.taskStartDate) {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+      const day = date.getDate().toString().padStart(2, "0");
+
+      const formattedDate = `${year}-${month}-${day}`;
+      taskDetails.taskStartDate = formattedDate;
+    }
+
+    delete taskDetails.assignees;
+
+    const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
+    setTask({ ...taskDetails, assignees: assigneeRefs });
     try {
-      await updateDoc(taskRef, task);
+      const taskRef = doc(db, "tasks", taskDetails.taskDoc);
+      await updateDoc(taskRef, {
+        taskName: taskDetails.taskName,
+        taskDescription: taskDetails.taskDescription,
+        taskStartDate: taskDetails.taskStartDate,
+        taskEndDate: taskDetails.taskEndDate,
+        taskTime: taskDetails.taskTime,
+        taskBudget: taskDetails.taskBudget || 0,
+        taskStatus: taskDetails.taskStatus,
+        assignees: assigneeRefs,
+        relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : "",
+        taskCreator: taskDetails.taskCreator || "",
+      });
+      setEditedSuccessfully(true);
+      setTimeout(() => {
+        setEditedSuccessfully(false);
+        props.onClose();
+        props.onTaskUpdated();
+      }, 2000);
+    } catch (error) {
+      console.error("Error updating task: ", error);
+    }
+    const taskRef = doc(db, "tasks", taskDetails.taskDoc);
+    try {
+      await updateDoc(taskRef, taskDetails);
 
       const docRef = await addDoc(collection(db, "log_tasks"), {
-        task: "tasks/" + task.taskDoc,
+        task: "tasks/" + taskDetails.taskDoc,
         timestamp: serverTimestamp(),
         member: "members/" + user.email,
-        updatedFields: getUpdatedFields(task, originalTask),
+        updatedFields: getUpdatedFields(taskDetails, originalTask)
       });
 
       setEditedSuccessfully(true);
@@ -131,10 +216,13 @@ function EditTask(props) {
     }
   };
 
-  const handleRemoveMember = (emailToRemove) => {
-    console.log(assignTo);
-    setAssignTo((prevAssignTo) => prevAssignTo.filter((member) => member.value !== emailToRemove));
-    setTask({...task, assignees: task.assignees.filter((email) => email !== "members/" + emailToRemove)})
+  const handleRemoveMember = (id) => {
+    console.log(id);
+    setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+  };
+
+  const handleRemoveEvent = () => {
+    setSelectedEvent("");
   };
 
   return (
@@ -167,28 +255,28 @@ function EditTask(props) {
         </svg>
       </div>
       <form className="edit-task-form" onSubmit={handleSubmit}>
-        <h2 className="edit-task-title">עריכת משימה: {task.taskName}</h2>
+        <h2 className="edit-task-title">עריכת משימה: {taskDetails.taskName}</h2>
         <div className="edit-task-input-box">
           <input
             type="text"
             placeholder="שם המשימה (חובה*)"
             className="edit-task-input"
-            value={task.taskName}
-            onChange={(e) => setTask({ ...task, taskName: e.target.value})}
+            value={taskDetails.taskName}
+            onChange={(e) => setTask({ ...taskDetails, taskName: e.target.value })}
           />
           <textarea
             placeholder="תיאור המשימה (חובה*)"
             className="edit-task-input"
-            value={task.taskDescription}
-            onChange={(e) => setTask({ ...task, taskDescription: e.target.value })}
+            value={taskDetails.taskDescription}
+            onChange={(e) => setTask({ ...taskDetails, taskDescription: e.target.value })}
           />
           <div className="edit-task-date-inputs">
             <div className="edit-task-start-date">
               <label htmlFor="start">תאריך התחלה</label>
               <input
                 type="date"
-                value={task.taskStartDate}
-                onChange={(e) => setTask({ ...task, taskStartDate: e.target.value })}
+                value={taskDetails.taskStartDate}
+                onChange={(e) => setTask({ ...taskDetails, taskStartDate: e.target.value })}
                 className="edit-task-input"
               />
             </div>
@@ -196,8 +284,8 @@ function EditTask(props) {
               <label htmlFor="due">תאריך יעד (חובה*)</label>
               <input
                 type="date"
-                value={task.taskEndDate}
-                onChange={(e) => setTask({ ...task, taskEndDate: e.target.value })}
+                value={taskDetails.taskEndDate}
+                onChange={(e) => setTask({ ...taskDetails, taskEndDate: e.target.value })}
                 id="due"
                 className="edit-task-input"
               />
@@ -210,8 +298,8 @@ function EditTask(props) {
                 type="time"
                 className="edit-task-input"
                 id="time"
-                value={task.taskTime}
-                onChange={(e) => setTask({ ...task, taskTime: e.target.value })}
+                value={taskDetails.taskTime}
+                onChange={(e) => setTask({ ...taskDetails, taskTime: e.target.value })}
               />
             </div>
             <div className="edit-task-input-budget">
@@ -222,55 +310,71 @@ function EditTask(props) {
                 placeholder="תקציב משימה"
                 className="edit-task-input"
                 id="budget"
-                value={task.taskBudget}
-                onChange={(e) => setTask({ ...task, taskBudget: e.target.value })}
+                value={taskDetails.taskBudget}
+                onChange={(e) => setTask({ ...taskDetails, taskBudget: e.target.value })}
               />
             </div>
           </div>
           <select
-            value={task.taskStatus}
-            onChange={(e) => setTask({ ...task, taskStatus: e.target.value })}
+            value={taskDetails.taskStatus}
+            onChange={(e) => setTask({ ...taskDetails, taskStatus: e.target.value })}
             className="edit-task-input extra-edit-task-input">
             <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>
             <option value="הושלמה">הושלמה</option>
           </select>
           <Select
-            options={events}
-            value={events.find((event) => event.value === task.relatedEvent)}
-            onChange={(selectedOption) =>
-              setTask({ ...task, relatedEvent: selectedOption ? selectedOption.value : "" })
-            }
-            placeholder="בחר אירוע קשור (לא חובה)"
-            className="edit-task-input extra-edit-task-input"
-            isClearable // Allows clearing the selection
+            name="relatedEvent"
+            placeholder="שייך לאירוע"
+            className="create-task-input extra-edit-task-input"
+            onInputChange={(inputValue) => {
+              handleSearchEvent({ target: { value: inputValue } });
+            }}
+            onChange={(e) => {
+              handleSelectEvent(e.value);
+            }}
+            options={events.map((event) => ({
+              value: event.eventName,
+              label: event.eventName
+            }))}
           />
           <Select
             placeholder="הוסף חבר וועדה"
             className="create-event-input extra-create-event-input"
-            onInputChange={(inputValue) => handleSearchMember(inputValue)}
-            onChange={(selectedOption) => handleSelectMember(selectedOption)}
-            inputValue={search}
+            onInputChange={(inputValue) => {
+              handleSearchMember({ target: { value: inputValue } });
+            }}
+            onChange={(e) => {
+              handleSelectMember(e.value);
+            }}
             options={members.map((member) => ({
-              value: member.value,
-              label: member.label,
+              value: member.fullName,
+              label: member.fullName
             }))}
-            noOptionsMessage={() => "לא נמצאו אפשרויות"}
-            isClearable
           />
-          <div className="edit-task-selected-members">
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              {assignTo.map((member) => (
+          <div className="TBU">
+            {selectedEvent && (
+              <Stack direction="row" spacing={1}>
                 <Chip
-                  key={member.value}
-                  avatar={<Avatar alt={member.label} src={require("../assets/profile.jpg")} />}
-                  label={member.label}
-                  onDelete={() => handleRemoveMember(member.value)}
+                  label={selectedEvent.eventName}
+                  onDelete={() => handleRemoveEvent()}
                   variant="outlined"
-                  style={{ margin: "5px" }}
                 />
-              ))}
-            </Stack>
+              </Stack>
+            )}
+          </div>
+          <div className="edit-task-selected-members">
+            {selectedMembers.map((member) => (
+              <Stack direction="row" spacing={1} flexWrap="wrap">
+                <Chip
+                  key={member.id}
+                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
+                  label={member.fullName}
+                  onDelete={() => handleRemoveMember(member.id)}
+                  variant="outlined"
+                />
+              </Stack>
+            ))}
           </div>
           <button type="submit" className="primary-button">
             עדכן פרטים

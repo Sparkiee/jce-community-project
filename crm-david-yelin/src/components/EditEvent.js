@@ -32,7 +32,7 @@ function EditEvent(props) {
   const [originalEvent, setOriginalEvent] = useState(props.eventDetails || {});
 
   useEffect(() => {
-    if (selectedMembers.length == 0) {
+    if (selectedMembers.length == 0 && eventDetails.assignees) {
       const selected = eventDetails.assignees.map((member) => {
         return member.split("/")[1];
       });

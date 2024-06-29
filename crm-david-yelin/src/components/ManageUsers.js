@@ -158,7 +158,20 @@ function ManageUsers() {
       field: "privileges",
       headerName: "הרשאות",
       align: "right",
-      flex: 2
+      flex: 2,
+      renderCell: (params) => {
+        const privileges = params.row.privileges;
+        if (privileges === 1) {
+          return "חבר מועצה";
+        } else if (privileges === 2) {
+          return "ראש מחלקה";
+        } else if (privileges === 3) {
+          return "יו'ר";
+        } else if(privileges === 0) {
+          return "ללא הרשאות";
+        }
+        return "לא מוגדר";
+      }
     }
   ];
 

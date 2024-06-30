@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
@@ -91,10 +91,10 @@ function EventPage() {
       const eventDoc = await getDoc(doc(db, "events", id));
       if (eventDoc.exists()) {
         const eventData = eventDoc.data();
-        
+
         // Fetch event creator's full name
         const eventCreatorFullName = await getMemberFullName(eventData.eventCreator.split("/")[1]);
-        
+
         const assigneesData = await Promise.all(
           (eventData.assignees || []).map(async (assigneePath) => {
             const email = assigneePath.split("/")[1];
@@ -188,8 +188,12 @@ function EventPage() {
       <div className="participants-list">
         {assignees.map((assignee, index) => (
           <div key={index} className="participant-item">
-            <Avatar {...stringAvatar(assignee.fullName)} />
-            <p className="participant-name">{assignee.fullName}</p>
+            <Link to={`/profile/${assignee.email}`}>
+              <Avatar {...stringAvatar(assignee.fullName)} />
+            </Link>
+            <Link to={`/profile/${assignee.email}`} className="participants-name">
+              <p>{assignee.fullName}</p>
+            </Link>
           </div>
         ))}
       </div>
@@ -214,19 +218,19 @@ function EventPage() {
     },
     ...(user.privileges == 2 || isUserAnAssignee
       ? [
-          {
-            field: "taskBudget",
-            headerName: "תקציב",
-            width: 150,
-            align: "right",
-            flex: 1,
-            renderCell: (params) => {
-              return (
-                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
-              );
-            },
+        {
+          field: "taskBudget",
+          headerName: "תקציב",
+          width: 150,
+          align: "right",
+          flex: 1,
+          renderCell: (params) => {
+            return (
+              <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+            );
           },
-        ]
+        },
+      ]
       : []),
     {
       field: "taskStatus",

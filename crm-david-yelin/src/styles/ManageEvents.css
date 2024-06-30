@@ -36,3 +36,22 @@
 .manage-events-avatar-group {
   direction: ltr;
 }
+
+.search-input {
+  border: 1px solid #ccc;
+  border-radius: 2rem;
+  padding: 0.6rem 3rem 0.6rem 0;
+  margin: 0.5rem;
+}
+
+.search-events-bar {
+  position: relative;
+
+}
+
+.search-events-bar svg {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  right: 4%;
+}

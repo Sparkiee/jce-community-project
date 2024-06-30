@@ -56,7 +56,6 @@ function ManageEvents() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState("");
   const [editEventDetails, setEditEventDetails] = useState(null);
-  const [userPrivileges, setUserPrivileges] = useState(1);
   const [allRows, setAllRows] = useState([]);
   const [searchValue, setSearchValue] = useState("");
 
@@ -110,7 +109,7 @@ function ManageEvents() {
       align: "right",
       flex: 4
     },
-    ...(userPrivileges >= 2
+    ...(user.privileges >= 2
       ? [
           {
             field: "eventBudget",
@@ -213,7 +212,7 @@ function ManageEvents() {
 
   const columns = [
     ...baseColumns,
-    ...(userPrivileges === 2 ||
+    ...(user.privileges >= 2 ||
     user.adminAccess.includes("deleteEvent") ||
     user.adminAccess.includes("editEvent")
       ? [
@@ -225,12 +224,12 @@ function ManageEvents() {
             flex: 1.5,
             renderCell: (params) => (
               <div>
-                {(userPrivileges === 2 || user.adminAccess.includes("editEvent")) && (
+                {(user.privileges >= 2 || user.adminAccess.includes("editEvent")) && (
                   <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
                     <EditIcon />
                   </IconButton>
                 )}
-                {(userPrivileges === 2 || user.adminAccess.includes("deleteEvent")) && (
+                {(user.privileges >= 2 || user.adminAccess.includes("deleteEvent")) && (
                   <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
                     <DeleteForeverIcon />
                   </IconButton>

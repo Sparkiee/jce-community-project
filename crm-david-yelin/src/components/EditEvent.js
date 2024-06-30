@@ -91,7 +91,6 @@ function EditEvent(props) {
       setWarningText(warning);
       return;
     }
-
     if (
       eventDetails.eventName !== originalEvent.eventName &&
       (await eventExistsAndOpen(eventDetails.eventName))
@@ -100,7 +99,6 @@ function EditEvent(props) {
       setWarningText("משימה פתוחה עם שם זהה כבר קיימת");
       return;
     }
-
     if (!eventDetails.eventStartDate) {
       const date = new Date();
       const year = date.getFullYear();
@@ -109,6 +107,13 @@ function EditEvent(props) {
 
       const formattedDate = `${year}-${month}-${day}`;
       eventDetails.eventStartDate = formattedDate;
+    }
+    const startDate = new Date(eventDetails.eventStartDate);
+    const endDate = new Date(eventDetails.eventEndDate);
+    if (startDate > endDate) {
+      setFormWarning(true);
+      setWarningText("תאריך ההתחלה לא יכול להיות לאחר תאריך הסיום");
+      return;
     }
 
     delete eventDetails.assignees;

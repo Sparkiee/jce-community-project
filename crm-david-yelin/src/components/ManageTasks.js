@@ -130,7 +130,9 @@ function ManageTasks() {
             flex: 1,
             renderCell: (params) => {
               return (
-                <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
+                <div>
+                  {params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}
+                </div>
               );
             },
           },
@@ -386,7 +388,9 @@ function ManageTasks() {
         </div>
       )}
       {deleteTarget && (
-        <ConfirmAction onConfirm={handleDeleteTask} onCancel={() => setDeleteTarget("")} />
+        <div className="popup-overlay">
+          <ConfirmAction onConfirm={handleDeleteTask} onCancel={() => setDeleteTarget("")} />
+        </div>
       )}
       <div className="manage-tasks-styles">
         <h1>משימות</h1>

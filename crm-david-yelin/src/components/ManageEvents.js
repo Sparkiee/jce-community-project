@@ -366,7 +366,12 @@ function ManageEvents() {
         </div>
       )}
       {deleteTarget && (
-        <ConfirmAction onConfirm={() => handleDeleteEvent()} onCancel={() => setDeleteTarget("")} />
+        <div className="popup-overlay">
+          <ConfirmAction
+            onConfirm={() => handleDeleteEvent()}
+            onCancel={() => setDeleteTarget("")}
+          />
+        </div>
       )}
       <div className="manage-events-styles">
         <h1>אירועים</h1>

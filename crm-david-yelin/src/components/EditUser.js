@@ -31,7 +31,7 @@ function EditUser(props) {
   const [phoneError, setPhoneError] = useState(false);
   const [isNoSuperAdmin, setIsNoSuperAdmin] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
-  const [removeSuperAdmin, setRemoveSuperAdmin] = useState(true);
+  const [removeSuperAdmin, setRemoveSuperAdmin] = useState(false);
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 

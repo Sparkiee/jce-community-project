@@ -24,8 +24,8 @@ function HomePage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -53,21 +53,21 @@ function HomePage() {
       headerName: "אינדקס",
       width: "3%",
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "taskName",
       headerName: "משימה",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "taskBudget",
@@ -76,8 +76,10 @@ function HomePage() {
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>;
-      },
+        return (
+          <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
+        );
+      }
     },
     {
       field: "taskStartDate",
@@ -89,7 +91,7 @@ function HomePage() {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "taskEndDate",
@@ -101,14 +103,14 @@ function HomePage() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "taskStatus",
@@ -124,8 +126,8 @@ function HomePage() {
             {params.row.taskStatus}
           </div>
         );
-      },
-    },
+      }
+    }
   ];
 
   const columnsEvents = [
@@ -135,21 +137,21 @@ function HomePage() {
       width: "3%",
       align: "right",
       colors: "red",
-      flex: 1,
+      flex: 1
     },
     {
       field: "eventName",
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "eventBudget",
@@ -159,9 +161,11 @@ function HomePage() {
       flex: 1,
       renderCell: (params) => {
         return (
-          <div>{params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}</div>
+          <div>
+            {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
+          </div>
         );
-      },
+      }
     },
     {
       field: "eventStartDate",
@@ -173,7 +177,7 @@ function HomePage() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventEndDate",
@@ -185,14 +189,14 @@ function HomePage() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventTime",
       headerName: "שעה",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "eventStatus",
@@ -208,8 +212,8 @@ function HomePage() {
             {params.row.eventStatus}
           </div>
         );
-      },
-    },
+      }
+    }
   ];
 
   const user = JSON.parse(sessionStorage.getItem("user"));
@@ -226,7 +230,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id,
+          docRef: doc.id
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
 
@@ -242,7 +246,7 @@ function HomePage() {
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
         taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus,
+        taskStatus: task.taskStatus
       }));
       setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
@@ -259,7 +263,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id,
+          docRef: doc.id
         }))
         .filter((event) => event.eventStatus !== "הסתיים");
       setNumEvents(eventsArray.length); // Update event count
@@ -274,7 +278,7 @@ function HomePage() {
         eventEndDate: event.eventEndDate,
         eventTime: event.eventTime,
         eventBudget: event.eventBudget,
-        eventStatus: event.eventStatus,
+        eventStatus: event.eventStatus
       }));
       setRowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
@@ -375,9 +379,8 @@ function HomePage() {
 
       <h1 className="page-title-home">היי {user.fullName}</h1>
       <div className="page-subtitle">כאן תוכל להתעדכן עם האירועים והמשימות שלך</div>
-      {user.privileges > 1 && (
-        <div className="pending-actions">
-          <div className="action-button add-task-button" onClick={handleShowCreateTask}>
+      <div className="pending-actions">
+        {(user.adminAccess.includes("createTask") || user.privileges == 2) && (<div className="action-button add-task-button" onClick={handleShowCreateTask}>
             <svg
               width="24px"
               height="24px"
@@ -396,29 +399,28 @@ function HomePage() {
               </g>
             </svg>
             הוסף משימה
-          </div>
-          <div className="action-button add-event-button" onClick={handleShowCreateEvent}>
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-              <g id="SVGRepo_iconCarrier">
-                <path
-                  d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"></path>
-              </g>
-            </svg>
-            הוסף אירוע
-          </div>
-        </div>
-      )}
+          </div>)}
+        {(user.adminAccess.includes("createEvent") || user.privileges == 2) && (<div className="action-button add-event-button" onClick={handleShowCreateEvent}>
+          <svg
+            width="24px"
+            height="24px"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"></path>
+            </g>
+          </svg>
+          הוסף אירוע
+        </div>)}
+      </div>
       {numTasks === 0 ? (
         <h2 className="title-home">אין משימות פתוחות!</h2>
       ) : numTasks === 1 ? (
@@ -435,8 +437,8 @@ function HomePage() {
             columns={columnsTasks}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
+                paginationModel: { page: 0, pageSize: 5 }
+              }
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
@@ -444,8 +446,8 @@ function HomePage() {
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:", // Optional: customize other texts
-              },
+                labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
+              }
             }}
             onRowDoubleClick={(params) => {
               navigate(`/task/${params.row.taskDoc}`);
@@ -469,16 +471,16 @@ function HomePage() {
             columns={columnsEvents}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
+                paginationModel: { page: 0, pageSize: 5 }
+              }
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:",
-              },
+                labelRowsPerPage: "שורות בכל עמוד:"
+              }
             }}
             onRowDoubleClick={(params) => {
               navigate(`/event/${params.row.eventDoc}`);

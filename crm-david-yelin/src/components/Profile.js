@@ -793,7 +793,7 @@ function Profile() {
       {profile ? (
         <div className="profile-page-container">
           <div className="profile-information right-side">
-            {user.privileges > 2 && (
+            {(user.privileges == 2  || user.adminAccess.includes("manageUser")) && (
               <IconButton
                 color="primary"
                 className="profile-edit-icon"

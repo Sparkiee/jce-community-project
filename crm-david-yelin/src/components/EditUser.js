@@ -30,6 +30,7 @@ function EditUser(props) {
   const [phoneError, setPhoneError] = useState(false);
   const [isNoLevel3, setIsNoLevel3] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
+  
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -45,8 +46,8 @@ function EditUser(props) {
       setPhoneError(true);
       return;
     }
-    // TODO: minimum phone requirement
 
+    // TODO: double check those privileges
     if (props.target.privileges > 2 && privileges < 3) {
       // Reference to the Firestore "members" collection
       const memberRef = collection(db, "members");
@@ -201,7 +202,7 @@ function EditUser(props) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          {user && user.privileges > 2 && (
+          {(user && user.privileges == 2 || user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin")) && (
             <>
               <select
                 id="department-select"
@@ -256,9 +257,8 @@ function EditUser(props) {
                 value={privileges}
                 onChange={(event) => setPrivileges(Number(event.target.value))}
                 className="forms-input">
-                <option value={3}>יו"ר</option>
-                <option value={2}>ראש מחלקה</option>
-                <option value={1}>חבר מועצה</option>
+                {user.adminAccess.includes("manageAdmin") && <option value={2}>מנהל ראשי</option>}
+                <option value={1}>משתמש פעיל</option>
                 <option value={0}>משתמש מושהה</option>
               </select>
             </>

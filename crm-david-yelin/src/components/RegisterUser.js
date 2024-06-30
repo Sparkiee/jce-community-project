@@ -90,6 +90,7 @@ function RegisterUser() {
             fullName: firstName + " " + lastName,
             phone: phone,
             privileges: 1,
+            adminAccess: [],
             department: userDepartment,
             role: await grabRole(email),
             createdOn: serverTimestamp(),

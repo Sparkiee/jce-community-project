@@ -91,12 +91,6 @@ function ManageTasks() {
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  const fetchUserPrivileges = useCallback(() => {
-    if (user && user.privileges) {
-      setUserPrivileges(user.privileges);
-    }
-  }, []);
-
   const baseColumns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 1 },
     {
@@ -120,7 +114,7 @@ function ManageTasks() {
       align: "right",
       flex: 2,
     },
-    ...(userPrivileges >= 2
+    ...(userPrivileges == 2
       ? [
           {
             field: "taskBudget",
@@ -220,25 +214,30 @@ function ManageTasks() {
     },
   ];
 
-  const editColumn = {
-    field: "edit",
-    headerName: "עריכה",
-    width: 150,
-    align: "right",
-    flex: 1.5,
-    renderCell: (params) => (
-      <div>
-        <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
-          <EditIcon />
-        </IconButton>
-        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
-          <DeleteForeverIcon />
-        </IconButton>
-      </div>
-    ),
-  };
+  const columns = [
+    ...baseColumns,
+    ...(userPrivileges === 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")) ? [
+      {
+        field: "edit",
+        headerName: "עריכה",
+        width: 150,
+        align: "right",
+        flex: 1.5,
+        renderCell: (params) => (
+          <div>
+            {(userPrivileges === 2 || user.adminAccess.includes("editTask")) && <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
+              <EditIcon />
+            </IconButton>}
+            {(userPrivileges === 2 || user.adminAccess.includes("deleteTask")) && <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
+              <DeleteForeverIcon />
+            </IconButton>}
+          </div>
+        ),
+      }
+    ] : []
+  ];
 
-  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  // const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -337,7 +336,6 @@ function ManageTasks() {
 
   useEffect(() => {
     getTasks();
-    fetchUserPrivileges();
 
     const handleClickOutside = (event) => {
       if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
@@ -395,7 +393,7 @@ function ManageTasks() {
       <div className="manage-tasks-styles">
         <h1>משימות</h1>
         <div ref={createTaskRef} className="display-create">
-          {user && user.privileges > 1 && showCreateTask && (
+          {showCreateTask && (
             <div className="popup-overlay">
               <div ref={createTaskRef} className="popup-content">
                 <CreateTask onClose={handleCloseForms} />
@@ -403,7 +401,7 @@ function ManageTasks() {
             </div>
           )}
         </div>
-        {user.privileges > 1 && (
+        {(user.adminAccess.includes("createTask") || user.privileges == 2) && (
           <div
             className="action-button add-tasks-button add-tasks-manage-tasks"
             onClick={handleShowCreateTask}>

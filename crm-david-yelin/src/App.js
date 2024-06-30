@@ -36,7 +36,7 @@ const App = () => {
         <Route
           path="/users"
           element={
-            <ProtectedRoute privilegeLevel={3}>
+            <ProtectedRoute privilegeLevel={1}>
               <ManageUsers />
             </ProtectedRoute>
           }

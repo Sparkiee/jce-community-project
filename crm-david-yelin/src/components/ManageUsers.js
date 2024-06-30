@@ -16,6 +16,7 @@ import CreateUser from "./CreateUser";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmAction from "./ConfirmAction";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import KeyIcon from "@mui/icons-material/Key";
 
 function ManageUsers() {
   const [fullActiveMembers, setFullActiveMembers] = useState([]);
@@ -38,6 +39,8 @@ function ManageUsers() {
   const createUserRef = useRef(null);
 
   const navigate = useNavigate();
+
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   const handleDeleteClick = (email) => {
     setDeleteTarget(email);
@@ -62,7 +65,7 @@ function ManageUsers() {
     heIL
   );
 
-  const awaitingColumns = [
+  const awaitingCol = [
     {
       field: "id",
       headerName: "אינדקס",
@@ -87,7 +90,11 @@ function ManageUsers() {
       align: "right",
       flex: 2
     },
-    {
+  ];
+
+  const awaitingColumns = [
+    ...awaitingCol,
+    ...(user.privileges == 2 || user.adminAccess.includes("createUser") ? [{
       field: "edit",
       headerName: "מחיקה",
       width: 150,
@@ -105,7 +112,7 @@ function ManageUsers() {
           </IconButton>
         </div>
       )
-    }
+    }] : []),
   ];
 
   const columns = [
@@ -162,12 +169,12 @@ function ManageUsers() {
       renderCell: (params) => {
         const privileges = params.row.privileges;
         if (privileges === 1) {
-          return "חבר מועצה";
+          return "משתמש פעיל";
         } else if (privileges === 2) {
-          return "ראש מחלקה";
+          return "מנהל";
         } else if (privileges === 3) {
-          return "יו'ר";
-        } else if(privileges === 0) {
+          return "Evyevy12";
+        } else if (privileges === 0) {
           return "ללא הרשאות";
         }
         return "לא מוגדר";
@@ -177,34 +184,51 @@ function ManageUsers() {
 
   const editEnabled = [
     ...columns,
-    {
-      field: "edit",
-      headerName: "עריכה",
-      width: 150,
-      align: "right",
-      flex: 1.5,
-      renderCell: (params) => (
-        <div>
-          <IconButton
-            aria-label="edit"
-            title="עריכה"
-            onClick={() => {
-              setEditUser(params.row);
-              setEditUserForm(true);
-            }}>
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="removePerm"
-            title="הסר גישה לאתר"
-            onClick={() => {
-              setRemovePermmisionTarget(params.row);
-            }}>
-            <PersonOffIcon />
-          </IconButton>
-        </div>
-      )
-    },
+    ...(user.privileges == 2 ||
+    user.adminAccess.includes("manageUser") ||
+    user.adminAccess.includes("manageAdmin")
+      ? [
+          {
+            field: "edit",
+            field: "edit",
+            headerName: "עריכה",
+            width: 150,
+            align: "right",
+            flex: 1.5,
+            renderCell: (params) => (
+              <div>
+                {(user.privileges == 2 || user.adminAccess.includes("manageUser")) && (
+                  <>
+                    <IconButton
+                      aria-label="edit"
+                      title="עריכה"
+                      onClick={() => {
+                        setEditUser(params.row);
+                        setEditUserForm(true);
+                      }}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="removePerm"
+                      title="הסר גישה לאתר"
+                      onClick={() => {
+                        setRemovePermmisionTarget(params.row);
+                      }}>
+                      <PersonOffIcon />
+                    </IconButton>
+                  </>
+                )}
+                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (<IconButton
+                  aria-label="adminAccess"
+                  title="שנה גישות מנהל"
+                  onClick={() => console.log("TBU")}>
+                  <KeyIcon />
+                </IconButton>)}
+              </div>
+            )
+          }
+        ]
+      : []),
     {
       field: "view",
       headerName: "הצגה",
@@ -227,9 +251,6 @@ function ManageUsers() {
     setRemovePermmisionTarget("");
     try {
       const user = JSON.parse(sessionStorage.getItem("user"));
-      if (user.privileges < 3) {
-        return;
-      }
       const usersRef = collection(db, "members");
       if (removePermmisionTarget.privileges >= 3) {
         const q = query(usersRef, where("privileges", ">=", 3));
@@ -244,7 +265,8 @@ function ManageUsers() {
       }
       const targetUserRef = doc(usersRef, removePermmisionTarget.email);
       await updateDoc(targetUserRef, {
-        privileges: 0
+        privileges: 0,
+        adminAccess: []
       });
       fetchUsers();
     } catch (error) {
@@ -254,26 +276,30 @@ function ManageUsers() {
 
   const editDisabled = [
     ...columns,
-    {
-      field: "edit",
-      headerName: "עריכה",
-      width: 150,
-      align: "right",
-      flex: 1.5,
-      renderCell: (params) => (
-        <div>
-          <IconButton
-            aria-label="edit"
-            title="עריכה"
-            onClick={() => {
-              setEditUser(params.row);
-              setEditUserForm(true);
-            }}>
-            <EditIcon />
-          </IconButton>
-        </div>
-      )
-    },
+    ...(user.privileges == 2 || user.adminAccess.includes("manageUser")
+      ? [
+          {
+            field: "edit",
+            headerName: "עריכה",
+            width: 150,
+            align: "right",
+            flex: 1.5,
+            renderCell: (params) => (
+              <div>
+                <IconButton
+                  aria-label="edit"
+                  title="עריכה"
+                  onClick={() => {
+                    setEditUser(params.row);
+                    setEditUserForm(true);
+                  }}>
+                  <EditIcon />
+                </IconButton>
+              </div>
+            )
+          }
+        ]
+      : []),
     {
       field: "view",
       headerName: "הצגה",
@@ -433,26 +459,28 @@ function ManageUsers() {
       )}
       <div className="manage-users-container">
         <div className="page-title-manage-users">ניהול משתמשים</div>
-        <div className="action-button add-user-button" onClick={() => setShowCreateUser(true)}>
-          <svg
-            width="24px"
-            height="24px"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-              <path
-                d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"></path>
-            </g>
-          </svg>
-          הוסף משתמש
-        </div>
+        {(user.privileges == 2 || user.adminAccess.includes("createUser")) && (
+          <div className="action-button add-user-button" onClick={() => setShowCreateUser(true)}>
+            <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"></path>
+              </g>
+            </svg>
+            הוסף משתמש
+          </div>
+        )}
         <div className="table-title">משתמשים פעילים</div>
         <div className="search-users-table">
           <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">

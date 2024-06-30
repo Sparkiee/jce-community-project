@@ -41,7 +41,6 @@ function TaskPage() {
   const [task, setTask] = useState(null);
   const [assignees, setAssignees] = useState([]);
   const [eventName, setEventName] = useState("");
-  const [userPrivileges, setUserPrivileges] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const editTaskRef = useRef(null);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
@@ -64,12 +63,7 @@ function TaskPage() {
     }
   };
 
-  const fetchUserPrivileges = useCallback(() => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user && user.privileges) {
-      setUserPrivileges(user.privileges);
-    }
-  }, []);
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   const getMemberFullName = async (email) => {
     try {
@@ -128,8 +122,7 @@ function TaskPage() {
     };
 
     fetchTask();
-    fetchUserPrivileges();
-  }, [taskId, fetchUserPrivileges]);
+  }, [taskId]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -231,7 +224,7 @@ function TaskPage() {
               <p>
                 <strong>שעת סיום:</strong> {task.taskTime}
               </p>
-              {(userPrivileges >= 2 || isUserAnAssignee) && (
+              {(user.privileges == 2 || isUserAnAssignee) && (
                 <p>
                   <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
                 </p>
@@ -241,7 +234,7 @@ function TaskPage() {
                 {taskCreatorFullName}
               </p>
             </div>
-            {userPrivileges >= 2 && (
+            {(user.adminAccess.includes("editTask") || user.privileges == 2) && (
               <IconButton
                 className="task-page-edit-icon"
                 aria-label="edit"

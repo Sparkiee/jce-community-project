@@ -56,7 +56,6 @@ function ManageTasks() {
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState("");
-  const [userPrivileges, setUserPrivileges] = useState(1);
   const [allRows, setAllRows] = useState([]);
   const [searchValue, setSearchValue] = useState("");
 
@@ -116,7 +115,7 @@ function ManageTasks() {
       align: "right",
       flex: 2,
     },
-    ...(userPrivileges == 2
+    ...(user.privileges >= 2
       ? [
           {
             field: "taskBudget",
@@ -218,7 +217,7 @@ function ManageTasks() {
 
   const columns = [
     ...baseColumns,
-    ...(userPrivileges === 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")) ? [
+    ...(user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")) ? [
       {
         field: "edit",
         headerName: "עריכה",
@@ -227,10 +226,10 @@ function ManageTasks() {
         flex: 1.5,
         renderCell: (params) => (
           <div>
-            {(userPrivileges === 2 || user.adminAccess.includes("editTask")) && <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
+            {(user.privileges >= 2 || user.adminAccess.includes("editTask")) && <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
               <EditIcon />
             </IconButton>}
-            {(userPrivileges === 2 || user.adminAccess.includes("deleteTask")) && <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
+            {(user.privileges >= 2 || user.adminAccess.includes("deleteTask")) && <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
               <DeleteForeverIcon />
             </IconButton>}
           </div>

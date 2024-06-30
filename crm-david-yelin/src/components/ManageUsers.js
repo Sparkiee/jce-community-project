@@ -17,6 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmAction from "./ConfirmAction";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import KeyIcon from "@mui/icons-material/Key";
+import EditAccess from "./EditAccess";
 
 function ManageUsers() {
   const [fullActiveMembers, setFullActiveMembers] = useState([]);
@@ -30,6 +31,7 @@ function ManageUsers() {
   const [removeLastAdminAlert, setRemoveLastAdminAlert] = useState(false);
   const [editUserForm, setEditUserForm] = useState(false);
   const [editUser, setEditUser] = useState();
+  const [editAdminAccess, setEditAdminAccess] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState("");
@@ -59,8 +61,8 @@ function ManageUsers() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -70,49 +72,53 @@ function ManageUsers() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2,
-    },
+      flex: 2
+    }
   ];
 
   const awaitingColumns = [
     ...awaitingCol,
-    ...(user.privileges == 2 || user.adminAccess.includes("createUser") ? [{
-      field: "edit",
-      headerName: "מחיקה",
-      width: 150,
-      align: "right",
-      flex: 1.5,
-      renderCell: (params) => (
-        <div>
-          <IconButton
-            aria-label="edit"
-            title="מחיקה"
-            onClick={() => {
-              handleDeleteClick(params.row.email);
-            }}>
-            <DeleteIcon />
-          </IconButton>
-        </div>
-      )
-    }] : []),
+    ...(user.privileges == 2 || user.adminAccess.includes("createUser")
+      ? [
+          {
+            field: "edit",
+            headerName: "מחיקה",
+            width: 150,
+            align: "right",
+            flex: 1.5,
+            renderCell: (params) => (
+              <div>
+                <IconButton
+                  aria-label="edit"
+                  title="מחיקה"
+                  onClick={() => {
+                    handleDeleteClick(params.row.email);
+                  }}>
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            )
+          }
+        ]
+      : [])
   ];
 
   const columns = [
@@ -121,46 +127,46 @@ function ManageUsers() {
       headerName: "אינדקס",
       align: "right",
       flex: 1,
-      edittable: true,
+      edittable: true
     },
     {
       field: "firstName",
       headerName: "שם פרטי",
       align: "right",
       flex: 2,
-      edittable: true,
+      edittable: true
     },
     {
       field: "lastName",
       headerName: "שם משפחה",
       align: "right",
       flex: 2,
-      edittable: true,
+      edittable: true
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "phone",
       headerName: "טלפון",
       align: "right",
       flex: 2,
-      renderCell: (params) => <span dir="ltr">{params.value}</span>,
+      renderCell: (params) => <span dir="ltr">{params.value}</span>
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "privileges",
@@ -172,15 +178,15 @@ function ManageUsers() {
         if (privileges === 1) {
           return "משתמש פעיל";
         } else if (privileges === 2) {
-          return "מנהל";
+          return "מנהל ראשי";
         } else if (privileges === 3) {
           return "Evyevy12";
         } else if (privileges === 0) {
           return "ללא הרשאות";
         }
         return "לא מוגדר";
-      },
-    },
+      }
+    }
   ];
 
   const editEnabled = [
@@ -219,12 +225,17 @@ function ManageUsers() {
                     </IconButton>
                   </>
                 )}
-                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (<IconButton
-                  aria-label="adminAccess"
-                  title="שנה גישות מנהל"
-                  onClick={() => console.log("TBU")}>
-                  <KeyIcon />
-                </IconButton>)}
+                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (
+                  <IconButton
+                    aria-label="adminAccess"
+                    title="שנה גישות מנהל"
+                    onClick={() => {
+                      setEditUser(params.row);
+                      setEditAdminAccess(true);
+                    }}>
+                    <KeyIcon />
+                  </IconButton>
+                )}
               </div>
             )
           }
@@ -244,8 +255,8 @@ function ManageUsers() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   async function handleRemovePermissions() {
@@ -315,8 +326,8 @@ function ManageUsers() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
   async function deleteUser(email) {
     try {
@@ -344,7 +355,7 @@ function ManageUsers() {
           phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
-          privileges: member.privileges || 0,
+          privileges: member.privileges || 0
         };
       });
       const enabledMembersFormatted = enabledMembers.map((member, index) => {
@@ -357,6 +368,7 @@ function ManageUsers() {
           department: member.department || "",
           role: member.role || "",
           privileges: member.privileges || 0,
+          adminAccess: member.adminAccess || []
         };
       });
       setDisabledMemberRows(disabledMembersFormatted);
@@ -377,7 +389,7 @@ function ManageUsers() {
           id: index + 1,
           email: member.email || "",
           department: member.department || "",
-          role: member.role || "",
+          role: member.role || ""
         };
       });
       setPendingMemberRows(membersFormatted);
@@ -420,6 +432,18 @@ function ManageUsers() {
 
   return (
     <div>
+      {editAdminAccess && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <EditAccess
+              target={editUser}
+              onClose={() => {
+                setEditAdminAccess(false);
+                fetchUsers();
+              }}
+            />
+          </div>
+        </div>)}
       {editUserForm && (
         <div className="popup-overlay">
           <div ref={editUserRef} className="popup-content">
@@ -527,16 +551,16 @@ function ManageUsers() {
               columns={editEnabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -583,16 +607,16 @@ function ManageUsers() {
               columns={editDisabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -638,16 +662,16 @@ function ManageUsers() {
               columns={awaitingColumns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
             />
           </ThemeProvider>

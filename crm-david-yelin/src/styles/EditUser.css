@@ -33,7 +33,8 @@
 }
 
 .feedback-edituser {
-  margin-top: 1.7rem;
+  position: absolute;
+  bottom: 1rem;
 }
 
 .mail-lock-icon {

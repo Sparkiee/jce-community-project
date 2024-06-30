@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   doc,
   serverTimestamp,
@@ -28,7 +27,7 @@ function EditUser(props) {
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [newDepartment, setNewDepartment] = useState("");
-
+  const [phoneError, setPhoneError] = useState(false);
   const [isNoLevel3, setIsNoLevel3] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
 
@@ -40,6 +39,10 @@ function EditUser(props) {
     if (!firstName || !lastName || !phone) {
       // fields are empty
       setFormWarning(true);
+      return;
+    }
+    if (phone.length !== 13) {
+      setPhoneError(true);
       return;
     }
     // TODO: minimum phone requirement
@@ -260,25 +263,30 @@ function EditUser(props) {
               </select>
             </>
           )}
-          {isNoLevel3 && (
-            <Alert severity="warning" className="feedback-alert feedback-edituser">
-              חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
-            </Alert>
-          )}
-          {formWarning && (
-            <Alert className="feedback-alert" severity="error">
-              אנא מלא את כל השדות
-            </Alert>
-          )}
-          {edittedSuccessfully && (
-            <Alert severity="success" className="feedback-alert feedback-edituser">
-              פרטי המשתמש עודכנו בהצלחה
-            </Alert>
-          )}
           <button type="submit" className="primary-button extra-reg">
             עדכן פרטים
           </button>
         </div>
+        {isNoLevel3 && (
+          <Alert severity="warning" className="feedback-alert feedback-edituser">
+            חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
+          </Alert>
+        )}
+        {formWarning && (
+          <Alert className="feedback-alert" severity="error">
+            אנא מלא את כל השדות
+          </Alert>
+        )}
+        {edittedSuccessfully && (
+          <Alert severity="success" className="feedback-alert feedback-edituser">
+            פרטי המשתמש עודכנו בהצלחה
+          </Alert>
+        )}
+        {phoneError && (
+          <Alert severity="warning" className="feedback-alert feedback-edituser">
+            מספר הטלפון אינו תקין
+          </Alert>
+        )}
       </form>
     </div>
   );

@@ -46,6 +46,7 @@ function RegisterUser() {
   const [pendingAccount, setPendingAccount] = useState(false);
   const [accountExists, setAccountExists] = useState(false);
   const [passwordLength, setPasswordLength] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
 
   useEffect(() => {
     const session = sessionStorage.getItem("user");
@@ -56,17 +57,13 @@ function RegisterUser() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (
-      !firstName ||
-      !lastName ||
-      !phone ||
-      !email ||
-      !password ||
-      !verifyPassword ||
-      phone.length !== 13
-    ) {
+    if (!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
       // fields are empty
       setFormWarning(true);
+      return;
+    }
+    if (phone.length !== 13) {
+      setPhoneError(true);
       return;
     }
     if (password !== verifyPassword) {
@@ -123,6 +120,7 @@ function RegisterUser() {
     setPendingAccount(false);
     setAccountExists(false);
     setPasswordLength(false);
+    setPhoneError(false);
   }
 
   return (
@@ -232,6 +230,11 @@ function RegisterUser() {
             {passwordLength && (
               <Alert className="feedback-alert" severity="warning">
                 הסיסמה צריכה להכיל לפחות 6 תווים
+              </Alert>
+            )}
+            {phoneError && (
+              <Alert className="feedback-alert" severity="warning">
+                מספר הטלפון אינו תקין
               </Alert>
             )}
           </div>

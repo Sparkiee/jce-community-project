@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  signInWithEmailAndPassword,
-  setPersistence,
-  Persistence,
-  sendEmailVerification
-} from "firebase/auth";
+import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
@@ -24,11 +19,7 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
       if (!userCredential.user.emailVerified) {
         setIsEmailVerified(false);
@@ -64,11 +55,7 @@ function LoginForm() {
       <div className="login-style">
         <div className="forms-box">
           <div className="login-logo">
-            <img
-              className="login-logo-img"
-              src={require("../assets/aguda.png")}
-              alt="aguda icon"
-            />
+            <img className="login-logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
             <p>
               אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
             </p>
@@ -89,11 +76,7 @@ function LoginForm() {
                 setVerificationSent(true);
                 async function sendVerificationEmail() {
                   try {
-                    const userCredential = await signInWithEmailAndPassword(
-                      auth,
-                      email,
-                      password
-                    );
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     await sendEmailVerification(userCredential.user);
                   } catch (error) {
                     console.log(error);
@@ -103,8 +86,7 @@ function LoginForm() {
                 setTimeout(() => {
                   setVerificationSent(false);
                 }, 5000);
-              }}
-            >
+              }}>
               אימייל לא אומת, לחץ כאן בכדי לשלוח חדש
             </Alert>
           )}
@@ -151,8 +133,7 @@ function LoginForm() {
               onChange={(event) => {
                 setRememberMe(event.target.checked);
                 console.log(event.target.checked);
-              }}
-            ></input>
+              }}></input>
             <label className="label-checkbox" htmlFor="input-checkbox">
               זכור אותי
             </label>
@@ -161,11 +142,7 @@ function LoginForm() {
             התחברות
           </button>
           <div className="extra-options">
-            <a
-              href="#"
-              className="forgot-password"
-              onClick={() => navigate("forgot-password")}
-            >
+            <a href="#" className="forgot-password" onClick={() => navigate("forgot-password")}>
               שכחת סיסמה?
             </a>
           </div>

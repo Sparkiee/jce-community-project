@@ -2,7 +2,7 @@ import "../styles/Styles.css";
 import "../styles/ChangePassword.css";
 
 import React, { useState } from "react";
-import { auth } from "../firebase"; // Adjust the import path according to your Firebase configuration file
+import { auth } from "../firebase";
 import { Alert } from "@mui/material";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 
@@ -12,20 +12,37 @@ function ChangePassword(props) {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordChanged, setPasswordChanged] = useState(false);
   const [passwordChangeError, setPasswordChangeError] = useState(false);
-
+  const [warningMessage, setWarningMessage] = useState("");
+  const [formWarning, setFormWarning] = useState(false);
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   const handleChangePassword = async () => {
     try {
-      if (!passwordsMatch) return;
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        user.email,
-        currentPassword
-      ); // Re-authenticate the user
+      const userCredential = await signInWithEmailAndPassword(auth, user.email, currentPassword);
+      if (!currentPassword || !newPassword || !confirmNewPassword) {
+        setFormWarning(true);
+        setWarningMessage("אנא מלא את כל השדות");
+        return;
+      }
+      if (currentPassword === newPassword) {
+        setFormWarning(true);
+        setWarningMessage("הסיסמה החדשה צריכה להיות שונה מהסיסמה הנוכחית");
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        setFormWarning(true);
+        setWarningMessage("הסיסמאות אינן תואמות");
+        return;
+      }
+      if (newPassword.length < 6) {
+        setFormWarning(true);
+        setWarningMessage("הסיסמה החדשה חייבת להיות באורך של לפחות 6 תווים");
+        return;
+      }
       await updatePassword(userCredential.user, newPassword);
       setPasswordChanged(true);
     } catch (error) {
+      setFormWarning(false);
       setPasswordChangeError(true);
       setTimeout(() => {
         setPasswordChangeError(false);
@@ -34,7 +51,11 @@ function ChangePassword(props) {
     }
   };
 
-  const passwordsMatch = newPassword === confirmNewPassword;
+  function resetAlerts() {
+    setFormWarning(false);
+    setPasswordChanged(false);
+    setPasswordChangeError(false);
+  }
 
   return (
     <div className="change-password-form">
@@ -42,15 +63,13 @@ function ChangePassword(props) {
         className="action-close"
         onClick={() => {
           props.onClose();
-        }}
-      >
+        }}>
         <svg
           width="24px"
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -78,51 +97,52 @@ function ChangePassword(props) {
           placeholder="סיסמה נוכחית"
           className="forms-input"
           value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
+          onChange={(e) => {
+            setCurrentPassword(e.target.value);
+            resetAlerts();
+          }}
         />
         <input
           type="password"
           placeholder="סיסמה חדשה"
           className="forms-input"
           value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
+          onChange={(e) => {
+            setNewPassword(e.target.value);
+            resetAlerts();
+          }}
         />
         <input
           type="password"
           placeholder="אימות סיסמה חדשה"
           className="forms-input"
           value={confirmNewPassword}
-          onChange={(e) => setConfirmNewPassword(e.target.value)}
+          onChange={(e) => {
+            setConfirmNewPassword(e.target.value);
+            resetAlerts();
+          }}
         />
       </div>
-      <button
-        type="button"
-        className="primary-button"
-        onClick={handleChangePassword}
-      >
+      <button type="button" className="primary-button" onClick={handleChangePassword}>
         אפס סיסמה
       </button>
-      {!passwordsMatch && (
-        <Alert
-          className="feedback-alert feedback-changepass"
-          severity="warning"
-        >
-          הסיסמאות אינן תואמות
-        </Alert>
-      )}
-      {passwordChanged && (
-        <Alert
-          className="feedback-alert feedback-changepass"
-          severity="success"
-        >
-          הסיסמה שונתה בהצלחה
-        </Alert>
-      )}
-      {passwordChangeError && (
-        <Alert className="feedback-alert feedback-changepass" severity="error">
-          שגיאה בעת שינוי הסיסמה
-        </Alert>
-      )}
+      <div className="change-password-feedback">
+        {formWarning && (
+          <Alert className="feedback-alert feedback-changepass" severity="warning">
+            {warningMessage}
+          </Alert>
+        )}
+        {passwordChanged && (
+          <Alert className="feedback-alert feedback-changepass" severity="success">
+            הסיסמה שונתה בהצלחה
+          </Alert>
+        )}
+        {passwordChangeError && (
+          <Alert className="feedback-alert feedback-changepass" severity="error">
+            הסיסמה הנוכחית אינה נכונה
+          </Alert>
+        )}
+      </div>
     </div>
   );
 }

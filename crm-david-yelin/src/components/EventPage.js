@@ -368,7 +368,7 @@ function EventPage() {
         </div>
       </div>
       <div className="event-page-comments">
-        <h2>Chat for knigass</h2>
+        <h2>Chat</h2>
         {event && <DiscussionList eventId={event.id} />}
       </div>
       <div className="footer"></div>

@@ -9,7 +9,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  getDoc
+  getDoc,
 } from "firebase/firestore";
 import "../styles/Discussion.css";
 import IconButton from "@mui/material/IconButton";
@@ -25,8 +25,13 @@ const DiscussionList = ({ eventId }) => {
   const [newComment, setNewComment] = useState("");
   const [editComment, setEditComment] = useState("");
   const [newReply, setNewReply] = useState("");
+  const [userEmail, setUserEmail] = useState(""); 
 
   useEffect(() => {
+    const storedUser = JSON.parse(sessionStorage.getItem('user'));
+    if (storedUser && storedUser.email) {
+      setUserEmail(storedUser.email); // Записываем email пользователя из sessionStorage
+    }
     fetchComments();
   }, [eventId]);
 
@@ -37,9 +42,10 @@ const DiscussionList = ({ eventId }) => {
     const commentsList = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
+      timestamp: doc.data().timestamp ? doc.data().timestamp.toDate() : new Date(), // Преобразуем timestamp в Date объект
     }));
-    // Инвертировать массив, чтобы последние комментарии были внизу
-    setComments(commentsList.sort((a, b) => a.timestamp - b.timestamp));
+    commentsList.sort((a, b) => a.timestamp - b.timestamp); // Сортировка комментариев по timestamp
+    setComments(commentsList);
   };
 
   const handleAddComment = async () => {
@@ -47,6 +53,7 @@ const DiscussionList = ({ eventId }) => {
     await addDoc(collection(db, "comments"), {
       eventId,
       text: newComment,
+      authorEmail: userEmail, // Добавляем email пользователя к комментарию
       timestamp: new Date(),
     });
     setNewComment("");
@@ -81,7 +88,7 @@ const DiscussionList = ({ eventId }) => {
       updatedReplies.push({
         text: newReply,
         timestamp: new Date(),
-        author: "Current User",  // Update accordingly with actual user data
+        author: userEmail,
       });
       await updateDoc(commentRef, {
         replies: updatedReplies
@@ -91,6 +98,13 @@ const DiscussionList = ({ eventId }) => {
     }
   };
 
+  const handleKeyDown = (event, callback) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      callback();
+    }
+  };
+  
   return (
     <div className="discussion-list">
       {comments.map((comment) => (
@@ -98,23 +112,27 @@ const DiscussionList = ({ eventId }) => {
           <div className="discussion-header">
             <span className="discussion-author">{comment.author}</span>
             <span className="discussion-timestamp">
-              {new Date(comment.timestamp.toDate()).toLocaleString()}
+              {new Date(comment.timestamp).toLocaleString()}
             </span>
           </div>
           {editingCommentId === comment.id ? (
             <textarea
               value={editComment}
               onChange={(e) => setEditComment(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, () => handleEditComment(comment.id))}
             />
           ) : (
+        <div className="comment-content">
+            <div className="author-email">{comment.authorEmail}</div> {/* Отображение email */}
             <p>{comment.text}</p>
+          </div>         
           )}
           <div className="discussion-actions">
             {editingCommentId === comment.id ? (
               <button onClick={() => handleEditComment(comment.id)}>Save</button>
             ) : (
               <>
-                <IconButton onClick={() => setEditingCommentId(comment.id)}>
+                <IconButton onClick={() => { setEditingCommentId(comment.id); setEditComment(comment.text); }}>
                   <EditIcon />
                 </IconButton>
                 <IconButton onClick={() => handleDeleteComment(comment.id)}>
@@ -130,7 +148,7 @@ const DiscussionList = ({ eventId }) => {
                 <span className="reply-author">{reply.author}:</span>
                 <span>{reply.text}</span>
                 <span className="discussion-timestamp">
-                  {new Date(reply.timestamp.toDate()).toLocaleString()}
+                  {new Date(reply.timestamp).toLocaleString()}
                 </span>
               </div>
             ))}
@@ -140,6 +158,7 @@ const DiscussionList = ({ eventId }) => {
                   value={newReply}
                   onChange={(e) => setNewReply(e.target.value)}
                   placeholder="Type your reply here..."
+                  onKeyDown={(e) => handleKeyDown(e, () => handleReply(comment.id))}
                 />
                 <IconButton onClick={() => handleReply(comment.id)}>
                   <SendIcon />
@@ -154,11 +173,13 @@ const DiscussionList = ({ eventId }) => {
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Leave a comment..."
+          onKeyDown={(e) => handleKeyDown(e, handleAddComment)}
         />
         <button onClick={handleAddComment}>Post Comment</button>
       </div>
     </div>
   );
+
 };
 
 export default DiscussionList;

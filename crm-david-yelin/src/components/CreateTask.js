@@ -56,7 +56,7 @@ function CreateTask(props) {
       setWarningText(warning);
       return;
     }
-    if(taskDetails.taskBudget < 0) {
+    if (taskDetails.taskBudget < 0) {
       setFormWarning(true);
       let warning = "אנא הכנס תקציב חוקי";
       setWarningText(warning);
@@ -70,6 +70,13 @@ function CreateTask(props) {
 
       const formattedDate = `${year}-${month}-${day}`;
       taskDetails.taskStartDate = formattedDate;
+    }
+    const startDate = new Date(taskDetails.taskStartDate);
+    const endDate = new Date(taskDetails.taskEndDate);
+    if (startDate > endDate) {
+      setFormWarning(true);
+      setWarningText("תאריך ההתחלה לא יכול להיות לאחר תאריך הסיום");
+      return;
     }
     const assigneeRefs = selectedMembers.map((member) => doc(db, "members", member.id));
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -337,7 +344,7 @@ function CreateTask(props) {
             </div>
           </div>
           <select
-            onChange={(e) => setTaskDetails({ ...taskDetails, taskStatus: e.target.value})}
+            onChange={(e) => setTaskDetails({ ...taskDetails, taskStatus: e.target.value })}
             className="create-task-input extra-create-task-status-input">
             <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>
@@ -384,10 +391,9 @@ function CreateTask(props) {
             }))}
           />
           <div className="create-task-selected-members">
-            {selectedMembers.map((member) => (
-              <Stack direction="row" spacing={1}>
+            {selectedMembers.map((member, index) => (
+              <Stack key={index} direction="row" spacing={1}>
                 <Chip
-                  key={member.id}
                   avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}

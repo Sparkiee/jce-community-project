@@ -22,6 +22,8 @@
 .extra-edit-event-title {
   margin: 0 0 1rem 0;
   font-size: 4rem;
+  width: 100%;
+  word-wrap: break-word;
 }
 
 .edit-event-input-box {

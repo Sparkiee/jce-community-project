@@ -52,7 +52,7 @@ function CreateEvent(props) {
       setFormWarning(true);
       let warning = "אנא מלא את כל השדות";
       setWarningText(warning);
-      return; // Exit the function to prevent further execution
+      return;
     }
     if (eventDetails.eventBudget < 0) {
       setFormWarning(true);
@@ -60,13 +60,11 @@ function CreateEvent(props) {
       setWarningText(warning);
       return;
     }
-
     if (await eventExistsAndOpen(eventDetails.eventName)) {
       setFormWarning(true);
       setWarningText("משימה פתוחה עם שם זהה כבר קיימת");
       return;
     }
-
     if (!eventDetails.eventStartDate) {
       const date = new Date();
       const year = date.getFullYear();
@@ -75,6 +73,13 @@ function CreateEvent(props) {
 
       const formattedDate = `${year}-${month}-${day}`;
       eventDetails.eventStartDate = formattedDate;
+    }
+    const startDate = new Date(eventDetails.eventStartDate);
+    const endDate = new Date(eventDetails.eventEndDate);
+    if (startDate > endDate) {
+      setFormWarning(true);
+      setWarningText("תאריך ההתחלה לא יכול להיות לאחר תאריך הסיום");
+      return;
     }
     const user = JSON.parse(sessionStorage.getItem("user"));
     const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);

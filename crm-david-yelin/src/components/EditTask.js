@@ -9,7 +9,7 @@ import {
   where,
   getDoc,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
 import "../styles/Styles.css";
 import "../styles/EditTask.css";
@@ -81,7 +81,7 @@ function EditTask(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
@@ -115,7 +115,7 @@ function EditTask(props) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setEvents(results);
     } else setEvents([]);
@@ -162,6 +162,13 @@ function EditTask(props) {
       const formattedDate = `${year}-${month}-${day}`;
       taskDetails.taskStartDate = formattedDate;
     }
+    const startDate = new Date(taskDetails.taskStartDate);
+    const endDate = new Date(taskDetails.taskEndDate);
+    if (startDate > endDate) {
+      setFormWarning(true);
+      setWarningText("תאריך ההתחלה לא יכול להיות לאחר תאריך הסיום");
+      return;
+    }
 
     delete taskDetails.assignees;
 
@@ -198,7 +205,7 @@ function EditTask(props) {
         task: "tasks/" + taskDetails.taskDoc,
         timestamp: serverTimestamp(),
         member: "members/" + user.email,
-        updatedFields: getUpdatedFields(taskDetails, originalTask)
+        updatedFields: getUpdatedFields(taskDetails, originalTask),
       });
 
       setEditedSuccessfully(true);
@@ -331,9 +338,20 @@ function EditTask(props) {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName
+              label: event.eventName,
             }))}
           />
+          <div className="edit-task-selected-task">
+            {selectedEvent && (
+              <Stack direction="row" spacing={1}>
+                <Chip
+                  label={selectedEvent.eventName}
+                  onDelete={() => handleRemoveEvent()}
+                  variant="outlined"
+                />
+              </Stack>
+            )}
+          </div>
           <Select
             placeholder="הוסף חבר וועדה"
             className="create-event-input extra-create-event-input"
@@ -345,25 +363,13 @@ function EditTask(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
-          <div className="TBU">
-            {selectedEvent && (
-              <Stack direction="row" spacing={1}>
-                <Chip
-                  label={selectedEvent.eventName}
-                  onDelete={() => handleRemoveEvent()}
-                  variant="outlined"
-                />
-              </Stack>
-            )}
-          </div>
           <div className="edit-task-selected-members">
-            {selectedMembers.map((member) => (
-              <Stack direction="row" spacing={1} flexWrap="wrap">
+            {selectedMembers.map((member, index) => (
+              <Stack key={index} direction="row" spacing={1} flexWrap="wrap">
                 <Chip
-                  key={member.id}
                   avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
@@ -378,6 +384,11 @@ function EditTask(props) {
           {editedSuccessfully && (
             <Alert severity="success" className="feedback-alert feedback-edit-task">
               פרטי המשימה עודכנו בהצלחה
+            </Alert>
+          )}
+          {formWarning && (
+            <Alert severity="error" className="feedback-alert feedback-edit-task">
+              {warningText}
             </Alert>
           )}
         </div>

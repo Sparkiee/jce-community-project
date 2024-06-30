@@ -11,9 +11,19 @@
   width: 60rem;
 }
 
+.edit-task-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 .edit-task-title {
   margin: 0 0 1rem 0;
   font-size: 4rem;
+  width: 100%;
+  word-wrap: break-word;
 }
 
 .edit-task-input-box {
@@ -72,7 +82,7 @@
 }
 
 .extra-edit-task-input {
-  width: 90%;
+  width: 92%;
 }
 
 .edit-task-input-time {
@@ -81,6 +91,10 @@
 
 .edit-task-input-time label {
   font-size: 1.8rem;
+}
+
+.edit-task-input-time input {
+  padding: 1.35rem 1.5rem;
 }
 
 .edit-task-input-budget {
@@ -102,5 +116,5 @@
 
 .feedback-edit-task {
   position: absolute;
-  bottom: 2rem;
+  bottom: 1.5rem;
 }

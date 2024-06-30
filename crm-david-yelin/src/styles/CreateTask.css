@@ -87,7 +87,7 @@
 }
 
 .create-task-time-input input {
-  padding: 1.3rem 1.5rem;
+  padding: 1.35rem 1.5rem;
 }
 
 .create-task-budget-input {
@@ -104,22 +104,6 @@
 
 .extra-create-task-status-input {
   width: 90%;
-}
-
-.selected-task {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 1.4rem;
-  transition: color 0.2s linear;
-}
-
-.selected-task:hover {
-  color: rgb(2, 4, 79);
-}
-
-.create-task-selected-task svg {
-  margin-left: 0.5rem;
 }
 
 .create-task-selected-members {

@@ -40,7 +40,7 @@ function CreateUser(props) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment,
+          name: newDepartment
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -90,10 +90,17 @@ function CreateUser(props) {
       const isExistingAccount = await checkExistingAccount(email.toLowerCase());
       if (isPendingRegistration) {
         setEmailPendingRegistration(true);
+        setTimeout(() => {
+          setEmailPendingRegistration(false);
+        }, 2000);
         return;
       }
       if (isExistingAccount) {
         setEmailExists(true);
+        setTimeout(() => {
+          setEmailExists(false);
+        }, 2000);
+        return;
       }
       setEmailPendingRegistration(false);
       setEmailExists(false);
@@ -103,13 +110,13 @@ function CreateUser(props) {
         email: email,
         department: department,
         role: role,
-        timestamp: serverTimestamp(),
+        timestamp: serverTimestamp()
       });
       setAccountCreated(true);
       setTimeout(() => {
         setAccountCreated(false);
         props.onClose();
-      }, 1000);
+      }, 2000);
     } catch (e) {
       console.error("Error adding document: ", e);
     }

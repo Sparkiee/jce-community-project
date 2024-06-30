@@ -23,6 +23,7 @@ function EditUser(props) {
   const [role, setRole] = useState(props.target.role || "");
   const [department, setDepartment] = useState(props.target.department || "");
   const [privileges, setPrivileges] = useState(props.target.privileges) || "";
+  const [adminAccess, setAdminAccess] = useState(props.target.adminAccess || []);
   const [formWarning, setFormWarning] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
@@ -91,6 +92,7 @@ function EditUser(props) {
         department: department,
         privileges: privileges,
         lastUpdate: serverTimestamp(),
+        adminAccess: adminAccess,
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {
@@ -257,7 +259,7 @@ function EditUser(props) {
                 value={privileges}
                 onChange={(event) => setPrivileges(Number(event.target.value))}
                 className="forms-input">
-                {user.adminAccess.includes("manageAdmin") && <option value={2}>מנהל ראשי</option>}
+                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && <option value={2}>מנהל ראשי</option>}
                 <option value={1}>משתמש פעיל</option>
                 <option value={0}>משתמש מושהה</option>
               </select>

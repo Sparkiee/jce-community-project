@@ -270,6 +270,8 @@ function TaskPage() {
             <div key={index} className="assignee-task-page-item">
               <Link className="profile-link" to={`/profile/${assignee.email}`}>
                 <Avatar {...stringAvatar(assignee.fullName)} />
+              </Link>
+              <Link to={`/profile/${assignee.email}`}>
                 <p>{assignee.fullName}</p>
               </Link>
             </div>

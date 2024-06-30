@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Avatar from "@mui/material/Avatar";
@@ -46,6 +46,7 @@ function TaskPage() {
   const editTaskRef = useRef(null);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const [taskCreatorFullName, setTaskCreatorFullName] = useState("");
+  const [eventId, setEventId] = useState("");
 
   const getStatusColorClass = (status) => {
     switch (status) {
@@ -112,6 +113,7 @@ function TaskPage() {
           if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
             const eventPathSegments = taskData.relatedEvent.split("/");
             const eventId = eventPathSegments[eventPathSegments.length - 1];
+            setEventId(eventId);
             const eventDoc = await getDoc(doc(db, "events", eventId));
             if (eventDoc.exists()) {
               setEventName(eventDoc.data().eventName);
@@ -162,6 +164,7 @@ function TaskPage() {
           if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
             const eventPathSegments = taskData.relatedEvent.split("/");
             const eventId = eventPathSegments[eventPathSegments.length - 1];
+            setEventId(eventId);
             const eventDoc = await getDoc(doc(db, "events", eventId));
             if (eventDoc.exists()) {
               setEventName(eventDoc.data().eventName);
@@ -213,7 +216,7 @@ function TaskPage() {
                 <strong>תיאור:</strong> {task.taskDescription}
               </p>
               <p>
-                <strong>אירוע משוייך:</strong> {eventName}
+                <strong>שייך לאירוע :</strong> <Link to={`/event/${eventId}`}>{eventName}</Link>
               </p>
               <p>
                 <strong>תאריך התחלה:</strong> {task.taskStartDate}
@@ -265,8 +268,10 @@ function TaskPage() {
           <h2>משתתפים</h2>
           {assignees.map((assignee, index) => (
             <div key={index} className="assignee-task-page-item">
-              <Avatar {...stringAvatar(assignee.fullName)} />
-              <p>{assignee.fullName}</p>
+              <Link className="profile-link" to={`/profile/${assignee.email}`}>
+                <Avatar {...stringAvatar(assignee.fullName)} />
+                <p>{assignee.fullName}</p>
+              </Link>
             </div>
           ))}
         </div>

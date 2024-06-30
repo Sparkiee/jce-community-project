@@ -25,7 +25,7 @@ function EditEvent(props) {
   const [warningText, setWarningText] = useState("");
   const [members, setMembers] = useState([]);
   const [eventExists, setEventExists] = useState(false);
-
+  const [editedSuccessfully, setEditedSuccessfully] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
 
   const [eventDetails, setEvent] = useState(props.eventDetails || {});
@@ -144,7 +144,11 @@ function EditEvent(props) {
         updatedFields: getUpdatedFields(eventDetails, originalEvent),
       });
 
-      props.onClose();
+      setEditedSuccessfully(true);
+      setTimeout(() => {
+        setEditedSuccessfully(false);
+        props.onClose();
+      }, 2000);
     } catch (error) {
       console.error("Error updating document: ", error);
     }
@@ -182,6 +186,11 @@ function EditEvent(props) {
       setSearch(""); // Clear the search input after selection
       setMembers([]); // Clear the dropdown options
     }
+  }
+
+  function resetAlerts() {
+    setFormWarning(false);
+    setWarningText("");
   }
 
   const handleRemoveMember = (id) => {
@@ -226,7 +235,10 @@ function EditEvent(props) {
             name="eventName"
             className="edit-event-input"
             value={eventDetails.eventName || ""}
-            onChange={(e) => setEvent({ ...eventDetails, eventName: e.target.value })}
+            onChange={(e) => {
+              setEvent({ ...eventDetails, eventName: e.target.value });
+              resetAlerts();
+            }}
           />
           <div className="start-due-date-edit-event">
             <div className="start-date-edit-event">
@@ -242,6 +254,7 @@ function EditEvent(props) {
                     ...eventDetails,
                     eventStartDate: e.target.value,
                   });
+                  resetAlerts();
                 }}
               />
             </div>
@@ -258,6 +271,7 @@ function EditEvent(props) {
                     ...eventDetails,
                     eventEndDate: e.target.value,
                   });
+                  resetAlerts();
                 }}
               />
             </div>
@@ -272,7 +286,10 @@ function EditEvent(props) {
                 name="eventTime"
                 className="edit-event-input"
                 value={eventDetails.eventTime || ""}
-                onChange={(e) => setEvent({ ...eventDetails, eventTime: e.target.value })}
+                onChange={(e) => {
+                  setEvent({ ...eventDetails, eventTime: e.target.value });
+                  resetAlerts();
+                }}
               />
             </div>
             <div className="edit-event-budget">
@@ -285,7 +302,10 @@ function EditEvent(props) {
                 placeholder="תקציב משימה"
                 className="edit-event-input"
                 value={eventDetails.eventBudget || 0}
-                onChange={(e) => setEvent({ ...eventDetails, eventBudget: Number(e.target.value) })}
+                onChange={(e) => {
+                  setEvent({ ...eventDetails, eventBudget: Number(e.target.value) });
+                  resetAlerts();
+                }}
               />
             </div>
           </div>
@@ -295,16 +315,18 @@ function EditEvent(props) {
             name="eventLocation"
             className="edit-event-input"
             value={eventDetails.eventLocation || ""}
-            onChange={(e) =>
+            onChange={(e) => {
               setEvent({
                 ...eventDetails,
                 eventLocation: e.target.value,
-              })
-            }
+              });
+              resetAlerts();
+            }}
           />
           <select
             onChange={(e) => {
               setEvent({ ...eventDetails, eventStatus: e.target.value });
+              resetAlerts();
             }}
             className="edit-event-input extra-edit-event-status-input">
             <option value="טרם החל">טרם החל</option>
@@ -319,6 +341,7 @@ function EditEvent(props) {
             }}
             onChange={(e) => {
               handleSelectMember(e.value);
+              resetAlerts();
             }}
             options={members.map((member) => ({
               value: member.fullName,
@@ -345,6 +368,11 @@ function EditEvent(props) {
         {formWarning && (
           <Alert className="feedback-alert" severity="error">
             {warningText}
+          </Alert>
+        )}
+        {editedSuccessfully && (
+          <Alert className="feedback-alert" severity="success">
+            השינויים נשמרו בהצלחה
           </Alert>
         )}
       </div>

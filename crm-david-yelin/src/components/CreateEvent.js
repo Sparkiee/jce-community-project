@@ -168,6 +168,12 @@ function CreateEvent(props) {
     }
   }
 
+  function resetAlerts() {
+    setEventExists(false);
+    setFormWarning(false);
+    setWarningText("");
+  }
+
   const handleRemoveMember = (id) => {
     setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
   };
@@ -209,7 +215,10 @@ function CreateEvent(props) {
             placeholder="שם האירוע (חובה*)"
             name="eventName"
             className="create-event-input"
-            onChange={(e) => setEventDetails({ ...eventDetails, eventName: e.target.value })}
+            onChange={(e) => {
+              setEventDetails({ ...eventDetails, eventName: e.target.value });
+              resetAlerts();
+            }}
           />
           <div className="start-due-date-event">
             <div className="start-date-event">
@@ -225,6 +234,7 @@ function CreateEvent(props) {
                     ...eventDetails,
                     eventStartDate: e.target.value,
                   });
+                  resetAlerts();
                 }}
               />
             </div>
@@ -241,6 +251,7 @@ function CreateEvent(props) {
                     ...eventDetails,
                     eventEndDate: e.target.value,
                   });
+                  resetAlerts();
                 }}
               />
             </div>
@@ -254,7 +265,10 @@ function CreateEvent(props) {
                 type="time"
                 name="eventTime"
                 className="create-event-input"
-                onChange={(e) => setEventDetails({ ...eventDetails, eventTime: e.target.value })}
+                onChange={(e) => {
+                  setEventDetails({ ...eventDetails, eventTime: e.target.value });
+                  resetAlerts();
+                }}
               />
             </div>
             <div className="create-event-budget">
@@ -266,9 +280,10 @@ function CreateEvent(props) {
                 name="eventBudget"
                 placeholder="תקציב משימה"
                 className="create-event-input"
-                onChange={(e) =>
-                  setEventDetails({ ...eventDetails, eventBudget: Number(e.target.value) })
-                }
+                onChange={(e) => {
+                  setEventDetails({ ...eventDetails, eventBudget: Number(e.target.value) });
+                  resetAlerts();
+                }}
               />
             </div>
           </div>
@@ -277,16 +292,18 @@ function CreateEvent(props) {
             placeholder="מיקום האירוע (חובה*)"
             name="eventLocation"
             className="create-event-input"
-            onChange={(e) =>
+            onChange={(e) => {
               setEventDetails({
                 ...eventDetails,
                 eventLocation: e.target.value,
-              })
-            }
+              });
+              resetAlerts();
+            }}
           />
           <select
             onChange={(e) => {
               setEventDetails({ ...eventDetails, eventStatus: e.target.value });
+              resetAlerts();
             }}
             className="create-event-input extra-create-event-status-input">
             <option value="טרם החל">טרם החל</option>
@@ -301,6 +318,7 @@ function CreateEvent(props) {
             }}
             onChange={(e) => {
               handleSelectMember(e.value);
+              resetAlerts();
             }}
             options={members.map((member) => ({
               value: member.fullName,

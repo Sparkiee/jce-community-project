@@ -19,11 +19,9 @@ import EditUser from "./EditUser";
 import ConfirmAction from "./ConfirmAction";
 import EditContactLog from "./EditContactLog";
 import { useNavigate } from "react-router-dom";
-
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
-
 import { Avatar, Tab } from "@mui/material";
 import TaskIcon from "@mui/icons-material/Task";
 import AssignmentIcon from "@mui/icons-material/Assignment";

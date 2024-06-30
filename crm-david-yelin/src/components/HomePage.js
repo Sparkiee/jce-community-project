@@ -457,11 +457,11 @@ function HomePage() {
       </div>
       <hr className="divider" />
       {numEvents === 0 ? (
-        <h2 className="title-home">אין אירועים קרובים!</h2>
+        <h2 className="title-home">אין אירועים פתוחים!</h2>
       ) : numEvents === 1 ? (
-        <h2 className="title-home">יש לך אירוע אחד בקרוב</h2>
+        <h2 className="title-home">יש לך אירוע פתוח אחד</h2>
       ) : (
-        <h2 className="title-home">יש לך {numEvents} אירועים בקרוב</h2>
+        <h2 className="title-home">יש לך {numEvents} אירועים פתוחים</h2>
       )}
       <div style={{ height: 372, width: "90%" }}>
         <ThemeProvider theme={theme}>

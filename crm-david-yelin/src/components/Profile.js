@@ -42,7 +42,7 @@ import ContactUser from "./ContactUser";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 function Profile() {
-  const pages = ["פניות", "משימות פתוחות", "אירועים קרובים", "היסטוריה"];
+  const pages = ["פניות", "משימות פתוחות", "אירועים פתוחים", "היסטוריה"];
   const handlePageSwitch = (event, newValue) => {
     setPage(newValue);
   };
@@ -821,7 +821,7 @@ function Profile() {
               </div>
               <div className="profile-stats-row">
                 <AssignmentIcon />
-                <h3>{numEvents} אירועים קרובים</h3>
+                <h3>{numEvents} אירועים פתוחים</h3>
               </div>
               <div className="profile-stats-row">
                 <TaskIcon />

@@ -86,6 +86,10 @@
   font-size: 1.8rem;
 }
 
+.create-task-time-input input {
+  padding: 1.3rem 1.5rem;
+}
+
 .create-task-budget-input {
   width: 50%;
 }

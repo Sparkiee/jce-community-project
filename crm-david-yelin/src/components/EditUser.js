@@ -6,7 +6,7 @@ import {
   getDocs,
   collection,
   where,
-  query,
+  query
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
@@ -29,16 +29,17 @@ function EditUser(props) {
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [newDepartment, setNewDepartment] = useState("");
   const [phoneError, setPhoneError] = useState(false);
-  const [isNoLevel3, setIsNoLevel3] = useState(false);
+  const [isNoSuperAdmin, setIsNoSuperAdmin] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
+  const [removeSuperAdmin, setRemoveSuperAdmin] = useState(true);
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   async function handleSubmit(event) {
     event.preventDefault();
+    console.log(props.target.adminAccess);
 
-    if (!firstName || !lastName || !phone || !department || !privileges) {
-      // fields are empty
+    if (!firstName || !lastName || !phone || !department || (privileges < 0 && privileges > 2)) {
       setFormWarning(true);
       return;
     }
@@ -48,19 +49,26 @@ function EditUser(props) {
     }
 
     // TODO: double check those privileges
-    if (props.target.privileges > 2 && privileges < 3) {
+    if (user.privileges.privileges < 2 && props.target.privileges > user.privileges) {
+      setRemoveSuperAdmin(true);
+      setTimeout(() => {
+        setRemoveSuperAdmin(false);
+      }, 2000);
+      return;
+    }
+    if (props.target.privileges == 2 && privileges < 2) {
       // Reference to the Firestore "members" collection
       const memberRef = collection(db, "members");
 
       // Construct the query
-      const q = query(memberRef, where("privileges", ">", 2));
+      const q = query(memberRef, where("privileges", "==", 2));
 
       // Fetch the documents matching the query
       const querySnapshot = await getDocs(q);
 
       // Check if the query snapshot is empty
       if (querySnapshot.empty) {
-        console.log("none");
+        return;
       } else {
         querySnapshot.forEach((doc) => {
           console.log(doc.id, " => ", doc.data());
@@ -70,9 +78,9 @@ function EditUser(props) {
 
         // Check if there is only one document with level 3 privileges
         if (querySnapshot.size <= 1) {
-          setIsNoLevel3(true);
+          setIsNoSuperAdmin(true);
           setTimeout(() => {
-            setIsNoLevel3(false);
+            setIsNoSuperAdmin(false);
           }, 1000);
           return;
         }
@@ -91,7 +99,7 @@ function EditUser(props) {
         department: department,
         privileges: privileges,
         lastUpdate: serverTimestamp(),
-        adminAccess: adminAccess,
+        adminAccess: adminAccess
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {
@@ -109,7 +117,7 @@ function EditUser(props) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment,
+          name: newDepartment
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -137,7 +145,7 @@ function EditUser(props) {
   function resetAlerts() {
     setFormWarning(false);
     setPhoneError(false);
-    setIsNoLevel3(false);
+    setIsNoSuperAdmin(false);
     setEdittedSuccessfully(false);
   }
 
@@ -293,14 +301,19 @@ function EditUser(props) {
           </button>
         </div>
         <div className="edit-user-feedback">
-          {isNoLevel3 && (
+          {isNoSuperAdmin && (
             <Alert severity="warning" className="feedback-alert feedback-edituser">
-              חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
+              חייב להיות לפחות מנהל ראשי אחד במערכת
             </Alert>
           )}
           {formWarning && (
             <Alert className="feedback-alert" severity="error">
               אנא מלא את כל השדות
+            </Alert>
+          )}
+          {removeSuperAdmin && (
+            <Alert className="feedback-alert" severity="error">
+              אינך רשאי לשנות למשתמש זה הרשאות
             </Alert>
           )}
           {edittedSuccessfully && (

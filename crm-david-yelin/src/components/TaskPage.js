@@ -288,7 +288,6 @@ function TaskPage() {
       <div className="task-discussion">
         <DiscussionList
           eventId={taskId}
-          userPrivileges={userPrivileges}
           onShowFullDiscussion={handleShowFullDiscussion}
         />
       </div>

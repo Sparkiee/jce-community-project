@@ -92,12 +92,6 @@ function ManageEvents() {
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  const fetchUserPrivileges = useCallback(() => {
-    if (user && user.privileges) {
-      setUserPrivileges(user.privileges);
-    }
-  }, []);
-
   const baseColumns = [
     { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
     {
@@ -299,7 +293,6 @@ function ManageEvents() {
 
   useEffect(() => {
     getEvents();
-    fetchUserPrivileges();
 
     const handleClickOutside = (event) => {
       if (createEventRef.current && !createEventRef.current.contains(event.target)) {

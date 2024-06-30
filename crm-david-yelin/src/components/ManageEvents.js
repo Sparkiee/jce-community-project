@@ -45,9 +45,9 @@ function stringAvatar(name) {
   const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -67,8 +67,8 @@ function ManageEvents() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -105,14 +105,14 @@ function ManageEvents() {
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "eventLocation",
       headerName: "מיקום",
       width: 150,
       align: "right",
-      flex: 4,
+      flex: 4
     },
     ...(userPrivileges >= 2
       ? [
@@ -128,8 +128,8 @@ function ManageEvents() {
                   {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
                 </div>
               );
-            },
-          },
+            }
+          }
         ]
       : []),
     {
@@ -142,7 +142,7 @@ function ManageEvents() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventEndDate",
@@ -154,14 +154,14 @@ function ManageEvents() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "eventStatus",
@@ -177,7 +177,7 @@ function ManageEvents() {
             {params.row.eventStatus}
           </div>
         );
-      },
+      }
     },
     {
       field: "assignTo",
@@ -199,7 +199,7 @@ function ManageEvents() {
             ))}
           </AvatarGroup>
         );
-      },
+      }
     },
     {
       field: "view",
@@ -211,29 +211,40 @@ function ManageEvents() {
         <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
-  const editColumn = {
-    field: "edit",
-    headerName: "עריכה",
-    width: 150,
-    align: "right",
-    flex: 1.5,
-    renderCell: (params) => (
-      <div>
-        <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
-          <EditIcon />
-        </IconButton>
-        <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
-          <DeleteForeverIcon />
-        </IconButton>
-      </div>
-    ),
-  };
-
-  const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
+  const columns = [
+    ...baseColumns,
+    ...(userPrivileges === 2 ||
+    user.adminAccess.includes("deleteEvent") ||
+    user.adminAccess.includes("editEvent")
+      ? [
+          {
+            field: "edit",
+            headerName: "עריכה",
+            width: 150,
+            align: "right",
+            flex: 1.5,
+            renderCell: (params) => (
+              <div>
+                {(userPrivileges === 2 || user.adminAccess.includes("editEvent")) && (
+                  <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
+                    <EditIcon />
+                  </IconButton>
+                )}
+                {(userPrivileges === 2 || user.adminAccess.includes("deleteEvent")) && (
+                  <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
+                    <DeleteForeverIcon />
+                  </IconButton>
+                )}
+              </div>
+            )
+          }
+        ]
+      : [])
+  ];
 
   async function getMemberFullName(email) {
     try {
@@ -252,7 +263,7 @@ function ManageEvents() {
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        eventDoc: doc.id,
+        eventDoc: doc.id
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
@@ -276,7 +287,7 @@ function ManageEvents() {
             eventStatus: event.eventStatus,
             assignees: event.assignees,
             eventCreator: event.eventCreator,
-            assignTo: assigneeData || [],
+            assignTo: assigneeData || []
           };
         })
       );
@@ -376,7 +387,7 @@ function ManageEvents() {
       <div className="manage-events-styles">
         <h1>אירועים</h1>
         <div ref={createEventRef} className="display-create">
-          {user && user.privileges > 1 && showCreateEvent && (
+          {showCreateEvent && (
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">
                 <CreateEvent onClose={handleCloseForms} />
@@ -384,7 +395,7 @@ function ManageEvents() {
             </div>
           )}
         </div>
-        {user && user.privileges > 1 && (
+        {(user.adminAccess.includes("createEvent") || user.privileges == 2) && (
           <div
             className="action-button add-events-button add-events-manage-events"
             onClick={handleShowCreateEvents}>
@@ -415,16 +426,16 @@ function ManageEvents() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 },
-                },
+                  paginationModel: { page: 0, pageSize: 17 }
+                }
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />

@@ -41,7 +41,6 @@ function EventPage() {
   const [event, setEvent] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [userPrivileges, setUserPrivileges] = useState(1);
   const [loading, setLoading] = useState(true);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const createEventRef = useRef(null);
@@ -146,17 +145,10 @@ function EventPage() {
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  const fetchUserPrivileges = useCallback(() => {
-    if (user && user.privileges) {
-      setUserPrivileges(user.privileges);
-    }
-  }, []);
-
   useEffect(() => {
     fetchEvent();
     fetchTasks();
-    fetchUserPrivileges();
-  }, [fetchEvent, fetchTasks, fetchUserPrivileges]);
+  }, []);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -218,7 +210,7 @@ function EventPage() {
       align: "right",
       flex: 4,
     },
-    ...(userPrivileges >= 2 || isUserAnAssignee
+    ...(user.privileges == 2 || isUserAnAssignee
       ? [
           {
             field: "taskBudget",
@@ -310,7 +302,7 @@ function EventPage() {
                   <strong>שעת סיום: </strong>
                   {event.eventTime}
                 </p>
-                {(userPrivileges >= 2 || isUserAnAssignee) && (
+                {(user.privileges == 2 || isUserAnAssignee) && (
                   <p>
                     <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}
                   </p>
@@ -320,7 +312,7 @@ function EventPage() {
                   {event.eventCreatorFullName}
                 </p>
               </div>
-              {userPrivileges >= 2 && (
+              {(user.privileges == 2 || (user.adminAccess.includes("editEvent"))) && (
                 <IconButton
                   className="event-page-edit-icon"
                   aria-label="edit"
@@ -356,7 +348,7 @@ function EventPage() {
         </div>
       </div>
 
-      {isEditing && event && event.assigneesData && (
+      {isEditing && event && (
         <div className="popup-overlay">
           <div ref={createEventRef} className="popup-content">
             <EditEvent eventDetails={event} onClose={handleSaveEdit} />

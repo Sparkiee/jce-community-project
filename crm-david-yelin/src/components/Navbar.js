@@ -197,7 +197,7 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
-              {user && user.privileges >= 3 && (
+              {(user.privileges == 2 || user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin")) && (
                 <li>
                   <a to="#" onClick={() => navigate("/users")}>
                     ניהול משתמשים

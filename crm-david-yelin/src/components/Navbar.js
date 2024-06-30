@@ -21,7 +21,6 @@ import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
 import MessageIcon from "@mui/icons-material/Message";
-import Profile from "./Profile.js";
 
 function Navbar() {
   function stringToColor(string) {

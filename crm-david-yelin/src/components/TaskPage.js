@@ -8,6 +8,8 @@ import "../styles/Styles.css";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditTask from "./EditTask";
+import DiscussionList from "./DiscussionList";
+
 
 function stringToColor(string) {
   let hash = 0;
@@ -42,6 +44,7 @@ function TaskPage() {
   const [assignees, setAssignees] = useState([]);
   const [eventName, setEventName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [fullDiscussion, setFullDiscussion] = useState(null);
   const editTaskRef = useRef(null);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const [taskCreatorFullName, setTaskCreatorFullName] = useState("");
@@ -190,6 +193,20 @@ function TaskPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isEditing]);
+    
+  const handleShowFullDiscussion = async (commentId) => {
+    try {
+      const commentDoc = await getDoc(doc(db, "discussions", commentId));
+      if (commentDoc.exists()) {
+        setFullDiscussion(commentDoc.data());
+      } else {
+        console.error("No such discussion document!");
+      }
+    } catch (error) {
+      console.error("Error fetching discussion:", error);
+    }
+  };
+
 
   if (!task) {
     return <div>טוען...</div>;
@@ -267,10 +284,49 @@ function TaskPage() {
           <h2>This is where the files will be</h2>
         </div>
       </div>
-      <div className="task-page-comments">
-        <h2>The is where the chat will be</h2>
+  
+      <div className="task-discussion">
+        <DiscussionList
+          eventId={taskId}
+          userPrivileges={userPrivileges}
+          onShowFullDiscussion={handleShowFullDiscussion}
+        />
       </div>
-      <div className="footer"></div>
+  
+      {isEditing && task && (
+        <div className="edit-task-popup">
+          <div className="edit-task-popup-content" ref={editTaskRef}>
+            <div className="action-close" onClick={handleCloseEdit}>
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor">
+                <line
+                  x1="17"
+                  y1="7"
+                  x2="7"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="7"
+                  y1="7"
+                  x2="17"
+                  y2="17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <EditTask task={task} onClose={handleCloseEdit} onTaskUpdated={handleSaveEdit} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

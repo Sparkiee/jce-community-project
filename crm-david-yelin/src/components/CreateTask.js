@@ -229,6 +229,12 @@ function CreateTask(props) {
     }
   }
 
+  function resetAlerts() {
+    setTaskExists(false);
+    setFormWarning(false);
+    setWarningText("");
+  }
+
   const handleRemoveMember = (id) => {
     setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
   };
@@ -273,18 +279,22 @@ function CreateTask(props) {
             placeholder="שם המשימה (חובה*)"
             name="taskName "
             className="create-task-input"
-            onChange={(e) => setTaskDetails({ ...taskDetails, taskName: e.target.value })}
+            onChange={(e) => {
+              setTaskDetails({ ...taskDetails, taskName: e.target.value });
+              resetAlerts();
+            }}
           />
           <textarea
             placeholder="תיאור המשימה (חובה*)"
             name="taskDescription"
             className="create-task-input text-area"
-            onChange={(e) =>
+            onChange={(e) => {
               setTaskDetails({
                 ...taskDetails,
                 taskDescription: e.target.value,
-              })
-            }
+              });
+              resetAlerts();
+            }}
           />
           <div className="start-due-date-task">
             <div className="start-date-task">
@@ -296,10 +306,13 @@ function CreateTask(props) {
                 className="create-task-input"
                 onChange={(e) => {
                   //change the start date
-                  setTaskDetails({
-                    ...taskDetails,
-                    taskStartDate: e.target.value,
-                  });
+                  {
+                    setTaskDetails({
+                      ...taskDetails,
+                      taskStartDate: e.target.value,
+                    });
+                    resetAlerts();
+                  }
                 }}
               />
             </div>
@@ -311,10 +324,13 @@ function CreateTask(props) {
                 id="due"
                 className="create-task-input"
                 onChange={(e) => {
-                  setTaskDetails({
-                    ...taskDetails,
-                    taskEndDate: e.target.value,
-                  });
+                  {
+                    setTaskDetails({
+                      ...taskDetails,
+                      taskEndDate: e.target.value,
+                    });
+                    resetAlerts();
+                  }
                 }}
               />
             </div>
@@ -328,7 +344,10 @@ function CreateTask(props) {
                 id="time"
                 className="create-task-input"
                 min="0"
-                onChange={(e) => setTaskDetails({ ...taskDetails, taskTime: e.target.value })}
+                onChange={(e) => {
+                  setTaskDetails({ ...taskDetails, taskTime: e.target.value });
+                  resetAlerts();
+                }}
               />
             </div>
             <div className="create-task-budget-input">
@@ -339,12 +358,18 @@ function CreateTask(props) {
                 placeholder="תקציב משימה"
                 id="budget"
                 className="create-task-input"
-                onChange={(e) => setTaskDetails({ ...taskDetails, taskBudget: e.target.value })}
+                onChange={(e) => {
+                  setTaskDetails({ ...taskDetails, taskBudget: e.target.value });
+                  resetAlerts();
+                }}
               />
             </div>
           </div>
           <select
-            onChange={(e) => setTaskDetails({ ...taskDetails, taskStatus: e.target.value })}
+            onChange={(e) => {
+              setTaskDetails({ ...taskDetails, taskStatus: e.target.value });
+              resetAlerts();
+            }}
             className="create-task-input extra-create-task-status-input">
             <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>
@@ -359,6 +384,7 @@ function CreateTask(props) {
             }}
             onChange={(e) => {
               handleSelectEvent(e.value);
+              resetAlerts();
             }}
             options={events.map((event) => ({
               value: event.eventName,
@@ -384,6 +410,7 @@ function CreateTask(props) {
             }}
             onChange={(e) => {
               handleSelectMember(e.value);
+              resetAlerts();
             }}
             options={members.map((member) => ({
               value: member.fullName,

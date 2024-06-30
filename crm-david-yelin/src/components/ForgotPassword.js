@@ -35,8 +35,8 @@ function ForgotPassword() {
   return (
     <div className="container">
       <div className="forgot-password-style">
-        <a href="/home" className="back-home">
-          → חזרה לעמוד הראשי
+        <a href="#" onClick={() => navigate("/")} className="back-home">
+          → חזרה להתחברות
         </a>
         <div className="forms-box">
           <div className="login-logo">

@@ -219,6 +219,12 @@ function EditTask(props) {
     }
   };
 
+  function resetAlerts() {
+    setFormWarning(false);
+    setWarningText("");
+    setEditedSuccessfully(false);
+  }
+
   const handleRemoveMember = (id) => {
     console.log(id);
     setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
@@ -265,13 +271,19 @@ function EditTask(props) {
             placeholder="שם המשימה (חובה*)"
             className="edit-task-input"
             value={taskDetails.taskName}
-            onChange={(e) => setTask({ ...taskDetails, taskName: e.target.value })}
+            onChange={(e) => {
+              setTask({ ...taskDetails, taskName: e.target.value });
+              resetAlerts();
+            }}
           />
           <textarea
             placeholder="תיאור המשימה (חובה*)"
             className="edit-task-input"
             value={taskDetails.taskDescription}
-            onChange={(e) => setTask({ ...taskDetails, taskDescription: e.target.value })}
+            onChange={(e) => {
+              setTask({ ...taskDetails, taskDescription: e.target.value });
+              resetAlerts();
+            }}
           />
           <div className="edit-task-date-inputs">
             <div className="edit-task-start-date">
@@ -279,7 +291,10 @@ function EditTask(props) {
               <input
                 type="date"
                 value={taskDetails.taskStartDate}
-                onChange={(e) => setTask({ ...taskDetails, taskStartDate: e.target.value })}
+                onChange={(e) => {
+                  setTask({ ...taskDetails, taskStartDate: e.target.value });
+                  resetAlerts();
+                }}
                 className="edit-task-input"
               />
             </div>
@@ -288,7 +303,10 @@ function EditTask(props) {
               <input
                 type="date"
                 value={taskDetails.taskEndDate}
-                onChange={(e) => setTask({ ...taskDetails, taskEndDate: e.target.value })}
+                onChange={(e) => {
+                  setTask({ ...taskDetails, taskEndDate: e.target.value });
+                  resetAlerts();
+                }}
                 id="due"
                 className="edit-task-input"
               />
@@ -302,7 +320,10 @@ function EditTask(props) {
                 className="edit-task-input"
                 id="time"
                 value={taskDetails.taskTime}
-                onChange={(e) => setTask({ ...taskDetails, taskTime: e.target.value })}
+                onChange={(e) => {
+                  setTask({ ...taskDetails, taskTime: e.target.value });
+                  resetAlerts();
+                }}
               />
             </div>
             <div className="edit-task-input-budget">
@@ -314,13 +335,19 @@ function EditTask(props) {
                 className="edit-task-input"
                 id="budget"
                 value={taskDetails.taskBudget}
-                onChange={(e) => setTask({ ...taskDetails, taskBudget: e.target.value })}
+                onChange={(e) => {
+                  setTask({ ...taskDetails, taskBudget: e.target.value });
+                  resetAlerts();
+                }}
               />
             </div>
           </div>
           <select
             value={taskDetails.taskStatus}
-            onChange={(e) => setTask({ ...taskDetails, taskStatus: e.target.value })}
+            onChange={(e) => {
+              setTask({ ...taskDetails, taskStatus: e.target.value });
+              resetAlerts();
+            }}
             className="edit-task-input extra-edit-task-input">
             <option value="טרם החלה">טרם החלה</option>
             <option value="בתהליך">בתהליך</option>
@@ -335,6 +362,7 @@ function EditTask(props) {
             }}
             onChange={(e) => {
               handleSelectEvent(e.value);
+              resetAlerts();
             }}
             options={events.map((event) => ({
               value: event.eventName,
@@ -360,6 +388,7 @@ function EditTask(props) {
             }}
             onChange={(e) => {
               handleSelectMember(e.value);
+              resetAlerts();
             }}
             options={members.map((member) => ({
               value: member.fullName,

@@ -68,6 +68,7 @@ function Navbar() {
 
   useEffect(() => {
     const member = JSON.parse(sessionStorage.getItem("user"));
+    console.log(member.adminAccess);
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
     if (member && member.email && member.privileges >= 1) {
       const unsubscribeSnapshot = onSnapshot(
@@ -199,9 +200,10 @@ function Navbar() {
               </li>
               {user &&
                 ((user.privileges > 0 && user.privileges == 2) ||
-                  (Array.isArray(user.adminAccess) && user.adminAccess.includes("manageUser")) ||
                   (Array.isArray(user.adminAccess) &&
-                    user.adminAccess.includes("manageAdmin"))) && (
+                    (user.adminAccess.includes("createUser") ||
+                      user.adminAccess.includes("manageUser") ||
+                      user.adminAccess.includes("manageAdmin")))) && (
                   <li>
                     <a to="#" onClick={() => navigate("/users")}>
                       ניהול משתמשים

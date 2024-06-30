@@ -37,13 +37,14 @@ function EditUser(props) {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!firstName || !lastName || !phone || phone.length !== 13) {
+    if (!firstName || !lastName || !phone) {
       // fields are empty
       setFormWarning(true);
       return;
     }
+    // TODO: minimum phone requirement
 
-    if (props.target.privileges > 2 && privileges !== 3) {
+    if (props.target.privileges > 2 && privileges < 3) {
       // Reference to the Firestore "members" collection
       const memberRef = collection(db, "members");
 
@@ -64,11 +65,12 @@ function EditUser(props) {
         console.log(querySnapshot.size);
 
         // Check if there is only one document with level 3 privileges
-        if (querySnapshot.size === 1) {
+        if (querySnapshot.size <= 1) {
           setIsNoLevel3(true);
           setTimeout(() => {
             setIsNoLevel3(false);
           }, 1000);
+          return;
         }
       }
     }

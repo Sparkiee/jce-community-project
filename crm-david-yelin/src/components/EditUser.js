@@ -31,14 +31,13 @@ function EditUser(props) {
   const [phoneError, setPhoneError] = useState(false);
   const [isNoLevel3, setIsNoLevel3] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
-  
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!firstName || !lastName || !phone) {
+    if (!firstName || !lastName || !phone || !department || !privileges) {
       // fields are empty
       setFormWarning(true);
       return;
@@ -97,9 +96,7 @@ function EditUser(props) {
       setEdittedSuccessfully(true);
       setTimeout(() => {
         setEdittedSuccessfully(false);
-      }, 1000);
-
-      props.onClose();
+      }, 2000);
     } catch (e) {
       console.error("Error updating document: ", e);
     }
@@ -136,6 +133,13 @@ function EditUser(props) {
 
     fetchDepartments();
   }, []);
+
+  function resetAlerts() {
+    setFormWarning(false);
+    setPhoneError(false);
+    setIsNoLevel3(false);
+    setEdittedSuccessfully(false);
+  }
 
   return (
     <div className="edit-user">
@@ -176,7 +180,7 @@ function EditUser(props) {
             value={firstName}
             onChange={(event) => {
               setFirstName(event.target.value);
-              console.log(event.target.value);
+              resetAlerts();
             }}
           />
           <input
@@ -184,7 +188,10 @@ function EditUser(props) {
             placeholder="שם משפחה"
             className="forms-input"
             value={lastName}
-            onChange={(event) => setLastName(event.target.value)}
+            onChange={(event) => {
+              setLastName(event.target.value);
+              resetAlerts();
+            }}
           />
           <PhoneInput
             defaultCountry="IL"
@@ -192,7 +199,10 @@ function EditUser(props) {
             className="forms-input"
             maxLength="12"
             value={phone}
-            onChange={(value) => setPhone(value)}
+            onChange={(value) => {
+              setPhone(value);
+              resetAlerts();
+            }}
             style={{ textAlign: "right" }}
           />
           <LockIcon className="mail-lock-icon" />
@@ -204,7 +214,9 @@ function EditUser(props) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          {(user && user.privileges == 2 || user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin")) && (
+          {((user && user.privileges == 2) ||
+            user.adminAccess.includes("manageUser") ||
+            user.adminAccess.includes("manageAdmin")) && (
             <>
               <select
                 id="department-select"
@@ -232,7 +244,10 @@ function EditUser(props) {
                     type="text"
                     value={newDepartment}
                     placeholder="שם מחלקה חדשה"
-                    onChange={(event) => setNewDepartment(event.target.value)}
+                    onChange={(event) => {
+                      setNewDepartment(event.target.value);
+                      resetAlerts();
+                    }}
                     className="forms-input"
                   />
                   <button
@@ -250,16 +265,24 @@ function EditUser(props) {
                 id="role-input"
                 type="text"
                 value={role}
-                onChange={(event) => setRole(event.target.value)}
+                onChange={(event) => {
+                  setRole(event.target.value);
+                  resetAlerts();
+                }}
                 placeholder="תפקיד"
                 className="forms-input"
               />
               <select
                 id="privileges-select"
                 value={privileges}
-                onChange={(event) => setPrivileges(Number(event.target.value))}
+                onChange={(event) => {
+                  setPrivileges(Number(event.target.value));
+                  resetAlerts();
+                }}
                 className="forms-input">
-                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && <option value={2}>מנהל ראשי</option>}
+                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (
+                  <option value={2}>מנהל ראשי</option>
+                )}
                 <option value={1}>משתמש פעיל</option>
                 <option value={0}>משתמש מושהה</option>
               </select>
@@ -269,26 +292,28 @@ function EditUser(props) {
             עדכן פרטים
           </button>
         </div>
-        {isNoLevel3 && (
-          <Alert severity="warning" className="feedback-alert feedback-edituser">
-            חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
-          </Alert>
-        )}
-        {formWarning && (
-          <Alert className="feedback-alert" severity="error">
-            אנא מלא את כל השדות
-          </Alert>
-        )}
-        {edittedSuccessfully && (
-          <Alert severity="success" className="feedback-alert feedback-edituser">
-            פרטי המשתמש עודכנו בהצלחה
-          </Alert>
-        )}
-        {phoneError && (
-          <Alert severity="warning" className="feedback-alert feedback-edituser">
-            מספר הטלפון אינו תקין
-          </Alert>
-        )}
+        <div className="edit-user-feedback">
+          {isNoLevel3 && (
+            <Alert severity="warning" className="feedback-alert feedback-edituser">
+              חייב להיות לפחות משתמש יו"ר אחד במערכת לפני הורדת הרשאות
+            </Alert>
+          )}
+          {formWarning && (
+            <Alert className="feedback-alert" severity="error">
+              אנא מלא את כל השדות
+            </Alert>
+          )}
+          {edittedSuccessfully && (
+            <Alert severity="success" className="feedback-alert feedback-edituser">
+              פרטי המשתמש עודכנו בהצלחה
+            </Alert>
+          )}
+          {phoneError && (
+            <Alert severity="warning" className="feedback-alert feedback-edituser">
+              מספר הטלפון אינו תקין
+            </Alert>
+          )}
+        </div>
       </form>
     </div>
   );

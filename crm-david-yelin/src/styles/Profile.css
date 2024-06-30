@@ -177,3 +177,14 @@ div .profile-avatar:hover {
   gap: 0.8rem;
   align-items: center;
 }
+
+.search-log-table {
+  position: relative;
+}
+
+.search-log-table svg {
+  position: absolute;
+  height: 70%;
+  /* width: 5%; */
+  right: -3%;
+}

@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Avatar from "@mui/material/Avatar";
 import "../styles/TaskPage.css";
+import "../styles/Styles.css";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditTask from "./EditTask";
@@ -252,35 +253,8 @@ function TaskPage() {
         </div>
 
         {isEditing && task && (
-          <div className="edit-task-page-popup">
-            <div className="edit-task-page-popup-content" ref={editTaskRef}>
-              <div className="action-close" onClick={handleCloseEdit}>
-                <svg
-                  width="24px"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor">
-                  <line
-                    x1="17"
-                    y1="7"
-                    x2="7"
-                    y2="17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <line
-                    x1="7"
-                    y1="7"
-                    x2="17"
-                    y2="17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
+          <div className="popup-overlay">
+            <div ref={editTaskRef} className="popup-content">
               <EditTask task={task} onClose={handleCloseEdit} onTaskUpdated={handleSaveEdit} />
             </div>
           </div>

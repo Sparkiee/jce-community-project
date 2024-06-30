@@ -59,8 +59,8 @@ function ManageUsers() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -70,25 +70,25 @@ function ManageUsers() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2
+      flex: 2,
     },
   ];
 
@@ -121,45 +121,46 @@ function ManageUsers() {
       headerName: "אינדקס",
       align: "right",
       flex: 1,
-      edittable: true
+      edittable: true,
     },
     {
       field: "firstName",
       headerName: "שם פרטי",
       align: "right",
       flex: 2,
-      edittable: true
+      edittable: true,
     },
     {
       field: "lastName",
       headerName: "שם משפחה",
       align: "right",
       flex: 2,
-      edittable: true
+      edittable: true,
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "phone",
       headerName: "טלפון",
       align: "right",
-      flex: 2
+      flex: 2,
+      renderCell: (params) => <span dir="ltr">{params.value}</span>,
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "privileges",
@@ -178,8 +179,8 @@ function ManageUsers() {
           return "ללא הרשאות";
         }
         return "לא מוגדר";
-      }
-    }
+      },
+    },
   ];
 
   const editEnabled = [
@@ -243,8 +244,8 @@ function ManageUsers() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   async function handleRemovePermissions() {
@@ -314,8 +315,8 @@ function ManageUsers() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      )
-    }
+      ),
+    },
   ];
   async function deleteUser(email) {
     try {
@@ -343,7 +344,7 @@ function ManageUsers() {
           phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
-          privileges: member.privileges || 0
+          privileges: member.privileges || 0,
         };
       });
       const enabledMembersFormatted = enabledMembers.map((member, index) => {
@@ -355,7 +356,7 @@ function ManageUsers() {
           phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
-          privileges: member.privileges || 0
+          privileges: member.privileges || 0,
         };
       });
       setDisabledMemberRows(disabledMembersFormatted);
@@ -376,7 +377,7 @@ function ManageUsers() {
           id: index + 1,
           email: member.email || "",
           department: member.department || "",
-          role: member.role || ""
+          role: member.role || "",
         };
       });
       setPendingMemberRows(membersFormatted);
@@ -526,16 +527,16 @@ function ManageUsers() {
               columns={editEnabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 }
-                }
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -582,16 +583,16 @@ function ManageUsers() {
               columns={editDisabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 }
-                }
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -637,16 +638,16 @@ function ManageUsers() {
               columns={awaitingColumns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 }
-                }
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
             />
           </ThemeProvider>

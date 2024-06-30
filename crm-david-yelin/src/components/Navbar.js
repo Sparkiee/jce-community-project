@@ -15,7 +15,7 @@ import {
   collection,
   query,
   where,
-  getDocs,
+  getDocs
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
@@ -49,9 +49,9 @@ function Navbar() {
     const secondInitial = names[1] ? names[1][0] : "";
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: stringToColor(name)
       },
-      children: `${firstInitial}${secondInitial}`,
+      children: `${firstInitial}${secondInitial}`
     };
   }
 
@@ -197,13 +197,17 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
-              {(user.privileges == 2 || user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin")) && (
-                <li>
-                  <a to="#" onClick={() => navigate("/users")}>
-                    ניהול משתמשים
-                  </a>
-                </li>
-              )}
+              {user &&
+                ((user.privileges > 0 && user.privileges == 2) ||
+                  (Array.isArray(user.adminAccess) && user.adminAccess.includes("manageUser")) ||
+                  (Array.isArray(user.adminAccess) &&
+                    user.adminAccess.includes("manageAdmin"))) && (
+                  <li>
+                    <a to="#" onClick={() => navigate("/users")}>
+                      ניהול משתמשים
+                    </a>
+                  </li>
+                )}
               <li className="search-li-nav">
                 <svg
                   viewBox="0 0 32 32"

@@ -9,7 +9,12 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditTask from "./EditTask";
 import DiscussionList from "./DiscussionList";
-
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { heIL } from "@mui/material/locale";
+import Box from "@mui/material/Box";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import { Tab } from "@mui/material";
 
 function stringToColor(string) {
   let hash = 0;
@@ -39,6 +44,11 @@ function stringAvatar(name) {
 }
 
 function TaskPage() {
+  const pages = ["קבצים", "צאט"];
+  const handlePageSwitch = (event, newValue) => {
+    setPage(newValue);
+  };
+  const [page, setPage] = useState(pages[0]);
   const { taskId } = useParams();
   const [task, setTask] = useState(null);
   const [assignees, setAssignees] = useState([]);
@@ -66,6 +76,26 @@ function TaskPage() {
         return "";
     }
   };
+
+  const theme = createTheme(
+    {
+      direction: "rtl",
+      typography: {
+        fontSize: 24,
+      },
+    },
+    heIL
+  );
+
+  const navbarTheme = createTheme(
+    {
+      direction: "rtl",
+      typography: {
+        fontSize: 36,
+      },
+    },
+    heIL
+  );
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -196,7 +226,7 @@ function TaskPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isEditing]);
-    
+
   const handleShowFullDiscussion = async (commentId) => {
     try {
       const commentDoc = await getDoc(doc(db, "discussions", commentId));
@@ -210,129 +240,122 @@ function TaskPage() {
     }
   };
 
-
   if (!task) {
     return <div>טוען...</div>;
   }
 
+  const PageContent = ({ pageName }) => {
+    switch (pageName) {
+      case pages[0]:
+        return <h2>פה יהיו הקבצים</h2>;
+      case pages[1]:
+        return (
+          <div className="task-discussion">
+            <DiscussionList eventId={taskId} onShowFullDiscussion={handleShowFullDiscussion} />
+          </div>
+        );
+      default:
+        return <h2>Page Not Found</h2>;
+    }
+  };
+
   return (
     <div className="task-page">
-      <div className="task-page-style">
-        <div className="task-page-details">
-          <h1>{task.taskName}</h1>
-          <div className="task-page-info">
-            <div>
-              <p>
-                <strong>תיאור:</strong> {task.taskDescription}
-              </p>
-              <p>
-                <strong>שייך לאירוע :</strong> <Link to={`/event/${eventId}`}>{eventName}</Link>
-              </p>
-              <p>
-                <strong>תאריך התחלה:</strong> {task.taskStartDate}
-              </p>
-              <p>
-                <strong>תאריך יעד:</strong> {task.taskEndDate}
-              </p>
-              <p>
-                <span className="status-cell">
-                  <strong>סטטוס: </strong>
-                  <span className={`status-circle ${getStatusColorClass(task.taskStatus)} circle-space`}></span>
-                  {task.taskStatus}
-                </span>
-              </p>
-              <p>
-                <strong>שעת סיום:</strong> {task.taskTime}
-              </p>
-              {(user.privileges == 2 || isUserAnAssignee) && (
-                <p>
-                  <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
-                </p>
-              )}
-              <p>
-                <strong>יוצר המשימה: </strong>
-                {taskCreatorFullName}
-              </p>
+      <div className="task-page-container">
+        <div className="task-page-right-side">
+          <div className="task-page-style">
+            <div className="task-page-details">
+              <h1>{task.taskName}</h1>
+              <div className="task-page-info">
+                <div>
+                  <p>
+                    <strong>תיאור:</strong> {task.taskDescription}
+                  </p>
+                  <p>
+                    <strong>שייך לאירוע :</strong> <Link to={`/event/${eventId}`}>{eventName}</Link>
+                  </p>
+                  <p>
+                    <strong>תאריך התחלה:</strong> {task.taskStartDate}
+                  </p>
+                  <p>
+                    <strong>תאריך יעד:</strong> {task.taskEndDate}
+                  </p>
+                  <p>
+                    <span className="status-cell">
+                      <strong>סטטוס: </strong>
+                      <span
+                        className={`status-circle ${getStatusColorClass(
+                          task.taskStatus
+                        )} circle-space`}></span>
+                      {task.taskStatus}
+                    </span>
+                  </p>
+                  <p>
+                    <strong>שעת סיום:</strong> {task.taskTime}
+                  </p>
+                  {(user.privileges == 2 || isUserAnAssignee) && (
+                    <p>
+                      <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
+                    </p>
+                  )}
+                  <p>
+                    <strong>יוצר המשימה: </strong>
+                    {taskCreatorFullName}
+                  </p>
+                </div>
+                {(user.adminAccess.includes("editTask") || user.privileges == 2) && (
+                  <IconButton
+                    className="task-page-edit-icon"
+                    aria-label="edit"
+                    onClick={handleEditClick}>
+                    <EditIcon />
+                  </IconButton>
+                )}
+              </div>
             </div>
-            {(user.adminAccess.includes("editTask") || user.privileges == 2) && (
-              <IconButton
-                className="task-page-edit-icon"
-                aria-label="edit"
-                onClick={handleEditClick}>
-                <EditIcon />
-              </IconButton>
+            <div className="task-page-participants">
+              <h2>משתתפים</h2>
+              {assignees.map((assignee, index) => (
+                <div key={index} className="assignee-task-page-item">
+                  <Link className="profile-link" to={`/profile/${assignee.email}`}>
+                    <Avatar {...stringAvatar(assignee.fullName)} />
+                  </Link>
+                  <Link to={`/profile/${assignee.email}`}>
+                    <p>{assignee.fullName}</p>
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            {isEditing && task && (
+              <div className="popup-overlay">
+                <div ref={editTaskRef} className="popup-content">
+                  <EditTask task={task} onClose={handleCloseEdit} onTaskUpdated={handleSaveEdit} />
+                </div>
+              </div>
             )}
           </div>
         </div>
-
-        {isEditing && task && (
-          <div className="popup-overlay">
-            <div ref={editTaskRef} className="popup-content">
-              <EditTask task={task} onClose={handleCloseEdit} onTaskUpdated={handleSaveEdit} />
-            </div>
+        <div className="task-page-left-side">
+          <div className="task-page-navbar">
+            <ThemeProvider theme={navbarTheme}>
+              <Box sx={{ width: "100%" }}>
+                <TabContext value={page}>
+                  <TabList onChange={handlePageSwitch} aria-label="lab API tabs example">
+                    {pages.map((page, index) => (
+                      <Tab key={index} label={page} value={page} />
+                    ))}
+                  </TabList>
+                </TabContext>
+              </Box>
+            </ThemeProvider>
           </div>
-        )}
-      </div>
-      <div className="lower-task-page-content">
-        <div className="task-page-participants">
-          <h2>משתתפים</h2>
-          {assignees.map((assignee, index) => (
-            <div key={index} className="assignee-task-page-item">
-              <Link className="profile-link" to={`/profile/${assignee.email}`}>
-                <Avatar {...stringAvatar(assignee.fullName)} />
-              </Link>
-              <Link to={`/profile/${assignee.email}`}>
-                <p>{assignee.fullName}</p>
-              </Link>
-            </div>
-          ))}
-        </div>
-        <div className="task-page-files">
-          <h2>This is where the files will be</h2>
-        </div>
-      </div>
-  
-      <div className="task-discussion">
-        <DiscussionList
-          eventId={taskId}
-          onShowFullDiscussion={handleShowFullDiscussion}
-        />
-      </div>
-  
-      {isEditing && task && (
-        <div className="edit-task-popup">
-          <div className="edit-task-popup-content" ref={editTaskRef}>
-            <div className="action-close" onClick={handleCloseEdit}>
-              <svg
-                width="24px"
-                height="24px"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor">
-                <line
-                  x1="17"
-                  y1="7"
-                  x2="7"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <line
-                  x1="7"
-                  y1="7"
-                  x2="17"
-                  y2="17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <EditTask task={task} onClose={handleCloseEdit} onTaskUpdated={handleSaveEdit} />
+          <div className="task-page-content">
+            <PageContent pageName={page} />
           </div>
         </div>
-      )}
+      </div>
+      <div className="footer"></div>
     </div>
   );
 }

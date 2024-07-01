@@ -95,6 +95,17 @@
   font-size: 2rem;
 }
 
+.participant-item a {
+  text-decoration: none;
+  color: black;
+  transition: all 0.2s linear;
+}
+
+.participant-item a:hover {
+  color: rgb(2, 4, 79);
+  transform: scale(1.05);
+}
+
 .manage-task-avatar-group {
   direction: ltr;
 }

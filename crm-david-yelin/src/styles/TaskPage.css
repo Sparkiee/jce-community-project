@@ -90,6 +90,17 @@
   font-size: 2rem;
 }
 
+.assignee-task-page-item a {
+  text-decoration: none;
+  color: black;
+  transition: all 0.2s linear;
+}
+
+.assignee-task-page-item a:hover {
+  color: rgb(2, 4, 79);
+  transform: scale(1.05);
+}
+
 .task-page-left-side {
   width: 69%;
 }
@@ -100,4 +111,14 @@
 
 .task-page-content {
   margin-top: 2rem;
+}
+
+.link-to-event-from-task-page a {
+  text-decoration: none;
+  color: #000;
+  transition: all 0.2s linear;
+}
+
+.link-to-event-from-task-page a:hover {
+  color: rgb(2, 4, 79);
 }

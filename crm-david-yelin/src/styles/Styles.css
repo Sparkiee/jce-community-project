@@ -21,6 +21,10 @@ body {
   .MuiPaper-root {
     padding: 5px 11px !important;
   }
+  .avatar-position {
+    position: relative;
+    top: 10%;
+  }
 }
 
 @media screen and (max-width: 1333px) {
@@ -29,6 +33,10 @@ body {
   }
   .MuiPaper-root {
     padding: 0px 4px !important;
+  }
+  .avatar-position {
+    position: relative;
+    top: 18%;
   }
 }
 

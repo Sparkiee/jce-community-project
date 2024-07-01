@@ -189,7 +189,7 @@ function ManageTasks() {
       flex: 2,
       renderCell: (params) => {
         return (
-          <AvatarGroup className="manage-task-avatar-group" max={3}>
+          <AvatarGroup className="manage-task-avatar-group avatar-position" max={3}>
             {params.value.map((user, index) => (
               <Avatar
                 key={index}

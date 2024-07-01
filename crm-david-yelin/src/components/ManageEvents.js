@@ -184,7 +184,7 @@ function ManageEvents() {
       renderCell: (params) => {
         const assignees = Array.isArray(params.value) ? params.value : [];
         return (
-          <AvatarGroup className="manage-task-avatar-group" max={3}>
+          <AvatarGroup className="manage-task-avatar-group avatar-position" max={3}>
             {assignees.map((user, index) => (
               <Avatar
                 key={index}

@@ -13,8 +13,11 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import DiscussionList from "./DiscussionList"; 
-
+import DiscussionList from "./DiscussionList";
+import Box from "@mui/material/Box";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import { Tab } from "@mui/material";
 
 function stringToColor(string) {
   let hash = 0;
@@ -39,6 +42,11 @@ function stringAvatar(name) {
 }
 
 function EventPage() {
+  const pages = ["משימות קשורות", "צ'אט", "קבצים"];
+  const handlePageSwitch = (event, newValue) => {
+    setPage(newValue);
+  };
+  const [page, setPage] = useState(pages[0]);
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -53,6 +61,16 @@ function EventPage() {
       direction: "rtl",
       typography: {
         fontSize: 24,
+      },
+    },
+    heIL
+  );
+
+  const navbarTheme = createTheme(
+    {
+      direction: "rtl",
+      typography: {
+        fontSize: 36,
       },
     },
     heIL
@@ -218,19 +236,19 @@ function EventPage() {
     },
     ...(user.privileges == 2 || isUserAnAssignee
       ? [
-        {
-          field: "taskBudget",
-          headerName: "תקציב",
-          width: 150,
-          align: "right",
-          flex: 1,
-          renderCell: (params) => {
-            return (
-              <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
-            );
+          {
+            field: "taskBudget",
+            headerName: "תקציב",
+            width: 150,
+            align: "right",
+            flex: 1,
+            renderCell: (params) => {
+              return (
+                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+              );
+            },
           },
-        },
-      ]
+        ]
       : []),
     {
       field: "taskStatus",
@@ -276,104 +294,137 @@ function EventPage() {
     },
   ];
 
+  const PageContent = ({ pageName }) => {
+    switch (pageName) {
+      case pages[0]:
+        return (
+          <div className="event-tasks">
+            {!loading && (
+              <ThemeProvider theme={theme}>
+                <DataGrid
+                  rows={tasks}
+                  columns={taskColumns}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 5 },
+                    },
+                  }}
+                  pageSizeOptions={[5, 25, 50]}
+                  localeText={{
+                    MuiTablePagination: {
+                      labelDisplayedRows: ({ from, to, count }) =>
+                        `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                      labelRowsPerPage: "שורות בכל עמוד:",
+                    },
+                  }}
+                />
+              </ThemeProvider>
+            )}
+          </div>
+        );
+      case pages[1]:
+        return <h2>פה יהיו הקבצים</h2>;
+      case pages[2]:
+        return (
+          <div className="event-page-comments">
+            <h2>Chat</h2>
+            {event && <DiscussionList eventId={event.id} />}
+          </div>
+        );
+      default:
+        return <h2>Page Not Found</h2>;
+    }
+  };
+
   return (
     <div className="event-page">
-      <div className="event-page-style">
-        <div className="event-details">
-          {event && (
-            <div className="event-box">
-              <h1>{event.eventName}</h1>
-              <div>
-                <p>
-                  <strong>מיקום: </strong>
-                  {event.eventLocation}
-                </p>
-                <p>
-                  <strong>תאריך התחלה: </strong>
-                  {event.eventStartDate}
-                </p>
-                <p>
-                  <strong>תאריך יעד: </strong>
-                  {event.eventEndDate}
-                </p>
-                <p>
-                  <span className="status-cell">
-                    <strong>סטטוס:</strong>
-                    <span
-                      className={`status-circle ${getStatusColorClass(event.eventStatus)} circle-space`}></span>
-                    {event.eventStatus}
-                  </span>
-                </p>
-                <p>
-                  <strong>שעת סיום: </strong>
-                  {event.eventTime}
-                </p>
-                {(user.privileges == 2 || isUserAnAssignee) && (
-                  <p>
-                    <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}
-                  </p>
-                )}
-                <p>
-                  <strong>יוצר האירוע: </strong>
-                  {event.eventCreatorFullName}
-                </p>
-              </div>
-              {(user.privileges == 2 || (user.adminAccess.includes("editEvent"))) && (
-                <IconButton
-                  className="event-page-edit-icon"
-                  aria-label="edit"
-                  onClick={handleEditClick}>
-                  <EditIcon />
-                </IconButton>
+      <div className="event-page-container">
+        <div className="event-page-right-side">
+          <div className="event-page-style">
+            <div className="event-details">
+              {event && (
+                <div className="event-box">
+                  <h1>{event.eventName}</h1>
+                  <div>
+                    <p>
+                      <strong>מיקום: </strong>
+                      {event.eventLocation}
+                    </p>
+                    <p>
+                      <strong>תאריך התחלה: </strong>
+                      {event.eventStartDate}
+                    </p>
+                    <p>
+                      <strong>תאריך יעד: </strong>
+                      {event.eventEndDate}
+                    </p>
+                    <p>
+                      <span className="status-cell">
+                        <strong>סטטוס:</strong>
+                        <span
+                          className={`status-circle ${getStatusColorClass(
+                            event.eventStatus
+                          )} circle-space`}></span>
+                        {event.eventStatus}
+                      </span>
+                    </p>
+                    <p>
+                      <strong>שעת סיום: </strong>
+                      {event.eventTime}
+                    </p>
+                    {(user.privileges == 2 || isUserAnAssignee) && (
+                      <p>
+                        <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}
+                      </p>
+                    )}
+                    <p>
+                      <strong>יוצר האירוע: </strong>
+                      {event.eventCreatorFullName}
+                    </p>
+                  </div>
+                  {(user.privileges == 2 || user.adminAccess.includes("editEvent")) && (
+                    <IconButton
+                      className="event-page-edit-icon"
+                      aria-label="edit"
+                      onClick={handleEditClick}>
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                </div>
               )}
+            </div>
+          </div>
+          <div className="event-page-participants">
+            <h2>משתתפים</h2>
+            {event && event.assigneesData && <Participants assignees={event.assigneesData} />}
+          </div>
+
+          {isEditing && event && (
+            <div className="popup-overlay">
+              <div ref={createEventRef} className="popup-content">
+                <EditEvent eventDetails={event} onClose={handleSaveEdit} />
+              </div>
             </div>
           )}
         </div>
-        <div className="event-tasks">
-          {!loading && (
-            <ThemeProvider theme={theme}>
-              <DataGrid
-                rows={tasks}
-                columns={taskColumns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
-                }}
-                pageSizeOptions={[5, 25, 50]}
-                localeText={{
-                  MuiTablePagination: {
-                    labelDisplayedRows: ({ from, to, count }) =>
-                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
-                }}
-              />
+        <div className="event-page-left-side">
+          <div className="event-page-navbar">
+            <ThemeProvider theme={navbarTheme}>
+              <Box sx={{ width: "100%" }}>
+                <TabContext value={page}>
+                  <TabList onChange={handlePageSwitch} aria-label="lab API tabs example">
+                    {pages.map((page, index) => (
+                      <Tab key={index} label={page} value={page} />
+                    ))}
+                  </TabList>
+                </TabContext>
+              </Box>
             </ThemeProvider>
-          )}
-        </div>
-      </div>
-
-      {isEditing && event && (
-        <div className="popup-overlay">
-          <div ref={createEventRef} className="popup-content">
-            <EditEvent eventDetails={event} onClose={handleSaveEdit} />
+          </div>
+          <div className="event-page-content">
+            <PageContent pageName={page} />
           </div>
         </div>
-      )}
-
-      <div className="lower-event-page-content">
-        <div className="event-page-participants">
-          <h2>משתתפים</h2>
-          {event && event.assigneesData && <Participants assignees={event.assigneesData} />}
-        </div>
-        <div className="event-page-files">
-          <h2>This is where the files will be</h2>
-        </div>
-      </div>
-      <div className="event-page-comments">
-        <h2>Chat</h2>
-        {event && <DiscussionList eventId={event.id} />}
       </div>
       <div className="footer"></div>
     </div>

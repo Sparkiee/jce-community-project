@@ -121,6 +121,17 @@
   font-size: 1.7rem;
 }
 
+.comment-item textarea {
+  font-family: inherit;
+  font-size: 1.7rem;
+  width: 90%;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  resize: none;
+}
+
 .discussion-actions {
   display: flex;
   gap: 1rem;
@@ -187,4 +198,15 @@
 .reply-content {
   padding: 1rem;
   font-size: 1.7rem;
+}
+
+.discussion-reply textarea {
+  font-family: inherit;
+  font-size: 1.7rem;
+  width: 90%;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
+  resize: none;
 }

@@ -23,9 +23,11 @@ const DiscussionList = ({ eventId }) => {
   const [comments, setComments] = useState([]);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [replyCommentId, setReplyCommentId] = useState(null);
+  const [editingReply, setEditingReply] = useState({ commentId: null, replyIndex: null });
   const [newComment, setNewComment] = useState("");
   const [editComment, setEditComment] = useState("");
   const [newReply, setNewReply] = useState("");
+  const [editReply, setEditReply] = useState("");
   const [userEmail, setUserEmail] = useState("");
 
   const storedUser = JSON.parse(sessionStorage.getItem("user"));
@@ -95,6 +97,38 @@ const DiscussionList = ({ eventId }) => {
         replies: updatedReplies,
       });
       setNewReply("");
+      setReplyCommentId(null);
+      fetchComments();
+    }
+  };
+
+  const handleEditReply = async (commentId, replyIndex) => {
+    if (editReply.trim() === "") return;
+    const commentRef = doc(db, "comments", commentId);
+    const commentSnap = await getDoc(commentRef);
+    if (commentSnap.exists()) {
+      const commentData = commentSnap.data();
+      const updatedReplies = commentData.replies || [];
+      updatedReplies[replyIndex].text = editReply;
+      await updateDoc(commentRef, {
+        replies: updatedReplies,
+      });
+      setEditingReply({ commentId: null, replyIndex: null });
+      setEditReply("");
+      fetchComments();
+    }
+  };
+
+  const handleDeleteReply = async (commentId, replyIndex) => {
+    const commentRef = doc(db, "comments", commentId);
+    const commentSnap = await getDoc(commentRef);
+    if (commentSnap.exists()) {
+      const commentData = commentSnap.data();
+      const updatedReplies = commentData.replies || [];
+      updatedReplies.splice(replyIndex, 1);
+      await updateDoc(commentRef, {
+        replies: updatedReplies,
+      });
       fetchComments();
     }
   };
@@ -191,8 +225,44 @@ const DiscussionList = ({ eventId }) => {
                         })}
                       </div>
                     </div>
-                    <div className="reply-content">
-                      <p>{reply.text}</p>
+                    {editingReply.commentId === comment.id && editingReply.replyIndex === index ? (
+                      <textarea
+                        value={editReply}
+                        onChange={(e) => setEditReply(e.target.value)}
+                        onKeyDown={(e) =>
+                          handleKeyDown(e, () => handleEditReply(comment.id, index))
+                        }
+                      />
+                    ) : (
+                      <div className="reply-content">
+                        <p>{reply.text}</p>
+                      </div>
+                    )}
+                    <div className="discussion-actions">
+                      {editingReply.commentId === comment.id &&
+                      editingReply.replyIndex === index ? (
+                        <button
+                          className="save-icon"
+                          onClick={() => handleEditReply(comment.id, index)}>
+                          שמור שינויים
+                        </button>
+                      ) : (
+                        <>
+                          <IconButton
+                            title="ערוך"
+                            onClick={() => {
+                              setEditingReply({ commentId: comment.id, replyIndex: index });
+                              setEditReply(reply.text);
+                            }}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            title="מחק"
+                            onClick={() => handleDeleteReply(comment.id, index)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}

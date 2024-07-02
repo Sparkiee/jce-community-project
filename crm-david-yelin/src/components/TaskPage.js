@@ -271,9 +271,12 @@ function TaskPage() {
                   <p>
                     <strong>תיאור:</strong> {task.taskDescription}
                   </p>
-                  <p className="link-to-event-from-task-page">
-                    <strong>שייך לאירוע :</strong> <Link to={`/event/${eventId}`}>{eventName}</Link>
-                  </p>
+                  {eventId && (
+                    <p className="link-to-event-from-task-page">
+                      <strong>שייך לאירוע :</strong>{" "}
+                      <Link to={`/event/${eventId}`}>{eventName}</Link>
+                    </p>
+                  )}
                   <p>
                     <strong>תאריך התחלה:</strong> {task.taskStartDate}
                   </p>

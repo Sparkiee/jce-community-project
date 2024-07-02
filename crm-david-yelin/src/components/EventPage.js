@@ -18,6 +18,8 @@ import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import { Tab } from "@mui/material";
+import { render } from "@testing-library/react";
+import ChangeLog from "./ChangeLog";
 
 function stringToColor(string) {
   let hash = 0;
@@ -35,9 +37,9 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
   };
 }
 
@@ -53,6 +55,10 @@ function EventPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [changes, setChanges] = useState("");
+
+  const changeLogRef = useRef(null);
   const createEventRef = useRef(null);
   const navigate = useNavigate();
 
@@ -60,8 +66,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -70,8 +76,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36,
-      },
+        fontSize: 36
+      }
     },
     heIL
   );
@@ -151,7 +157,7 @@ function EventPage() {
             ...taskData,
             id: doc.id,
             assignTo: assigneeData,
-            index: index + 1,
+            index: index + 1
           };
         })
       );
@@ -163,11 +169,40 @@ function EventPage() {
     }
   }, [id]);
 
+  async function fetchHistory() {
+    try {
+      const q = query(collection(db, "log_events"), where("event", "==", `events/${id}`));
+      const querySnapshot = await getDocs(q);
+      const historyArray = querySnapshot.docs.map((doc) => doc.data());
+      const history = historyArray.map((item, index) => {
+        return {
+          id: index + 1,
+          date: item.timestamp.toDate().toLocaleDateString("he-IL"),
+          time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
+          ...item
+        };
+      });
+      const nonEmptyHistory = history.filter(
+        (item) => item.updatedFields && Object.keys(item.updatedFields).length > 0
+      );
+      const historyWithNames = await Promise.all(
+        nonEmptyHistory.map(async (item) => {
+          const fullName = await getMemberFullName(item.member.split("/")[1]);
+          return { ...item, fullName: fullName };
+        })
+      );
+      setHistory(historyWithNames);
+    } catch (e) {
+      console.log("Error fetching history: ", e);
+    }
+  }
+
   const user = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     fetchEvent();
     fetchTasks();
+    fetchHistory();
   }, []);
 
   const handleEditClick = () => {
@@ -187,6 +222,9 @@ function EventPage() {
     const handleClickOutside = (event) => {
       if (createEventRef.current && !createEventRef.current.contains(event.target)) {
         setIsEditing(false);
+      }
+      if (changeLogRef.current && !changeLogRef.current.contains(event.target)) {
+        setChanges("");
       }
     };
 
@@ -225,14 +263,14 @@ function EventPage() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 4,
+      flex: 4
     },
     ...(user.privileges == 2 || isUserAnAssignee
       ? [
@@ -246,8 +284,8 @@ function EventPage() {
               return (
                 <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
               );
-            },
-          },
+            }
+          }
         ]
       : []),
     {
@@ -263,7 +301,7 @@ function EventPage() {
             {params.row.taskStatus}
           </div>
         );
-      },
+      }
     },
     {
       field: "assignTo",
@@ -278,7 +316,7 @@ function EventPage() {
             ))}
           </AvatarGroup>
         );
-      },
+      }
     },
     {
       field: "view",
@@ -290,8 +328,100 @@ function EventPage() {
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
           <VisibilityIcon />
         </IconButton>
-      ),
+      )
+    }
+  ];
+
+  function replaceFieldString(fieldName) {
+    switch (fieldName) {
+      case "eventName":
+        return "שם האירוע";
+      case "eventLocation":
+        return "מיקום האירוע";
+      case "eventStartDate":
+        return "תאריך התחלת האירוע";
+      case "eventEndDate":
+        return "תאריך סיום האירוע";
+      case "eventTime":
+        return "שעת האירוע";
+      case "eventStatus":
+        return "סטטוס האירוע";
+      case "eventBudget":
+        return "תקציב האירוע";
+      default:
+        return fieldName;
+    }
+  }
+
+  function generateHtmlListForFieldChanges(fields) {
+    if (fields == null) return "";
+    const array = Object.entries(fields);
+    const formatted = array
+      .map(([fieldName]) => {
+        return `${replaceFieldString(fieldName)}`;
+      })
+      .join(", "); // Modified this line to add a comma and space
+
+    return formatted;
+  }
+
+  const HistoryColumns = [
+    { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
+    {
+      field: "changeDate",
+      headerName: "תאריך",
+      align: "right",
+      flex: 1.5,
+      renderCell: (params) => {
+        return <div>{params.row.date}</div>;
+      }
     },
+    {
+      field: "changeTime",
+      headerName: "שעה",
+      align: "right",
+      flex: 1.5,
+      renderCell: (params) => {
+        return <div>{params.row.time}</div>;
+      }
+    },
+    {
+      field: "changedBy",
+      headerName: "שונה על ידי",
+      align: "right",
+      flex: 2,
+      renderCell: (params) => {
+        return (
+          <div className="avatar-position-center" style={{ cursor: "pointer" }}>
+            <Avatar {...stringAvatar(`${params.row.fullName}`)} />
+            {params.row.fullName}
+          </div>
+        );
+      }
+    },
+    {
+      field: "changeDescription",
+      headerName: "שדות שהשתנו",
+      align: "right",
+      flex: 3,
+      renderCell: (params) => {
+        return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
+      }
+    },
+    {
+      field: "view",
+      headerName: "צפייה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <IconButton
+          aria-label="view"
+          onClick={() => setChanges(params.row.updatedFields)}
+          style={{ padding: 0 }}>
+          <VisibilityIcon />
+        </IconButton>
+      )
+    }
   ];
 
   const PageContent = ({ pageName }) => {
@@ -306,16 +436,16 @@ function EventPage() {
                   columns={taskColumns}
                   initialState={{
                     pagination: {
-                      paginationModel: { page: 0, pageSize: 5 },
-                    },
+                      paginationModel: { page: 0, pageSize: 5 }
+                    }
                   }}
                   pageSizeOptions={[5, 25, 50]}
                   localeText={{
                     MuiTablePagination: {
                       labelDisplayedRows: ({ from, to, count }) =>
                         `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                      labelRowsPerPage: "שורות בכל עמוד:",
-                    },
+                      labelRowsPerPage: "שורות בכל עמוד:"
+                    }
                   }}
                   onRowDoubleClick={(params) => {
                     navigate(`/task/${params.row.taskDoc}`);
@@ -335,7 +465,32 @@ function EventPage() {
       case pages[2]:
         return <h2>פה יהיו הקבצים</h2>;
       case pages[3]:
-        return <h2>פה יהיו השינויים</h2>;
+        return (
+          <div className="event-history">
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                rows={history}
+                columns={HistoryColumns}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
+                }}
+                pageSizeOptions={[5, 25, 50]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
+                }}
+                onRowDoubleClick={(params) => {
+                  navigate(`/task/${params.row.taskDoc}`);
+                }}
+              />
+            </ThemeProvider>
+          </div>
+        );
       default:
         return <h2>Page Not Found</h2>;
     }
@@ -408,6 +563,13 @@ function EventPage() {
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">
                 <EditEvent eventDetails={event} onClose={handleSaveEdit} />
+              </div>
+            </div>
+          )}
+          {changes && (
+            <div className="popup-overlay">
+              <div ref={changeLogRef} className="popup-content">
+                <ChangeLog fields={changes} onClose={() => setChanges("")} />
               </div>
             </div>
           )}

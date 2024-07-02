@@ -1,30 +1,34 @@
 .edit-access {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 1rem;
-    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-    background-color: rgb(255, 255, 255);
-    padding: 4rem 4rem 6rem;
-    width: 50rem;
-  }
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
+  background-color: rgb(255, 255, 255);
+  padding: 4rem 4rem 6rem;
+  width: 50rem;
+}
 
-  
 .edit-access-form {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-items: center;
-    width: 100%;
-  }
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+}
 
-  .edit-access-input-box {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    gap: 1.2rem;
-    font-size: 1.8rem;
-  }
+.edit-access-input-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  gap: 1.2rem;
+  font-size: 1.8rem;
+}
+
+.edit-access-feedback {
+  position: absolute;
+  bottom: 1rem;
+}

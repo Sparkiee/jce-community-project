@@ -8,7 +8,7 @@ import { db } from "../firebase.js";
 import { Alert } from "@mui/material";
 
 function EditAccess(props) {
-  const [permSuccess, setPermSuccess] = useState(false);
+  const [permSuccess, setPermSuccess] = useState(true);
   const [access, setAccess] = useState({
     createTask:
       Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
@@ -27,7 +27,7 @@ function EditAccess(props) {
     manageUser:
       Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
     manageAdmin:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin")
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
   });
 
   const handleChange = (event) => {
@@ -47,7 +47,7 @@ function EditAccess(props) {
     try {
       const memberRef = doc(db, "members", props.target.email);
       await updateDoc(memberRef, {
-        adminAccess: updatedAdminAccess
+        adminAccess: updatedAdminAccess,
       });
       setPermSuccess(true);
       setTimeout(() => {
@@ -176,11 +176,13 @@ function EditAccess(props) {
         <button type="submit" className="primary-button extra-reg">
           עדכן פרטים
         </button>
-        {permSuccess && (
-          <Alert className="feedback-alert" severity="success">
-            הרשאות עודכנו בהצלחה
-          </Alert>
-        )}
+        <div className="edit-access-feedback">
+          {permSuccess && (
+            <Alert className="feedback-alert" severity="success">
+              הרשאות עודכנו בהצלחה
+            </Alert>
+          )}
+        </div>
       </form>
     </div>
   );

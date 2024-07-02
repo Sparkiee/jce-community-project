@@ -119,7 +119,10 @@ function ManageEvents() {
             flex: 1,
             renderCell: (params) => {
               return (
-                <div>
+                <div
+                  title={
+                    params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"
+                  }>
                   {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
                 </div>
               );

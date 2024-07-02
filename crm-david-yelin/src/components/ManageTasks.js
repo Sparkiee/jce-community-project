@@ -125,7 +125,10 @@ function ManageTasks() {
             flex: 1,
             renderCell: (params) => {
               return (
-                <div>
+                <div
+                  title={
+                    params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"
+                  }>
                   {params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}
                 </div>
               );
@@ -217,25 +220,33 @@ function ManageTasks() {
 
   const columns = [
     ...baseColumns,
-    ...(user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")) ? [
-      {
-        field: "edit",
-        headerName: "עריכה",
-        width: 150,
-        align: "right",
-        flex: 1.5,
-        renderCell: (params) => (
-          <div>
-            {(user.privileges >= 2 || user.adminAccess.includes("editTask")) && <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
-              <EditIcon />
-            </IconButton>}
-            {(user.privileges >= 2 || user.adminAccess.includes("deleteTask")) && <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
-              <DeleteForeverIcon />
-            </IconButton>}
-          </div>
-        ),
-      }
-    ] : []
+    ...(user.privileges >= 2 ||
+    user.adminAccess.includes("deleteTask") ||
+    user.adminAccess.includes("editTask")
+      ? [
+          {
+            field: "edit",
+            headerName: "עריכה",
+            width: 150,
+            align: "right",
+            flex: 1.5,
+            renderCell: (params) => (
+              <div>
+                {(user.privileges >= 2 || user.adminAccess.includes("editTask")) && (
+                  <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
+                    <EditIcon />
+                  </IconButton>
+                )}
+                {(user.privileges >= 2 || user.adminAccess.includes("deleteTask")) && (
+                  <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
+                    <DeleteForeverIcon />
+                  </IconButton>
+                )}
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   // const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;

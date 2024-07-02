@@ -199,17 +199,19 @@ const DiscussionList = ({ eventId }) => {
                   </button>
                 ) : (
                   <>
+                    {comment.authorEmail === userEmail && (
+                      <IconButton
+                        title="ערוך"
+                        onClick={() => {
+                          setEditingCommentId(comment.id);
+
+                          setEditComment(comment.text);
+                        }}>
+                        <EditIcon />
+                      </IconButton>
+                    )}
                     {(storedUser.privileges >= 2 || comment.authorEmail === userEmail) && (
                       <>
-                        <IconButton
-                          title="ערוך"
-                          onClick={() => {
-                            setEditingCommentId(comment.id);
-
-                            setEditComment(comment.text);
-                          }}>
-                          <EditIcon />
-                        </IconButton>
                         <IconButton title="מחק" onClick={() => handleDeleteComment(comment.id)}>
                           <DeleteIcon />
                         </IconButton>
@@ -259,17 +261,19 @@ const DiscussionList = ({ eventId }) => {
                         </button>
                       ) : (
                         <>
+                          {reply.authorEmail === userEmail && (
+                            <IconButton
+                              title="ערוך"
+                              onClick={() => {
+                                setEditingReply({ commentId: comment.id, replyIndex: index });
+
+                                setEditReply(reply.text);
+                              }}>
+                              <EditIcon />
+                            </IconButton>
+                          )}
                           {(storedUser.privileges >= 2 || reply.authorEmail === userEmail) && (
                             <>
-                              <IconButton
-                                title="ערוך"
-                                onClick={() => {
-                                  setEditingReply({ commentId: comment.id, replyIndex: index });
-
-                                  setEditReply(reply.text);
-                                }}>
-                                <EditIcon />
-                              </IconButton>
                               <IconButton
                                 title="מחק"
                                 onClick={() => handleDeleteReply(comment.id, index)}>

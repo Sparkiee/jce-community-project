@@ -396,7 +396,10 @@ function ManageEvents() {
           {showCreateEvent && (
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">
-                <CreateEvent onClose={handleCloseForms} />
+                <CreateEvent onClose={()=> {
+                  handleCloseForms();
+                  getEvents();
+                }} />
               </div>
             </div>
           )}

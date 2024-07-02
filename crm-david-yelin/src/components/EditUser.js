@@ -104,6 +104,7 @@ function EditUser(props) {
       setEdittedSuccessfully(true);
       setTimeout(() => {
         setEdittedSuccessfully(false);
+        props.onClose();
       }, 2000);
     } catch (e) {
       console.error("Error updating document: ", e);

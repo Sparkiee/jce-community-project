@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where, orderBy } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -18,7 +18,6 @@ import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import { Tab } from "@mui/material";
-import { render } from "@testing-library/react";
 import ChangeLog from "./ChangeLog";
 
 function stringToColor(string) {
@@ -171,7 +170,11 @@ function EventPage() {
 
   async function fetchHistory() {
     try {
-      const q = query(collection(db, "log_events"), where("event", "==", `events/${id}`));
+      const q = query(
+        collection(db, "log_events"),
+        where("event", "==", `events/${id}`),
+        orderBy("timestamp", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const historyArray = querySnapshot.docs.map((doc) => doc.data());
       const history = historyArray.map((item, index) => {

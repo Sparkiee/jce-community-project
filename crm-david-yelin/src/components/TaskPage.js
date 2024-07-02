@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { db } from "../firebase";
-import { doc, getDoc, query, collection, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, query, collection, where, getDocs, orderBy } from "firebase/firestore";
 import Avatar from "@mui/material/Avatar";
 import "../styles/TaskPage.css";
 import "../styles/Styles.css";
@@ -190,7 +190,11 @@ function TaskPage() {
 
   async function fetchHistory() {
     try {
-      const q = query(collection(db, "log_tasks"), where("task", "==", `tasks/${taskId}`));
+      const q = query(
+        collection(db, "log_tasks"),
+        where("task", "==", `tasks/${taskId}`),
+        orderBy("timestamp", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const historyArray = querySnapshot.docs.map((doc) => doc.data());
       const history = historyArray.map((item, index) => {

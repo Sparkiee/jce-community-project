@@ -1,24 +1,31 @@
-.task-page {
+.task-page-container {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  width: 100%;
-}
-
-.task-page-style {
-  padding: 5rem 10rem 0 0;
-  display: flex;
-  justify-content: center;
+  margin: 5rem 12rem 0 auto;
   width: 90%;
   gap: 5rem;
 }
 
+.task-page-right-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 55rem;
+}
+
+.task-page-style {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  gap: 3rem;
+}
+
 .task-page-details {
   position: relative;
-  width: 20%;
-  padding: 2rem;
+  width: 100%;
+  padding: 2rem 2rem 2rem 0;
   background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -59,17 +66,9 @@
   z-index: 1;
 }
 
-.lower-task-page-content {
-  padding: 5rem 10rem 5rem 0;
-  display: flex;
-  justify-content: center;
-  width: 85%;
-  gap: 5rem;
-}
-
 .task-page-participants {
-  width: 23%;
-  padding: 2rem;
+  width: 100%;
+  padding: 2rem 2rem 2rem 0;
   background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -91,12 +90,35 @@
   font-size: 2rem;
 }
 
-.task-page-files {
-  border: 2px solid red;
-  width: 80%;
+.assignee-task-page-item a {
+  text-decoration: none;
+  color: black;
+  transition: all 0.2s linear;
 }
 
-.task-page-comments {
-  width: 60%;
-  border: 2px solid red;
+.assignee-task-page-item a:hover {
+  color: rgb(2, 4, 79);
+  transform: scale(1.05);
+}
+
+.task-page-left-side {
+  width: 69%;
+}
+
+.task-page-navbar {
+  border-bottom: 1px solid #ccc;
+}
+
+.task-page-content {
+  margin-top: 2rem;
+}
+
+.link-to-event-from-task-page a {
+  text-decoration: none;
+  color: #000;
+  transition: all 0.2s linear;
+}
+
+.link-to-event-from-task-page a:hover {
+  color: rgb(2, 4, 79);
 }

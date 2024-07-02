@@ -1,23 +1,31 @@
-.event-page {
+.event-page-container {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  width: 100%;
-}
-
-.event-page-style {
-  padding: 5rem 10rem 0 0;
-  display: flex;
-  justify-content: center;
+  margin: 5rem 12rem 0 auto;
   width: 90%;
   gap: 5rem;
 }
 
+.event-page-right-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 55rem;
+  gap: 3rem;
+}
+
+.event-page-style {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
 .event-details {
-  width: 20%;
-  padding: 2rem;
+  position: relative;
+  width: 100%;
+  padding: 2rem 2rem 2rem 0;
   background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -40,31 +48,6 @@
   margin-right: 1rem;
 }
 
-.lower-event-page-content {
-  padding: 5rem 10rem 5rem 0;
-  display: flex;
-  justify-content: center;
-  width: 85%;
-  gap: 5rem;
-}
-
-.event-page-participants {
-  width: 23%;
-  padding: 2rem;
-  background-color: rgb(64, 142, 198, 0.25);
-  border-radius: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.event-page-files {
-  border: 2px solid red;
-  width: 80%;
-}
-
-.event-box {
-  position: relative;
-}
-
 .event-page-edit-icon {
   position: absolute !important;
   top: 0;
@@ -76,13 +59,30 @@
   height: 3rem !important;
 }
 
-.event-tasks {
-  width: 70%;
-  height: auto;
+.edit-event-popup {
+  position: absolute;
+  top: -2rem;
+  left: 36.5%;
+  z-index: 1;
 }
 
-.manage-task-avatar-group {
-  direction: ltr;
+.event-page-participants {
+  width: 100%;
+  padding: 2rem 2rem 2rem 0;
+  background-color: rgb(64, 142, 198, 0.25);
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-page-participants h2 {
+  font-size: 3rem;
+  margin: 0;
+  padding-bottom: 1rem;
+}
+
+.event-tasks {
+  width: 100%;
+  height: 63.1rem;
 }
 
 .participant-item {
@@ -95,20 +95,29 @@
   font-size: 2rem;
 }
 
-.event-page-participants h2 {
-  font-size: 3rem;
-  margin: 0;
-  padding-bottom: 1rem;
+.participant-item a {
+  text-decoration: none;
+  color: black;
+  transition: all 0.2s linear;
 }
 
-.edit-event-popup {
-  position: absolute;
-  top: -2rem;
-  left: 36.5%;
-  z-index: 1;
+.participant-item a:hover {
+  color: rgb(2, 4, 79);
+  transform: scale(1.05);
 }
 
-.event-page-comments {
-  width: 60%;
-  border: 2px solid red;
+.manage-task-avatar-group {
+  direction: ltr;
+}
+
+.event-page-left-side {
+  width: 69%;
+}
+
+.event-page-navbar {
+  border-bottom: 1px solid #ccc;
+}
+
+.event-page-content {
+  margin-top: 2rem;
 }

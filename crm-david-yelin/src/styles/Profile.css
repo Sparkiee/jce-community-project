@@ -184,7 +184,7 @@ div .profile-avatar:hover {
 
 .search-log-table svg {
   position: absolute;
-  height: 70%;
-  /* width: 5%; */
-  right: -3%;
+  height: 50%;
+  right: 0.7%;
+  top: 25%;
 }

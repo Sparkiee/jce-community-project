@@ -28,6 +28,8 @@ function EditAccess(props) {
       Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
     manageAdmin:
       Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
+    deleteComment:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment")
   });
 
   const handleChange = (event) => {
@@ -47,7 +49,7 @@ function EditAccess(props) {
     try {
       const memberRef = doc(db, "members", props.target.email);
       await updateDoc(memberRef, {
-        adminAccess: updatedAdminAccess,
+        adminAccess: updatedAdminAccess
       });
       setPermSuccess(true);
       setTimeout(() => {
@@ -144,6 +146,15 @@ function EditAccess(props) {
               onChange={handleChange}
             />
             מחיקת אירוע
+          </div>
+          <div className="edit-access-input">
+            <Checkbox
+              name="deleteComment"
+              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+              checked={access.deleteComment}
+              onChange={handleChange}
+            />
+            מחיקת תגובה בפורום
           </div>
           <div className="edit-access-input">
             <Checkbox

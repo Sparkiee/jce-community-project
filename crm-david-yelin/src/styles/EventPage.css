@@ -121,3 +121,9 @@
 .event-page-content {
   margin-top: 2rem;
 }
+
+.avatar-position-center {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

@@ -210,7 +210,9 @@ const DiscussionList = ({ eventId }) => {
                         <EditIcon />
                       </IconButton>
                     )}
-                    {(storedUser.privileges >= 2 || comment.authorEmail === userEmail) && (
+                    {(storedUser.privileges >= 2 ||
+                      comment.authorEmail === userEmail ||
+                      storedUser.adminAccess.includes("deleteComment")) && (
                       <>
                         <IconButton title="מחק" onClick={() => handleDeleteComment(comment.id)}>
                           <DeleteIcon />
@@ -272,7 +274,9 @@ const DiscussionList = ({ eventId }) => {
                               <EditIcon />
                             </IconButton>
                           )}
-                          {(storedUser.privileges >= 2 || reply.authorEmail === userEmail) && (
+                          {(storedUser.privileges >= 2 ||
+                            reply.authorEmail === userEmail ||
+                            storedUser.adminAccess.includes("deleteComment")) && (
                             <>
                               <IconButton
                                 title="מחק"

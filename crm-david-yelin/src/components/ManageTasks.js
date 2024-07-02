@@ -45,9 +45,9 @@ function stringAvatar(name) {
   const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -67,8 +67,8 @@ function ManageTasks() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -99,21 +99,21 @@ function ManageTasks() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 2.5,
+      flex: 2.5
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "relatedEvent",
       headerName: "שייך לאירוע",
       width: 150,
       align: "right",
-      flex: 2,
+      flex: 2
     },
     ...(user.privileges >= 2
       ? [
@@ -129,8 +129,8 @@ function ManageTasks() {
                   {params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}
                 </div>
               );
-            },
-          },
+            }
+          }
         ]
       : []),
     {
@@ -143,7 +143,7 @@ function ManageTasks() {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "taskEndDate",
@@ -155,14 +155,14 @@ function ManageTasks() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "taskStatus",
@@ -178,7 +178,7 @@ function ManageTasks() {
             {params.row.taskStatus}
           </div>
         );
-      },
+      }
     },
     {
       field: "assignTo",
@@ -199,7 +199,7 @@ function ManageTasks() {
             ))}
           </AvatarGroup>
         );
-      },
+      }
     },
     {
       field: "view",
@@ -211,31 +211,39 @@ function ManageTasks() {
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const columns = [
     ...baseColumns,
-    ...(user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")) ? [
-      {
-        field: "edit",
-        headerName: "עריכה",
-        width: 150,
-        align: "right",
-        flex: 1.5,
-        renderCell: (params) => (
-          <div>
-            {(user.privileges >= 2 || user.adminAccess.includes("editTask")) && <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
-              <EditIcon />
-            </IconButton>}
-            {(user.privileges >= 2 || user.adminAccess.includes("deleteTask")) && <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
-              <DeleteForeverIcon />
-            </IconButton>}
-          </div>
-        ),
-      }
-    ] : []
+    ...(user.privileges >= 2 ||
+    user.adminAccess.includes("deleteTask") ||
+    user.adminAccess.includes("editTask")
+      ? [
+          {
+            field: "edit",
+            headerName: "עריכה",
+            width: 150,
+            align: "right",
+            flex: 1.5,
+            renderCell: (params) => (
+              <div>
+                {(user.privileges >= 2 || user.adminAccess.includes("editTask")) && (
+                  <IconButton aria-label="edit" onClick={() => handleEditClick(params.row)}>
+                    <EditIcon />
+                  </IconButton>
+                )}
+                {(user.privileges >= 2 || user.adminAccess.includes("deleteTask")) && (
+                  <IconButton aria-label="delete" onClick={() => setDeleteTarget(params.row)}>
+                    <DeleteForeverIcon />
+                  </IconButton>
+                )}
+              </div>
+            )
+          }
+        ]
+      : [])
   ];
 
   // const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
@@ -273,7 +281,7 @@ function ManageTasks() {
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        taskDoc: doc.id, // Ensure taskDoc is set correctly
+        taskDoc: doc.id // Ensure taskDoc is set correctly
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -297,7 +305,7 @@ function ManageTasks() {
             taskTime: task.taskTime,
             taskBudget: task.taskBudget,
             taskStatus: task.taskStatus,
-            assignTo: assigneeData,
+            assignTo: assigneeData
           };
         })
       );
@@ -324,8 +332,8 @@ function ManageTasks() {
           taskDoc: row.taskDoc,
           assignTo: assigneeData.map((assignee) => ({
             value: assignee.email,
-            label: assignee.fullName,
-          })),
+            label: assignee.fullName
+          }))
         });
       } else {
         console.error("No such document!");
@@ -405,7 +413,12 @@ function ManageTasks() {
           {showCreateTask && (
             <div className="popup-overlay">
               <div ref={createTaskRef} className="popup-content">
-                <CreateTask onClose={handleCloseForms} />
+                <CreateTask
+                  onClose={() => {
+                    handleCloseForms();
+                    getTasks();
+                  }}
+                />
               </div>
             </div>
           )}
@@ -466,16 +479,16 @@ function ManageTasks() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 },
-                },
+                  paginationModel: { page: 0, pageSize: 17 }
+                }
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
             />

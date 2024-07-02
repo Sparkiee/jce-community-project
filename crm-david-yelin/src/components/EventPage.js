@@ -323,14 +323,14 @@ function EventPage() {
           </div>
         );
       case pages[1]:
-        return <h2>פה יהיו הקבצים</h2>;
-      case pages[2]:
         return (
           <div className="event-page-comments">
             <h2>Chat</h2>
             {event && <DiscussionList eventId={event.id} />}
           </div>
         );
+      case pages[2]:
+        return <h2>פה יהיו הקבצים</h2>;
       default:
         return <h2>Page Not Found</h2>;
     }

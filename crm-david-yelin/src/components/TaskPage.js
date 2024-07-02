@@ -44,7 +44,7 @@ function stringAvatar(name) {
 }
 
 function TaskPage() {
-  const pages = ["קבצים", "צאט"];
+  const pages = ["צאט", "קבצים"];
   const handlePageSwitch = (event, newValue) => {
     setPage(newValue);
   };
@@ -247,13 +247,13 @@ function TaskPage() {
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
-        return <h2>פה יהיו הקבצים</h2>;
-      case pages[1]:
         return (
           <div className="task-discussion">
             <DiscussionList eventId={taskId} onShowFullDiscussion={handleShowFullDiscussion} />
           </div>
         );
+      case pages[1]:
+        return <h2>פה יהיו הקבצים</h2>;
       default:
         return <h2>Page Not Found</h2>;
     }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, query, collection, where, getDocs } from "firebase/firestore";
 import Avatar from "@mui/material/Avatar";
 import "../styles/TaskPage.css";
 import "../styles/Styles.css";
@@ -15,6 +15,9 @@ import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import { Tab } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { DataGrid } from "@mui/x-data-grid";
+import ChangeLog from "./ChangeLog";
 
 function stringToColor(string) {
   let hash = 0;
@@ -37,9 +40,9 @@ function stringAvatar(name) {
   }
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -55,10 +58,13 @@ function TaskPage() {
   const [eventName, setEventName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [fullDiscussion, setFullDiscussion] = useState(null);
-  const editTaskRef = useRef(null);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const [taskCreatorFullName, setTaskCreatorFullName] = useState("");
   const [eventId, setEventId] = useState("");
+  const [history, setHistory] = useState([]);
+  const [changes, setChanges] = useState("");
+
+  const editTaskRef = useRef(null);
 
   const getStatusColorClass = (status) => {
     switch (status) {
@@ -77,12 +83,35 @@ function TaskPage() {
     }
   };
 
+  function replaceFieldString(field) {
+    switch (field) {
+      case "assignees":
+        return "משוייכים";
+      case "taskName":
+        return "שם המשימה";
+      case "taskDescription":
+        return "תיאור";
+      case "taskStatus":
+        return "סטטוס";
+      case "taskStartDate":
+        return "תאריך התחלה";
+      case "taskEndDate":
+        return "תאריך סיום";
+      case "taskTime":
+        return "שעה";
+      case "taskBudget":
+        return "תקציב";
+      case "relatedEvent":
+        return "אירוע קשור";
+    }
+  }
+
   const theme = createTheme(
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -91,8 +120,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36,
-      },
+        fontSize: 36
+      }
     },
     heIL
   );
@@ -158,6 +187,38 @@ function TaskPage() {
 
     fetchTask();
   }, [taskId]);
+
+  async function fetchHistory() {
+    try {
+      const q = query(collection(db, "log_tasks"), where("task", "==", `tasks/${taskId}`));
+      const querySnapshot = await getDocs(q);
+      const historyArray = querySnapshot.docs.map((doc) => doc.data());
+      const history = historyArray.map((item, index) => {
+        return {
+          id: index + 1,
+          date: item.timestamp.toDate().toLocaleDateString("he-IL"),
+          time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
+          ...item
+        };
+      });
+      const nonEmptyHistory = history.filter(
+        (item) => item.updatedFields && Object.keys(item.updatedFields).length > 0
+      );
+      const historyWithNames = await Promise.all(
+        nonEmptyHistory.map(async (item) => {
+          const fullName = await getMemberFullName(item.member.split("/")[1]);
+          return { ...item, fullName: fullName };
+        })
+      );
+      setHistory(historyWithNames);
+    } catch (e) {
+      console.error("Error getting history: ", e);
+    }
+  }
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -244,6 +305,76 @@ function TaskPage() {
     return <div>טוען...</div>;
   }
 
+  function generateHtmlListForFieldChanges(fields) {
+    if (fields == null) return "";
+    const array = Object.entries(fields);
+    const formatted = array
+      .map(([fieldName]) => {
+        return `${replaceFieldString(fieldName)}`;
+      })
+      .join(", "); // Modified this line to add a comma and space
+
+    return formatted;
+  }
+  const HistoryColumns = [
+    { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
+    {
+      field: "changeDate",
+      headerName: "תאריך",
+      align: "right",
+      flex: 1.5,
+      renderCell: (params) => {
+        return <div>{params.row.date}</div>;
+      }
+    },
+    {
+      field: "changeTime",
+      headerName: "שעה",
+      align: "right",
+      flex: 1.5,
+      renderCell: (params) => {
+        return <div>{params.row.time}</div>;
+      }
+    },
+    {
+      field: "changedBy",
+      headerName: "שונה על ידי",
+      align: "right",
+      flex: 2,
+      renderCell: (params) => {
+        return (
+          <div className="avatar-position-center" style={{ cursor: "pointer" }}>
+            <Avatar {...stringAvatar(`${params.row.fullName}`)} />
+            {params.row.fullName}
+          </div>
+        );
+      }
+    },
+    {
+      field: "changeDescription",
+      headerName: "שדות שהשתנו",
+      align: "right",
+      flex: 3,
+      renderCell: (params) => {
+        return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
+      }
+    },
+    {
+      field: "view",
+      headerName: "צפייה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <IconButton
+          aria-label="view"
+          onClick={() => setChanges(params.row.updatedFields)}
+          style={{ padding: 0 }}>
+          <VisibilityIcon />
+        </IconButton>
+      )
+    }
+  ];
+
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
@@ -255,7 +386,29 @@ function TaskPage() {
       case pages[1]:
         return <h2>פה יהיו הקבצים</h2>;
       case pages[2]:
-        return <h2>פה יהיו השינויים</h2>;
+        return (
+          <div className="task-history">
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                rows={history}
+                columns={HistoryColumns}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
+                }}
+                pageSizeOptions={[5, 25, 50]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
+                }}
+              />
+            </ThemeProvider>
+          </div>
+        );
       default:
         return <h2>Page Not Found</h2>;
     }
@@ -263,6 +416,13 @@ function TaskPage() {
 
   return (
     <div className="task-page">
+      {changes && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <ChangeLog fields={changes} onClose={() => setChanges("")} />
+          </div>
+        </div>
+      )}
       <div className="task-page-container">
         <div className="task-page-right-side">
           <div className="task-page-style">

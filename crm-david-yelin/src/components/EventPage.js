@@ -42,7 +42,7 @@ function stringAvatar(name) {
 }
 
 function EventPage() {
-  const pages = ["משימות קשורות", "צ'אט", "קבצים"];
+  const pages = ["משימות קשורות", "צ'אט", "קבצים", "שינויים"];
   const handlePageSwitch = (event, newValue) => {
     setPage(newValue);
   };
@@ -331,6 +331,8 @@ function EventPage() {
         );
       case pages[2]:
         return <h2>פה יהיו הקבצים</h2>;
+      case pages[3]:
+        return <h2>פה יהיו השינויים</h2>;
       default:
         return <h2>Page Not Found</h2>;
     }

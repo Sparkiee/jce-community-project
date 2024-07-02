@@ -44,7 +44,7 @@ function stringAvatar(name) {
 }
 
 function TaskPage() {
-  const pages = ["צאט", "קבצים"];
+  const pages = ["צאט", "קבצים", "שינויים"];
   const handlePageSwitch = (event, newValue) => {
     setPage(newValue);
   };
@@ -254,6 +254,8 @@ function TaskPage() {
         );
       case pages[1]:
         return <h2>פה יהיו הקבצים</h2>;
+      case pages[2]:
+        return <h2>פה יהיו השינויים</h2>;
       default:
         return <h2>Page Not Found</h2>;
     }

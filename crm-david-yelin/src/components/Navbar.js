@@ -68,7 +68,6 @@ function Navbar() {
 
   useEffect(() => {
     const member = JSON.parse(sessionStorage.getItem("user"));
-    console.log(member.adminAccess);
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
     if (member && member.email && member.privileges >= 1) {
       const unsubscribeSnapshot = onSnapshot(

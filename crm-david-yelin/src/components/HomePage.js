@@ -380,7 +380,7 @@ function HomePage() {
       <h1 className="page-title-home">היי {user.fullName}</h1>
       <div className="page-subtitle">כאן תוכל להתעדכן עם האירועים והמשימות שלך</div>
       <div className="pending-actions">
-        {(user.adminAccess.includes("createTask") || user.privileges == 2) && (<div className="action-button add-task-button" onClick={handleShowCreateTask}>
+        {user && (Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask") || user.privileges == 2) && (<div className="action-button add-task-button" onClick={handleShowCreateTask}>
             <svg
               width="24px"
               height="24px"
@@ -400,7 +400,7 @@ function HomePage() {
             </svg>
             הוסף משימה
           </div>)}
-        {(user.adminAccess.includes("createEvent") || user.privileges == 2) && (<div className="action-button add-event-button" onClick={handleShowCreateEvent}>
+        {user && (Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent") || user.privileges == 2) && (<div className="action-button add-event-button" onClick={handleShowCreateEvent}>
           <svg
             width="24px"
             height="24px"

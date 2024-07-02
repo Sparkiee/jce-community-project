@@ -49,7 +49,15 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/task/:taskId" element={<TaskPage />} />
+        <Route
+          path="/task/:taskId"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <TaskPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/task" element={<ProtectedRoute privilegeLevel={1}></ProtectedRoute>} />
         <Route
           path="/events"
           element={
@@ -58,9 +66,25 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/event/:id" element={<EventPage />} />
+        <Route
+          path="/event/:id"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <EventPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/event" element={<ProtectedRoute privilegeLevel={1}></ProtectedRoute>} />
         <Route
           path="/profile/:email"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
           element={
             <ProtectedRoute privilegeLevel={1}>
               <Profile />

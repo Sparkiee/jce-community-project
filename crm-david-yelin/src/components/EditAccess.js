@@ -36,7 +36,6 @@ function EditAccess(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log(props.target);
     const updatedAdminAccess = [];
 
     for (const [key, value] of Object.entries(access)) {
@@ -60,7 +59,6 @@ function EditAccess(props) {
     }
   }
 
-  console.log(props.target.adminAccess);
   return (
     <div className="edit-access">
       <div className="action-close" onClick={props.onClose}>
@@ -172,7 +170,7 @@ function EditAccess(props) {
               checked={access.manageAdmin}
               onChange={handleChange}
             />
-            הרשאות ניהול
+            ניהול הרשאות
           </div>
         </div>
         <button type="submit" className="primary-button extra-reg">

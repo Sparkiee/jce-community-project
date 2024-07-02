@@ -19,6 +19,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import { Tab } from "@mui/material";
 import { render } from "@testing-library/react";
+import ChangeLog from "./ChangeLog";
 
 function stringToColor(string) {
   let hash = 0;
@@ -55,6 +56,8 @@ function EventPage() {
   const [loading, setLoading] = useState(true);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const [history, setHistory] = useState([]);
+  const [changes, setChanges] = useState();
+
   const createEventRef = useRef(null);
   const navigate = useNavigate();
 
@@ -178,8 +181,9 @@ function EventPage() {
           ...item
         };
       });
+      const nonEmptyHistory = history.filter((item) => item.updatedFields && Object.keys(item.updatedFields).length > 0);
       const historyWithNames = await Promise.all(
-        history.map(async (item) => {
+        nonEmptyHistory.map(async (item) => {
           const fullName = await getMemberFullName(item.member.split("/")[1]);
           return { ...item, fullName: fullName };
         })
@@ -322,6 +326,39 @@ function EventPage() {
     }
   ];
 
+  function replaceFieldString(fieldName) {
+    switch (fieldName) {
+      case "eventName":
+        return "שם האירוע";
+      case "eventLocation":
+        return "מיקום האירוע";
+      case "eventStartDate":
+        return "תאריך התחלת האירוע";
+      case "eventEndDate":
+        return "תאריך סיום האירוע";
+      case "eventTime":
+        return "שעת האירוע";
+      case "eventStatus":
+        return "סטטוס האירוע";
+      case "eventBudget":
+        return "תקציב האירוע";
+      default:
+        return fieldName;
+    }
+  }
+
+  function generateHtmlListForFieldChanges(fields) {
+    if(fields == null) return "";
+    const array = Object.entries(fields);
+    const formatted = array
+      .map(([fieldName]) => {
+        return `${replaceFieldString(fieldName)}`;
+      })
+      .join(", "); // Modified this line to add a comma and space
+
+    return formatted;
+  }
+
   const HistoryColumns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
     {
@@ -348,7 +385,6 @@ function EventPage() {
       align: "right",
       flex: 2,
       renderCell: (params) => {
-        console.log(params.row)
         return (
           <div className="avatar-position-center" style={{ cursor: "pointer" }}>
             <Avatar {...stringAvatar(`${params.row.fullName}`)} />
@@ -357,7 +393,29 @@ function EventPage() {
         );
       }
     },
-    { field: "changeDescription", headerName: "תיאור השינוי", align: "right", flex: 3 }
+    {
+      field: "changeDescription",
+      headerName: "שדות שהשתנו",
+      align: "right",
+      flex: 3,
+      renderCell: (params) => {
+        return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
+      }
+    },
+    {
+      field: "view",
+      headerName: "צפייה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <IconButton
+          aria-label="view"
+          onClick={() => setChanges(params.row.updatedFields)}
+          style={{ padding: 0 }}>
+          <VisibilityIcon />
+        </IconButton>
+      )
+    }
   ];
 
   const PageContent = ({ pageName }) => {
@@ -432,10 +490,15 @@ function EventPage() {
     }
   };
 
-  console.log(history);
-
   return (
     <div className="event-page">
+      {changes && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <ChangeLog fields={changes} onClose={() => setChanges("")} />
+          </div>
+        </div>
+      )}
       <div className="event-page-container">
         <div className="event-page-right-side">
           <div className="event-page-style">

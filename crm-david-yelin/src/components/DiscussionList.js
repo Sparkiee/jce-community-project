@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { db } from "../firebase";
 import {
   collection,
@@ -11,7 +12,7 @@ import {
   deleteDoc,
   getDoc,
 } from "firebase/firestore";
-import "../styles/Discussion.css";
+import "../styles/DiscussionList.css";
 import IconButton from "@mui/material/IconButton";
 import ReplyIcon from "@mui/icons-material/Reply";
 import EditIcon from "@mui/icons-material/Edit";
@@ -25,12 +26,12 @@ const DiscussionList = ({ eventId }) => {
   const [newComment, setNewComment] = useState("");
   const [editComment, setEditComment] = useState("");
   const [newReply, setNewReply] = useState("");
-  const [userEmail, setUserEmail] = useState(""); 
+  const [userEmail, setUserEmail] = useState("");
 
+  const storedUser = JSON.parse(sessionStorage.getItem("user"));
   useEffect(() => {
-    const storedUser = JSON.parse(sessionStorage.getItem('user'));
     if (storedUser && storedUser.email) {
-      setUserEmail(storedUser.email); // Записываем email пользователя из sessionStorage
+      setUserEmail(storedUser.email);
     }
     fetchComments();
   }, [eventId]);
@@ -42,9 +43,9 @@ const DiscussionList = ({ eventId }) => {
     const commentsList = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
       id: doc.id,
-      timestamp: doc.data().timestamp ? doc.data().timestamp.toDate() : new Date(), // Преобразуем timestamp в Date объект
+      timestamp: doc.data().timestamp ? doc.data().timestamp.toDate() : new Date(),
     }));
-    commentsList.sort((a, b) => a.timestamp - b.timestamp); // Сортировка комментариев по timestamp
+    commentsList.sort((a, b) => a.timestamp - b.timestamp);
     setComments(commentsList);
   };
 
@@ -53,7 +54,7 @@ const DiscussionList = ({ eventId }) => {
     await addDoc(collection(db, "comments"), {
       eventId,
       text: newComment,
-      authorEmail: userEmail, // Добавляем email пользователя к комментарию
+      authorEmail: userEmail,
       timestamp: new Date(),
     });
     setNewComment("");
@@ -65,7 +66,6 @@ const DiscussionList = ({ eventId }) => {
     const commentRef = doc(db, "comments", commentId);
     await updateDoc(commentRef, {
       text: editComment,
-      timestamp: new Date(),
     });
     setEditingCommentId(null);
     setEditComment("");
@@ -88,10 +88,11 @@ const DiscussionList = ({ eventId }) => {
       updatedReplies.push({
         text: newReply,
         timestamp: new Date(),
-        author: userEmail,
+        author: storedUser.fullName,
+        authorEmail: storedUser.email,
       });
       await updateDoc(commentRef, {
-        replies: updatedReplies
+        replies: updatedReplies,
       });
       setNewReply("");
       fetchComments();
@@ -99,87 +100,119 @@ const DiscussionList = ({ eventId }) => {
   };
 
   const handleKeyDown = (event, callback) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       callback();
     }
   };
-  
+
+  const totalReplies = comments.reduce(
+    (acc, comment) => acc + (comment.replies ? comment.replies.length : 0),
+    0
+  );
+  const totalCommentsAndReplies = comments.length + totalReplies;
+
   return (
     <div className="discussion-list">
-      {comments.map((comment) => (
-        <div key={comment.id} className="discussion-item">
-          <div className="discussion-header">
-            <span className="discussion-author">{comment.author}</span>
-            <span className="discussion-timestamp">
-              {new Date(comment.timestamp).toLocaleString()}
-            </span>
-          </div>
-          {editingCommentId === comment.id ? (
-            <textarea
-              value={editComment}
-              onChange={(e) => setEditComment(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, () => handleEditComment(comment.id))}
-            />
-          ) : (
-        <div className="comment-content">
-            <div className="author-email">{comment.authorEmail}</div> {/* Отображение email */}
-            <p>{comment.text}</p>
-          </div>         
-          )}
-          <div className="discussion-actions">
-            {editingCommentId === comment.id ? (
-              <button onClick={() => handleEditComment(comment.id)}>Save</button>
-            ) : (
-              <>
-                <IconButton onClick={() => { setEditingCommentId(comment.id); setEditComment(comment.text); }}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton onClick={() => handleDeleteComment(comment.id)}>
-                  <DeleteIcon />
-                </IconButton>
-                <IconButton onClick={() => setReplyCommentId(comment.id)}>
-                  <ReplyIcon />
-                </IconButton>
-              </>
-            )}
-            {comment.replies && comment.replies.map((reply, index) => (
-              <div key={index} className="discussion-reply">
-                <span className="reply-author">{reply.author}:</span>
-                <span>{reply.text}</span>
-                <span className="discussion-timestamp">
-                  {new Date(reply.timestamp).toLocaleString()}
-                </span>
-              </div>
-            ))}
-            {replyCommentId === comment.id && (
-              <div>
-                <textarea
-                  value={newReply}
-                  onChange={(e) => setNewReply(e.target.value)}
-                  placeholder="Type your reply here..."
-                  onKeyDown={(e) => handleKeyDown(e, () => handleReply(comment.id))}
-                />
-                <IconButton onClick={() => handleReply(comment.id)}>
-                  <SendIcon />
-                </IconButton>
-              </div>
-            )}
-          </div>
+      <div className="discussion-header">
+        <div className="new-comment">
+          <h2>{storedUser.fullName}</h2>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="הקלד תגובה כאן..."
+            onKeyDown={(e) => handleKeyDown(e, handleAddComment)}
+          />
+          <button onClick={handleAddComment}>שתף תגובה</button>
         </div>
-      ))}
-      <div className="new-comment">
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Leave a comment..."
-          onKeyDown={(e) => handleKeyDown(e, handleAddComment)}
-        />
-        <button onClick={handleAddComment}>Post Comment</button>
+      </div>
+      <div className="comments-area">
+        <h2>{totalCommentsAndReplies} תגובות</h2>
+        {comments.map((comment) => (
+          <div key={comment.id} className="discussion-block">
+            <div className="comment-item">
+              <div className="comment-header">
+                <div className="author-name">
+                  <Link to={`/profile/${comment.authorEmail}`}>{storedUser.fullName}</Link>
+                </div>
+                <div className="comment-timestamp">
+                  {new Date(comment.timestamp).toLocaleString("en-GB", {
+                    hour12: false,
+                  })}
+                </div>
+              </div>
+              {editingCommentId === comment.id ? (
+                <textarea
+                  value={editComment}
+                  onChange={(e) => setEditComment(e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, () => handleEditComment(comment.id))}
+                />
+              ) : (
+                <div className="comment-content">
+                  <p>{comment.text}</p>
+                </div>
+              )}
+              <div className="discussion-actions">
+                {editingCommentId === comment.id ? (
+                  <button className="save-icon" onClick={() => handleEditComment(comment.id)}>
+                    שמור שינויים
+                  </button>
+                ) : (
+                  <>
+                    <IconButton
+                      title="ערוך"
+                      onClick={() => {
+                        setEditingCommentId(comment.id);
+                        setEditComment(comment.text);
+                      }}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton title="מחק" onClick={() => handleDeleteComment(comment.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                    <IconButton title="הגב" onClick={() => setReplyCommentId(comment.id)}>
+                      <ReplyIcon />
+                    </IconButton>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="discussion-replies">
+              {comment.replies &&
+                comment.replies.map((reply, index) => (
+                  <div key={index} className="discussion-reply">
+                    <div className="reply-header">
+                      <div className="author-name">
+                        <Link to={`/profile/${reply.authorEmail}`}>{reply.author}</Link>
+                      </div>
+                      <div className="comment-timestamp">
+                        {new Date(reply.timestamp).toLocaleString("en-GB", {
+                          hour12: false,
+                        })}
+                      </div>
+                    </div>
+                    <div className="reply-content">
+                      <p>{reply.text}</p>
+                    </div>
+                  </div>
+                ))}
+              {replyCommentId === comment.id && (
+                <div className="reply-area">
+                  <textarea
+                    value={newReply}
+                    onChange={(e) => setNewReply(e.target.value)}
+                    placeholder="הקלד תגובה כאן..."
+                    onKeyDown={(e) => handleKeyDown(e, () => handleReply(comment.id))}
+                  />
+                  <button onClick={() => handleReply(comment.id)}>שלח תגובה</button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
-
 };
 
 export default DiscussionList;

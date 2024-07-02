@@ -220,7 +220,6 @@ function EventPage() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log("inside!!!");
       if (createEventRef.current && !createEventRef.current.contains(event.target)) {
         setIsEditing(false);
       }

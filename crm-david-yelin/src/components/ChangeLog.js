@@ -46,11 +46,11 @@ function ChangeLog(props) {
     const list = array.map(([key, { oldValue, newValue }], index) => {
       // Use `key` and `index` to form a unique key for each item
       return (
-        <div key={`${key}-${index}`}>
-          השדה שהשתנה: {replaceFieldString(key)}
+        <div className="changelog-field" key={`${key}-${index}`}>
+          <b>השדה שהשתנה:</b> {replaceFieldString(key)}
           <ul>
-            <li>ערך ישן: - {oldValue}</li>
-            <li>ערך חדש: - {newValue}</li>
+            <li><b>ערך ישן:</b> {oldValue}</li>
+            <li><b>ערך חדש:</b> {newValue}</li>
           </ul>
         </div>
       );

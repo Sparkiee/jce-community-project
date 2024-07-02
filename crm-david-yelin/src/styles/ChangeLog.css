@@ -8,8 +8,16 @@
     background-color: rgb(255, 255, 255);
     padding: 4rem 4rem 6rem;
     width: 50rem;
+
+    font-size: 2rem;
   }
 
   .centered-title-changelog {
     text-align: center;
+    font-size: 4rem;
+  }
+
+  .changelog-field > ul {
+    margin: 0;
+    margin-bottom: 1.5rem;
   }

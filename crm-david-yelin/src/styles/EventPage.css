@@ -10,7 +10,6 @@
 .event-page-right-side {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   width: 55rem;
   gap: 3rem;
 }

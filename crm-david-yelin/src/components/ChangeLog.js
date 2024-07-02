@@ -43,10 +43,10 @@ function ChangeLog(props) {
   function generateHtmlListForFieldChanges(fields) {
     if (fields == null) return null;
     const array = Object.entries(fields);
-    const list = array.map(([key, { oldValue, newValue }]) => {
-      // Destructure value into oldValue and newValue
+    const list = array.map(([key, { oldValue, newValue }], index) => {
+      // Use `key` and `index` to form a unique key for each item
       return (
-        <div>
+        <div key={`${key}-${index}`}>
           השדה שהשתנה: {replaceFieldString(key)}
           <ul>
             <li>ערך ישן: - {oldValue}</li>

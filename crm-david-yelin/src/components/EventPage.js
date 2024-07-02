@@ -56,8 +56,9 @@ function EventPage() {
   const [loading, setLoading] = useState(true);
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const [history, setHistory] = useState([]);
-  const [changes, setChanges] = useState();
+  const [changes, setChanges] = useState("");
 
+  const changeLogRef = useRef(null);
   const createEventRef = useRef(null);
   const navigate = useNavigate();
 
@@ -181,7 +182,9 @@ function EventPage() {
           ...item
         };
       });
-      const nonEmptyHistory = history.filter((item) => item.updatedFields && Object.keys(item.updatedFields).length > 0);
+      const nonEmptyHistory = history.filter(
+        (item) => item.updatedFields && Object.keys(item.updatedFields).length > 0
+      );
       const historyWithNames = await Promise.all(
         nonEmptyHistory.map(async (item) => {
           const fullName = await getMemberFullName(item.member.split("/")[1]);
@@ -217,8 +220,12 @@ function EventPage() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      console.log("inside!!!");
       if (createEventRef.current && !createEventRef.current.contains(event.target)) {
         setIsEditing(false);
+      }
+      if (changeLogRef.current && !changeLogRef.current.contains(event.target)) {
+        setChanges("");
       }
     };
 
@@ -348,7 +355,7 @@ function EventPage() {
   }
 
   function generateHtmlListForFieldChanges(fields) {
-    if(fields == null) return "";
+    if (fields == null) return "";
     const array = Object.entries(fields);
     const formatted = array
       .map(([fieldName]) => {
@@ -492,13 +499,6 @@ function EventPage() {
 
   return (
     <div className="event-page">
-      {changes && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <ChangeLog fields={changes} onClose={() => setChanges("")} />
-          </div>
-        </div>
-      )}
       <div className="event-page-container">
         <div className="event-page-right-side">
           <div className="event-page-style">
@@ -564,6 +564,13 @@ function EventPage() {
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">
                 <EditEvent eventDetails={event} onClose={handleSaveEdit} />
+              </div>
+            </div>
+          )}
+          {changes && (
+            <div className="popup-overlay">
+              <div ref={changeLogRef} className="popup-content">
+                <ChangeLog fields={changes} onClose={() => setChanges("")} />
               </div>
             </div>
           )}

@@ -39,6 +39,7 @@ function ManageUsers() {
 
   const editUserRef = useRef(null);
   const createUserRef = useRef(null);
+  const editAccessRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -410,6 +411,10 @@ function ManageUsers() {
       if (createUserRef.current && !createUserRef.current.contains(event.target)) {
         setShowCreateUser(false);
       }
+
+      if(editAccessRef.current && !editAccessRef.current.contains(event.target)) {
+        setEditAdminAccess(false);
+      }
     };
     // Add the event listener when the component mounts
     document.addEventListener("mousedown", handleClickOutside);
@@ -434,7 +439,7 @@ function ManageUsers() {
     <div>
       {editAdminAccess && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div ref={editAccessRef} className="popup-content">
             <EditAccess
               target={editUser}
               onClose={() => {

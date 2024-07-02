@@ -8,7 +8,7 @@ import { db } from "../firebase.js";
 import { Alert } from "@mui/material";
 
 function EditAccess(props) {
-  const [permSuccess, setPermSuccess] = useState(true);
+  const [permSuccess, setPermSuccess] = useState(false);
   const [access, setAccess] = useState({
     createTask:
       Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),

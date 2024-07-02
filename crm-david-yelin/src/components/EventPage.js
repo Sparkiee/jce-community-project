@@ -317,6 +317,9 @@ function EventPage() {
                       labelRowsPerPage: "שורות בכל עמוד:",
                     },
                   }}
+                  onRowDoubleClick={(params) => {
+                    navigate(`/task/${params.row.taskDoc}`);
+                  }}
                 />
               </ThemeProvider>
             )}

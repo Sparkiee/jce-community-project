@@ -17,7 +17,6 @@ import IconButton from "@mui/material/IconButton";
 import ReplyIcon from "@mui/icons-material/Reply";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import SendIcon from "@mui/icons-material/Send";
 
 const DiscussionList = ({ eventId }) => {
   const [comments, setComments] = useState([]);
@@ -46,6 +45,12 @@ const DiscussionList = ({ eventId }) => {
       ...doc.data(),
       id: doc.id,
       timestamp: doc.data().timestamp ? doc.data().timestamp.toDate() : new Date(),
+      replies: doc.data().replies
+        ? doc.data().replies.map((reply) => ({
+            ...reply,
+            timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date(),
+          }))
+        : [],
     }));
     commentsList.sort((a, b) => a.timestamp - b.timestamp);
     setComments(commentsList);
@@ -56,6 +61,7 @@ const DiscussionList = ({ eventId }) => {
     await addDoc(collection(db, "comments"), {
       eventId,
       text: newComment,
+      author: storedUser.fullName,
       authorEmail: userEmail,
       timestamp: new Date(),
     });
@@ -167,7 +173,7 @@ const DiscussionList = ({ eventId }) => {
             <div className="comment-item">
               <div className="comment-header">
                 <div className="author-name">
-                  <Link to={`/profile/${comment.authorEmail}`}>{storedUser.fullName}</Link>
+                  <Link to={`/profile/${comment.authorEmail}`}>{comment.author}</Link>
                 </div>
                 <div className="comment-timestamp">
                   {new Date(comment.timestamp).toLocaleString("en-GB", {
@@ -193,17 +199,22 @@ const DiscussionList = ({ eventId }) => {
                   </button>
                 ) : (
                   <>
-                    <IconButton
-                      title="ערוך"
-                      onClick={() => {
-                        setEditingCommentId(comment.id);
-                        setEditComment(comment.text);
-                      }}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton title="מחק" onClick={() => handleDeleteComment(comment.id)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    {(storedUser.privileges >= 2 || comment.authorEmail === userEmail) && (
+                      <>
+                        <IconButton
+                          title="ערוך"
+                          onClick={() => {
+                            setEditingCommentId(comment.id);
+
+                            setEditComment(comment.text);
+                          }}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton title="מחק" onClick={() => handleDeleteComment(comment.id)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </>
+                    )}
                     <IconButton title="הגב" onClick={() => setReplyCommentId(comment.id)}>
                       <ReplyIcon />
                     </IconButton>
@@ -248,19 +259,24 @@ const DiscussionList = ({ eventId }) => {
                         </button>
                       ) : (
                         <>
-                          <IconButton
-                            title="ערוך"
-                            onClick={() => {
-                              setEditingReply({ commentId: comment.id, replyIndex: index });
-                              setEditReply(reply.text);
-                            }}>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            title="מחק"
-                            onClick={() => handleDeleteReply(comment.id, index)}>
-                            <DeleteIcon />
-                          </IconButton>
+                          {(storedUser.privileges >= 2 || reply.authorEmail === userEmail) && (
+                            <>
+                              <IconButton
+                                title="ערוך"
+                                onClick={() => {
+                                  setEditingReply({ commentId: comment.id, replyIndex: index });
+
+                                  setEditReply(reply.text);
+                                }}>
+                                <EditIcon />
+                              </IconButton>
+                              <IconButton
+                                title="מחק"
+                                onClick={() => handleDeleteReply(comment.id, index)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            </>
+                          )}
                         </>
                       )}
                     </div>

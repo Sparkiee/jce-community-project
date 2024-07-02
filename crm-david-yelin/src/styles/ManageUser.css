@@ -54,3 +54,13 @@
   right: 5%;
   top: 7rem;
 }
+
+.user-privilege-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.addition-indicator {
+  margin-right: 1rem;
+  color: rgb(2, 4, 79);
+}

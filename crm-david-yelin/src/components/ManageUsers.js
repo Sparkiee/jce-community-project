@@ -18,6 +18,7 @@ import ConfirmAction from "./ConfirmAction";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import KeyIcon from "@mui/icons-material/Key";
 import EditAccess from "./EditAccess";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 function ManageUsers() {
   const [fullActiveMembers, setFullActiveMembers] = useState([]);
@@ -62,8 +63,8 @@ function ManageUsers() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -73,26 +74,26 @@ function ManageUsers() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2
-    }
+      flex: 2,
+    },
   ];
 
   const awaitingColumns = [
@@ -116,10 +117,10 @@ function ManageUsers() {
                   <DeleteIcon />
                 </IconButton>
               </div>
-            )
-          }
+            ),
+          },
         ]
-      : [])
+      : []),
   ];
 
   const columns = [
@@ -128,46 +129,46 @@ function ManageUsers() {
       headerName: "אינדקס",
       align: "right",
       flex: 1,
-      edittable: true
+      edittable: true,
     },
     {
       field: "firstName",
       headerName: "שם פרטי",
       align: "right",
       flex: 2,
-      edittable: true
+      edittable: true,
     },
     {
       field: "lastName",
       headerName: "שם משפחה",
       align: "right",
       flex: 2,
-      edittable: true
+      edittable: true,
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "phone",
       headerName: "טלפון",
       align: "right",
       flex: 2,
-      renderCell: (params) => <span dir="ltr">{params.value}</span>
+      renderCell: (params) => <span dir="ltr">{params.value}</span>,
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "privileges",
@@ -176,8 +177,16 @@ function ManageUsers() {
       flex: 2,
       renderCell: (params) => {
         const privileges = params.row.privileges;
+        const hasAdminAccess =
+          Array.isArray(params.row.adminAccess) && params.row.adminAccess.length > 0;
+
         if (privileges === 1) {
-          return "משתמש פעיל";
+          return (
+            <div className="user-privilege-indicator">
+              משתמש פעיל
+              {hasAdminAccess && <AddCircleOutlineIcon className="addition-indicator" />}
+            </div>
+          );
         } else if (privileges === 2) {
           return "מנהל ראשי";
         } else if (privileges === 3) {
@@ -186,8 +195,8 @@ function ManageUsers() {
           return "ללא הרשאות";
         }
         return "לא מוגדר";
-      }
-    }
+      },
+    },
   ];
 
   const editEnabled = [
@@ -238,8 +247,8 @@ function ManageUsers() {
                   </IconButton>
                 )}
               </div>
-            )
-          }
+            ),
+          },
         ]
       : []),
     {
@@ -256,8 +265,8 @@ function ManageUsers() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   async function handleRemovePermissions() {
@@ -279,7 +288,7 @@ function ManageUsers() {
       const targetUserRef = doc(usersRef, removePermmisionTarget.email);
       await updateDoc(targetUserRef, {
         privileges: 0,
-        adminAccess: []
+        adminAccess: [],
       });
       fetchUsers();
     } catch (error) {
@@ -309,8 +318,8 @@ function ManageUsers() {
                   <EditIcon />
                 </IconButton>
               </div>
-            )
-          }
+            ),
+          },
         ]
       : []),
     {
@@ -327,8 +336,8 @@ function ManageUsers() {
             <VisibilityIcon />
           </IconButton>
         </div>
-      )
-    }
+      ),
+    },
   ];
   async function deleteUser(email) {
     try {
@@ -356,7 +365,7 @@ function ManageUsers() {
           phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
-          privileges: member.privileges || 0
+          privileges: member.privileges || 0,
         };
       });
       const enabledMembersFormatted = enabledMembers.map((member, index) => {
@@ -369,7 +378,7 @@ function ManageUsers() {
           department: member.department || "",
           role: member.role || "",
           privileges: member.privileges || 0,
-          adminAccess: member.adminAccess || []
+          adminAccess: member.adminAccess || [],
         };
       });
       setDisabledMemberRows(disabledMembersFormatted);
@@ -390,7 +399,7 @@ function ManageUsers() {
           id: index + 1,
           email: member.email || "",
           department: member.department || "",
-          role: member.role || ""
+          role: member.role || "",
         };
       });
       setPendingMemberRows(membersFormatted);
@@ -412,7 +421,7 @@ function ManageUsers() {
         setShowCreateUser(false);
       }
 
-      if(editAccessRef.current && !editAccessRef.current.contains(event.target)) {
+      if (editAccessRef.current && !editAccessRef.current.contains(event.target)) {
         setEditAdminAccess(false);
       }
     };
@@ -448,7 +457,8 @@ function ManageUsers() {
               }}
             />
           </div>
-        </div>)}
+        </div>
+      )}
       {editUserForm && (
         <div className="popup-overlay">
           <div ref={editUserRef} className="popup-content">
@@ -556,16 +566,16 @@ function ManageUsers() {
               columns={editEnabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 }
-                }
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -612,16 +622,16 @@ function ManageUsers() {
               columns={editDisabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 }
-                }
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -667,16 +677,16 @@ function ManageUsers() {
               columns={awaitingColumns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 }
-                }
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
             />
           </ThemeProvider>

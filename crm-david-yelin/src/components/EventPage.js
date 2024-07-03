@@ -458,7 +458,6 @@ function EventPage() {
       case pages[1]:
         return (
           <div className="event-page-comments">
-            <h2>Chat</h2>
             {event && <DiscussionList eventId={event.id} />}
           </div>
         );

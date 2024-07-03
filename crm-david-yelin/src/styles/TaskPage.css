@@ -121,3 +121,8 @@
 .link-to-event-from-task-page a:hover {
   color: rgb(2, 4, 79);
 }
+
+.task-history {
+  width: 100%;
+  height: 63.1rem;
+}

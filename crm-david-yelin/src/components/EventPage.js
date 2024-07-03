@@ -479,10 +479,10 @@ function EventPage() {
                   columns={taskColumns}
                   initialState={{
                     pagination: {
-                      paginationModel: { page: 0, pageSize: 5 },
+                      paginationModel: { page: 0, pageSize: 10 },
                     },
                   }}
-                  pageSizeOptions={[5, 25, 50]}
+                  pageSizeOptions={[10, 20, 50]}
                   localeText={{
                     MuiTablePagination: {
                       labelDisplayedRows: ({ from, to, count }) =>
@@ -515,10 +515,10 @@ function EventPage() {
                 columns={HistoryColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
+                    paginationModel: { page: 0, pageSize: 10 },
                   },
                 }}
-                pageSizeOptions={[5, 25, 50]}
+                pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>

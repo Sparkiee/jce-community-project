@@ -266,7 +266,6 @@ function ManageEvents() {
     try {
       const eventDoc = await getDoc(doc(db, "events", eventId));
       if (eventDoc.exists() && eventDoc.data().eventStatus === "הסתיים") {
-        console.log(`Event ${eventId} is finished.`);
         return 100;
       }
 
@@ -276,19 +275,15 @@ function ManageEvents() {
       );
       const tasksSnapshot = await getDocs(tasksQuery);
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
-      console.log(`Tasks for event ${eventId}:`, tasks);
 
       if (tasks.length === 0) {
-        console.log(`No tasks found for event ${eventId}`);
         return 0;
       }
 
       const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
-      console.log(`Completed tasks for event ${eventId}: ${completedTasks} out of ${tasks.length}`);
 
       return (completedTasks / tasks.length) * 100;
     } catch (error) {
-      console.error("Error calculating completion percentage: ", error);
       return 0;
     }
   }

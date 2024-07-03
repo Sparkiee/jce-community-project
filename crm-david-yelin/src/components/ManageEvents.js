@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, getDoc, doc, getDocs, deleteDoc, where, query } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -262,6 +262,37 @@ function ManageEvents() {
     }
   }
 
+  async function calculateCompletionPercentage(eventId) {
+    try {
+      const eventDoc = await getDoc(doc(db, "events", eventId));
+      if (eventDoc.exists() && eventDoc.data().eventStatus === "הסתיים") {
+        console.log(`Event ${eventId} is finished.`);
+        return 100;
+      }
+
+      const tasksQuery = query(
+        collection(db, "tasks"),
+        where("relatedEvent", "==", `events/${eventId}`)
+      );
+      const tasksSnapshot = await getDocs(tasksQuery);
+      const tasks = tasksSnapshot.docs.map((doc) => doc.data());
+      console.log(`Tasks for event ${eventId}:`, tasks);
+
+      if (tasks.length === 0) {
+        console.log(`No tasks found for event ${eventId}`);
+        return 0;
+      }
+
+      const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
+      console.log(`Completed tasks for event ${eventId}: ${completedTasks} out of ${tasks.length}`);
+
+      return (completedTasks / tasks.length) * 100;
+    } catch (error) {
+      console.error("Error calculating completion percentage: ", error);
+      return 0;
+    }
+  }
+
   async function getEvents() {
     try {
       const querySnapshot = await getDocs(collection(db, "events"));
@@ -280,6 +311,7 @@ function ManageEvents() {
               return { email, fullName };
             })
           );
+          const completedPercentage = await calculateCompletionPercentage(event.eventDoc);
           return {
             id: index + 1,
             eventDoc: event.eventDoc,
@@ -293,6 +325,7 @@ function ManageEvents() {
             assignees: event.assignees,
             eventCreator: event.eventCreator,
             assignTo: assigneeData || [],
+            completedPercentage: `${Math.round(completedPercentage)}%`,
           };
         })
       );

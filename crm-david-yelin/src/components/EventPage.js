@@ -2,7 +2,16 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, doc, getDoc, getDocs, query, where, orderBy } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  updateDoc,
+} from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -57,7 +66,7 @@ function EventPage() {
   const [history, setHistory] = useState([]);
   const [changes, setChanges] = useState("");
   const [completionPercentage, setCompletionPercentage] = useState(0);
-
+  const [remainingBudget, setRemainingBudget] = useState(0);
   const changeLogRef = useRef(null);
   const createEventRef = useRef(null);
   const navigate = useNavigate();
@@ -248,11 +257,33 @@ function EventPage() {
       setCompletionPercentage(100);
     } else if (tasks.length > 0) {
       const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
-      setCompletionPercentage(Math.round((completedTasks / tasks.length) * 100));
+      const newCompletionPercentage = Math.round((completedTasks / tasks.length) * 100);
+      setCompletionPercentage(newCompletionPercentage);
+
+      // New code starts here
+      if (newCompletionPercentage === 100 && event?.eventStatus !== "הסתיים") {
+        // Update the event status in Firestore
+        const eventRef = doc(db, "events", id);
+        updateDoc(eventRef, { eventStatus: "הסתיים" })
+          .then(() => {
+            setEvent((prevEvent) => ({ ...prevEvent, eventStatus: "הסתיים" }));
+          })
+          .catch((error) => {
+            console.error("Error updating event status: ", error);
+          });
+      }
     } else {
       setCompletionPercentage(0);
     }
   }, [tasks, event]);
+
+  useEffect(() => {
+    if (event && tasks.length > 0) {
+      const totalTaskBudget = tasks.reduce((sum, task) => sum + (task.taskBudget || 0), 0);
+      const newRemainingBudget = event.eventBudget - totalTaskBudget;
+      setRemainingBudget(newRemainingBudget);
+    }
+  }, [event, tasks]);
 
   const Participants = ({ assignees }) => {
     return (
@@ -547,6 +578,13 @@ function EventPage() {
                         </p>
                         <p>
                           <strong>תקציב שנותר: </strong>
+                          {remainingBudget < 0 ? (
+                            <b className="overdraft">
+                              חריגה בתקציב! יתרה של ₪{Math.abs(remainingBudget).toLocaleString()}
+                            </b>
+                          ) : (
+                            `₪${remainingBudget.toLocaleString()}`
+                          )}
                         </p>
                       </div>
                     )}

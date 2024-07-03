@@ -11,6 +11,7 @@ import {
   updateDoc,
   deleteDoc,
   getDoc,
+  arrayUnion
 } from "firebase/firestore";
 import "../styles/DiscussionList.css";
 import IconButton from "@mui/material/IconButton";
@@ -29,10 +30,10 @@ const DiscussionList = ({ eventId }) => {
   const [editReply, setEditReply] = useState("");
   const [userEmail, setUserEmail] = useState("");
 
-  const storedUser = JSON.parse(sessionStorage.getItem("user"));
+  const user = JSON.parse(sessionStorage.getItem("user"));
   useEffect(() => {
-    if (storedUser && storedUser.email) {
-      setUserEmail(storedUser.email);
+    if (user && user.email) {
+      setUserEmail(user.email);
     }
     fetchComments();
   }, [eventId]);
@@ -48,9 +49,9 @@ const DiscussionList = ({ eventId }) => {
       replies: doc.data().replies
         ? doc.data().replies.map((reply) => ({
             ...reply,
-            timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date(),
+            timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date()
           }))
-        : [],
+        : []
     }));
     commentsList.sort((a, b) => a.timestamp - b.timestamp);
     setComments(commentsList);
@@ -61,9 +62,9 @@ const DiscussionList = ({ eventId }) => {
     await addDoc(collection(db, "comments"), {
       eventId,
       text: newComment,
-      author: storedUser.fullName,
+      author: user.fullName,
       authorEmail: userEmail,
-      timestamp: new Date(),
+      timestamp: new Date()
     });
     setNewComment("");
     fetchComments();
@@ -73,7 +74,7 @@ const DiscussionList = ({ eventId }) => {
     if (editComment.trim() === "") return;
     const commentRef = doc(db, "comments", commentId);
     await updateDoc(commentRef, {
-      text: editComment,
+      text: editComment
     });
     setEditingCommentId(null);
     setEditComment("");
@@ -96,15 +97,24 @@ const DiscussionList = ({ eventId }) => {
       updatedReplies.push({
         text: newReply,
         timestamp: new Date(),
-        author: storedUser.fullName,
-        authorEmail: storedUser.email,
+        author: user.fullName,
+        authorEmail: user.email
       });
       await updateDoc(commentRef, {
-        replies: updatedReplies,
+        replies: updatedReplies
       });
       setNewReply("");
       setReplyCommentId(null);
       fetchComments();
+
+      if(user.email === commentData.authorEmail) return;
+      const memberRef = doc(db, "members", commentData.authorEmail);
+      await updateDoc(memberRef, {
+        Notifications: arrayUnion({
+          event: eventId,
+          message: `${user.fullName} השיב לתגובה שלך באירוע ${eventId}`
+        })
+      });
     }
   };
 
@@ -117,7 +127,7 @@ const DiscussionList = ({ eventId }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies[replyIndex].text = editReply;
       await updateDoc(commentRef, {
-        replies: updatedReplies,
+        replies: updatedReplies
       });
       setEditingReply({ commentId: null, replyIndex: null });
       setEditReply("");
@@ -133,7 +143,7 @@ const DiscussionList = ({ eventId }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies.splice(replyIndex, 1);
       await updateDoc(commentRef, {
-        replies: updatedReplies,
+        replies: updatedReplies
       });
       fetchComments();
     }
@@ -156,7 +166,7 @@ const DiscussionList = ({ eventId }) => {
     <div className="discussion-list">
       <div className="discussion-header">
         <div className="new-comment">
-          <h2>{storedUser.fullName}</h2>
+          <h2>{user.fullName}</h2>
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
@@ -177,7 +187,7 @@ const DiscussionList = ({ eventId }) => {
                 </div>
                 <div className="comment-timestamp">
                   {new Date(comment.timestamp).toLocaleString("en-GB", {
-                    hour12: false,
+                    hour12: false
                   })}
                 </div>
               </div>
@@ -210,9 +220,9 @@ const DiscussionList = ({ eventId }) => {
                         <EditIcon />
                       </IconButton>
                     )}
-                    {(storedUser.privileges >= 2 ||
+                    {(user.privileges >= 2 ||
                       comment.authorEmail === userEmail ||
-                      storedUser.adminAccess.includes("deleteComment")) && (
+                      user.adminAccess.includes("deleteComment")) && (
                       <>
                         <IconButton title="מחק" onClick={() => handleDeleteComment(comment.id)}>
                           <DeleteIcon />
@@ -236,7 +246,7 @@ const DiscussionList = ({ eventId }) => {
                       </div>
                       <div className="comment-timestamp">
                         {new Date(reply.timestamp).toLocaleString("en-GB", {
-                          hour12: false,
+                          hour12: false
                         })}
                       </div>
                     </div>
@@ -274,9 +284,9 @@ const DiscussionList = ({ eventId }) => {
                               <EditIcon />
                             </IconButton>
                           )}
-                          {(storedUser.privileges >= 2 ||
+                          {(user.privileges >= 2 ||
                             reply.authorEmail === userEmail ||
-                            storedUser.adminAccess.includes("deleteComment")) && (
+                            user.adminAccess.includes("deleteComment")) && (
                             <>
                               <IconButton
                                 title="מחק"

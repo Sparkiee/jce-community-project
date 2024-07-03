@@ -44,6 +44,12 @@
   margin: 0.5rem;
 }
 
+@media screen and (max-width: 1860px) {
+  .search-input {
+    padding: 0.6rem 4.5rem 0.6rem 0;
+  }
+}
+
 .search-events-bar {
   position: relative;
   margin-bottom: 1rem;

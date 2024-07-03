@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/Styles.css";
 import "../styles/Navbar.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { auth } from "../firebase.js";
-import { onAuthStateChanged } from "firebase/auth";
 import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import IconButton from "@mui/material/IconButton";
@@ -15,7 +14,7 @@ import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
@@ -49,9 +48,9 @@ function Navbar() {
     const secondInitial = names[1] ? names[1][0] : "";
     return {
       sx: {
-        bgcolor: stringToColor(name)
+        bgcolor: stringToColor(name),
       },
-      children: `${firstInitial}${secondInitial}`
+      children: `${firstInitial}${secondInitial}`,
     };
   }
 
@@ -62,6 +61,7 @@ function Navbar() {
   const [fullName, setFullName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const location = useLocation();
 
   const user = JSON.parse(sessionStorage.getItem("user"));
   const notificationsRef = useRef(null);
@@ -167,6 +167,11 @@ function Navbar() {
   function handleProfileClick() {
     navigate(`/profile/${user.email}`);
   }
+
+  useEffect(() => {
+    setSearchQuery("");
+    setSearchResults([]);
+  }, [location]);
 
   return (
     <header>

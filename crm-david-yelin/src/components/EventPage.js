@@ -574,13 +574,10 @@ function EventPage() {
                     {(user.privileges == 2 || isUserAnAssignee) && (
                       <div>
                         <p>
-                          <strong>תקציב התחלתי: </strong>₪{event.eventBudget.toLocaleString()}
-                        </p>
-                        <p>
-                          <strong>תקציב שנותר: </strong>
+                          <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/
                           {remainingBudget < 0 ? (
                             <b className="overdraft">
-                              חריגה בתקציב! יתרה של ₪{Math.abs(remainingBudget).toLocaleString()}
+                              ₪{Math.abs(remainingBudget).toLocaleString()}-
                             </b>
                           ) : (
                             `₪${remainingBudget.toLocaleString()}`

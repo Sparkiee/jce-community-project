@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDoc, doc, getDocs, deleteDoc } from "firebase/firestore";
@@ -107,7 +107,7 @@ function ManageEvents() {
       headerName: "מיקום",
       width: 150,
       align: "right",
-      flex: 4,
+      flex: 2.5,
     },
     ...(user.privileges >= 2
       ? [
@@ -166,7 +166,7 @@ function ManageEvents() {
       headerName: "סטטוס",
       width: 150,
       align: "right",
-      flex: 1.5,
+      flex: 1,
       renderCell: (params) => {
         const colorClass = getStatusColorClass(params.row.eventStatus);
         return (
@@ -176,6 +176,13 @@ function ManageEvents() {
           </div>
         );
       },
+    },
+    {
+      field: "completedPercentage",
+      headerName: "אחוז השלמה",
+      width: 150,
+      align: "right",
+      flex: 1,
     },
     {
       field: "assignTo",
@@ -396,10 +403,12 @@ function ManageEvents() {
           {showCreateEvent && (
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">
-                <CreateEvent onClose={()=> {
-                  handleCloseForms();
-                  getEvents();
-                }} />
+                <CreateEvent
+                  onClose={() => {
+                    handleCloseForms();
+                    getEvents();
+                  }}
+                />
               </div>
             </div>
           )}

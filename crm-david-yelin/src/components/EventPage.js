@@ -56,6 +56,7 @@ function EventPage() {
   const [isUserAnAssignee, setIsUserAnAssignee] = useState(false);
   const [history, setHistory] = useState([]);
   const [changes, setChanges] = useState("");
+  const [completionPercentage, setCompletionPercentage] = useState(0);
 
   const changeLogRef = useRef(null);
   const createEventRef = useRef(null);
@@ -241,6 +242,17 @@ function EventPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isEditing]);
+
+  useEffect(() => {
+    if (event?.eventStatus === "הסתיים") {
+      setCompletionPercentage(100);
+    } else if (tasks.length > 0) {
+      const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
+      setCompletionPercentage(Math.round((completedTasks / tasks.length) * 100));
+    } else {
+      setCompletionPercentage(0);
+    }
+  }, [tasks, event]);
 
   const Participants = ({ assignees }) => {
     return (
@@ -529,10 +541,19 @@ function EventPage() {
                       {event.eventTime}
                     </p>
                     {(user.privileges == 2 || isUserAnAssignee) && (
-                      <p>
-                        <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}
-                      </p>
+                      <div>
+                        <p>
+                          <strong>תקציב התחלתי: </strong>₪{event.eventBudget.toLocaleString()}
+                        </p>
+                        <p>
+                          <strong>תקציב שנותר: </strong>
+                        </p>
+                      </div>
                     )}
+                    <p>
+                      <strong>אחוז השלמה: </strong>
+                      {completionPercentage}%
+                    </p>
                     <p>
                       <strong>יוצר האירוע: </strong>
                       {event.eventCreatorFullName}

@@ -36,9 +36,9 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
 }
 
@@ -65,8 +65,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -75,8 +75,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36
-      }
+        fontSize: 36,
+      },
     },
     heIL
   );
@@ -156,7 +156,7 @@ function EventPage() {
             ...taskData,
             id: doc.id,
             assignTo: assigneeData,
-            index: index + 1
+            index: index + 1,
           };
         })
       );
@@ -182,7 +182,7 @@ function EventPage() {
           id: index + 1,
           date: item.timestamp.toDate().toLocaleDateString("he-IL"),
           time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
-          ...item
+          ...item,
         };
       });
       const nonEmptyHistory = history.filter(
@@ -266,14 +266,14 @@ function EventPage() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 4
+      flex: 4,
     },
     ...(user.privileges == 2 || isUserAnAssignee
       ? [
@@ -287,8 +287,8 @@ function EventPage() {
               return (
                 <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
               );
-            }
-          }
+            },
+          },
         ]
       : []),
     {
@@ -304,7 +304,7 @@ function EventPage() {
             {params.row.taskStatus}
           </div>
         );
-      }
+      },
     },
     {
       field: "assignTo",
@@ -319,7 +319,7 @@ function EventPage() {
             ))}
           </AvatarGroup>
         );
-      }
+      },
     },
     {
       field: "view",
@@ -331,8 +331,8 @@ function EventPage() {
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   function replaceFieldString(fieldName) {
@@ -377,7 +377,7 @@ function EventPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.date}</div>;
-      }
+      },
     },
     {
       field: "changeTime",
@@ -386,7 +386,7 @@ function EventPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.time}</div>;
-      }
+      },
     },
     {
       field: "changedBy",
@@ -400,7 +400,7 @@ function EventPage() {
             {params.row.fullName}
           </div>
         );
-      }
+      },
     },
     {
       field: "changeDescription",
@@ -409,7 +409,7 @@ function EventPage() {
       flex: 3,
       renderCell: (params) => {
         return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
-      }
+      },
     },
     {
       field: "view",
@@ -417,14 +417,11 @@ function EventPage() {
       align: "right",
       flex: 0.8,
       renderCell: (params) => (
-        <IconButton
-          aria-label="view"
-          onClick={() => setChanges(params.row.updatedFields)}
-          style={{ padding: 0 }}>
+        <IconButton aria-label="view" onClick={() => setChanges(params.row.updatedFields)}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const PageContent = ({ pageName }) => {
@@ -439,16 +436,16 @@ function EventPage() {
                   columns={taskColumns}
                   initialState={{
                     pagination: {
-                      paginationModel: { page: 0, pageSize: 5 }
-                    }
+                      paginationModel: { page: 0, pageSize: 5 },
+                    },
                   }}
                   pageSizeOptions={[5, 25, 50]}
                   localeText={{
                     MuiTablePagination: {
                       labelDisplayedRows: ({ from, to, count }) =>
                         `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                      labelRowsPerPage: "שורות בכל עמוד:"
-                    }
+                      labelRowsPerPage: "שורות בכל עמוד:",
+                    },
                   }}
                   onRowDoubleClick={(params) => {
                     navigate(`/task/${params.row.taskDoc}`);
@@ -476,19 +473,16 @@ function EventPage() {
                 columns={HistoryColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 5 }
-                  }
+                    paginationModel: { page: 0, pageSize: 5 },
+                  },
                 }}
                 pageSizeOptions={[5, 25, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:"
-                  }
-                }}
-                onRowDoubleClick={(params) => {
-                  navigate(`/task/${params.row.taskDoc}`);
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
                 }}
               />
             </ThemeProvider>

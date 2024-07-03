@@ -417,7 +417,7 @@ function HomePage() {
       </div>
 
       <h1 className="page-title-home">היי {user.fullName}</h1>
-      <div className="page-subtitle">כאן תוכל להתעדכן עם האירועים והמשימות שלך</div>
+      <div className="page-subtitle">כאן ניתן להתעדכן עם האירועים והמשימות שלך</div>
       <div className="pending-actions">
         {user &&
           ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||

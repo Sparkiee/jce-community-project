@@ -40,9 +40,9 @@ function stringAvatar(name) {
   }
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: initials
+    children: initials,
   };
 }
 
@@ -110,8 +110,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -120,8 +120,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36
-      }
+        fontSize: 36,
+      },
     },
     heIL
   );
@@ -202,7 +202,7 @@ function TaskPage() {
           id: index + 1,
           date: item.timestamp.toDate().toLocaleDateString("he-IL"),
           time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
-          ...item
+          ...item,
         };
       });
       const nonEmptyHistory = history.filter(
@@ -329,7 +329,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.date}</div>;
-      }
+      },
     },
     {
       field: "changeTime",
@@ -338,7 +338,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.time}</div>;
-      }
+      },
     },
     {
       field: "changedBy",
@@ -352,7 +352,7 @@ function TaskPage() {
             {params.row.fullName}
           </div>
         );
-      }
+      },
     },
     {
       field: "changeDescription",
@@ -361,7 +361,7 @@ function TaskPage() {
       flex: 3,
       renderCell: (params) => {
         return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
-      }
+      },
     },
     {
       field: "view",
@@ -375,8 +375,8 @@ function TaskPage() {
           style={{ padding: 0 }}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const PageContent = ({ pageName }) => {
@@ -398,16 +398,16 @@ function TaskPage() {
                 columns={HistoryColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 5 }
-                  }
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
                 }}
-                pageSizeOptions={[5, 25, 50]}
+                pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:"
-                  }
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
                 }}
               />
             </ThemeProvider>

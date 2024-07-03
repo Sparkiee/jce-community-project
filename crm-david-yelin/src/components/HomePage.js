@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { db } from "../firebase";
-import { collection, query, where, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot, getDoc, doc } from "firebase/firestore";
 import "../styles/HomePage.css";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
@@ -24,8 +24,8 @@ function HomePage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -53,21 +53,21 @@ function HomePage() {
       headerName: "אינדקס",
       width: "3%",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "taskName",
       headerName: "משימה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "taskBudget",
@@ -79,7 +79,7 @@ function HomePage() {
         return (
           <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
         );
-      }
+      },
     },
     {
       field: "taskStartDate",
@@ -91,7 +91,7 @@ function HomePage() {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskEndDate",
@@ -103,14 +103,14 @@ function HomePage() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskStatus",
@@ -126,8 +126,8 @@ function HomePage() {
             {params.row.taskStatus}
           </div>
         );
-      }
-    }
+      },
+    },
   ];
 
   const columnsEvents = [
@@ -137,21 +137,21 @@ function HomePage() {
       width: "3%",
       align: "right",
       colors: "red",
-      flex: 1
+      flex: 1,
     },
     {
       field: "eventName",
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "eventBudget",
@@ -165,7 +165,7 @@ function HomePage() {
             {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
           </div>
         );
-      }
+      },
     },
     {
       field: "eventStartDate",
@@ -177,7 +177,7 @@ function HomePage() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventEndDate",
@@ -189,14 +189,14 @@ function HomePage() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventTime",
       headerName: "שעה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventStatus",
@@ -212,8 +212,15 @@ function HomePage() {
             {params.row.eventStatus}
           </div>
         );
-      }
-    }
+      },
+    },
+    {
+      field: "completionPercentage",
+      headerName: "אחוז השלמה",
+      width: 150,
+      align: "right",
+      flex: 1,
+    },
   ];
 
   const user = JSON.parse(sessionStorage.getItem("user"));
@@ -230,7 +237,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id
+          docRef: doc.id,
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
 
@@ -246,11 +253,38 @@ function HomePage() {
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
         taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus
+        taskStatus: task.taskStatus,
       }));
       setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
+    }
+  }
+
+  async function calculateCompletionPercentage(eventId) {
+    try {
+      const eventDoc = await getDoc(doc(db, "events", eventId));
+      if (eventDoc.exists() && eventDoc.data().eventStatus === "הסתיים") {
+        return 100;
+      }
+
+      const tasksQuery = query(
+        collection(db, "tasks"),
+        where("relatedEvent", "==", `events/${eventId}`)
+      );
+      const tasksSnapshot = await getDocs(tasksQuery);
+      const tasks = tasksSnapshot.docs.map((doc) => doc.data());
+
+      if (tasks.length === 0) {
+        return 0;
+      }
+
+      const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
+
+      return Math.round((completedTasks / tasks.length) * 100);
+    } catch (error) {
+      console.error("Error calculating completion percentage:", error);
+      return 0;
     }
   }
 
@@ -263,23 +297,28 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id
+          docRef: doc.id,
         }))
         .filter((event) => event.eventStatus !== "הסתיים");
       setNumEvents(eventsArray.length); // Update event count
 
-      // Map the events to the format expected by DataGrid
-      const rowsEventsData = eventsArray.map((event, index) => ({
-        id: index + 1,
-        eventDoc: event.docRef,
-        eventName: event.eventName,
-        eventLocation: event.eventLocation,
-        eventStartDate: event.eventStartDate,
-        eventEndDate: event.eventEndDate,
-        eventTime: event.eventTime,
-        eventBudget: event.eventBudget,
-        eventStatus: event.eventStatus
-      }));
+      const rowsEventsData = await Promise.all(
+        eventsArray.map(async (event, index) => {
+          const completionPercentage = await calculateCompletionPercentage(event.docRef);
+          return {
+            id: index + 1,
+            eventDoc: event.docRef,
+            eventName: event.eventName,
+            eventLocation: event.eventLocation,
+            eventStartDate: event.eventStartDate,
+            eventEndDate: event.eventEndDate,
+            eventTime: event.eventTime,
+            eventBudget: event.eventBudget,
+            eventStatus: event.eventStatus,
+            completionPercentage: `${completionPercentage}%`,
+          };
+        })
+      );
       setRowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
       console.error("Failed to fetch events:", error);
@@ -378,48 +417,56 @@ function HomePage() {
       </div>
 
       <h1 className="page-title-home">היי {user.fullName}</h1>
-      <div className="page-subtitle">כאן תוכל להתעדכן עם האירועים והמשימות שלך</div>
+      <div className="page-subtitle">כאן ניתן להתעדכן עם האירועים והמשימות שלך</div>
       <div className="pending-actions">
-        {user && (Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask") || user.privileges == 2) && (<div className="action-button add-task-button" onClick={handleShowCreateTask}>
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-              <g id="SVGRepo_iconCarrier">
-                <path
-                  d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"></path>
-              </g>
-            </svg>
-            הוסף משימה
-          </div>)}
-        {user && (Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent") || user.privileges == 2) && (<div className="action-button add-event-button" onClick={handleShowCreateEvent}>
-          <svg
-            width="24px"
-            height="24px"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-              <path
-                d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"></path>
-            </g>
-          </svg>
-          הוסף אירוע
-        </div>)}
+        {user &&
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||
+            user.privileges == 2) && (
+            <div className="action-button add-task-button" onClick={handleShowCreateTask}>
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"></path>
+                </g>
+              </svg>
+              הוסף משימה
+            </div>
+          )}
+        {user &&
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges == 2) && (
+            <div className="action-button add-event-button" onClick={handleShowCreateEvent}>
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"></path>
+                </g>
+              </svg>
+              הוסף אירוע
+            </div>
+          )}
       </div>
       {numTasks === 0 ? (
         <h2 className="title-home">אין משימות פתוחות!</h2>
@@ -437,8 +484,8 @@ function HomePage() {
             columns={columnsTasks}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
+                paginationModel: { page: 0, pageSize: 5 },
+              },
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
@@ -446,8 +493,8 @@ function HomePage() {
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
-              }
+                labelRowsPerPage: "שורות בכל עמוד:", // Optional: customize other texts
+              },
             }}
             onRowDoubleClick={(params) => {
               navigate(`/task/${params.row.taskDoc}`);
@@ -471,16 +518,16 @@ function HomePage() {
             columns={columnsEvents}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
+                paginationModel: { page: 0, pageSize: 5 },
+              },
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:"
-              }
+                labelRowsPerPage: "שורות בכל עמוד:",
+              },
             }}
             onRowDoubleClick={(params) => {
               navigate(`/event/${params.row.eventDoc}`);

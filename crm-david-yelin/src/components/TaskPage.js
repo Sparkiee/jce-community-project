@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc, query, collection, where, getDocs, orderBy } from "firebase/firestore";
 import Avatar from "@mui/material/Avatar";
@@ -65,6 +65,7 @@ function TaskPage() {
   const [changes, setChanges] = useState("");
 
   const editTaskRef = useRef(null);
+  const navigate = useNavigate();
 
   const getStatusColorClass = (status) => {
     switch (status) {
@@ -183,6 +184,7 @@ function TaskPage() {
         }
       } else {
         console.error("No such document!");
+        navigate("/tasks");
       }
     } catch (error) {
       console.error("Error fetching task:", error);
@@ -232,42 +234,6 @@ function TaskPage() {
   const handleSaveEdit = () => {
     setIsEditing(false);
     // Fetch task details again to refresh the data
-    const fetchTask = async () => {
-      try {
-        const taskDoc = await getDoc(doc(db, "tasks", taskId));
-        if (taskDoc.exists()) {
-          const taskData = taskDoc.data();
-          setTask({ ...taskData, taskDoc: taskId }); // Ensure taskDoc is included in the task object
-
-          // Fetch assignee data
-          const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
-          const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
-          const assigneeDocs = await Promise.all(assigneePromises);
-          const assigneeData = assigneeDocs
-            .map((doc) => (doc.exists() ? doc.data() : null))
-            .filter((data) => data);
-          setAssignees(assigneeData);
-
-          // Extract event ID from the full path and fetch event data
-          if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
-            const eventPathSegments = taskData.relatedEvent.split("/");
-            const eventId = eventPathSegments[eventPathSegments.length - 1];
-            setEventId(eventId);
-            const eventDoc = await getDoc(doc(db, "events", eventId));
-            if (eventDoc.exists()) {
-              setEventName(eventDoc.data().eventName);
-            }
-          } else {
-            setEventName("");
-          }
-        } else {
-          console.error("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching task:", error);
-      }
-    };
-
     fetchTask();
   };
 

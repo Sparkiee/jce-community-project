@@ -152,6 +152,7 @@ function EventPage() {
         setIsUserAnAssignee(userIsAssignee);
       } else {
         console.error("No such document!");
+        navigate("/events");
       }
     } catch (e) {
       console.error("Error fetching event: ", e);

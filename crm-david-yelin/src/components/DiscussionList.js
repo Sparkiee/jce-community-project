@@ -12,6 +12,7 @@ import {
   deleteDoc,
   getDoc,
   arrayUnion,
+  serverTimestamp,
 } from "firebase/firestore";
 import "../styles/DiscussionList.css";
 import IconButton from "@mui/material/IconButton";
@@ -85,7 +86,6 @@ const DiscussionList = ({ eventId }) => {
     await addDoc(collection(db, "comments"), {
       eventId,
       text: newComment,
-      author: user.fullName,
       authorEmail: user.email,
       timestamp: new Date(),
     });
@@ -120,7 +120,6 @@ const DiscussionList = ({ eventId }) => {
       updatedReplies.push({
         text: newReply,
         timestamp: new Date(),
-        author: user.fullName,
         authorEmail: user.email,
       });
       await updateDoc(commentRef, {
@@ -136,6 +135,7 @@ const DiscussionList = ({ eventId }) => {
         Notifications: arrayUnion({
           event: eventId,
           message: `${user.fullName} השיב לתגובה שלך באירוע ${eventId}`,
+          timestamp: serverTimestamp()
         }),
       });
     }

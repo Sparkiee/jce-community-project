@@ -40,9 +40,9 @@ function stringAvatar(name) {
   }
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -110,8 +110,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -120,8 +120,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36,
-      },
+        fontSize: 36
+      }
     },
     heIL
   );
@@ -140,53 +140,52 @@ function TaskPage() {
   };
 
   useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        const taskDoc = await getDoc(doc(db, "tasks", taskId));
-        if (taskDoc.exists()) {
-          const taskData = taskDoc.data();
-          setTask({ ...taskData, taskDoc: taskId }); // Ensure taskDoc is included in the task object
+    fetchHistory();
+    fetchTask();
+  }, []);
 
-          // Fetch task creator's full name
-          const taskCreatorFullName = await getMemberFullName(taskData.taskCreator.split("/")[1]);
-          setTaskCreatorFullName(taskCreatorFullName);
+  const fetchTask = async () => {
+    try {
+      const taskDoc = await getDoc(doc(db, "tasks", taskId));
+      if (taskDoc.exists()) {
+        const taskData = taskDoc.data();
+        setTask({ ...taskData, taskDoc: taskId }); // Ensure taskDoc is included in the task object
 
-          // Fetch assignee data
-          const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
-          const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
-          const assigneeDocs = await Promise.all(assigneePromises);
-          const assigneeData = assigneeDocs
-            .map((doc) => (doc.exists() ? doc.data() : null))
-            .filter((data) => data);
-          setAssignees(assigneeData);
+        // Fetch task creator's full name
+        const taskCreatorFullName = await getMemberFullName(taskData.taskCreator.split("/")[1]);
+        setTaskCreatorFullName(taskCreatorFullName);
 
-          const user = JSON.parse(sessionStorage.getItem("user"));
-          if (user && assigneeEmails.includes(user.email)) {
-            setIsUserAnAssignee(true);
-          }
+        // Fetch assignee data
+        const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
+        const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
+        const assigneeDocs = await Promise.all(assigneePromises);
+        const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
+        setAssignees(assigneeData);
 
-          // Extract event ID from the full path and fetch event data
-          if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
-            const eventPathSegments = taskData.relatedEvent.split("/");
-            const eventId = eventPathSegments[eventPathSegments.length - 1];
-            setEventId(eventId);
-            const eventDoc = await getDoc(doc(db, "events", eventId));
-            if (eventDoc.exists()) {
-              setEventName(eventDoc.data().eventName);
-            }
-          } else {
-            setEventName("");
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        if (user && assigneeEmails.includes(user.email)) {
+          setIsUserAnAssignee(true);
+        }
+
+        // Extract event ID from the full path and fetch event data
+        if (taskData.relatedEvent && taskData.relatedEvent.split("/").length === 2) {
+          const eventPathSegments = taskData.relatedEvent.split("/");
+          const eventId = eventPathSegments[eventPathSegments.length - 1];
+          setEventId(eventId);
+          const eventDoc = await getDoc(doc(db, "events", eventId));
+          if (eventDoc.exists()) {
+            setEventName(eventDoc.data().eventName);
           }
         } else {
-          console.error("No such document!");
+          setEventName("");
         }
-      } catch (error) {
-        console.error("Error fetching task:", error);
+      } else {
+        console.error("No such document!");
       }
-    };
-
-    fetchTask();
-  }, [taskId]);
+    } catch (error) {
+      console.error("Error fetching task:", error);
+    }
+  };
 
   async function fetchHistory() {
     try {
@@ -202,7 +201,7 @@ function TaskPage() {
           id: index + 1,
           date: item.timestamp.toDate().toLocaleDateString("he-IL"),
           time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
-          ...item,
+          ...item
         };
       });
       const nonEmptyHistory = history.filter(
@@ -219,10 +218,6 @@ function TaskPage() {
       console.error("Error getting history: ", e);
     }
   }
-
-  useEffect(() => {
-    fetchHistory();
-  }, []);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -246,9 +241,7 @@ function TaskPage() {
           const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
           const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
           const assigneeDocs = await Promise.all(assigneePromises);
-          const assigneeData = assigneeDocs
-            .map((doc) => (doc.exists() ? doc.data() : null))
-            .filter((data) => data);
+          const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
           setAssignees(assigneeData);
 
           // Extract event ID from the full path and fetch event data
@@ -329,7 +322,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.date}</div>;
-      },
+      }
     },
     {
       field: "changeTime",
@@ -338,7 +331,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.time}</div>;
-      },
+      }
     },
     {
       field: "changedBy",
@@ -352,7 +345,7 @@ function TaskPage() {
             {params.row.fullName}
           </div>
         );
-      },
+      }
     },
     {
       field: "changeDescription",
@@ -361,7 +354,7 @@ function TaskPage() {
       flex: 3,
       renderCell: (params) => {
         return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
-      },
+      }
     },
     {
       field: "view",
@@ -369,14 +362,11 @@ function TaskPage() {
       align: "right",
       flex: 0.8,
       renderCell: (params) => (
-        <IconButton
-          aria-label="view"
-          onClick={() => setChanges(params.row.updatedFields)}
-          style={{ padding: 0 }}>
+        <IconButton aria-label="view" onClick={() => setChanges(params.row.updatedFields)} style={{ padding: 0 }}>
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const PageContent = ({ pageName }) => {
@@ -398,16 +388,16 @@ function TaskPage() {
                 columns={HistoryColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 },
-                  },
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
                 }}
               />
             </ThemeProvider>
@@ -439,8 +429,7 @@ function TaskPage() {
                   </p>
                   {eventId && (
                     <p className="link-to-event-from-task-page">
-                      <strong>שייך לאירוע :</strong>{" "}
-                      <Link to={`/event/${eventId}`}>{eventName}</Link>
+                      <strong>שייך לאירוע :</strong> <Link to={`/event/${eventId}`}>{eventName}</Link>
                     </p>
                   )}
                   <p>
@@ -452,10 +441,7 @@ function TaskPage() {
                   <p>
                     <span className="status-cell">
                       <strong>סטטוס: </strong>
-                      <span
-                        className={`status-circle ${getStatusColorClass(
-                          task.taskStatus
-                        )} circle-space`}></span>
+                      <span className={`status-circle ${getStatusColorClass(task.taskStatus)} circle-space`}></span>
                       {task.taskStatus}
                     </span>
                   </p>
@@ -473,10 +459,7 @@ function TaskPage() {
                   </p>
                 </div>
                 {(user.adminAccess.includes("editTask") || user.privileges == 2) && (
-                  <IconButton
-                    className="task-page-edit-icon"
-                    aria-label="edit"
-                    onClick={handleEditClick}>
+                  <IconButton className="task-page-edit-icon" aria-label="edit" onClick={handleEditClick}>
                     <EditIcon />
                   </IconButton>
                 )}

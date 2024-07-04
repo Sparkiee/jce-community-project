@@ -139,22 +139,27 @@ header .logo a {
   position: absolute;
   display: flex;
   flex-direction: column;
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   padding: 1.3rem;
   top: 7rem;
   left: 21.5rem;
   background-color: white;
   box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.2);
   z-index: 1;
-  border-radius: 10px;
-  border: 1px solid #d3d3d3;
-  max-width: 30rem;
-  min-width: 30rem;
+  border-radius: 1rem;
+  max-width: 50rem;
+  min-width: 50rem;
+}
+
+.notification-dropdown .MuiDivider-root {
+  border-width: 0.1rem !important;
+  width: 95% !important;
+  margin: 0 auto !important;
 }
 
 .notification-title {
   font-weight: bold;
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   margin-bottom: 1rem;
 }
 
@@ -167,16 +172,17 @@ header .logo a {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.7rem;
+  gap: 1rem;
 }
 
 .notification-button {
   text-decoration: none;
-  font-size: 1.6rem;
+  font-size: 1.7rem;
+  min-width: 5rem;
   padding: 0.3rem 1.2rem;
-  border-radius: 1.5rem;
+  border-radius: 2rem;
   color: #fff;
-  background-color: dodgerblue;
+  background-color: rgb(2, 4, 79);
   transition: all 0.2s linear;
 }
 
@@ -187,6 +193,19 @@ header .logo a {
 .notification-item {
   width: 100%;
   text-align: right;
+  transition: all 0.1s linear;
+  cursor: pointer;
+}
+
+.notification-item p {
+  font-size: 1.8rem;
+  margin: 1rem;
+  word-wrap: break-word;
+}
+
+.notification-item:hover {
+  border-radius: 3rem;
+  background-color: rgba(2, 4, 79, 0.1);
 }
 
 .search-results {

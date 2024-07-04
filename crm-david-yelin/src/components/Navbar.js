@@ -15,7 +15,6 @@ import {
   query,
   where,
   getDocs,
-  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
@@ -294,7 +293,6 @@ function Navbar() {
                           {notification.substring(0, 90)}
                           {notification.length > 90 ? "..." : ""}
                         </p>
-                        <small>{notification.timestamp?.toDate().toLocaleString()}</small>
                       </div>
                     ))}
                   {displayNotifications.length === 0 && (

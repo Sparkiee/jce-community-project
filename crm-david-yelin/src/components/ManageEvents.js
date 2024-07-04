@@ -211,7 +211,7 @@ function ManageEvents() {
       headerName: "צפייה",
       width: 80,
       align: "center",
-      flex: 0.5,
+      flex: 0.8,
       renderCell: (params) => (
         <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
           <VisibilityIcon />

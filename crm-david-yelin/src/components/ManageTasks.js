@@ -209,7 +209,7 @@ function ManageTasks() {
       headerName: "צפייה",
       width: 80,
       align: "center",
-      flex: 0.5,
+      flex: 0.8,
       renderCell: (params) => (
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
           <VisibilityIcon />

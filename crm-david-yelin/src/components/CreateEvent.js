@@ -110,7 +110,7 @@ function CreateEvent(props) {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               eventID: docRef,
-              message: `הינך משובץ לאירוע חדש${eventDetails.eventName}`,
+              message: `הינך משובץ לאירוע חדש: ${eventDetails.eventName}`,
               link: `/event/${docRef.id}`,
             }),
           });

@@ -136,7 +136,7 @@ function CreateTask(props) {
             Notifications: arrayUnion({
               taskID: docRef,
               message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
-              link: `/tasks/${docRef.id}`,
+              link: `/task/${docRef.id}`,
             }),
           });
         })

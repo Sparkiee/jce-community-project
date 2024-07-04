@@ -19,7 +19,9 @@ function EditAccess(props) {
     createUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createUser"),
     manageUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
     manageAdmin: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
-    deleteComment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment")
+    deleteComment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment"),
+    editDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editDepartment"),
+    deleteDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteDepartment")
   });
 
   const handleChange = (event) => {
@@ -151,13 +153,15 @@ function EditAccess(props) {
             </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="manageUser"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.manageUser}
-              onChange={handleChange}
-            />
-            ניהול משתמש
+            <label>
+              <Checkbox
+                name="manageUser"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.manageUser}
+                onChange={handleChange}
+              />
+              ניהול משתמש
+            </label>
           </div>
           <div className="edit-access-input">
             <label>
@@ -168,6 +172,28 @@ function EditAccess(props) {
                 onChange={handleChange}
               />
               ניהול הרשאות
+            </label>
+          </div>
+          <div className="edit-access-input">
+            <label>
+              <Checkbox
+                name="editDepartment"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.editDepartment}
+                onChange={handleChange}
+              />
+              עריכת מחלקה
+            </label>
+          </div>
+          <div className="edit-access-input">
+            <label>
+              <Checkbox
+                name="deleteDepartment"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.deleteDepartment}
+                onChange={handleChange}
+              />
+              מחיקת מחלקה
             </label>
           </div>
         </div>

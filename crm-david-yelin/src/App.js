@@ -20,6 +20,14 @@ const App = () => {
     <Router>
       <Navigation />
       <Routes>
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
         {/* OPEN ACCESS PAGES */}
         <Route exact path="/" element={<LoginForm />} />
         <Route path="/register" element={<RegisterUser />} />
@@ -65,7 +73,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/task" element={<ProtectedRoute privilegeLevel={1}></ProtectedRoute>} />
         <Route
           path="/events"
           element={

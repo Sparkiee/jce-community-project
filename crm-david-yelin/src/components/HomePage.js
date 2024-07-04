@@ -231,7 +231,7 @@ function HomePage() {
   async function grabMyTasks() {
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(tasksRef, where("assignees", "array-contains", "members/" + user.email));
+      const q = query(tasksRef, where("assignees", "array-contains", "members/" + user?.email));
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs
         .map((doc, index) => ({
@@ -291,7 +291,7 @@ function HomePage() {
   async function grabMyEvents() {
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("assignees", "array-contains", "members/" + user.email));
+      const q = query(eventsRef, where("assignees", "array-contains", "members/" + user?.email));
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs
         .map((doc, index) => ({
@@ -332,7 +332,7 @@ function HomePage() {
     const eventsRef = collection(db, "events");
     const eventsQuery = query(
       eventsRef,
-      where("assignees", "array-contains", "members/" + user.email)
+      where("assignees", "array-contains", "members/" + user?.email)
     );
 
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
@@ -346,7 +346,7 @@ function HomePage() {
     const tasksRef = collection(db, "tasks");
     const tasksQuery = query(
       tasksRef,
-      where("assignees", "array-contains", "members/" + user.email)
+      where("assignees", "array-contains", "members/" + user?.email)
     );
     const unsubscribeTasks = onSnapshot(tasksQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
@@ -400,14 +400,14 @@ function HomePage() {
   return (
     <div className="home-content">
       <div className="display-create">
-        {user.privileges > 1 && showCreateTask && (
+        {user && user.privileges > 1 && showCreateTask && (
           <div className="popup-overlay">
             <div ref={createTaskRef} className="popup-content">
               <CreateTask onClose={handleCloseForms} />
             </div>
           </div>
         )}
-        {user.privileges > 1 && showCreateEvent && (
+        {user && user.privileges > 1 && showCreateEvent && (
           <div className="popup-overlay">
             <div ref={createEventRef} className="popup-content">
               <CreateEvent onClose={handleCloseForms} />
@@ -416,11 +416,11 @@ function HomePage() {
         )}
       </div>
 
-      <h1 className="page-title-home">היי {user.fullName}</h1>
+      <h1 className="page-title-home">היי {user?.fullName}</h1>
       <div className="page-subtitle">כאן ניתן להתעדכן עם האירועים והמשימות שלך</div>
       <div className="pending-actions">
         {user &&
-          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||
+          (user && (Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||
             user.privileges == 2) && (
             <div className="action-button add-task-button" onClick={handleShowCreateTask}>
               <svg
@@ -444,8 +444,8 @@ function HomePage() {
             </div>
           )}
         {user &&
-          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
-            user.privileges == 2) && (
+          (user && ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges == 2)) && (
             <div className="action-button add-event-button" onClick={handleShowCreateEvent}>
               <svg
                 width="24px"

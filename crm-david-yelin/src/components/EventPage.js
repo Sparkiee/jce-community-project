@@ -1,8 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, doc, getDoc, getDocs, query, where, orderBy, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -39,9 +49,9 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
 }
 
@@ -76,8 +86,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -86,8 +96,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36
-      }
+        fontSize: 36,
+      },
     },
     heIL
   );
@@ -155,7 +165,7 @@ function EventPage() {
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        taskDoc: doc.id // Ensure taskDoc is set correctly
+        taskDoc: doc.id, // Ensure taskDoc is set correctly
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -177,7 +187,7 @@ function EventPage() {
             taskTime: task.taskTime,
             taskBudget: task.taskBudget,
             taskStatus: task.taskStatus,
-            assignTo: assigneeData
+            assignTo: assigneeData,
           };
         })
       );
@@ -189,7 +199,11 @@ function EventPage() {
 
   async function fetchHistory() {
     try {
-      const q = query(collection(db, "log_events"), where("event", "==", `events/${id}`), orderBy("timestamp", "desc"));
+      const q = query(
+        collection(db, "log_events"),
+        where("event", "==", `events/${id}`),
+        orderBy("timestamp", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const historyArray = querySnapshot.docs.map((doc) => doc.data());
       const history = historyArray.map((item, index) => {
@@ -197,7 +211,7 @@ function EventPage() {
           id: index + 1,
           date: item.timestamp.toDate().toLocaleDateString("he-IL"),
           time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
-          ...item
+          ...item,
         };
       });
       const nonEmptyHistory = history.filter(
@@ -223,14 +237,16 @@ function EventPage() {
         const assigneeEmails = (taskData.assignees || []).map((email) => email.split("/")[1]); // Ensure taskData.assignees is an array
         const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
         const assigneeDocs = await Promise.all(assigneePromises);
-        const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : [])).filter((data) => data);
+        const assigneeData = assigneeDocs
+          .map((doc) => (doc.exists() ? doc.data() : []))
+          .filter((data) => data);
         setEditingTask({
           ...taskData,
           taskDoc: row.taskDoc,
           assignTo: assigneeData.map((assignee) => ({
             value: assignee.email,
-            label: assignee.fullName
-          }))
+            label: assignee.fullName,
+          })),
         });
       } else {
         console.error("No such document!");
@@ -335,14 +351,14 @@ function EventPage() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 4
+      flex: 4,
     },
     ...(user.privileges == 2 || isUserAnAssignee
       ? [
@@ -353,9 +369,11 @@ function EventPage() {
             align: "right",
             flex: 1,
             renderCell: (params) => {
-              return <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>;
-            }
-          }
+              return (
+                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+              );
+            },
+          },
         ]
       : []),
     {
@@ -371,7 +389,7 @@ function EventPage() {
             {params.row.taskStatus}
           </div>
         );
-      }
+      },
     },
     {
       field: "assignTo",
@@ -386,25 +404,27 @@ function EventPage() {
             ))}
           </AvatarGroup>
         );
-      }
+      },
     },
     {
       field: "view",
       headerName: "צפייה",
       width: 80,
       align: "center",
-      flex: 0.5,
+      flex: 0.8,
       renderCell: (params) => (
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const taskColumns = [
     ...baseTaskColumns,
-    ...(user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")
+    ...(user.privileges >= 2 ||
+    user.adminAccess.includes("deleteTask") ||
+    user.adminAccess.includes("editTask")
       ? [
           {
             field: "edit",
@@ -425,10 +445,10 @@ function EventPage() {
                   </IconButton>
                 )}
               </div>
-            )
-          }
+            ),
+          },
         ]
-      : [])
+      : []),
   ];
 
   function replaceFieldString(fieldName) {
@@ -473,7 +493,7 @@ function EventPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.date}</div>;
-      }
+      },
     },
     {
       field: "changeTime",
@@ -482,7 +502,7 @@ function EventPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.time}</div>;
-      }
+      },
     },
     {
       field: "changedBy",
@@ -496,7 +516,7 @@ function EventPage() {
             {params.row.fullName}
           </div>
         );
-      }
+      },
     },
     {
       field: "changeDescription",
@@ -505,7 +525,7 @@ function EventPage() {
       flex: 3,
       renderCell: (params) => {
         return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
-      }
+      },
     },
     {
       field: "view",
@@ -516,8 +536,8 @@ function EventPage() {
         <IconButton aria-label="view" onClick={() => setChanges(params.row.updatedFields)}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const PageContent = ({ pageName }) => {
@@ -531,16 +551,16 @@ function EventPage() {
                 columns={taskColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 }
-                  }
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:"
-                  }
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
                 }}
                 onRowDoubleClick={(params) => {
                   navigate(`/task/${params.row.taskDoc}`);
@@ -550,7 +570,11 @@ function EventPage() {
           </div>
         );
       case pages[1]:
-        return <div className="event-page-comments">{event && <DiscussionList eventId={event.id} />}</div>;
+        return (
+          <div className="event-page-comments">
+            {event && <DiscussionList eventId={event.id} />}
+          </div>
+        );
       case pages[2]:
         return <h2>פה יהיו הקבצים</h2>;
       case pages[3]:
@@ -562,16 +586,16 @@ function EventPage() {
                 columns={HistoryColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 }
-                  }
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:"
-                  }
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
                 }}
               />
             </ThemeProvider>
@@ -598,7 +622,11 @@ function EventPage() {
       {editingTask && (
         <div className="popup-overlay">
           <div ref={editTaskRef} className="popup-content">
-            <EditTask task={editingTask} onClose={() => setEditingTask(null)} onTaskUpdated={fetchTasks} />
+            <EditTask
+              task={editingTask}
+              onClose={() => setEditingTask(null)}
+              onTaskUpdated={fetchTasks}
+            />
           </div>
         </div>
       )}
@@ -630,7 +658,10 @@ function EventPage() {
                     <p>
                       <span className="status-cell">
                         <strong>סטטוס:</strong>
-                        <span className={`status-circle ${getStatusColorClass(event.eventStatus)} circle-space`}></span>
+                        <span
+                          className={`status-circle ${getStatusColorClass(
+                            event.eventStatus
+                          )} circle-space`}></span>
                         {event.eventStatus}
                       </span>
                     </p>
@@ -643,7 +674,9 @@ function EventPage() {
                         <p>
                           <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/
                           {remainingBudget < 0 ? (
-                            <b className="overdraft">₪{Math.abs(remainingBudget).toLocaleString()}-</b>
+                            <b className="overdraft">
+                              ₪{Math.abs(remainingBudget).toLocaleString()}-
+                            </b>
                           ) : (
                             `₪${remainingBudget.toLocaleString()}`
                           )}
@@ -660,7 +693,10 @@ function EventPage() {
                     </p>
                   </div>
                   {(user.privileges == 2 || user.adminAccess.includes("editEvent")) && (
-                    <IconButton className="event-page-edit-icon" aria-label="edit" onClick={handleEditClick}>
+                    <IconButton
+                      className="event-page-edit-icon"
+                      aria-label="edit"
+                      onClick={handleEditClick}>
                       <EditIcon />
                     </IconButton>
                   )}

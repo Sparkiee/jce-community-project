@@ -28,15 +28,13 @@ const DiscussionList = ({ eventId }) => {
   const [editComment, setEditComment] = useState("");
   const [newReply, setNewReply] = useState("");
   const [editReply, setEditReply] = useState("");
-  const [userEmail, setUserEmail] = useState("");
 
   const user = JSON.parse(sessionStorage.getItem("user"));
+
+  // load on page load
   useEffect(() => {
-    if (user && user.email) {
-      setUserEmail(user.email);
-    }
     fetchComments();
-  }, [eventId]);
+  }, []);
 
   const fetchComments = async () => {
     const commentsRef = collection(db, "comments");
@@ -63,7 +61,7 @@ const DiscussionList = ({ eventId }) => {
       eventId,
       text: newComment,
       author: user.fullName,
-      authorEmail: userEmail,
+      authorEmail: user.email,
       timestamp: new Date()
     });
     setNewComment("");
@@ -209,7 +207,7 @@ const DiscussionList = ({ eventId }) => {
                   </button>
                 ) : (
                   <>
-                    {comment.authorEmail === userEmail && (
+                    {comment.authorEmail === user.email && (
                       <IconButton
                         title="ערוך"
                         onClick={() => {
@@ -221,7 +219,7 @@ const DiscussionList = ({ eventId }) => {
                       </IconButton>
                     )}
                     {(user.privileges >= 2 ||
-                      comment.authorEmail === userEmail ||
+                      comment.authorEmail === user.email ||
                       user.adminAccess.includes("deleteComment")) && (
                       <>
                         <IconButton title="מחק" onClick={() => handleDeleteComment(comment.id)}>
@@ -273,7 +271,7 @@ const DiscussionList = ({ eventId }) => {
                         </button>
                       ) : (
                         <>
-                          {reply.authorEmail === userEmail && (
+                          {reply.authorEmail === user.email && (
                             <IconButton
                               title="ערוך"
                               onClick={() => {
@@ -285,7 +283,7 @@ const DiscussionList = ({ eventId }) => {
                             </IconButton>
                           )}
                           {(user.privileges >= 2 ||
-                            reply.authorEmail === userEmail ||
+                            reply.authorEmail === user.email ||
                             user.adminAccess.includes("deleteComment")) && (
                             <>
                               <IconButton

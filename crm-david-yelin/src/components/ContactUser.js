@@ -33,8 +33,7 @@ function ContactUser(props) {
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
               contactID: docRef,
-              message: `התקבל עדכון חדש בפרופילך: ${subject}`,
-              timestamp: serverTimestamp()
+              message: `התקבל עדכון חדש בפרופילך: ${subject}`
             })
           });
 

@@ -220,7 +220,7 @@ function Navbar() {
                     (user.adminAccess.includes("editDepartment") ||
                       user.adminAccess.includes("deleteDepartment")))) && (
                   <li>
-                    <a to="#" onClick={() => navigate("/department")}>
+                    <a to="#" onClick={() => navigate("/departments")}>
                       ניהול מחלקות
                     </a>
                   </li>

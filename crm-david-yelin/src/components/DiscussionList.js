@@ -85,7 +85,6 @@ const DiscussionList = ({ eventId }) => {
     await addDoc(collection(db, "comments"), {
       eventId,
       text: newComment,
-      author: user.fullName,
       authorEmail: user.email,
       timestamp: new Date(),
     });
@@ -120,7 +119,6 @@ const DiscussionList = ({ eventId }) => {
       updatedReplies.push({
         text: newReply,
         timestamp: new Date(),
-        author: user.fullName,
         authorEmail: user.email,
       });
       await updateDoc(commentRef, {

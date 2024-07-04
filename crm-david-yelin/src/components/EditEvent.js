@@ -324,6 +324,7 @@ function EditEvent(props) {
             }}
           />
           <select
+            value={eventDetails.eventStatus || "טרם החל"}
             onChange={(e) => {
               setEvent({ ...eventDetails, eventStatus: e.target.value });
               resetAlerts();

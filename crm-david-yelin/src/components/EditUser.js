@@ -37,7 +37,6 @@ function EditUser(props) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log(props.target.adminAccess);
 
     if (!firstName || !lastName || !phone || !department || (privileges < 0 && privileges > 2)) {
       setFormWarning(true);

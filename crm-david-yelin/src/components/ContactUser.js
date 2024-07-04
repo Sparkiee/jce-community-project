@@ -3,7 +3,14 @@ import "../styles/ContactUser.css";
 import "../styles/Styles.css";
 import { Alert } from "@mui/material";
 import { db } from "../firebase";
-import { addDoc, collection, serverTimestamp, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 
 function ContactUser(props) {
   const [subject, setSubject] = useState("");
@@ -20,31 +27,32 @@ function ContactUser(props) {
       return;
     }
     try {
-        const docRef = await addDoc(collection(db, "log_contact"), {
-            subject: subject,
-            description: description,
-            notes: notes,
-            timestamp: serverTimestamp(),
-            srcMember: "members/" + props.source.email,
-            destMember: "members/" + props.target.email,
-        });
+      const docRef = await addDoc(collection(db, "log_contact"), {
+        subject: subject,
+        description: description,
+        notes: notes,
+        timestamp: serverTimestamp(),
+        srcMember: "members/" + props.source.email,
+        destMember: "members/" + props.target.email,
+      });
 
-        const memberRef = doc(db, "members", props.target.email);
-          await updateDoc(memberRef, {
-            Notifications: arrayUnion({
-              contactID: docRef,
-              message: `התקבל עדכון חדש בפרופילך: ${subject}`
-            })
-          });
+      const memberRef = doc(db, "members", props.target.email);
+      await updateDoc(memberRef, {
+        Notifications: arrayUnion({
+          contactID: docRef,
+          message: `התקבל עדכון חדש בפרופילך: ${subject}`,
+          link: `/profile/${props.target.email}`,
+        }),
+      });
 
-        setContactSubmitted(true);
-        setTimeout(() => {
-            setContactSubmitted(false);
-            props.onClose();
-        }, 1000);
-        console.log("Document written with ID: ", docRef.id);
+      setContactSubmitted(true);
+      setTimeout(() => {
+        setContactSubmitted(false);
+        props.onClose();
+      }, 1000);
+      console.log("Document written with ID: ", docRef.id);
     } catch (e) {
-        console.error("Error adding document: ", e);
+      console.error("Error adding document: ", e);
     }
   }
 
@@ -56,8 +64,7 @@ function ContactUser(props) {
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -110,13 +117,21 @@ function ContactUser(props) {
             maxLength={46}
             value={notes}
             onChange={(event) => {
-                setNotes(event.target.value);
-                setWarning(false);
+              setNotes(event.target.value);
+              setWarning(false);
             }}
           />
         </div>
-        {warning && <Alert className="feedback-alert feedback-contactuser" severity="warning">נא למלא את כל השדות</Alert>}
-        {contactSubmitted && <Alert className="feedback-alert feedback-contactuser" severity="success">תיעוד הושלם בהצלחה</Alert>}
+        {warning && (
+          <Alert className="feedback-alert feedback-contactuser" severity="warning">
+            נא למלא את כל השדות
+          </Alert>
+        )}
+        {contactSubmitted && (
+          <Alert className="feedback-alert feedback-contactuser" severity="success">
+            תיעוד הושלם בהצלחה
+          </Alert>
+        )}
         <button type="submit" className="primary-button extra-reg">
           שלח פניה
         </button>

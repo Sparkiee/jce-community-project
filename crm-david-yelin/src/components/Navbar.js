@@ -134,7 +134,7 @@ function Navbar() {
           notificationMessages.push(element.message);
         });
 
-        setDisplayNotifications(notificationMessages);
+        setDisplayNotifications(firstNotifications);
 
         // Update the document with the modified notifications array
         await updateDoc(docRef, { Notifications: notifications });
@@ -143,6 +143,13 @@ function Navbar() {
       }
     } catch (error) {
       console.error("Error updating document: ", error);
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    if (notification.link) {
+      navigate(notification.link);
+      setNotificationsVisible(false);
     }
   };
 
@@ -298,11 +305,14 @@ function Navbar() {
                   <div className="notification-title">התראות</div>
                   {displayNotifications.length > 0 &&
                     displayNotifications.map((notification, index) => (
-                      <div key={index} className="notification-item">
+                      <div
+                        key={index}
+                        className="notification-item"
+                        onClick={() => handleNotificationClick(notification)}>
                         <Divider />
                         <p>
-                          {notification.substring(0, 90)}
-                          {notification.length > 90 ? "..." : ""}
+                          {notification.message.substring(0, 90)}
+                          {notification.message.length > 90 ? "..." : ""}
                         </p>
                       </div>
                     ))}

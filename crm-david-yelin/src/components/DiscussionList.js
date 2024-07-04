@@ -11,7 +11,7 @@ import {
   updateDoc,
   deleteDoc,
   getDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import "../styles/DiscussionList.css";
 import IconButton from "@mui/material/IconButton";
@@ -36,21 +36,46 @@ const DiscussionList = ({ eventId }) => {
     fetchComments();
   }, []);
 
+  const fetchUserDetails = async (email) => {
+    const userRef = doc(db, "members", email);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      return userSnap.data();
+    } else {
+      console.log("No such user!");
+      return { fullName: "Unknown User" };
+    }
+  };
+
   const fetchComments = async () => {
     const commentsRef = collection(db, "comments");
     const q = query(commentsRef, where("eventId", "==", eventId));
     const querySnapshot = await getDocs(q);
-    const commentsList = querySnapshot.docs.map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-      timestamp: doc.data().timestamp ? doc.data().timestamp.toDate() : new Date(),
-      replies: doc.data().replies
-        ? doc.data().replies.map((reply) => ({
-            ...reply,
-            timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date()
-          }))
-        : []
-    }));
+    const commentsList = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const data = doc.data();
+        const authorDetails = await fetchUserDetails(data.authorEmail);
+        const replies = data.replies
+          ? await Promise.all(
+              data.replies.map(async (reply) => {
+                const replyAuthorDetails = await fetchUserDetails(reply.authorEmail);
+                return {
+                  ...reply,
+                  author: replyAuthorDetails.fullName,
+                  timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date(),
+                };
+              })
+            )
+          : [];
+        return {
+          ...data,
+          id: doc.id,
+          author: authorDetails.fullName,
+          timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
+          replies,
+        };
+      })
+    );
     commentsList.sort((a, b) => a.timestamp - b.timestamp);
     setComments(commentsList);
   };
@@ -62,7 +87,7 @@ const DiscussionList = ({ eventId }) => {
       text: newComment,
       author: user.fullName,
       authorEmail: user.email,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
     setNewComment("");
     fetchComments();
@@ -72,7 +97,7 @@ const DiscussionList = ({ eventId }) => {
     if (editComment.trim() === "") return;
     const commentRef = doc(db, "comments", commentId);
     await updateDoc(commentRef, {
-      text: editComment
+      text: editComment,
     });
     setEditingCommentId(null);
     setEditComment("");
@@ -96,22 +121,22 @@ const DiscussionList = ({ eventId }) => {
         text: newReply,
         timestamp: new Date(),
         author: user.fullName,
-        authorEmail: user.email
+        authorEmail: user.email,
       });
       await updateDoc(commentRef, {
-        replies: updatedReplies
+        replies: updatedReplies,
       });
       setNewReply("");
       setReplyCommentId(null);
       fetchComments();
 
-      if(user.email === commentData.authorEmail) return;
+      if (user.email === commentData.authorEmail) return;
       const memberRef = doc(db, "members", commentData.authorEmail);
       await updateDoc(memberRef, {
         Notifications: arrayUnion({
           event: eventId,
-          message: `${user.fullName} השיב לתגובה שלך באירוע ${eventId}`
-        })
+          message: `${user.fullName} השיב לתגובה שלך באירוע ${eventId}`,
+        }),
       });
     }
   };
@@ -125,7 +150,7 @@ const DiscussionList = ({ eventId }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies[replyIndex].text = editReply;
       await updateDoc(commentRef, {
-        replies: updatedReplies
+        replies: updatedReplies,
       });
       setEditingReply({ commentId: null, replyIndex: null });
       setEditReply("");
@@ -141,7 +166,7 @@ const DiscussionList = ({ eventId }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies.splice(replyIndex, 1);
       await updateDoc(commentRef, {
-        replies: updatedReplies
+        replies: updatedReplies,
       });
       fetchComments();
     }
@@ -185,7 +210,7 @@ const DiscussionList = ({ eventId }) => {
                 </div>
                 <div className="comment-timestamp">
                   {new Date(comment.timestamp).toLocaleString("en-GB", {
-                    hour12: false
+                    hour12: false,
                   })}
                 </div>
               </div>
@@ -244,7 +269,7 @@ const DiscussionList = ({ eventId }) => {
                       </div>
                       <div className="comment-timestamp">
                         {new Date(reply.timestamp).toLocaleString("en-GB", {
-                          hour12: false
+                          hour12: false,
                         })}
                       </div>
                     </div>

@@ -14,13 +14,13 @@ import {
   arrayUnion,
   serverTimestamp,
 } from "firebase/firestore";
-import "../styles/DiscussionList.css";
+import "../styles/Forum.css";
 import IconButton from "@mui/material/IconButton";
 import ReplyIcon from "@mui/icons-material/Reply";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const DiscussionList = ({ eventId }) => {
+const Forum = ({ eventId }) => {
   const [comments, setComments] = useState([]);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [replyCommentId, setReplyCommentId] = useState(null);
@@ -341,4 +341,4 @@ const DiscussionList = ({ eventId }) => {
   );
 };
 
-export default DiscussionList;
+export default Forum;

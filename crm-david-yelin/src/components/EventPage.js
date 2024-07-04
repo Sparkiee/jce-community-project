@@ -23,7 +23,7 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import DiscussionList from "./DiscussionList";
+import Forum from "./Forum";
 import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -56,7 +56,7 @@ function stringAvatar(name) {
 }
 
 function EventPage() {
-  const pages = ["משימות קשורות", "צ'אט", "קבצים", "שינויים"];
+  const pages = ["משימות קשורות", "פורום", "קבצים", "שינויים"];
   const handlePageSwitch = (event, newValue) => {
     setPage(newValue);
   };
@@ -571,11 +571,7 @@ function EventPage() {
           </div>
         );
       case pages[1]:
-        return (
-          <div className="event-page-comments">
-            {event && <DiscussionList eventId={event.id} />}
-          </div>
-        );
+        return <div className="event-page-comments">{event && <Forum eventId={event.id} />}</div>;
       case pages[2]:
         return <h2>פה יהיו הקבצים</h2>;
       case pages[3]:

@@ -255,6 +255,7 @@ function EventPage() {
   };
 
   const handleSaveEdit = () => {
+    fetchEvent();
     setIsEditing(false);
   };
 

@@ -238,7 +238,7 @@ function ManageUsers() {
                 {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (
                   <IconButton
                     aria-label="adminAccess"
-                    title="שנה גישות מנהל"
+                    title="עדכן גישות"
                     onClick={() => {
                       setEditUser(params.row);
                       setEditAdminAccess(true);

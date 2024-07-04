@@ -12,6 +12,7 @@ import {
   deleteDoc,
   getDoc,
   arrayUnion,
+  serverTimestamp,
 } from "firebase/firestore";
 import "../styles/DiscussionList.css";
 import IconButton from "@mui/material/IconButton";
@@ -134,6 +135,7 @@ const DiscussionList = ({ eventId }) => {
         Notifications: arrayUnion({
           event: eventId,
           message: `${user.fullName} השיב לתגובה שלך באירוע ${eventId}`,
+          timestamp: serverTimestamp()
         }),
       });
     }

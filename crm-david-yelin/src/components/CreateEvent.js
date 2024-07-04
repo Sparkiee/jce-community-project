@@ -111,6 +111,7 @@ function CreateEvent(props) {
             Notifications: arrayUnion({
               eventID: docRef,
               message: `הינך משובץ לאירוע חדש ${eventDetails.eventName}`,
+              timestamp: serverTimestamp()
             }),
           });
         })

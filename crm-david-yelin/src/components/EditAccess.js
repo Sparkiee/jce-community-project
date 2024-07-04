@@ -10,26 +10,16 @@ import { Alert } from "@mui/material";
 function EditAccess(props) {
   const [permSuccess, setPermSuccess] = useState(false);
   const [access, setAccess] = useState({
-    createTask:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
-    editTask:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editTask"),
-    deleteTask:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteTask"),
-    createEvent:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createEvent"),
-    editEvent:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editEvent"),
-    deleteEvent:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteEvent"),
-    createUser:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createUser"),
-    manageUser:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
-    manageAdmin:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
-    deleteComment:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment")
+    createTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
+    editTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editTask"),
+    deleteTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteTask"),
+    createEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createEvent"),
+    editEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editEvent"),
+    deleteEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteEvent"),
+    createUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createUser"),
+    manageUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
+    manageAdmin: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
+    deleteComment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment")
   });
 
   const handleChange = (event) => {
@@ -64,106 +54,101 @@ function EditAccess(props) {
   return (
     <div className="edit-access">
       <div className="action-close" onClick={props.onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <form className="edit-access-form" onSubmit={handleSubmit}>
         <h2 className="title extra-registration-form-title">עריכת גישה</h2>
         <div className="edit-access-input-box">
           <div className="edit-access-input">
-            <Checkbox
-              name="createTask"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.createTask}
-              onChange={handleChange}
-            />
-            יצירת משימה
+            <label>
+              <Checkbox
+                name="createTask"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.createTask}
+                onChange={handleChange}
+              />
+              יצירת משימה
+            </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="editTask"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.editTask}
-              onChange={handleChange}
-            />
-            עריכת משימה
+            <label>
+              <Checkbox
+                name="editTask"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.editTask}
+                onChange={handleChange}
+              />
+              עריכת משימה
+            </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="deleteTask"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.deleteTask}
-              onChange={handleChange}
-            />
-            מחיקת משימה
+            <label>
+              <Checkbox
+                name="deleteTask"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.deleteTask}
+                onChange={handleChange}
+              />
+              מחיקת משימה
+            </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="createEvent"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.createEvent}
-              onChange={handleChange}
-            />
-            יצירת אירוע
+            <label>
+              <Checkbox
+                name="createEvent"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.createEvent}
+                onChange={handleChange}
+              />
+              יצירת אירוע
+            </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="editEvent"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.editEvent}
-              onChange={handleChange}
-            />
-            עריכת אירוע
+            <label>
+              <Checkbox
+                name="editEvent"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.editEvent}
+                onChange={handleChange}
+              />
+              עריכת אירוע
+            </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="deleteEvent"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.deleteEvent}
-              onChange={handleChange}
-            />
-            מחיקת אירוע
+            <label>
+              <Checkbox
+                name="deleteEvent"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.deleteEvent}
+                onChange={handleChange}
+              />
+              מחיקת אירוע
+            </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="deleteComment"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.deleteComment}
-              onChange={handleChange}
-            />
-            מחיקת תגובה בפורום
+            <label>
+              <Checkbox
+                name="deleteComment"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.deleteComment}
+                onChange={handleChange}
+              />
+              מחיקת תגובה בפורום
+            </label>
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="createUser"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.createUser}
-              onChange={handleChange}
-            />
-            יצירת משתמש
+            <label>
+              <Checkbox
+                name="createUser"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.createUser}
+                onChange={handleChange}
+              />
+              יצירת משתמש
+            </label>
           </div>
           <div className="edit-access-input">
             <Checkbox
@@ -175,13 +160,15 @@ function EditAccess(props) {
             ניהול משתמש
           </div>
           <div className="edit-access-input">
-            <Checkbox
-              name="manageAdmin"
-              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-              checked={access.manageAdmin}
-              onChange={handleChange}
-            />
-            ניהול הרשאות
+            <label>
+              <Checkbox
+                name="manageAdmin"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.manageAdmin}
+                onChange={handleChange}
+              />
+              ניהול הרשאות
+            </label>
           </div>
         </div>
         <button type="submit" className="primary-button extra-reg">

@@ -214,6 +214,17 @@ function Navbar() {
                     </a>
                   </li>
                 )}
+              {user &&
+                ((user.privileges > 0 && user.privileges == 2) ||
+                  (Array.isArray(user.adminAccess) &&
+                    (user.adminAccess.includes("editDepartment") ||
+                      user.adminAccess.includes("deleteDepartment")))) && (
+                  <li>
+                    <a to="#" onClick={() => navigate("/department")}>
+                      ניהול מחלקות
+                    </a>
+                  </li>
+                )}
               <li className="search-li-nav">
                 <svg
                   viewBox="0 0 32 32"

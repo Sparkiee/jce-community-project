@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, getDoc, doc, getDocs, deleteDoc, where, query } from "firebase/firestore";
+import { collection, getDoc, doc, getDocs, deleteDoc, where, query, orderBy } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -290,7 +290,9 @@ function ManageEvents() {
 
   async function getEvents() {
     try {
-      const querySnapshot = await getDocs(collection(db, "events"));
+      const eventRef = collection(db, "events");
+      const q = query(eventRef, orderBy("eventEndDate", "desc"), orderBy("eventTime", "desc"), orderBy("eventName", "desc"));
+      const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,

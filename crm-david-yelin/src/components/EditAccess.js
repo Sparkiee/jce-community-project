@@ -9,6 +9,7 @@ import { Alert } from "@mui/material";
 
 function EditAccess(props) {
   const [permSuccess, setPermSuccess] = useState(false);
+  const [checkAll, setCheckAll] = useState(false);
   const [access, setAccess] = useState({
     createTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
     editTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editTask"),
@@ -24,8 +25,31 @@ function EditAccess(props) {
     deleteDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteDepartment")
   });
 
+  const handleCheckAllChange = (event) => {
+    const newCheckAll = event.target.checked;
+    setCheckAll(newCheckAll);
+    setAccess({
+      createTask: newCheckAll,
+      editTask: newCheckAll,
+      deleteTask: newCheckAll,
+      createEvent: newCheckAll,
+      editEvent: newCheckAll,
+      deleteEvent: newCheckAll,
+      createUser: newCheckAll,
+      manageUser: newCheckAll,
+      manageAdmin: newCheckAll,
+      deleteComment: newCheckAll,
+      editDepartment: newCheckAll,
+      deleteDepartment: newCheckAll
+    });
+  };
+
   const handleChange = (event) => {
-    setAccess({ ...access, [event.target.name]: event.target.checked });
+    const newAccess = { ...access, [event.target.name]: event.target.checked };
+    setAccess(newAccess);
+
+    const allChecked = Object.values(newAccess).every((value) => value);
+    setCheckAll(allChecked);
   };
 
   async function handleSubmit(event) {
@@ -62,7 +86,18 @@ function EditAccess(props) {
         </svg>
       </div>
       <form className="edit-access-form" onSubmit={handleSubmit}>
-        <h2 className="title extra-registration-form-title">עריכת גישה</h2>
+        <h2 className="title-edit-access">עריכת גישה</h2>
+        <div className="edit-access-input edit-access-all">
+          <label>
+            <Checkbox
+              name="checkAll"
+              sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+              checked={checkAll}
+              onChange={handleCheckAllChange}
+            />
+            בחירת כל ההרשאות
+          </label>
+        </div>
         <div className="edit-access-input-box">
           <div className="edit-access-input">
             <label>

@@ -10,6 +10,23 @@
   width: 50rem;
 }
 
+.title-edit-access {
+  margin: 0;
+  font-size: 4.5rem;
+  padding-bottom: 2rem;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.edit-access-input {
+  cursor: pointer;
+  font-size: 1.8rem;
+}
+
+.edit-access-all {
+  padding-left: 3.5rem;
+}
+
 .edit-access-form {
   display: flex;
   flex-direction: column;

@@ -12,7 +12,7 @@ import ManageEvents from "./components/ManageEvents";
 import Profile from "./components/Profile";
 import TaskPage from "./components/TaskPage";
 import EventPage from "./components/EventPage";
-
+import ManageDepartments from "./components/ManageDepartments";
 import Navbar from "./components/Navbar";
 
 const App = () => {
@@ -38,6 +38,14 @@ const App = () => {
           element={
             <ProtectedRoute privilegeLevel={1}>
               <ManageUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/departments"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <ManageDepartments />
             </ProtectedRoute>
           }
         />

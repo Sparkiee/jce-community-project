@@ -172,7 +172,6 @@ function TaskPage() {
         const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
         setAssignees(assigneeData);
 
-        const user = JSON.parse(sessionStorage.getItem("user"));
         if (user && assigneeEmails.includes(user.email)) {
           setIsUserAnAssignee(true);
         }

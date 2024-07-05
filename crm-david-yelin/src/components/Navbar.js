@@ -53,6 +53,7 @@ function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [user, setUser] = useState(null);
+
   const location = useLocation();
 
   const notificationsRef = useRef(null);
@@ -343,7 +344,7 @@ function Navbar() {
                   </div>
                 </div>
               )}
-              <Avatar {...stringAvatar(fullName)} title={fullName} onClick={() => handleProfileClick()} />
+              <Avatar {...stringAvatar(user.fullName)} title={fullName} onClick={() => handleProfileClick()} />
               <a className="logout-button" to="/logout" onClick={() => disconnect()}>
                 התנתק
               </a>

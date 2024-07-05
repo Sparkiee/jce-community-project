@@ -30,12 +30,22 @@ const Forum = ({ eventId, type, name }) => {
   const [editComment, setEditComment] = useState("");
   const [newReply, setNewReply] = useState("");
   const [editReply, setEditReply] = useState("");
-
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const [user, setUser] = useState(null);
 
   // load on page load
   useEffect(() => {
     fetchComments();
+  }, []);
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData)
+      setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData)
+        setUser(userData);
+    }
   }, []);
 
   const fetchUserDetails = async (email) => {
@@ -198,7 +208,7 @@ const Forum = ({ eventId, type, name }) => {
     <div className="discussion-list">
       <div className="discussion-header">
         <div className="new-comment">
-          <h2>{user.fullName}</h2>
+          <h2>{user && user.fullName}</h2>
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}

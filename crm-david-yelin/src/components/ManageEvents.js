@@ -117,7 +117,7 @@ function ManageEvents() {
       align: "right",
       flex: 2.5
     },
-    ...(user.privileges >= 2
+    ...(user && user.privileges >= 2
       ? [
           {
             field: "eventBudget",
@@ -227,7 +227,7 @@ function ManageEvents() {
 
   const columns = [
     ...baseColumns,
-    ...(user.privileges >= 2 || user.adminAccess.includes("deleteEvent") || user.adminAccess.includes("editEvent")
+    ...(user && (user.privileges >= 2 || user.adminAccess.includes("deleteEvent") || user.adminAccess.includes("editEvent"))
       ? [
           {
             field: "edit",
@@ -445,7 +445,7 @@ function ManageEvents() {
             </div>
           )}
         </div>
-        {(user.adminAccess.includes("createEvent") || user.privileges == 2) && (
+        {user && ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges == 2) && (
           <div className="action-button add-events-button add-events-manage-events" onClick={handleShowCreateEvents}>
             <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

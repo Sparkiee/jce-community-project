@@ -31,6 +31,7 @@ function EditTask(props) {
   const [editedSuccessfully, setEditedSuccessfully] = useState(false);
   const [taskDetails, setTask] = useState(props.task || {});
   const [originalTask, setOriginalTask] = useState(props.task || {});
+  const [user, setUser] = useState(null);
 
   function getUpdatedFields(taskDetails, originalTask) {
     const updatedFields = {};
@@ -42,7 +43,16 @@ function EditTask(props) {
     return updatedFields;
   }
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData)
+      setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData)
+        setUser(userData);
+    }
+  }, []);
 
   useEffect(() => {
     if (selectedMembers.length == 0 && taskDetails.assignees) {

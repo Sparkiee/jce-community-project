@@ -1,7 +1,7 @@
 import "../styles/Styles.css";
 import "../styles/ChangePassword.css";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth } from "../firebase";
 import { Alert } from "@mui/material";
 import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
@@ -14,7 +14,16 @@ function ChangePassword(props) {
   const [passwordChangeError, setPasswordChangeError] = useState(false);
   const [warningMessage, setWarningMessage] = useState("");
   const [formWarning, setFormWarning] = useState(false);
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData) setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) setUser(userData);
+    }
+  }, []);
 
   const handleChangePassword = async () => {
     try {
@@ -64,30 +73,9 @@ function ChangePassword(props) {
         onClick={() => {
           props.onClose();
         }}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <h1 className="change-password-title">שינוי סיסמה</h1>

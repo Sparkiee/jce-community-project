@@ -27,6 +27,7 @@ function CreateEvent(props) {
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
   const [members, setMembers] = useState([]);
+  const [user, setUser] = useState(null);
 
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [eventDetails, setEventDetails] = useState({
@@ -83,7 +84,7 @@ function CreateEvent(props) {
       setWarningText("תאריך ההתחלה לא יכול להיות לאחר תאריך הסיום");
       return;
     }
-    const user = JSON.parse(sessionStorage.getItem("user"));
+
     const assigneeRefs = selectedMembers.map((member) => `members/${member.id}`);
     const updatedEventDetails = {
       eventName: eventDetails.eventName,

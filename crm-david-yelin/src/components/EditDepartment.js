@@ -2,11 +2,12 @@ import React, { useState } from "react";
 
 function EditDepartment(props) {
   const [department, setDepartment] = useState(props.department.name || "");
+
   async function handleSubmit(e) {
     e.preventDefault();
     props.onComplete(department);
   }
-  console.log(props);
+  
   return (
     <div className="change-password-form">
       <div

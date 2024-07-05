@@ -40,9 +40,9 @@ function stringAvatar(name) {
   }
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -65,6 +65,7 @@ function TaskPage() {
   const [changes, setChanges] = useState("");
 
   const editTaskRef = useRef(null);
+  const changelogRef = useRef(null);
   const navigate = useNavigate();
 
   const getStatusColorClass = (status) => {
@@ -111,8 +112,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -121,8 +122,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36,
-      },
+        fontSize: 36
+      }
     },
     heIL
   );
@@ -160,9 +161,7 @@ function TaskPage() {
         const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
         const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
         const assigneeDocs = await Promise.all(assigneePromises);
-        const assigneeData = assigneeDocs
-          .map((doc) => (doc.exists() ? doc.data() : null))
-          .filter((data) => data);
+        const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
         setAssignees(assigneeData);
 
         const user = JSON.parse(sessionStorage.getItem("user"));
@@ -205,7 +204,7 @@ function TaskPage() {
           id: index + 1,
           date: item.timestamp.toDate().toLocaleDateString("he-IL"),
           time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
-          ...item,
+          ...item
         };
       });
       const nonEmptyHistory = history.filter(
@@ -242,13 +241,12 @@ function TaskPage() {
       if (editTaskRef.current && !editTaskRef.current.contains(event.target)) {
         setIsEditing(false);
       }
+      if (changelogRef.current && !changelogRef.current.contains(event.target)) {
+        console.log("click outside");
+        setChanges("");
+      }
     };
-
-    if (isEditing) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -292,7 +290,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.date}</div>;
-      },
+      }
     },
     {
       field: "changeTime",
@@ -301,7 +299,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.time}</div>;
-      },
+      }
     },
     {
       field: "changedBy",
@@ -315,7 +313,7 @@ function TaskPage() {
             {params.row.fullName}
           </div>
         );
-      },
+      }
     },
     {
       field: "changeDescription",
@@ -324,7 +322,7 @@ function TaskPage() {
       flex: 3,
       renderCell: (params) => {
         return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
-      },
+      }
     },
     {
       field: "view",
@@ -332,14 +330,11 @@ function TaskPage() {
       align: "right",
       flex: 0.8,
       renderCell: (params) => (
-        <IconButton
-          aria-label="view"
-          onClick={() => setChanges(params.row.updatedFields)}
-          style={{ padding: 0 }}>
+        <IconButton aria-label="view" onClick={() => setChanges(params.row.updatedFields)} style={{ padding: 0 }}>
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const PageContent = ({ pageName }) => {
@@ -347,7 +342,7 @@ function TaskPage() {
       case pages[0]:
         return (
           <div className="task-discussion">
-            <Forum eventId={taskId} type='task' name={task.taskName} onShowFullDiscussion={handleShowFullDiscussion} />
+            <Forum eventId={taskId} type="task" name={task.taskName} onShowFullDiscussion={handleShowFullDiscussion} />
           </div>
         );
       case pages[1]:
@@ -361,16 +356,16 @@ function TaskPage() {
                 columns={HistoryColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 },
-                  },
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
                 }}
               />
             </ThemeProvider>
@@ -385,7 +380,7 @@ function TaskPage() {
     <div className="task-page">
       {changes && (
         <div className="popup-overlay">
-          <div className="popup-content">
+          <div ref={changelogRef} className="popup-content">
             <ChangeLog fields={changes} onClose={() => setChanges("")} />
           </div>
         </div>
@@ -402,8 +397,7 @@ function TaskPage() {
                   </p>
                   {eventId && (
                     <p className="link-to-event-from-task-page">
-                      <strong>שייך לאירוע :</strong>{" "}
-                      <Link to={`/event/${eventId}`}>{eventName}</Link>
+                      <strong>שייך לאירוע :</strong> <Link to={`/event/${eventId}`}>{eventName}</Link>
                     </p>
                   )}
                   <p>
@@ -415,10 +409,7 @@ function TaskPage() {
                   <p>
                     <span className="status-cell">
                       <strong>סטטוס: </strong>
-                      <span
-                        className={`status-circle ${getStatusColorClass(
-                          task.taskStatus
-                        )} circle-space`}></span>
+                      <span className={`status-circle ${getStatusColorClass(task.taskStatus)} circle-space`}></span>
                       {task.taskStatus}
                     </span>
                   </p>
@@ -436,10 +427,7 @@ function TaskPage() {
                   </p>
                 </div>
                 {(user.adminAccess.includes("editTask") || user.privileges == 2) && (
-                  <IconButton
-                    className="task-page-edit-icon"
-                    aria-label="edit"
-                    onClick={handleEditClick}>
+                  <IconButton className="task-page-edit-icon" aria-label="edit" onClick={handleEditClick}>
                     <EditIcon />
                   </IconButton>
                 )}

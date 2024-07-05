@@ -74,9 +74,9 @@ function EventPage() {
   const [editingTask, setEditingTask] = useState(null);
   // const []
 
-  const changeLogRef = useRef(null);
   const createEventRef = useRef(null);
   const editTaskRef = useRef(null);
+  const changelogRef = useRef(null);
 
   const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -281,11 +281,11 @@ function EventPage() {
       if (createEventRef.current && !createEventRef.current.contains(event.target)) {
         setIsEditing(false);
       }
-      if (changeLogRef.current && !changeLogRef.current.contains(event.target)) {
-        setChanges("");
-      }
       if (editTaskRef.current && !editTaskRef.current.contains(event.target)) {
         setEditingTask(null);
+      }
+      if (changelogRef.current && !changelogRef.current.contains(event.target)) {
+        setChanges("");
       }
     };
 
@@ -716,7 +716,7 @@ function EventPage() {
           )}
           {changes && (
             <div className="popup-overlay">
-              <div ref={changeLogRef} className="popup-content">
+              <div ref={changelogRef} className="popup-content">
                 <ChangeLog fields={changes} onClose={() => setChanges("")} />
               </div>
             </div>

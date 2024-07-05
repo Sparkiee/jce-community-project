@@ -445,7 +445,7 @@ function ManageEvents() {
         </div>
         {(user.adminAccess.includes("createEvent") || user.privileges == 2) && (
           <div
-            className="action-button add-events-button add-events-manage-events"
+            className="action-button add-events-manage-events"
             onClick={handleShowCreateEvents}>
             <svg
               width="24px"

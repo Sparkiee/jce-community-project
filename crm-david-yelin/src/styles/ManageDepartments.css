@@ -1,0 +1,17 @@
+.manage-departments {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.manage-departments h1 {
+    margin: 2rem 0 2rem 0;
+    font-size: 3.5rem;
+}
+
+.add-department-button {
+    position: absolute;
+    top: 4rem;
+    right: 5%;
+}

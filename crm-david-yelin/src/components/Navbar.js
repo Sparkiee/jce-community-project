@@ -127,8 +127,7 @@ function Navbar() {
         const data = docSnap.data();
         setNotifications(data?.Notifications?.length || 0);
         let notifications = docSnap.data().Notifications || [];
-        const firstNotifications = notifications.slice(0, 6); // Get the first 6 notifications
-        notifications = notifications.slice(6); // Remove the first 6 notifications
+        const firstNotifications = notifications.slice(0, 6);
         let notificationMessages = [];
         firstNotifications.forEach((element) => {
           notificationMessages.push(element.message);
@@ -314,6 +313,33 @@ function Navbar() {
                           {notification.message.substring(0, 90)}
                           {notification.message.length > 90 ? "..." : ""}
                         </p>
+                        <div className="clear-notification">
+                          <svg
+                            width="24px"
+                            height="24px"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor">
+                            <line
+                              x1="17"
+                              y1="7"
+                              x2="7"
+                              y2="17"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                            <line
+                              x1="7"
+                              y1="7"
+                              x2="17"
+                              y2="17"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     ))}
                   {displayNotifications.length === 0 && (

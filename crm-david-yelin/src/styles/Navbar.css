@@ -153,7 +153,7 @@ header .logo a {
 
 .notification-dropdown .MuiDivider-root {
   border-width: 0.1rem !important;
-  width: 95% !important;
+  width: 98% !important;
   margin: 0 auto !important;
 }
 
@@ -191,6 +191,7 @@ header .logo a {
 }
 
 .notification-item {
+  position: relative;
   width: 100%;
   text-align: right;
   transition: all 0.1s linear;
@@ -204,8 +205,27 @@ header .logo a {
 }
 
 .notification-item:hover {
-  border-radius: 3rem;
+  border-radius: 1.5rem;
   background-color: rgba(2, 4, 79, 0.1);
+}
+
+.clear-notification {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  color: black;
+  transition: all 0.2s linear;
+}
+
+.clear-notification svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.clear-notification:hover {
+  color: rgb(2, 4, 79);
+  transform: scale(1.1);
 }
 
 .search-results {

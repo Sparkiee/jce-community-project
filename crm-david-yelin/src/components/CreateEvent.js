@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import {
   collection,
@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion,
+  arrayUnion
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
@@ -18,8 +18,7 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
-import { v4 as uuidv4 } from 'uuid';
-
+import { v4 as uuidv4 } from "uuid";
 
 function CreateEvent(props) {
   const [search, setSearch] = useState("");
@@ -38,8 +37,17 @@ function CreateEvent(props) {
     eventBudget: 0,
     eventLocation: "",
     eventStatus: "טרם החל",
-    assignees: selectedMembers,
+    assignees: selectedMembers
   });
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData) setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) setUser(userData);
+    }
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -96,7 +104,7 @@ function CreateEvent(props) {
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
       eventCreator: "members/" + user.email,
-      eventStatus: eventDetails.eventStatus,
+      eventStatus: eventDetails.eventStatus
     };
 
     try {
@@ -115,8 +123,8 @@ function CreateEvent(props) {
               eventID: docRef,
               message: `הינך משובץ לאירוע חדש: ${eventDetails.eventName}`,
               link: `/event/${docRef.id}`,
-              id: uuidv4(),
-            }),
+              id: uuidv4()
+            })
           });
         })
       );
@@ -142,16 +150,12 @@ function CreateEvent(props) {
   async function handleSearchMember(event) {
     if (event.target.value.length >= 2) {
       const membersRef = collection(db, "members");
-      const q = query(
-        membersRef,
-        where("fullName", ">=", search),
-        where("fullName", "<=", search + "\uf8ff")
-      );
+      const q = query(membersRef, where("fullName", ">=", search), where("fullName", "<=", search + "\uf8ff"));
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }))
         .filter(
           (member) =>
@@ -186,30 +190,9 @@ function CreateEvent(props) {
   return (
     <div className="create-event">
       <div className="action-close" onClick={props.onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <form className="create-event-form" onSubmit={handleSubmit}>
@@ -237,7 +220,7 @@ function CreateEvent(props) {
                   //change the start date
                   setEventDetails({
                     ...eventDetails,
-                    eventStartDate: e.target.value,
+                    eventStartDate: e.target.value
                   });
                   resetAlerts();
                 }}
@@ -254,7 +237,7 @@ function CreateEvent(props) {
                   //change the due date
                   setEventDetails({
                     ...eventDetails,
-                    eventEndDate: e.target.value,
+                    eventEndDate: e.target.value
                   });
                   resetAlerts();
                 }}
@@ -300,7 +283,7 @@ function CreateEvent(props) {
             onChange={(e) => {
               setEventDetails({
                 ...eventDetails,
-                eventLocation: e.target.value,
+                eventLocation: e.target.value
               });
               resetAlerts();
             }}
@@ -327,7 +310,7 @@ function CreateEvent(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="create-task-selected-members">

@@ -172,7 +172,6 @@ function CreateTask(props) {
       );
     }
     const querySnapshot = await getDocs(taskQuery);
-    console.log(!querySnapshot.empty);
     return !querySnapshot.empty;
   }
 
@@ -219,7 +218,6 @@ function CreateTask(props) {
   }
   function handleSelectEvent(value) {
     const selectedEvent = events.find((event) => event.eventName === value);
-    console.log(selectedEvent);
 
     if (selectedEvent) {
       setSelectedEvent(selectedEvent);

@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  doc,
-  serverTimestamp,
-  setDoc,
-  getDocs,
-  collection,
-  where,
-  query
-} from "firebase/firestore";
+import { doc, serverTimestamp, setDoc, getDocs, collection, where, query } from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
 import "../styles/EditUser.css";
@@ -34,7 +26,14 @@ function EditUser(props) {
   const [removeSuperAdmin, setRemoveSuperAdmin] = useState(false);
   const [user, setUser] = useState(null);
 
-  
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData) setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) setUser(userData);
+    }
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -49,7 +48,7 @@ function EditUser(props) {
     }
 
     // TODO: double check those privileges
-    if (user.privileges.privileges < 2 && props.target.privileges > user.privileges) {
+    if (user && user.privileges < 2 && props.target.privileges > user.privileges) {
       setRemoveSuperAdmin(true);
       setTimeout(() => {
         setRemoveSuperAdmin(false);
@@ -149,34 +148,12 @@ function EditUser(props) {
     setIsNoSuperAdmin(false);
     setEdittedSuccessfully(false);
   }
-
   return (
     <div className="edit-user">
       <div className="action-close" onClick={props.onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <form className="edit-user-form" onSubmit={handleSubmit}>
@@ -223,80 +200,81 @@ function EditUser(props) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          {(user && (user.privileges == 2 || Array.isArray(user.adminAccess) && (
-            user.adminAccess.includes("manageUser") ||
-            user.adminAccess.includes("manageAdmin")))) && (
-            <>
-              <select
-                id="department-select"
-                name="department"
-                value={department}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  setIsOtherSelected(value === "other");
-                  setDepartment(value === "other" ? "" : value);
-                }}
-                className="forms-input">
-                <option value="" disabled>
-                  בחר מחלקה
-                </option>
-                {departmentList.map((dept) => (
-                  <option key={dept} value={dept}>
-                    {dept}
+          {user &&
+            (user.privileges >= 2 ||
+              (Array.isArray(user.adminAccess) &&
+                (user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin")))) && (
+              <>
+                <select
+                  id="department-select"
+                  name="department"
+                  value={department}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setIsOtherSelected(value === "other");
+                    setDepartment(value === "other" ? "" : value);
+                  }}
+                  className="forms-input">
+                  <option value="" disabled>
+                    בחר מחלקה
                   </option>
-                ))}
-                <option value="other">הוסף מחלקה חדשה</option>
-              </select>
-              {isOtherSelected && (
-                <div className="new-department">
-                  <input
-                    type="text"
-                    value={newDepartment}
-                    placeholder="שם מחלקה חדשה"
-                    onChange={(event) => {
-                      setNewDepartment(event.target.value);
-                      resetAlerts();
-                    }}
-                    className="forms-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      addDepartment(newDepartment);
-                      setNewDepartment("");
-                    }}
-                    className="primary-button extra-create-user-button">
-                    הוסף מחלקה חדשה
-                  </button>
-                </div>
-              )}
-              <input
-                id="role-input"
-                type="text"
-                value={role}
-                onChange={(event) => {
-                  setRole(event.target.value);
-                  resetAlerts();
-                }}
-                placeholder="תפקיד"
-                className="forms-input"
-              />
-              <select
-                id="privileges-select"
-                value={privileges}
-                onChange={(event) => {
-                  setPrivileges(Number(event.target.value));
-                  resetAlerts();
-                }}
-                className="forms-input">
-                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (
-                  <option value={2}>מנהל ראשי</option>
+                  {departmentList.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                  <option value="other">הוסף מחלקה חדשה</option>
+                </select>
+                {isOtherSelected && (
+                  <div className="new-department">
+                    <input
+                      type="text"
+                      value={newDepartment}
+                      placeholder="שם מחלקה חדשה"
+                      onChange={(event) => {
+                        setNewDepartment(event.target.value);
+                        resetAlerts();
+                      }}
+                      className="forms-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        addDepartment(newDepartment);
+                        setNewDepartment("");
+                      }}
+                      className="primary-button extra-create-user-button">
+                      הוסף מחלקה חדשה
+                    </button>
+                  </div>
                 )}
-                <option value={1}>משתמש פעיל</option>
-                <option value={0}>משתמש מושהה</option>
-              </select>
-            </>
-          )}
+                <input
+                  id="role-input"
+                  type="text"
+                  value={role}
+                  onChange={(event) => {
+                    setRole(event.target.value);
+                    resetAlerts();
+                  }}
+                  placeholder="תפקיד"
+                  className="forms-input"
+                />
+                <select
+                  id="privileges-select"
+                  value={privileges}
+                  onChange={(event) => {
+                    setPrivileges(Number(event.target.value));
+                    resetAlerts();
+                  }}
+                  className="forms-input">
+                  {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (
+                    <option value={2}>מנהל ראשי</option>
+                  )}
+                  <option value={1}>משתמש פעיל</option>
+                  <option value={0}>משתמש מושהה</option>
+                </select>
+              </>
+            )}
           <button type="submit" className="primary-button extra-reg">
             עדכן פרטים
           </button>

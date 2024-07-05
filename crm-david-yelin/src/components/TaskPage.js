@@ -63,6 +63,7 @@ function TaskPage() {
   const [eventId, setEventId] = useState("");
   const [history, setHistory] = useState([]);
   const [changes, setChanges] = useState("");
+  const [user, setUser] = useState(null);
 
   const editTaskRef = useRef(null);
   const changelogRef = useRef(null);
@@ -128,7 +129,14 @@ function TaskPage() {
     heIL
   );
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData) setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) setUser(userData);
+    }
+  }, []);
 
   const getMemberFullName = async (email) => {
     try {

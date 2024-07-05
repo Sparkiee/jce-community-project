@@ -37,6 +37,7 @@ function Profile() {
     setPage(newValue);
   };
 
+  const [user, setUser] = useState(null);
   const [page, setPage] = useState(pages[0]);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
@@ -60,7 +61,14 @@ function Profile() {
 
   const navigate = useNavigate();
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData) setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) setUser(userData);
+    }
+  }, []);
 
   const editUserRef = useRef(null);
   const changePasswordRef = useRef(null);

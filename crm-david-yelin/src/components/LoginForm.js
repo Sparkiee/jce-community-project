@@ -34,6 +34,11 @@ function LoginForm() {
       // You can now use docSnap to access the document data
       if (docSnap.exists()) {
         sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
+        if(rememberMe)
+        {
+          localStorage.setItem("user", JSON.stringify(docSnap.data()));
+          console.log("remember me!!1");
+        }
       }
       setWrongCredentials(false);
       navigate("/home");
@@ -45,7 +50,11 @@ function LoginForm() {
 
   useEffect(() => {
     const session = sessionStorage.getItem("user");
-    if (session !== null) {
+    if (session !== null && session.privileges > 0) {
+      navigate("/home");
+    }
+    const user = localStorage.getItem("user");
+    if (user !== null && user.privileges > 0) {
       navigate("/home");
     }
   }, []);
@@ -132,7 +141,6 @@ function LoginForm() {
               name="remember-me"
               onChange={(event) => {
                 setRememberMe(event.target.checked);
-                console.log(event.target.checked);
               }}></input>
             <label className="label-checkbox" htmlFor="input-checkbox">
               זכור אותי

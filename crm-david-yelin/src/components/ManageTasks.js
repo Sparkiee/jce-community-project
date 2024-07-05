@@ -58,6 +58,7 @@ function ManageTasks() {
   const [deleteTarget, setDeleteTarget] = useState("");
   const [allRows, setAllRows] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [user, setUser] = useState(null);
 
   const createTaskRef = useRef(null);
   const editTaskRef = useRef(null);
@@ -72,6 +73,17 @@ function ManageTasks() {
     },
     heIL
   );
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData)
+      setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData)
+        setUser(userData);
+    }
+  }, []);
 
   const getStatusColorClass = (status) => {
     switch (status) {
@@ -89,8 +101,6 @@ function ManageTasks() {
         return "";
     }
   };
-
-  const user = JSON.parse(sessionStorage.getItem("user"));
 
   const baseColumns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 1 },

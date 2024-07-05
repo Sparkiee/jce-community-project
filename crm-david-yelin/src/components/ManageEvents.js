@@ -45,9 +45,9 @@ function stringAvatar(name) {
   const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: initials,
+    children: initials
   };
 }
 
@@ -61,6 +61,7 @@ function ManageEvents() {
 
   const createEventRef = useRef(null);
   const editEventRef = useRef(null);
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -68,8 +69,8 @@ function ManageEvents() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -91,7 +92,14 @@ function ManageEvents() {
     }
   };
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData) setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) setUser(userData);
+    }
+  }, []);
 
   const baseColumns = [
     { field: "id", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
@@ -100,14 +108,14 @@ function ManageEvents() {
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "eventLocation",
       headerName: "מיקום",
       width: 150,
       align: "right",
-      flex: 2.5,
+      flex: 2.5
     },
     ...(user.privileges >= 2
       ? [
@@ -119,15 +127,12 @@ function ManageEvents() {
             flex: 1,
             renderCell: (params) => {
               return (
-                <div
-                  title={
-                    params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"
-                  }>
+                <div title={params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}>
                   {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
                 </div>
               );
-            },
-          },
+            }
+          }
         ]
       : []),
     {
@@ -140,7 +145,7 @@ function ManageEvents() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventEndDate",
@@ -152,14 +157,14 @@ function ManageEvents() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      },
+      }
     },
     {
       field: "eventTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "eventStatus",
@@ -175,14 +180,14 @@ function ManageEvents() {
             {params.row.eventStatus}
           </div>
         );
-      },
+      }
     },
     {
       field: "completedPercentage",
       headerName: "אחוז השלמה",
       width: 150,
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "assignTo",
@@ -204,7 +209,7 @@ function ManageEvents() {
             ))}
           </AvatarGroup>
         );
-      },
+      }
     },
     {
       field: "view",
@@ -216,15 +221,13 @@ function ManageEvents() {
         <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const columns = [
     ...baseColumns,
-    ...(user.privileges >= 2 ||
-    user.adminAccess.includes("deleteEvent") ||
-    user.adminAccess.includes("editEvent")
+    ...(user.privileges >= 2 || user.adminAccess.includes("deleteEvent") || user.adminAccess.includes("editEvent")
       ? [
           {
             field: "edit",
@@ -245,10 +248,10 @@ function ManageEvents() {
                   </IconButton>
                 )}
               </div>
-            ),
-          },
+            )
+          }
         ]
-      : []),
+      : [])
   ];
 
   async function getMemberFullName(email) {
@@ -269,10 +272,7 @@ function ManageEvents() {
         return 100;
       }
 
-      const tasksQuery = query(
-        collection(db, "tasks"),
-        where("relatedEvent", "==", `events/${eventId}`)
-      );
+      const tasksQuery = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${eventId}`));
       const tasksSnapshot = await getDocs(tasksQuery);
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
 
@@ -291,12 +291,17 @@ function ManageEvents() {
   async function getEvents() {
     try {
       const eventRef = collection(db, "events");
-      const q = query(eventRef, orderBy("eventEndDate", "desc"), orderBy("eventTime", "desc"), orderBy("eventName", "desc"));
+      const q = query(
+        eventRef,
+        orderBy("eventEndDate", "desc"),
+        orderBy("eventTime", "desc"),
+        orderBy("eventName", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        eventDoc: doc.id,
+        eventDoc: doc.id
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
@@ -322,7 +327,7 @@ function ManageEvents() {
             assignees: event.assignees,
             eventCreator: event.eventCreator,
             assignTo: assigneeData || [],
-            completedPercentage: `${Math.round(completedPercentage)}%`,
+            completedPercentage: `${Math.round(completedPercentage)}%`
           };
         })
       );
@@ -421,10 +426,7 @@ function ManageEvents() {
       )}
       {deleteTarget && (
         <div className="popup-overlay">
-          <ConfirmAction
-            onConfirm={() => handleDeleteEvent()}
-            onCancel={() => setDeleteTarget("")}
-          />
+          <ConfirmAction onConfirm={() => handleDeleteEvent()} onCancel={() => setDeleteTarget("")} />
         </div>
       )}
       <div className="manage-events-styles">
@@ -444,15 +446,8 @@ function ManageEvents() {
           )}
         </div>
         {(user.adminAccess.includes("createEvent") || user.privileges == 2) && (
-          <div
-            className="action-button add-events-button add-events-manage-events"
-            onClick={handleShowCreateEvents}>
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+          <div className="action-button add-events-button add-events-manage-events" onClick={handleShowCreateEvents}>
+            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
@@ -499,16 +494,16 @@ function ManageEvents() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 },
-                },
+                  paginationModel: { page: 0, pageSize: 17 }
+                }
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />

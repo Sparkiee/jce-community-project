@@ -52,10 +52,21 @@ function Navbar() {
   const [fullName, setFullName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [user, setUser] = useState(null);
   const location = useLocation();
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
   const notificationsRef = useRef(null);
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData)
+      setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData)
+        setUser(userData);
+    }
+  }, []);
 
   useEffect(() => {
     const member = JSON.parse(sessionStorage.getItem("user"));
@@ -98,6 +109,7 @@ function Navbar() {
   const disconnect = () => {
     navigate("/");
     sessionStorage.removeItem("user");
+    localStorage.removeItem("user");
     auth.signOut();
   };
 

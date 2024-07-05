@@ -38,13 +38,24 @@ function ManageUsers() {
   const [deleteTarget, setDeleteTarget] = useState("");
   const [removePermmisionTarget, setRemovePermmisionTarget] = useState("");
 
+  const [user, setUser] = useState(null);
+
   const editUserRef = useRef(null);
   const createUserRef = useRef(null);
   const editAccessRef = useRef(null);
 
   const navigate = useNavigate();
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData)
+      setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData)
+        setUser(userData);
+    }
+  }, []);
 
   const handleDeleteClick = (email) => {
     setDeleteTarget(email);

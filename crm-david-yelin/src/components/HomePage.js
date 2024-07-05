@@ -17,6 +17,7 @@ function HomePage() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
@@ -223,8 +224,6 @@ function HomePage() {
     },
   ];
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
-
   const createTaskRef = useRef(null);
   const createEventRef = useRef(null);
 
@@ -377,6 +376,17 @@ function HomePage() {
     setShowCreateTask(false);
     setShowCreateEvent(false);
   };
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData)
+      setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData)
+        setUser(userData);
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

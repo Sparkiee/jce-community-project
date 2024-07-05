@@ -344,7 +344,7 @@ function Navbar() {
                   </div>
                 </div>
               )}
-              <Avatar {...stringAvatar(user.fullName)} title={fullName} onClick={() => handleProfileClick()} />
+              {user && <Avatar {...stringAvatar(user.fullName)} title={fullName} onClick={() => handleProfileClick()} />}
               <a className="logout-button" to="/logout" onClick={() => disconnect()}>
                 התנתק
               </a>

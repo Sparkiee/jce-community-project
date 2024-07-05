@@ -572,7 +572,7 @@ function EventPage() {
           </div>
         );
       case pages[1]:
-        return <div className="event-page-comments">{event && <Forum eventId={event.id} />}</div>;
+        return <div className="event-page-comments">{event && <Forum eventId={event.id} name={event.eventName} type='event'/>}</div>;
       case pages[2]:
         return <h2>פה יהיו הקבצים</h2>;
       case pages[3]:

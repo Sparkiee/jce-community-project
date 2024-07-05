@@ -216,11 +216,13 @@ header .logo a {
   cursor: pointer;
   color: black;
   transition: all 0.2s linear;
+  z-index: 2;
 }
 
 .clear-notification svg {
   width: 2rem;
   height: 2rem;
+  z-index: 2;
 }
 
 .clear-notification:hover {

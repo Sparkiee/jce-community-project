@@ -12,15 +12,16 @@ import {
   deleteDoc,
   getDoc,
   arrayUnion,
-  serverTimestamp,
+  serverTimestamp
 } from "firebase/firestore";
 import "../styles/Forum.css";
 import IconButton from "@mui/material/IconButton";
 import ReplyIcon from "@mui/icons-material/Reply";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { v4 as uuidv4 } from "uuid";
 
-const Forum = ({ eventId }) => {
+const Forum = ({ eventId, type, name }) => {
   const [comments, setComments] = useState([]);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [replyCommentId, setReplyCommentId] = useState(null);
@@ -63,7 +64,7 @@ const Forum = ({ eventId }) => {
                 return {
                   ...reply,
                   author: replyAuthorDetails.fullName,
-                  timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date(),
+                  timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date()
                 };
               })
             )
@@ -73,7 +74,7 @@ const Forum = ({ eventId }) => {
           id: doc.id,
           author: authorDetails.fullName,
           timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
-          replies,
+          replies
         };
       })
     );
@@ -87,7 +88,7 @@ const Forum = ({ eventId }) => {
       eventId,
       text: newComment,
       authorEmail: user.email,
-      timestamp: new Date(),
+      timestamp: new Date()
     });
     setNewComment("");
     fetchComments();
@@ -97,7 +98,7 @@ const Forum = ({ eventId }) => {
     if (editComment.trim() === "") return;
     const commentRef = doc(db, "comments", commentId);
     await updateDoc(commentRef, {
-      text: editComment,
+      text: editComment
     });
     setEditingCommentId(null);
     setEditComment("");
@@ -120,10 +121,10 @@ const Forum = ({ eventId }) => {
       updatedReplies.push({
         text: newReply,
         timestamp: new Date(),
-        authorEmail: user.email,
+        authorEmail: user.email
       });
       await updateDoc(commentRef, {
-        replies: updatedReplies,
+        replies: updatedReplies
       });
       setNewReply("");
       setReplyCommentId(null);
@@ -131,11 +132,23 @@ const Forum = ({ eventId }) => {
 
       if (user.email === commentData.authorEmail) return;
       const memberRef = doc(db, "members", commentData.authorEmail);
+      let message = "";
+      let link = "";
+      if (type === "event") {
+        message = `${user.fullName} השיב לתגובה שלך באירוע ${name}`;
+        link = `/event/${eventId}`;
+      }
+      if (type === "task") {
+        message = `${user.fullName} השיב לתגובה שלך במשימה ${name}`;
+        link = `/task/${eventId}`;
+      }
       await updateDoc(memberRef, {
         Notifications: arrayUnion({
           event: eventId,
-          message: `${user.fullName} השיב לתגובה שלך באירוע ${eventId}`,
-        }),
+          message: message,
+          link: link,
+          id: uuidv4()
+        })
       });
     }
   };
@@ -149,7 +162,7 @@ const Forum = ({ eventId }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies[replyIndex].text = editReply;
       await updateDoc(commentRef, {
-        replies: updatedReplies,
+        replies: updatedReplies
       });
       setEditingReply({ commentId: null, replyIndex: null });
       setEditReply("");
@@ -165,7 +178,7 @@ const Forum = ({ eventId }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies.splice(replyIndex, 1);
       await updateDoc(commentRef, {
-        replies: updatedReplies,
+        replies: updatedReplies
       });
       fetchComments();
     }
@@ -178,10 +191,7 @@ const Forum = ({ eventId }) => {
     }
   };
 
-  const totalReplies = comments.reduce(
-    (acc, comment) => acc + (comment.replies ? comment.replies.length : 0),
-    0
-  );
+  const totalReplies = comments.reduce((acc, comment) => acc + (comment.replies ? comment.replies.length : 0), 0);
   const totalCommentsAndReplies = comments.length + totalReplies;
 
   return (
@@ -209,7 +219,7 @@ const Forum = ({ eventId }) => {
                 </div>
                 <div className="comment-timestamp">
                   {new Date(comment.timestamp).toLocaleString("en-GB", {
-                    hour12: false,
+                    hour12: false
                   })}
                 </div>
               </div>
@@ -268,7 +278,7 @@ const Forum = ({ eventId }) => {
                       </div>
                       <div className="comment-timestamp">
                         {new Date(reply.timestamp).toLocaleString("en-GB", {
-                          hour12: false,
+                          hour12: false
                         })}
                       </div>
                     </div>
@@ -276,9 +286,7 @@ const Forum = ({ eventId }) => {
                       <textarea
                         value={editReply}
                         onChange={(e) => setEditReply(e.target.value)}
-                        onKeyDown={(e) =>
-                          handleKeyDown(e, () => handleEditReply(comment.id, index))
-                        }
+                        onKeyDown={(e) => handleKeyDown(e, () => handleEditReply(comment.id, index))}
                       />
                     ) : (
                       <div className="reply-content">
@@ -286,11 +294,8 @@ const Forum = ({ eventId }) => {
                       </div>
                     )}
                     <div className="discussion-actions">
-                      {editingReply.commentId === comment.id &&
-                      editingReply.replyIndex === index ? (
-                        <button
-                          className="save-icon"
-                          onClick={() => handleEditReply(comment.id, index)}>
+                      {editingReply.commentId === comment.id && editingReply.replyIndex === index ? (
+                        <button className="save-icon" onClick={() => handleEditReply(comment.id, index)}>
                           שמור שינויים
                         </button>
                       ) : (
@@ -310,9 +315,7 @@ const Forum = ({ eventId }) => {
                             reply.authorEmail === user.email ||
                             user.adminAccess.includes("deleteComment")) && (
                             <>
-                              <IconButton
-                                title="מחק"
-                                onClick={() => handleDeleteReply(comment.id, index)}>
+                              <IconButton title="מחק" onClick={() => handleDeleteReply(comment.id, index)}>
                                 <DeleteIcon />
                               </IconButton>
                             </>

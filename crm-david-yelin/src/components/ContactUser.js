@@ -11,6 +11,8 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
+import { v4 as uuidv4 } from 'uuid';
+
 
 function ContactUser(props) {
   const [subject, setSubject] = useState("");
@@ -42,6 +44,7 @@ function ContactUser(props) {
           contactID: docRef,
           message: `התקבל עדכון חדש בפרופילך: ${subject}`,
           link: `/profile/${props.target.email}`,
+          id: uuidv4(),
         }),
       });
 

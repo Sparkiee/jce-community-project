@@ -18,6 +18,8 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import { v4 as uuidv4 } from 'uuid';
+
 
 function CreateEvent(props) {
   const [search, setSearch] = useState("");
@@ -112,6 +114,7 @@ function CreateEvent(props) {
               eventID: docRef,
               message: `הינך משובץ לאירוע חדש: ${eventDetails.eventName}`,
               link: `/event/${docRef.id}`,
+              id: uuidv4(),
             }),
           });
         })

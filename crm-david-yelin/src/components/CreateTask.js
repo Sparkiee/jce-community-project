@@ -18,6 +18,8 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import { v4 as uuidv4 } from 'uuid';
+
 
 function CreateTask(props) {
   const [taskExists, setTaskExists] = useState(false);
@@ -137,6 +139,7 @@ function CreateTask(props) {
               taskID: docRef,
               message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
               link: `/task/${docRef.id}`,
+              id: uuidv4(),
             }),
           });
         })

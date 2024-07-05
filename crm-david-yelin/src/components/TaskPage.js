@@ -347,7 +347,7 @@ function TaskPage() {
       case pages[0]:
         return (
           <div className="task-discussion">
-            <Forum eventId={taskId} onShowFullDiscussion={handleShowFullDiscussion} />
+            <Forum eventId={taskId} type='task' name={task.taskName} onShowFullDiscussion={handleShowFullDiscussion} />
           </div>
         );
       case pages[1]:

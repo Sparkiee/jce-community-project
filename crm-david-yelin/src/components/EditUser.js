@@ -32,8 +32,9 @@ function EditUser(props) {
   const [isNoSuperAdmin, setIsNoSuperAdmin] = useState(false);
   const [edittedSuccessfully, setEdittedSuccessfully] = useState(false);
   const [removeSuperAdmin, setRemoveSuperAdmin] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -222,9 +223,9 @@ function EditUser(props) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          {((user && user.privileges == 2) ||
+          {(user && (user.privileges == 2 || Array.isArray(user.adminAccess) && (
             user.adminAccess.includes("manageUser") ||
-            user.adminAccess.includes("manageAdmin")) && (
+            user.adminAccess.includes("manageAdmin")))) && (
             <>
               <select
                 id="department-select"

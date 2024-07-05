@@ -135,7 +135,6 @@ function EventPage() {
 
         // Fetch event creator's full name
         const eventCreatorFullName = await getMemberFullName(eventData.eventCreator.split("/")[1]);
-
         const assigneesData = await Promise.all(
           (eventData.assignees || []).map(async (assigneePath) => {
             const email = assigneePath.split("/")[1];
@@ -143,7 +142,9 @@ function EventPage() {
             return { email, fullName };
           })
         );
-        const userIsAssignee = assigneesData.some((assignee) => assignee.email === user.email);
+
+        const userIsAssignee =
+          assigneesData && assigneesData.some((assignee) => assignee && assignee.email === user.email);
 
         setEvent({ ...eventData, id: eventDoc.id, assigneesData, eventCreatorFullName });
         setIsUserAnAssignee(userIsAssignee);
@@ -252,7 +253,7 @@ function EventPage() {
     fetchEvent();
     fetchTasks();
     fetchHistory();
-  }, []);
+  }, [user]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -353,7 +354,7 @@ function EventPage() {
       align: "right",
       flex: 4
     },
-    ...(user.privileges == 2 || isUserAnAssignee
+    ...(user && (user.privileges == 2 || isUserAnAssignee)
       ? [
           {
             field: "taskBudget",
@@ -413,7 +414,8 @@ function EventPage() {
 
   const taskColumns = [
     ...baseTaskColumns,
-    ...(user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")
+    ...(user &&
+    (user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask"))
       ? [
           {
             field: "edit",

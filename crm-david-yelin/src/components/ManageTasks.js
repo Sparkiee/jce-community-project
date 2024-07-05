@@ -125,7 +125,7 @@ function ManageTasks() {
       align: "right",
       flex: 2
     },
-    ...(user.privileges >= 2
+    ...(user && user.privileges >= 2
       ? [
           {
             field: "taskBudget",
@@ -227,7 +227,7 @@ function ManageTasks() {
 
   const columns = [
     ...baseColumns,
-    ...(user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask")
+    ...(user && (user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask"))
       ? [
           {
             field: "edit",
@@ -253,8 +253,6 @@ function ManageTasks() {
         ]
       : [])
   ];
-
-  // const columns = user.privileges > 1 ? [...baseColumns, editColumn] : baseColumns;
 
   async function getMemberFullName(email) {
     try {
@@ -427,7 +425,7 @@ function ManageTasks() {
             </div>
           )}
         </div>
-        {(user.adminAccess.includes("createTask") || user.privileges == 2) && (
+        {(user && (user.adminAccess.includes("createTask") || user.privileges == 2)) && (
           <div className="action-button add-tasks-button add-tasks-manage-tasks" onClick={handleShowCreateTask}>
             <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

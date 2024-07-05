@@ -30,6 +30,19 @@ function EditEvent(props) {
 
   const [eventDetails, setEvent] = useState(props.eventDetails || {});
   const [originalEvent, setOriginalEvent] = useState(props.eventDetails || {});
+  const [user, setUser] = useState(null);
+
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData)
+      setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData)
+        setUser(userData);
+    }
+  }, []);
 
   useEffect(() => {
     if (selectedMembers.length == 0 && eventDetails.assignees) {
@@ -56,8 +69,6 @@ function EditEvent(props) {
     });
     return updatedFields;
   }
-
-  const user = JSON.parse(sessionStorage.getItem("user"));
 
   async function eventExistsAndOpen(eventName) {
     const eventQuery = query(

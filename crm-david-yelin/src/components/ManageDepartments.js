@@ -86,11 +86,24 @@ function ManageDepartments() {
     } catch (e) {
       console.error("Error updating documents: ", e);
     }
+    const pendingRef = collection(db, "awaiting_registration");
+    const qPending = query(pendingRef, where("department", "==", oldDepartment));
+    try {
+      const querySnapshot = await getDocs(qPending);
+      const updatePromises = querySnapshot.docs.map((document) => {
+        const docRef = doc(db, "awaiting_registration", document.id);
+        return updateDoc(docRef, {
+          department: newDepartment
+        });
+      });
+      await Promise.all(updatePromises);
+    } catch (e) {
+      console.error("Error updating documents: ", e);
+    }
   }
 
   async function handleDeleteDepartment() {
     try {
-      console.log("im here ", deleteTarget.name);
       const docRef = doc(db, "departments", deleteTarget.name);
       await deleteDoc(docRef);
       setDeleteTarget("");

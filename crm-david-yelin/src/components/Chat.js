@@ -89,21 +89,8 @@ function Chat() {
     }
   }
 
-  useEffect(() => {
-    const checkAndCreateChat = async () => {
-      const memberDocRef = doc(db, "members", user.email);
-      const docSnap = await getDoc(memberDocRef);
-
-      // Check if the 'chats' field exists, if not, create it
-      if (!docSnap.exists() || !docSnap.data().chats) {
-        await setDoc(memberDocRef, { ...docSnap.data(), chats: [], updatedAt: serverTimestamp() }, { merge: true });
-      }
-    };
-
-    checkAndCreateChat();
-  }, [user.email]);
-
   const fetchUserChats = async () => {
+    if(!user) return;
     try {
       const chatRef = collection(db, "chats");
       const q = query(chatRef, where("members", "array-contains", user.email));
@@ -123,7 +110,7 @@ function Chat() {
 
   useEffect(() => {
     fetchUserChats();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     setMessages(selectedChat?.messages);
@@ -240,13 +227,15 @@ function Chat() {
         <div className="chat-list-container">
           <div className="chat-user-info">
             <div className="chat-user-info-avatar">
-              <Avatar
-                {...stringAvatar(user.fullName)}
-                title={user.fullName}
-                className="chat-user-info-profile-avatar"
-                onClick={() => navigate(`/profile/${user.email}`)}
-              />
-              <h2>{user.fullName}</h2>
+              {user && (
+                <Avatar
+                  {...stringAvatar(user.fullName)}
+                  title={user.fullName}
+                  className="chat-user-info-profile-avatar"
+                  onClick={() => navigate(`/profile/${user.email}`)}
+                />
+              )}
+              <h2>{user && user.fullName}</h2>
             </div>
           </div>
           <div className="chat-list">

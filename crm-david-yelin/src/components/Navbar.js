@@ -60,12 +60,10 @@ function Navbar() {
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData)
-      setUser(userData);
+    if (userData) setUser(userData);
     else {
       const userData = JSON.parse(localStorage.getItem("user"));
-      if (userData)
-        setUser(userData);
+      if (userData) setUser(userData);
     }
   }, []);
 
@@ -300,7 +298,9 @@ function Navbar() {
               </li>
             </ul>
             <div className="left-side-nav">
-              <MessageIcon className="message-icon" />
+              <IconButton color="primary" onClick={() => navigate(`/chat`)}>
+                <MessageIcon className="message-icon" />
+              </IconButton>
               <IconButton color="primary" onClick={() => handleNotifications()}>
                 <Badge badgeContent={notifications} color="primary">
                   <NotificationsIcon className="notification-icon" />
@@ -344,7 +344,9 @@ function Navbar() {
                   </div>
                 </div>
               )}
-              {user && <Avatar {...stringAvatar(user.fullName)} title={fullName} onClick={() => handleProfileClick()} />}
+              {user && (
+                <Avatar {...stringAvatar(user.fullName)} title={fullName} onClick={() => handleProfileClick()} />
+              )}
               <a className="logout-button" to="/logout" onClick={() => disconnect()}>
                 התנתק
               </a>

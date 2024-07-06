@@ -14,6 +14,7 @@ import TaskPage from "./components/TaskPage";
 import EventPage from "./components/EventPage";
 import ManageDepartments from "./components/ManageDepartments";
 import Navbar from "./components/Navbar";
+import Chat from "./components/Chat";
 
 const App = () => {
   return (
@@ -40,6 +41,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/chat" element={<Chat />} />
         {/* PRIVATE PAGES */}
         <Route
           path="/users"

@@ -60,7 +60,7 @@ function ManageDepartments() {
   const columns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 0.5 },
     { field: "name", headerName: "שם המחלקה", align: "right", flex: 3 },
-    { field: "memberCount", headerName: "מספר חברים", align: "right", flex: 2 },
+    { field: "memberCount", headerName: "מספר חברים פעילים", align: "right", flex: 2 },
     {
       field: "view",
       headerName: "עריכה",

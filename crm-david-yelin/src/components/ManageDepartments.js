@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/ManageDepartments.css";
 import { db } from "../firebase";
-import { collection, getDocs, doc, query, where, deleteDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, query, where, deleteDoc, updateDoc,setDoc } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
@@ -10,11 +10,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ConfirmAction from "./ConfirmAction";
 import EditDepartment from "./EditDepartment";
+import DepartmentForm from "./CreateDepartment";
 
 function ManageDepartments() {
   const [departments, setDepartments] = useState([]);
   const [deleteTarget, setDeleteTarget] = useState("");
   const [editTarget, setEditTarget] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const editDepartmentRef = useRef(null);
 
@@ -24,9 +26,8 @@ function ManageDepartments() {
       const snapshot = await getDocs(collectionRef);
       const departments = snapshot.docs.map((doc, index) => ({
         ...doc.data(),
-        id: index + 1,
-        name: doc.data().name,
-        doc: doc.data()
+        id: doc.id,  // Use the document ID as the ID
+        name: doc.data().name
       }));
       setDepartments(departments);
       console.log(departments);
@@ -104,7 +105,7 @@ function ManageDepartments() {
 
   async function handleDeleteDepartment() {
     try {
-      const docRef = doc(db, "departments", deleteTarget.name);
+      const docRef = doc(db, "departments", deleteTarget.id);
       await deleteDoc(docRef);
       setDeleteTarget("");
       updateMemberDepartment(deleteTarget.name, "נא לעדכן מחלקה");
@@ -133,7 +134,7 @@ function ManageDepartments() {
     console.log("new department:", department);
     console.log("old department:", editTarget.name);
     try {
-      const docToDelete = doc(db, "departments", editTarget.name);
+      const docToDelete = doc(db, "departments", editTarget.id);
       await deleteDoc(docToDelete);
       const newDocRef = doc(db, "departments", department);
       await setDoc(newDocRef, { name: department });
@@ -163,9 +164,22 @@ function ManageDepartments() {
           <ConfirmAction onConfirm={() => handleDeleteDepartment()} onCancel={() => setDeleteTarget("")} />
         </div>
       )}
+      {showAddForm && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <DepartmentForm
+              onClose={() => setShowAddForm(false)}
+              onComplete={() => {
+                setShowAddForm(false);
+                getDepartments();
+              }}
+            />
+          </div>
+        </div>
+      )}
       <div className="manage-departments">
         <h1>ניהול מחלקות</h1>
-        <div className="action-button add-department-button">יצירת מחלקה חדשה</div>
+        <div className="action-button add-department-button" onClick={() => setShowAddForm(true)}>יצירת מחלקה חדשה</div>
         <div style={{ height: 371, width: "90%" }}>
           <ThemeProvider theme={theme}>
             <DataGrid

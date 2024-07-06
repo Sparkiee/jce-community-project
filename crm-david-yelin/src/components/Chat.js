@@ -1,19 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
 import "../styles/Chat.css";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import EditIcon from "@mui/icons-material/Edit";
-import PhoneIcon from "@mui/icons-material/Phone";
 import InfoIcon from "@mui/icons-material/Info";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ImageIcon from "@mui/icons-material/Image";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import MicIcon from "@mui/icons-material/Mic";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Avatar from "@mui/material/Avatar";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { db } from "../firebase";
 import {
   getDoc,
@@ -27,7 +18,7 @@ import {
   where,
   arrayUnion,
   updateDoc,
-  addDoc
+  addDoc,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
@@ -58,9 +49,9 @@ function Chat() {
     const secondInitial = names[1] ? names[1][0] : "";
     return {
       sx: {
-        bgcolor: stringToColor(name)
+        bgcolor: stringToColor(name),
       },
-      children: `${firstInitial}${secondInitial}`
+      children: `${firstInitial}${secondInitial}`,
     };
   }
 
@@ -96,7 +87,11 @@ function Chat() {
 
       // Check if the 'chats' field exists, if not, create it
       if (!docSnap.exists() || !docSnap.data().chats) {
-        await setDoc(memberDocRef, { ...docSnap.data(), chats: [], updatedAt: serverTimestamp() }, { merge: true });
+        await setDoc(
+          memberDocRef,
+          { ...docSnap.data(), chats: [], updatedAt: serverTimestamp() },
+          { merge: true }
+        );
       }
     };
 
@@ -194,7 +189,7 @@ function Chat() {
       await addDoc(collection(db, "chats"), {
         members: [currentUserEmail, targetEmail],
         messages: [],
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
       setSearchResults([]);
       setSearchQuery("");
@@ -218,7 +213,7 @@ function Chat() {
       await updateDoc(chatRef, {
         lastMessage: text,
         updatedAt: now,
-        messages: arrayUnion(message)
+        messages: arrayUnion(message),
       });
       setText("");
       fetchMessagesforChat(selectedChat);
@@ -227,12 +222,12 @@ function Chat() {
     }
   };
 
-  const fetchMessagesforChat = async(selectedChat) => {
+  const fetchMessagesforChat = async (selectedChat) => {
     const chatRef = doc(db, "chats", selectedChat.chatId);
     onSnapshot(chatRef, (doc) => {
       setMessages(doc.data().messages);
     });
-  }
+  };
 
   return (
     <div className="chat-body">
@@ -252,7 +247,11 @@ function Chat() {
           <div className="chat-list">
             <div className="chat-list-search">
               <div className="chat-list-search-bar">
-                <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                <svg
+                  viewBox="0 0 32 32"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#000000">
                   <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                   <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                   <g id="SVGRepo_iconCarrier">
@@ -260,7 +259,10 @@ function Chat() {
                     <desc>Created with Sketch Beta.</desc>
                     <defs></defs>
                     <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                      <g id="Icon-Set" transform="translate(-256.000000, -1139.000000)" fill="#000000">
+                      <g
+                        id="Icon-Set"
+                        transform="translate(-256.000000, -1139.000000)"
+                        fill="#000000">
                         <path
                           d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
                           id="search"></path>
@@ -304,28 +306,24 @@ function Chat() {
                 )}
               </div>
             </div>
-            {chats.map(
-              (chat, index) => (
-                (
-                  <div
-                    className={`chat-list-item ${
-                      selectedChat && selectedChat.chatId === chat.chatId ? "selected" : ""
-                    }`}
-                    key={index}
-                    onClick={() => setSelectedChat(chat)}>
-                    <Avatar
-                      {...stringAvatar(chat && chat.fullName)}
-                      title={chat.fullName || "Unknown Name"}
-                      className="chat-list-item-avatar"
-                    />
-                    <div className="chat-list-item-texts">
-                      <span>{chat.fullName}</span>
-                      <p>{chat.lastMessage}</p>
-                    </div>
-                  </div>
-                )
-              )
-            )}
+            {chats.map((chat, index) => (
+              <div
+                className={`chat-list-item ${
+                  selectedChat && selectedChat.chatId === chat.chatId ? "selected" : ""
+                }`}
+                key={index}
+                onClick={() => setSelectedChat(chat)}>
+                <Avatar
+                  {...stringAvatar(chat && chat.fullName)}
+                  title={chat.fullName || "Unknown Name"}
+                  className="chat-list-item-avatar"
+                />
+                <div className="chat-list-item-texts">
+                  <span>{chat.fullName}</span>
+                  <p>{chat.lastMessage}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         {selectedChat && (
@@ -344,21 +342,39 @@ function Chat() {
                   </div>
                 </div>
                 <div className="chat-messages-top-icons">
-                  <InfoIcon onClick={()=> navigate(`/profile/${selectedChat.otherUserEmail === user.email ? user.email : selectedChat.otherUserEmail}`)}/>
+                  <InfoIcon
+                    onClick={() =>
+                      navigate(
+                        `/profile/${
+                          selectedChat.otherUserEmail === user.email
+                            ? user.email
+                            : selectedChat.otherUserEmail
+                        }`
+                      )
+                    }
+                  />
                 </div>
               </div>
               <div className="chat-messages-center">
-                {messages && messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`chat-messages-center-message-${message.sender === user.email ? "own" : "other"}`}>
-                    <div className="chat-messages-center-message-texts">
-                      {message.img && <img src={message.img} />}
-                      <p>{message.text}</p>
-                      <span>{(new Date(message.timestamp.seconds * 1000 + message.timestamp.nanoseconds / 1000000)).toLocaleString("en-GB", {hour12: false})}</span>
+                {messages &&
+                  messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={`chat-messages-center-message-${
+                        message.sender === user.email ? "own" : "other"
+                      }`}>
+                      <div className="chat-messages-center-message-texts">
+                        {message.img && <img src={message.img} />}
+                        <p>{message.text}</p>
+                        <span>
+                          {new Date(
+                            message.timestamp.seconds * 1000 +
+                              message.timestamp.nanoseconds / 1000000
+                          ).toLocaleString("en-GB", { hour12: false })}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 <div ref={endRef}></div>
               </div>
               <div className="chat-messages-bottom">

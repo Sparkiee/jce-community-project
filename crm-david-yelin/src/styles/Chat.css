@@ -1,7 +1,6 @@
 .chat-body {
-  /* background-image: url("../assets/bg.jpg"); */
+  background-image: url("../assets/bg.png");
   background-color: #c0c2e4;
-  background-image: url("../assets/axiom-pattern.png");
   position: relative;
   font-size: 2rem;
   display: flex;

@@ -1,4 +1,4 @@
-.create-department-form-style {
+.edit-department-style {
   position: relative;
   z-index: 1;
   display: flex;
@@ -13,7 +13,7 @@
   width: 50rem;
 }
 
-.create-department-container-input {
+.edit-department-form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,8 +21,13 @@
   gap: 1rem;
 }
 
-.create-department-title {
+.edit-department-title {
   margin: 0;
   font-weight: 700;
   font-size: 4.5rem;
+}
+
+.edit-department-input-container {
+  width: 100%;
+  margin-left: 4.5rem;
 }

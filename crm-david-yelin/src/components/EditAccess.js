@@ -24,7 +24,7 @@ function EditAccess(props) {
     deleteComment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment"),
     editDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editDepartment"),
     deleteDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteDepartment"),
-    CreateDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("CreateDepartment")
+    createDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createDepartment")
   });
 
   const handleCheckAllChange = (event) => {

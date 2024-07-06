@@ -88,6 +88,11 @@
   background-color: rgba(2, 4, 79, 0.5);
   padding: 1rem;
   border-radius: 1rem;
+  transition: all 0.2s linear;
+}
+
+.chat-list-search .chat-list-search-add-minus:hover {
+  transform: scale(1.1);
 }
 
 .chat-list-search-bar {
@@ -196,15 +201,15 @@
   color: #a5a5a5;
 }
 
-.chat-messages-top-icons {
-  display: flex;
-  gap: 2rem;
-}
-
 .chat-messages-top-icons svg {
   width: 3.5rem;
   height: 3.5rem;
   cursor: pointer;
+  transition: all 0.2s linear;
+}
+
+.chat-messages-top-icons svg:hover {
+  transform: scale(1.1);
 }
 
 .chat-messages-center {
@@ -278,18 +283,18 @@
   margin-top: auto;
 }
 
-.chat-messages-bottom-icons {
-  display: flex;
-  gap: 2rem;
-}
-
 .chat-messages-bottom-icons svg {
   width: 3.5rem;
   height: 3.5rem;
   cursor: pointer;
+  transition: all 0.2s linear;
 }
 
-.chat-messages-bottom input {
+.chat-messages-bottom-icons svg:hover {
+  transform: scale(1.1);
+}
+
+.chat-messages-bottom-input {
   flex: 1;
   background-color: rgba(2, 4, 79, 0.5);
   border: none;
@@ -305,15 +310,40 @@
 }
 
 .chat-messages-bottom-emoji svg {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 4.5rem;
+  height: 4.5rem;
   cursor: pointer;
+  transition: all 0.2s linear;
+}
+
+.chat-messages-bottom-emoji svg:hover {
+  transform: scale(1.1);
 }
 
 .chat-messages-bottom-emoji-picker {
   position: absolute;
   bottom: 5rem;
-  right: 0;
+  left: 50%;
+}
+
+.epr-skin-tone-select .epr-tone-1f3fb {
+  transform: translateX(28px) scale(1.3) !important;
+}
+
+.epr-skin-tone-select .epr-tone-1f3fc {
+  transform: translateX(56px) scale(1.3) !important;
+}
+
+.epr-skin-tone-select .epr-tone-1f3fd {
+  transform: translateX(84px) scale(1.3) !important;
+}
+
+.epr-skin-tone-select .epr-tone-1f3fe {
+  transform: translateX(112px) scale(1.3) !important;
+}
+
+.epr-skin-tone-select .epr-tone-1f3ff {
+  transform: translateX(140px) scale(1.3) !important;
 }
 
 .chat-messages-send-button {
@@ -322,7 +352,13 @@
   padding: 1.5rem 2rem;
   border: none;
   border-radius: 1rem;
+  font-size: 2rem;
   cursor: pointer;
+  transition: all 0.2s linear;
+}
+
+.chat-messages-send-button:hover {
+  transform: scale(1.1);
 }
 
 .chat-detail-container {

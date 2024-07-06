@@ -6,6 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
 import { Alert } from "@mui/material";
+import CreateDepartment from "./CreateDepartment.js";
 
 function EditAccess(props) {
   const [permSuccess, setPermSuccess] = useState(false);
@@ -22,7 +23,8 @@ function EditAccess(props) {
     manageAdmin: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
     deleteComment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment"),
     editDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editDepartment"),
-    deleteDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteDepartment")
+    deleteDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteDepartment"),
+    CreateDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("CreateDepartment")
   });
 
   const handleCheckAllChange = (event) => {
@@ -40,7 +42,8 @@ function EditAccess(props) {
       manageAdmin: newCheckAll,
       deleteComment: newCheckAll,
       editDepartment: newCheckAll,
-      deleteDepartment: newCheckAll
+      deleteDepartment: newCheckAll,
+      createDepartment: newCheckAll
     });
   };
 
@@ -229,6 +232,17 @@ function EditAccess(props) {
                 onChange={handleChange}
               />
               מחיקת מחלקה
+            </label>
+          </div>
+          <div className="edit-access-input">
+            <label>
+              <Checkbox
+                name="createDepartment"
+                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                checked={access.createDepartment}
+                onChange={handleChange}
+              />
+              יצירת מחלקה
             </label>
           </div>
         </div>

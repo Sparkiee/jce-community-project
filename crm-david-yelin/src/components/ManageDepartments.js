@@ -198,9 +198,9 @@ function ManageDepartments() {
       )}
       <div className="manage-departments">
         <h1>ניהול מחלקות</h1>
-        <div className="action-button add-department-button" onClick={() => setShowAddForm(true)}>
+        {user && ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createDepartment")) || user.privileges >= 2) &&(<div className="action-button add-department-button" onClick={() => setShowAddForm(true)}>
           יצירת מחלקה חדשה
-        </div>
+        </div>)}
         <div style={{ height: 995, width: "90%" }}>
           <ThemeProvider theme={theme}>
             <DataGrid

@@ -223,7 +223,7 @@ function EditUser(props) {
                       {dept}
                     </option>
                   ))}
-                  <option value="other">הוסף מחלקה חדשה</option>
+                  {user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("createDepartment"))) && <option value="other">הוסף מחלקה חדשה</option>}
                 </select>
                 {isOtherSelected && (
                   <div className="new-department">

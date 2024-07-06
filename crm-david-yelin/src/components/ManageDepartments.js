@@ -24,9 +24,10 @@ function ManageDepartments() {
     const collectionRef = collection(db, "departments");
     try {
       const snapshot = await getDocs(collectionRef);
-      const departments = snapshot.docs.map((doc) => ({
+      const departments = snapshot.docs.map((doc, index) => ({
         ...doc.data(),
-        id: doc.id,
+        docRef: doc.id,
+        id: index + 1,
         name: doc.data().name
       }));
       setDepartments(departments);
@@ -104,7 +105,7 @@ function ManageDepartments() {
 
   async function handleDeleteDepartment() {
     try {
-      const docRef = doc(db, "departments", deleteTarget.id);
+      const docRef = doc(db, "departments", deleteTarget.docRef);
       await deleteDoc(docRef);
       setDeleteTarget("");
       updateMemberDepartment(deleteTarget.name, "נא לעדכן מחלקה");
@@ -131,7 +132,7 @@ function ManageDepartments() {
   async function handleUpdateDepartment(department) {
     setEditTarget("");
     try {
-      const docToDelete = doc(db, "departments", editTarget.id);
+      const docToDelete = doc(db, "departments", editTarget.docRef);
       await deleteDoc(docToDelete);
       const newDocRef = doc(db, "departments", department);
       await setDoc(newDocRef, { name: department });

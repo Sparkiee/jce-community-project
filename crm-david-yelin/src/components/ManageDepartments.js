@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/ManageDepartments.css";
 import { db } from "../firebase";
-import { collection, getDocs, doc, query, where, deleteDoc, updateDoc,setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, query, where, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
@@ -10,7 +10,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ConfirmAction from "./ConfirmAction";
 import EditDepartment from "./EditDepartment";
-import DepartmentForm from "./CreateDepartment";
+import CreateDepartment from "./CreateDepartment";
 
 function ManageDepartments() {
   const [departments, setDepartments] = useState([]);
@@ -24,13 +24,12 @@ function ManageDepartments() {
     const collectionRef = collection(db, "departments");
     try {
       const snapshot = await getDocs(collectionRef);
-      const departments = snapshot.docs.map((doc, index) => ({
+      const departments = snapshot.docs.map((doc) => ({
         ...doc.data(),
-        id: doc.id,  // Use the document ID as the ID
+        id: doc.id,
         name: doc.data().name
       }));
       setDepartments(departments);
-      console.log(departments);
     } catch (e) {
       console.error("Error getting documents: ", e);
     }
@@ -119,7 +118,7 @@ function ManageDepartments() {
     getDepartments();
 
     const handleClickOutside = (event) => {
-      if(editDepartmentRef.current && !editDepartmentRef.current.contains(event.target)) {
+      if (editDepartmentRef.current && !editDepartmentRef.current.contains(event.target)) {
         setEditTarget("");
       }
     };
@@ -131,8 +130,6 @@ function ManageDepartments() {
 
   async function handleUpdateDepartment(department) {
     setEditTarget("");
-    console.log("new department:", department);
-    console.log("old department:", editTarget.name);
     try {
       const docToDelete = doc(db, "departments", editTarget.id);
       await deleteDoc(docToDelete);
@@ -167,7 +164,7 @@ function ManageDepartments() {
       {showAddForm && (
         <div className="popup-overlay">
           <div className="popup-content">
-            <DepartmentForm
+            <CreateDepartment
               onClose={() => setShowAddForm(false)}
               onComplete={() => {
                 setShowAddForm(false);
@@ -194,11 +191,10 @@ function ManageDepartments() {
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
-                // Customizing displayed rows text
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
+                  labelRowsPerPage: "שורות בכל עמוד:"
                 }
               }}
               onRowDoubleClick={(params) => {

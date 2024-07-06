@@ -218,6 +218,7 @@
 
 .chat-messages-center-message-other {
   display: flex;
+  align-self: flex-end;
   max-width: 70%;
   gap: 2rem;
 }
@@ -257,7 +258,6 @@
 
 .chat-messages-center-message-own {
   display: flex;
-  align-self: flex-end;
   gap: 2rem;
   max-width: 70%;
 }

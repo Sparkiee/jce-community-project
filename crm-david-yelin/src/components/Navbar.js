@@ -52,6 +52,7 @@ function Navbar() {
   const [fullName, setFullName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [messageUnseenCount, setMessageUnseenCount] = useState(0); // [1
   const [user, setUser] = useState(null);
 
   const location = useLocation();
@@ -68,11 +69,11 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
-    const member = JSON.parse(sessionStorage.getItem("user"));
+    let unsubscribeChatsSnapshot = () => {};
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
-    if (member && member.email && member.privileges >= 1) {
-      const unsubscribeSnapshot = onSnapshot(
-        doc(db, "members", member.email),
+    if (user && user.email && user.privileges >= 1) {
+      const unsubscribeMembersSnapshot = onSnapshot(
+        doc(db, "members", user.email),
         (doc) => {
           const data = doc.data();
           sessionStorage.setItem("user", JSON.stringify(data));
@@ -85,11 +86,35 @@ function Navbar() {
           // Handle the error appropriately
         }
       );
+      const chatsQuery = query(collection(db, "chats"), where("members", "array-contains", user.email));
+      unsubscribeChatsSnapshot = onSnapshot(
+        chatsQuery,
+        (querySnapshot) => {
+          const chatsData = [];
+          let count = 0;
+          querySnapshot.forEach((doc) => {
+            // Process each document, for example, pushing to an array
+            chatsData.push({ id: doc.id, ...doc.data() });
+            doc.data().messages.forEach((message) => {
+              if (!message.sender.includes(user.email) && !message.seen) count++;
+            });
+          });
+          setMessageUnseenCount(count);
+          // Example: Update state with the fetched chats data
+        },
+        (error) => {
+          console.error("Error fetching chats: ", error);
+          // Handle the error appropriately
+        }
+      );
 
       // Cleanup function to unsubscribe from the snapshot when the component unmounts
-      return () => unsubscribeSnapshot();
+      return () => {
+        unsubscribeMembersSnapshot();
+        unsubscribeChatsSnapshot();
+      };
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -299,7 +324,9 @@ function Navbar() {
             </ul>
             <div className="left-side-nav">
               <IconButton color="primary" onClick={() => navigate(`/chat`)}>
-                <MessageIcon className="message-icon" />
+                <Badge badgeContent={messageUnseenCount} color="primary">
+                  <MessageIcon className="message-icon" />
+                </Badge>
               </IconButton>
               <IconButton color="primary" onClick={() => handleNotifications()}>
                 <Badge badgeContent={notifications} color="primary">

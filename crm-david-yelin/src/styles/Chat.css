@@ -1,11 +1,15 @@
 .chat-body {
-  background-image: url("../assets/bg.jpg");
+  /* background-image: url("../assets/bg.jpg"); */
+  background-color: #c0c2e4;
+  background-image: url("../assets/axiom-pattern.png");
+  position: relative;
   font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
 }
 
 .chat-body p {
@@ -17,6 +21,7 @@
 }
 
 .chat-container {
+  position: absolute;
   display: flex;
   width: 80%;
   height: 90%;
@@ -24,6 +29,9 @@
   backdrop-filter: blur(19px) saturate(180%);
   border-radius: 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.125);
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
 }
 
 .chat-list-container {

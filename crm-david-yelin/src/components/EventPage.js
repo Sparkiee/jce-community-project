@@ -23,6 +23,14 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditTask from "./EditTask";
 import ConfirmAction from "./ConfirmAction";
 
+import { FilePond, registerPlugin } from "react-filepond";
+import "filepond/dist/filepond.min.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+
+registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview);
+
 function stringToColor(string) {
   let hash = 0;
   for (let i = 0; i < string.length; i += 1) {
@@ -615,7 +623,19 @@ function EventPage() {
           </div>
         );
       case pages[2]:
-        return <h2>פה יהיו הקבצים</h2>;
+        return (
+          <div className="event-files">
+            <h2>העלאת קבצים</h2>
+            <FilePond
+              allowMultiple={true}
+              maxFiles={5}
+              server="/api"
+              name="files"
+              labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
+              acceptedFileTypes={['image/*']}
+            />
+          </div>
+        );
       case pages[3]:
         return (
           <div className="event-history">

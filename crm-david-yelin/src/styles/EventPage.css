@@ -150,3 +150,54 @@
 }
 
   
+.event-files {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.event-files h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.filepond--wrapper {
+  direction: ltr;
+}
+
+.filepond--label-action {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.filepond--label-action:hover {
+  text-decoration: underline;
+}
+
+.filepond--panel-root {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.filepond--item-panel {
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.filepond--drop-label {
+  color: #555;
+}
+
+.filepond--file-action-button {
+  color: #007bff;
+}
+
+.filepond--file-action-button:hover {
+  color: #0056b3;
+}

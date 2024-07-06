@@ -1,16 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/ManageDepartments.css";
 import { db } from "../firebase";
-import {
-  collection,
-  getDocs,
-  doc,
-  query,
-  where,
-  deleteDoc,
-  updateDoc,
-  setDoc,
-} from "firebase/firestore";
+import { collection, getDocs, doc, query, where, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
@@ -26,8 +17,18 @@ function ManageDepartments() {
   const [deleteTarget, setDeleteTarget] = useState("");
   const [editTarget, setEditTarget] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [user, setUser] = useState(null);
 
   const editDepartmentRef = useRef(null);
+
+  useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+    if (userData) setUser(userData);
+    else {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) setUser(userData);
+    }
+  }, []);
 
   async function getDepartments() {
     const collectionRef = collection(db, "departments");
@@ -67,16 +68,16 @@ function ManageDepartments() {
             </IconButton>
           )}
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   const theme = createTheme(
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -89,7 +90,7 @@ function ManageDepartments() {
       const updatePromises = querySnapshot.docs.map((document) => {
         const docRef = doc(db, "members", document.id);
         return updateDoc(docRef, {
-          department: newDepartment,
+          department: newDepartment
         });
       });
       await Promise.all(updatePromises);
@@ -103,7 +104,7 @@ function ManageDepartments() {
       const updatePromises = querySnapshot.docs.map((document) => {
         const docRef = doc(db, "awaiting_registration", document.id);
         return updateDoc(docRef, {
-          department: newDepartment,
+          department: newDepartment
         });
       });
       await Promise.all(updatePromises);
@@ -151,8 +152,7 @@ function ManageDepartments() {
       console.error("Error updating document: ", e);
     }
   }
-
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  
   return (
     <div>
       {editTarget && (
@@ -168,10 +168,7 @@ function ManageDepartments() {
       )}
       {deleteTarget && (
         <div className="popup-overlay">
-          <ConfirmAction
-            onConfirm={() => handleDeleteDepartment()}
-            onCancel={() => setDeleteTarget("")}
-          />
+          <ConfirmAction onConfirm={() => handleDeleteDepartment()} onCancel={() => setDeleteTarget("")} />
         </div>
       )}
       {showAddForm && (
@@ -201,16 +198,16 @@ function ManageDepartments() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 },
-                },
+                  paginationModel: { page: 0, pageSize: 17 }
+                }
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={(params) => {
                 console.log(`${params.row}`);

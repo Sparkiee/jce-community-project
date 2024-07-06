@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 import "../styles/CreateDepartment.css";
 
 function CreateDepartment({ onClose, onComplete }) {
@@ -26,7 +26,7 @@ function CreateDepartment({ onClose, onComplete }) {
         setTimeout(() => {
           setSuccess(false);
           onComplete(departmentName);
-        }, 2000); 
+        }, 2000);
       } catch (e) {
         console.error("Error adding document: ", e);
         setError("שגיאה בהוספת מחלקה");
@@ -34,7 +34,7 @@ function CreateDepartment({ onClose, onComplete }) {
       }
     } else {
       setError("המחלקה כבר קיימת");
-      setTimeout(() => setError(""), 2000); 
+      setTimeout(() => setError(""), 2000);
     }
   };
 
@@ -59,8 +59,7 @@ function CreateDepartment({ onClose, onComplete }) {
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -83,7 +82,7 @@ function CreateDepartment({ onClose, onComplete }) {
       </div>
       <div className="create-department-container-input" ref={formRef}>
         <h1 className="create-department-title">הוספת מחלקה חדשה</h1>
-        <label htmlFor="departmentName" className="name-label">שם המחלקה (חובה):</label>
+        <label className="create-department-label">שם המחלקה (חובה):</label>
         <input
           type="text"
           value={departmentName}
@@ -96,14 +95,21 @@ function CreateDepartment({ onClose, onComplete }) {
           placeholder="שם המחלקה"
           className="forms-input"
         />
-        <button
-          onClick={handleAddDepartment}
-          className="primary-button"
-        >
+        <button onClick={handleAddDepartment} className="primary-button">
           הוסף מחלקה
         </button>
-        {success && <Alert severity="success">המחלקה נוספה בהצלחה!</Alert>}
-        {error && <Alert severity="error">{error}</Alert>}
+      </div>
+      <div className="create-department-messages">
+        {success && (
+          <Alert className="feedback-alert" severity="success">
+            המחלקה נוספה בהצלחה!
+          </Alert>
+        )}
+        {error && (
+          <Alert className="feedback-alert" severity="error">
+            {error}
+          </Alert>
+        )}
       </div>
     </div>
   );

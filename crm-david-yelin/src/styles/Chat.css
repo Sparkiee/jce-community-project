@@ -482,7 +482,7 @@
 }
 
 .chat-body ::-webkit-scrollbar {
-  width: 12px; /* Change width to fit design */
+  width: 12px;
 }
 
 .chat-body ::-webkit-scrollbar-track {
@@ -493,8 +493,4 @@
 .chat-body ::-webkit-scrollbar-thumb {
   background: rgba(2, 4, 79, 0.5);
   border-radius: 1rem;
-}
-
-.chat-body ::-webkit-scrollbar-thumb:hover {
-  background: rgba(2, 4, 79);
 }

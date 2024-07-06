@@ -34,12 +34,23 @@ function ManageDepartments() {
     const collectionRef = collection(db, "departments");
     try {
       const snapshot = await getDocs(collectionRef);
-      const departments = snapshot.docs.map((doc, index) => ({
-        ...doc.data(),
-        docRef: doc.id,
-        id: index + 1,
-        name: doc.data().name
-      }));
+      const departmentsPromises = snapshot.docs.map(async (doc, index) => {
+        // Query members for each department
+        const membersRef = collection(db, "members");
+        const q = query(membersRef, where("department", "==", doc.data().name));
+        const membersSnapshot = await getDocs(q);
+        const memberCount = membersSnapshot.docs.length; // Count members in department
+
+        return {
+          ...doc.data(),
+          docRef: doc.id,
+          id: index + 1,
+          name: doc.data().name,
+          memberCount: memberCount // Include member count
+        };
+      });
+
+      const departments = await Promise.all(departmentsPromises);
       setDepartments(departments);
     } catch (e) {
       console.error("Error getting documents: ", e);
@@ -49,6 +60,7 @@ function ManageDepartments() {
   const columns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 0.5 },
     { field: "name", headerName: "שם המחלקה", align: "right", flex: 3 },
+    { field: "memberCount", headerName: "מספר חברים", align: "right", flex: 2 },
     {
       field: "view",
       headerName: "עריכה",
@@ -152,7 +164,7 @@ function ManageDepartments() {
       console.error("Error updating document: ", e);
     }
   }
-  
+
   return (
     <div>
       {editTarget && (

@@ -12,6 +12,7 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import MicIcon from "@mui/icons-material/Mic";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import Avatar from "@mui/material/Avatar";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { db } from "../firebase";
 import {
@@ -29,6 +30,41 @@ import {
 } from "firebase/firestore";
 
 function Chat() {
+  function stringToColor(string) {
+    let hash = 0;
+    let i;
+
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = "#";
+
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    /* eslint-enable no-bitwise */
+
+    return color;
+  }
+
+  function stringAvatar(name) {
+    if (typeof name !== "string") {
+      return { children: "Unknown" };
+    }
+    const names = name.split(" ");
+    const firstInitial = names[0] ? names[0][0] : "";
+    const secondInitial = names[1] ? names[1][0] : "";
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${firstInitial}${secondInitial}`,
+    };
+  }
+
   const [addMode, setAddMode] = useState(false);
   const [emojiMode, setEmojiMode] = useState(false);
   const [text, setText] = useState("");
@@ -36,6 +72,7 @@ function Chat() {
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedChat, setSelectedChat] = useState(null);
+  const [messages, setMessages] = useState([]);
 
   const user = JSON.parse(sessionStorage.getItem("user"));
   const endRef = useRef(null);
@@ -53,30 +90,60 @@ function Chat() {
           { merge: true }
         );
       }
-
-      // Subscribe to the member document to listen for chat updates
-      const unSub = onSnapshot(memberDocRef, async (res) => {
-        const items = res.data()?.chats || [];
-        if (items.length > 0) {
-          const chatData = await Promise.all(
-            items.map(async (item) => {
-              const chatDocRef = doc(db, "members", item.member);
-              const chatDocSnap = await getDoc(chatDocRef);
-              const chatUser = chatDocSnap.data();
-              return { ...item, ...chatUser };
-            })
-          );
-          setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
-        } else {
-          setChats([]);
-        }
-      });
-
-      return () => unSub();
     };
 
     checkAndCreateChat();
   }, [user.email]);
+
+  useEffect(() => {
+    const fetchUserChats = async () => {
+      try {
+        const userRef = doc(db, "members", user.email);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          let chatArray = []; // Initialize as an array
+          if (userData.chats) {
+            userData.chats.forEach((chat) => {
+              chatArray.push(chat); // Push each chat object into the array
+            });
+            setChats(chatArray); // Set the state with the array of chats
+            console.log("chatArray", chatArray);
+          } else {
+            console.log("No chats data found for the user.");
+          }
+        } else {
+          console.log("No document found for the user.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user chats:", error);
+      }
+    };
+
+    fetchUserChats();
+  }, []);
+
+  useEffect(() => {
+    if (user && selectedChat) {
+      const userRef = doc(db, "members", user.email);
+      const unsubscribe = onSnapshot(userRef, (doc) => {
+        if (doc.exists()) {
+          const userData = doc.data();
+          if (userData.chats && typeof userData.chats === "object") {
+            const currentChat = userData.chats[selectedChat.chatId];
+            if (currentChat) {
+              setMessages(currentChat.messages || []);
+            }
+          } else {
+            console.error("Chats data structure is not as expected:", userData.chats);
+          }
+        }
+      });
+
+      return () => unsubscribe();
+    }
+  }, [user, selectedChat]);
 
   useEffect(() => {
     if (endRef.current) {
@@ -85,7 +152,6 @@ function Chat() {
   }, [selectedChat]);
 
   const handleEmoji = (e) => {
-    console.log(e);
     setText((prev) => prev + e.emoji);
     setEmojiMode(false);
   };
@@ -125,10 +191,7 @@ function Chat() {
       const currentUserData = currentUserDoc.data();
 
       // Check if chat already exists
-      if (
-        currentUserData.chats &&
-        currentUserData.chats.some((chat) => chat.member === userToAdd.email)
-      ) {
+      if (currentUserData.chats && currentUserData.chats[userToAdd.email]) {
         console.log("Chat already exists with this user");
         return;
       }
@@ -145,6 +208,7 @@ function Chat() {
         lastMessage: "",
         member: userToAdd.email,
         updatedAt: now,
+        messages: [],
       };
 
       const newChat = { ...newChatItem, ...userToAdd };
@@ -152,6 +216,7 @@ function Chat() {
         if (prevChats.some((chat) => chat.member === userToAdd.email)) {
           return prevChats;
         }
+        console.log("newChat", ...prevChats, newChat);
         return [...prevChats, newChat];
       });
       setSelectedChat(newChat);
@@ -168,6 +233,7 @@ function Chat() {
         lastMessage: "",
         member: currentUserEmail,
         updatedAt: now,
+        messages: [],
       };
 
       // Update the other user's chats array
@@ -198,14 +264,59 @@ function Chat() {
     }
   };
 
+  const handleSendMessage = async () => {
+    if (!text || !selectedChat) return;
+
+    const currentUserRef = doc(db, "members", user.email);
+    const otherUserRef = doc(db, "members", selectedChat.member);
+
+    try {
+      const now = new Date();
+
+      const message = {
+        text: text,
+        sender: user.email,
+        createdAt: now,
+      };
+
+      const updateData = {
+        [`chats.${selectedChat.chatId}.lastMessage`]: text,
+        [`chats.${selectedChat.chatId}.updatedAt`]: serverTimestamp(),
+        [`chats.${selectedChat.chatId}.isSeen`]: true,
+      };
+
+      // Update current user's document
+      await updateDoc(currentUserRef, updateData);
+      await updateDoc(currentUserRef, {
+        [`chats.${selectedChat.chatId}.messages`]: arrayUnion(message),
+      });
+
+      // Update other user's document
+      updateData[`chats.${selectedChat.chatId}.isSeen`] = false;
+      await updateDoc(otherUserRef, updateData);
+      await updateDoc(otherUserRef, {
+        [`chats.${selectedChat.chatId}.messages`]: arrayUnion(message),
+      });
+
+      console.log("Message sent successfully");
+      setText("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
   return (
     <div className="chat-body">
       <div className="chat-container">
         <div className="chat-list-container">
           <div className="chat-user-info">
             <div className="chat-user-info-avatar">
-              <img src={require("../assets/profile.jpg")} alt="profile" />
-              <h2>Monkey D. Luffy</h2>
+              <Avatar
+                {...stringAvatar(user.fullName)}
+                title={user.fullName}
+                className="chat-user-info-profile-avatar"
+              />
+              <h2>{user.fullName}</h2>
             </div>
             <div className="chat-user-info-icons">
               <MoreHorizIcon />
@@ -275,14 +386,18 @@ function Chat() {
                 )}
               </div>
             </div>
-            {chats.map((chat) => (
+            {chats.map((chat, index) => (
               <div
                 className={`chat-list-item ${
                   selectedChat && selectedChat.chatId === chat.chatId ? "selected" : ""
                 }`}
-                key={chat.chatId}
+                key={index}
                 onClick={() => setSelectedChat(chat)}>
-                <img src={require("../assets/profile.jpg")} alt="profile" />
+                <Avatar
+                  {...stringAvatar(chat?.fullName || "Unknown Name")}
+                  title={chat.fullName || "Unknown Name"}
+                  className="chat-list-item-avatar"
+                />
                 <div className="chat-list-item-texts">
                   <span>{chat.fullName}</span>
                   <p>{chat.lastMessage}</p>
@@ -296,7 +411,11 @@ function Chat() {
             <div className="chat-messages-container">
               <div className="chat-messages-top">
                 <div className="chat-messages-top-avatar">
-                  <img src={require("../assets/profile.jpg")} alt="profile" />
+                  <Avatar
+                    {...stringAvatar(selectedChat?.fullName || "Unknown Name")}
+                    title={selectedChat.fullName || "Unknown Name"}
+                    className="chat-messages-top-avatar-img"
+                  />
                   <div className="chat-messages-top-avatar-texts">
                     <span>{selectedChat.fullName}</span>
                     <p>{selectedChat.lastMessage}</p>
@@ -309,16 +428,19 @@ function Chat() {
                 </div>
               </div>
               <div className="chat-messages-center">
-                <div className="chat-messages-center-message-own">
-                  <div className="chat-messages-center-message-texts">
-                    <img src={require("../assets/profile.jpg")} alt="profile" />
-                    <p>
-                      זוהי עובדה מבוססת שדעתו של הקורא תהיה מוסחת על ידי טקטס קריא כאשר הוא יביט
-                      בפריסתו.{" "}
-                    </p>
-                    <span>1 min ago</span>
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`chat-messages-center-message-${
+                      message.sender === user.email ? "own" : "other"
+                    }`}>
+                    <div className="chat-messages-center-message-texts">
+                      {message.img && <img src={message.img} />}
+                      <p>{message.text}</p>
+                      <span>{message.timestamp}</span>
+                    </div>
                   </div>
-                </div>
+                ))}
                 <div ref={endRef}></div>
               </div>
               <div className="chat-messages-bottom">
@@ -339,12 +461,18 @@ function Chat() {
                     <EmojiPicker open={emojiMode} onEmojiClick={handleEmoji} />
                   </div>
                 </div>
-                <button className="chat-messages-send-button">שלח</button>
+                <button className="chat-messages-send-button" onClick={handleSendMessage}>
+                  שלח
+                </button>
               </div>
             </div>
             <div className="chat-detail-container">
               <div className="chat-detail-user">
-                <img src={require("../assets/profile.jpg")} alt="profile" />
+                <Avatar
+                  {...stringAvatar(selectedChat?.fullName || "Unknown Name")}
+                  title={selectedChat.fullName || "Unknown Name"}
+                  className="chat-detail-user-avatar"
+                />
                 <h2>{selectedChat.fullName}</h2>
                 <p>{selectedChat.lastMessage}</p>
               </div>

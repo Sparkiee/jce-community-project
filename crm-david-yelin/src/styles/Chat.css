@@ -34,7 +34,7 @@
 
 .chat-list {
   flex: 1;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .chat-user-info {
@@ -50,11 +50,10 @@
   gap: 2rem;
 }
 
-.chat-user-info-avatar img {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  object-fit: cover;
+.chat-user-info-avatar .chat-user-info-profile-avatar {
+  width: 5rem !important;
+  height: 5rem !important;
+  font-size: 2rem !important;
 }
 
 .chat-user-info-icons {
@@ -123,11 +122,10 @@
   border-bottom: 1px solid #dddddd35;
 }
 
-.chat-list-item img {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  object-fit: cover;
+.chat-list-item .chat-list-item-avatar {
+  width: 5rem !important;
+  height: 5rem !important;
+  font-size: 2rem !important;
 }
 
 .chat-list-item-texts {
@@ -168,11 +166,10 @@
   gap: 2rem;
 }
 
-.chat-messages-top-avatar img {
-  width: 7rem;
-  height: 7rem;
-  border-radius: 50%;
-  object-fit: cover;
+.chat-messages-top-avatar .chat-messages-top-avatar-img {
+  width: 7rem !important;
+  height: 7rem !important;
+  font-size: 3rem !important;
 }
 
 .chat-messages-top-avatar-texts {
@@ -209,10 +206,10 @@
   flex-direction: column;
   justify-content: flex-start;
   padding: 2rem;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
-.chat-messages-center-message {
+.chat-messages-center-message-other {
   display: flex;
   max-width: 70%;
   gap: 2rem;
@@ -232,7 +229,7 @@
   gap: 0.5rem;
 }
 
-.chat-messages-center-message .chat-messages-center-message-texts p {
+.chat-messages-center-message-other .chat-messages-center-message-texts p {
   background-color: rgba(2, 4, 79, 0.3);
   padding: 2rem;
   border-radius: 1rem;
@@ -246,7 +243,7 @@
 
 .chat-messages-center-message-texts img {
   width: 100%;
-  height: 30rem;
+  height: 25rem;
   border-radius: 1rem;
   object-fit: cover;
 }
@@ -334,11 +331,10 @@
   border-bottom: 1px solid #dddddd35;
 }
 
-.chat-detail-user img {
-  width: 13rem;
-  height: 13rem;
-  border-radius: 50%;
-  object-fit: cover;
+.chat-detail-user .chat-detail-user-avatar {
+  width: 13rem !important;
+  height: 13rem !important;
+  font-size: 7rem !important;
 }
 
 .chat-detail-info {

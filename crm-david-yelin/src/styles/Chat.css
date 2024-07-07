@@ -128,10 +128,22 @@
 .chat-list-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 2rem;
   padding: 2rem;
   cursor: pointer;
   border-bottom: 1px solid #dddddd35;
+  transition: all 0.1s linear;
+}
+
+.chat-list-item:hover {
+  background-color: rgba(2, 4, 79, 0.3);
+}
+
+.chat-list-item-right-side {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .chat-list-item .chat-list-item-avatar {
@@ -143,7 +155,6 @@
 .chat-list-item-texts {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .chat-list-item-texts span {
@@ -153,6 +164,10 @@
 .chat-list-item-texts p {
   font-size: 1.6rem;
   font-weight: 300;
+}
+
+.chat-list-item-badge {
+  padding-left: 2rem;
 }
 
 .chat-messages-container {
@@ -242,10 +257,13 @@
   gap: 0.5rem;
 }
 
-.chat-messages-center-message-other .chat-messages-center-message-texts p {
+.chat-messages-center-message-other .chat-messages-center-message-texts pre {
+  font-family: inherit;
+  margin: 0;
   background-color: rgba(2, 4, 79, 0.3);
   padding: 2rem;
   border-radius: 1rem;
+  white-space: pre-wrap;
 }
 
 .chat-messages-center-message-texts span {
@@ -267,10 +285,13 @@
   max-width: 70%;
 }
 
-.chat-messages-center-message-own .chat-messages-center-message-texts p {
+.chat-messages-center-message-own .chat-messages-center-message-texts pre {
+  font-family: inherit;
+  margin: 0;
   background-color: #5183fe;
   padding: 2rem;
   border-radius: 1rem;
+  white-space: pre-wrap;
 }
 
 .chat-messages-bottom {
@@ -296,6 +317,7 @@
 
 .chat-messages-bottom-input {
   flex: 1;
+  font-family: inherit;
   background-color: rgba(2, 4, 79, 0.5);
   border: none;
   outline: none;
@@ -303,6 +325,9 @@
   font-size: 2rem;
   padding: 1.5rem;
   border-radius: 1rem;
+  max-height: 4rem;
+  white-space: pre-wrap;
+  resize: none;
 }
 
 .chat-messages-bottom-emoji {
@@ -492,11 +517,10 @@
   justify-content: space-between;
 }
 
-.chat-user-list img {
-  width: 8rem;
-  height: 8rem;
-  border-radius: 50%;
-  object-fit: cover;
+.chat-user-avatar {
+  width: 8rem !important;
+  height: 8rem !important;
+  font-size: 3rem !important;
 }
 
 .chat-user-list button {

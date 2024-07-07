@@ -326,7 +326,7 @@ function Chat() {
                         </g>
                       </g>
                     </svg>
-                    <input type="text" placeholder="חפש משתמש..." />
+                    <input type="text" className="open-chat-search" placeholder="חפש משתמש..." />
                   </div>
                   <div className="chat-list-search-add-minus">
                     {!addMode ? (

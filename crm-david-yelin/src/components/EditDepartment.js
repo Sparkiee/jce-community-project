@@ -47,7 +47,7 @@ function EditDepartment(props) {
         <div className="edit-department-input-container">
           <input
             type="input"
-            placeholder="שם מחלקה"
+            placeholder="שם מחלקה (חובה*)"
             className="forms-input"
             value={department}
             onChange={(e) => {

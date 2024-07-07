@@ -72,6 +72,18 @@ function Chat() {
 
   const navigate = useNavigate();
 
+  const [chatSearchQuery, setChatSearchQuery] = useState("");
+
+  const handleChatSearch = (e) => {
+    setChatSearchQuery(e.target.value);
+  };
+
+  const filteredChats = chats.filter(
+    (chat) =>
+      (chat.fullName && chat.fullName.toLowerCase().includes(chatSearchQuery.toLowerCase())) ||
+      (chat.lastMessage && chat.lastMessage.toLowerCase().includes(chatSearchQuery.toLowerCase()))
+  );
+
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
     if (userData) setUser(userData);
@@ -356,7 +368,13 @@ function Chat() {
                         </g>
                       </g>
                     </svg>
-                    <input type="text" className="open-chat-search" placeholder="חפש משתמש..." />
+                    <input
+                      type="text"
+                      className="open-chat-search"
+                      placeholder="חפש משתמש..."
+                      value={chatSearchQuery}
+                      onChange={handleChatSearch}
+                    />
                   </div>
                   <div className="chat-list-search-add-minus">
                     {!addMode ? (
@@ -397,7 +415,7 @@ function Chat() {
                     )}
                   </div>
                 </div>
-                {chats.map((chat, index) => (
+                {filteredChats.map((chat, index) => (
                   <div
                     className={`chat-list-item ${
                       selectedChat && selectedChat.chatId === chat.chatId ? "selected" : ""

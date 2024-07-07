@@ -110,7 +110,10 @@ function Chat() {
         const fullName = await getMemberFullName(otherUserEmail); // Now it's valid to use await here
         const chat = doc.data();
         const unseenCount = chat.messages.filter(
-          (message) => message.sender !== user.email && !message.seen
+          (message) =>
+            message.sender !== user.email &&
+            !message.seen &&
+            (!selectedChat || selectedChat.chatId !== doc.id)
         ).length;
         chatArray.push({ chatId: doc.id, otherUserEmail, fullName, unseenCount, ...chat });
       }
@@ -225,6 +228,7 @@ function Chat() {
 
   const handleChatSelection = async (chat) => {
     setSelectedChat(chat);
+    fetchMessagesforChat(chat);
     if (chat.unseenCount > 0) {
       const chatRef = doc(db, "chats", chat.chatId);
       const updatedMessages = chat.messages.map((message) =>
@@ -244,7 +248,7 @@ function Chat() {
         text: text,
         sender: user.email,
         timestamp: now,
-        seen: false,
+        seen: true,
       };
       await updateDoc(chatRef, {
         lastMessage: text,
@@ -260,8 +264,31 @@ function Chat() {
 
   const fetchMessagesforChat = async (selectedChat) => {
     const chatRef = doc(db, "chats", selectedChat.chatId);
-    onSnapshot(chatRef, (doc) => {
-      setMessages(doc.data().messages);
+    onSnapshot(chatRef, async (docSnapshot) => {
+      const chatData = docSnapshot.data();
+      let messages = chatData.messages;
+      let needsUpdate = false;
+
+      // Check if there are any unseen messages from the other user
+      messages = messages.map((message) => {
+        if (message.sender !== user.email && !message.seen) {
+          message.seen = true;
+          needsUpdate = true;
+        }
+        return message;
+      });
+
+      setMessages(messages);
+
+      // If we marked any messages as seen, update the database
+      if (needsUpdate) {
+        await updateDoc(chatRef, { messages: messages });
+        setChats((prevChats) =>
+          prevChats.map((chat) =>
+            chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
+          )
+        );
+      }
     });
   };
 

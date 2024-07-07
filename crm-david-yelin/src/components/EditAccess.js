@@ -102,148 +102,152 @@ function EditAccess(props) {
           </label>
         </div>
         <div className="edit-access-input-box">
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="createTask"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.createTask}
-                onChange={handleChange}
-              />
-              יצירת משימה
-            </label>
+          <div className="edit-access-box-right">
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="deleteComment"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.deleteComment}
+                  onChange={handleChange}
+                />
+                מחיקת תגובה בפורום
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="createUser"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.createUser}
+                  onChange={handleChange}
+                />
+                יצירת משתמש
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="manageUser"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.manageUser}
+                  onChange={handleChange}
+                />
+                ניהול משתמש
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="manageAdmin"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.manageAdmin}
+                  onChange={handleChange}
+                />
+                ניהול הרשאות
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="editDepartment"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.editDepartment}
+                  onChange={handleChange}
+                />
+                עריכת מחלקה
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="deleteDepartment"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.deleteDepartment}
+                  onChange={handleChange}
+                />
+                מחיקת מחלקה
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="createDepartment"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.createDepartment}
+                  onChange={handleChange}
+                />
+                יצירת מחלקה
+              </label>
+            </div>
           </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="editTask"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.editTask}
-                onChange={handleChange}
-              />
-              עריכת משימה
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="deleteTask"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.deleteTask}
-                onChange={handleChange}
-              />
-              מחיקת משימה
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="createEvent"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.createEvent}
-                onChange={handleChange}
-              />
-              יצירת אירוע
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="editEvent"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.editEvent}
-                onChange={handleChange}
-              />
-              עריכת אירוע
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="deleteEvent"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.deleteEvent}
-                onChange={handleChange}
-              />
-              מחיקת אירוע
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="deleteComment"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.deleteComment}
-                onChange={handleChange}
-              />
-              מחיקת תגובה בפורום
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="createUser"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.createUser}
-                onChange={handleChange}
-              />
-              יצירת משתמש
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="manageUser"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.manageUser}
-                onChange={handleChange}
-              />
-              ניהול משתמש
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="manageAdmin"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.manageAdmin}
-                onChange={handleChange}
-              />
-              ניהול הרשאות
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="editDepartment"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.editDepartment}
-                onChange={handleChange}
-              />
-              עריכת מחלקה
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="deleteDepartment"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.deleteDepartment}
-                onChange={handleChange}
-              />
-              מחיקת מחלקה
-            </label>
-          </div>
-          <div className="edit-access-input">
-            <label>
-              <Checkbox
-                name="createDepartment"
-                sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
-                checked={access.createDepartment}
-                onChange={handleChange}
-              />
-              יצירת מחלקה
-            </label>
+          <div className="edit-access-box-left">
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="createTask"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.createTask}
+                  onChange={handleChange}
+                />
+                יצירת משימה
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="editTask"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.editTask}
+                  onChange={handleChange}
+                />
+                עריכת משימה
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="deleteTask"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.deleteTask}
+                  onChange={handleChange}
+                />
+                מחיקת משימה
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="createEvent"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.createEvent}
+                  onChange={handleChange}
+                />
+                יצירת אירוע
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="editEvent"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.editEvent}
+                  onChange={handleChange}
+                />
+                עריכת אירוע
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="deleteEvent"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.deleteEvent}
+                  onChange={handleChange}
+                />
+                מחיקת אירוע
+              </label>
+            </div>
           </div>
         </div>
         <button type="submit" className="primary-button extra-reg">

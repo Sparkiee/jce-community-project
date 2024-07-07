@@ -74,6 +74,8 @@ function Chat() {
 
   const [chatSearchQuery, setChatSearchQuery] = useState("");
 
+  const searchBoxref = useRef(null);
+
   const handleChatSearch = (e) => {
     setChatSearchQuery(e.target.value);
   };
@@ -108,9 +110,6 @@ function Chat() {
 
   const fetchUserChats = async () => {
     if (!user) return;
-    if (!selectedChat) {
-      setIsChatsLoading(true);
-    }
 
     try {
       const chatRef = collection(db, "chats");
@@ -198,6 +197,21 @@ function Chat() {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchBoxref.current && !searchBoxref.current.contains(event.target)) {
+        setSearchResults([]);
+        setSearchQuery("");
+        setAddMode(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleAddUser = async (userToAdd) => {
     try {
       const targetEmail = userToAdd.email;
@@ -260,7 +274,7 @@ function Chat() {
         text: text,
         sender: user.email,
         timestamp: now,
-        seen: true,
+        seen: false,
       };
       await updateDoc(chatRef, {
         lastMessage: text,
@@ -523,7 +537,7 @@ function Chat() {
         )}
       </div>
       {addMode && (
-        <div className="chat-add-user">
+        <div ref={searchBoxref} className="chat-add-user">
           <form onSubmit={handleSearch}>
             <input type="text" placeholder="שם משתמש" name="username" />
             <button type="submit">חפש</button>

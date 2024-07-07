@@ -150,7 +150,6 @@ function ManageEvents() {
     {
       field: "eventEndDate",
       headerName: "תאריך יעד",
-      width: 150,
       align: "right",
       flex: 1.5,
       renderCell: (params) => {
@@ -162,16 +161,14 @@ function ManageEvents() {
     {
       field: "eventTime",
       headerName: "שעת סיום",
-      width: 150,
       align: "right",
       flex: 1
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
-      width: 150,
       align: "right",
-      flex: 1,
+      flex: 1.2,
       renderCell: (params) => {
         const colorClass = getStatusColorClass(params.row.eventStatus);
         return (

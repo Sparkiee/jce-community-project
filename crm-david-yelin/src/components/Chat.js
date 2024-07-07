@@ -96,7 +96,10 @@ function Chat() {
 
   const fetchUserChats = async () => {
     if (!user) return;
-    setIsChatsLoading(true);
+    if (!selectedChat) {
+      setIsChatsLoading(true);
+    }
+
     try {
       const chatRef = collection(db, "chats");
       const q = query(chatRef, where("members", "array-contains", user.email));
@@ -326,7 +329,7 @@ function Chat() {
                         </g>
                       </g>
                     </svg>
-                    <input type="text" placeholder="חפש משתמש..." />
+                    <input type="text" className="open-chat-search" placeholder="חפש משתמש..." />
                   </div>
                   <div className="chat-list-search-add-minus">
                     {!addMode ? (

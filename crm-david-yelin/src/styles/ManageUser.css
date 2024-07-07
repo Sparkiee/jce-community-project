@@ -13,9 +13,16 @@
 }
 
 .table-title {
-  margin-top: 2rem;
-  font-size: 2rem;
+  margin: 2rem 0 5rem;
+  font-size: 2.3rem;
   font-weight: bold;
+}
+
+.divider-manage-users {
+  width: 95%;
+  border: none;
+  border-top: 2px solid rgb(2, 4, 79);
+  margin: 5rem 0;
 }
 
 .datagrid-table {
@@ -39,10 +46,55 @@
   margin: 0.5rem;
 }
 
-.search-users-table {
-  position: relative;
+.search-active-users-table {
+  position: absolute;
+  top: 11rem;
+  left: 5%;
 }
-.search-users-table svg {
+
+.search-active-users-table svg {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  right: 4%;
+}
+
+.unactive-users {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.search-unactive-users-table {
+  position: absolute;
+  top: 16rem;
+  left: 5%;
+}
+
+.search-unactive-users-table svg {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  right: 4%;
+}
+
+.waiting-users {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.search-waiting-users-table {
+  position: absolute;
+  top: 16rem;
+  left: 5%;
+}
+
+.search-waiting-users-table svg {
   position: absolute;
   height: 100%;
   width: 10%;

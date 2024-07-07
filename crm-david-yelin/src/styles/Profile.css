@@ -146,6 +146,7 @@ div .profile-avatar:hover {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -185,6 +186,6 @@ div .profile-avatar:hover {
 .search-log-table svg {
   position: absolute;
   height: 50%;
-  right: 0.5%;
+  right: 5%;
   top: 25%;
 }

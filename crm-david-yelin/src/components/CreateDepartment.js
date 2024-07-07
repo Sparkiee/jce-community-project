@@ -82,7 +82,6 @@ function CreateDepartment({ onClose, onComplete }) {
       </div>
       <div className="create-department-container-input" ref={formRef}>
         <h1 className="create-department-title">הוספת מחלקה חדשה</h1>
-        <label className="create-department-label">שם המחלקה (חובה):</label>
         <input
           type="text"
           value={departmentName}
@@ -92,7 +91,7 @@ function CreateDepartment({ onClose, onComplete }) {
               setError("");
             }
           }}
-          placeholder="שם המחלקה"
+          placeholder="שם המחלקה (חובה*)"
           className="forms-input"
         />
         <button onClick={handleAddDepartment} className="primary-button">

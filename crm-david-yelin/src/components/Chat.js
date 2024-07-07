@@ -96,7 +96,10 @@ function Chat() {
 
   const fetchUserChats = async () => {
     if (!user) return;
-    setIsChatsLoading(true);
+    if (!selectedChat) {
+      setIsChatsLoading(true);
+    }
+
     try {
       const chatRef = collection(db, "chats");
       const q = query(chatRef, where("members", "array-contains", user.email));

@@ -184,7 +184,8 @@ function Chat() {
       const q = query(
         collection(db, "members"),
         where("fullName", ">=", searchValue),
-        where("fullName", "<=", searchValue + "\uf8ff")
+        where("fullName", "<=", searchValue + "\uf8ff"),
+        where("privileges", ">", 0)
       );
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => doc.data());
@@ -563,7 +564,7 @@ function Chat() {
                   </div>
                 ))
               ) : (
-                <p>לא נמצא משתמש</p>
+                <p>לא נמצא משתמש פעיל</p>
               )}
             </div>
           )}

@@ -6,6 +6,9 @@ import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -15,6 +18,12 @@ function LoginForm() {
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [verificationSent, setVerificationSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -34,8 +43,7 @@ function LoginForm() {
       // You can now use docSnap to access the document data
       if (docSnap.exists()) {
         sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
-        if(rememberMe)
-        {
+        if (rememberMe) {
           localStorage.setItem("user", JSON.stringify(docSnap.data()));
           console.log("remember me!!1");
         }
@@ -122,7 +130,7 @@ function LoginForm() {
           </div>
           <div className="input-container">
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="סיסמה"
               className="forms-input"
               value={password}
@@ -130,8 +138,16 @@ function LoginForm() {
                 setWrongCredentials(false);
                 setIsEmailVerified(true);
                 setPassword(event.target.value);
-              }}
+          }}
             />
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowPassword}
+              edge="end"
+              className="visibility-icon"
+            >
+              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon  />}
+            </IconButton>
           </div>
           <div className="form-checkbox">
             <input

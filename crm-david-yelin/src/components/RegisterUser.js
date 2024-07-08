@@ -8,6 +8,9 @@ import PhoneInput from "react-phone-number-input/input";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -47,6 +50,18 @@ function RegisterUser() {
   const [accountExists, setAccountExists] = useState(false);
   const [passwordLength, setPasswordLength] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleClickShowPasswordConfirm = () => {
+    setShowPasswordConfirm(!showPasswordConfirm);
+  };
+
 
   useEffect(() => {
     const session = sessionStorage.getItem("user");
@@ -188,7 +203,7 @@ function RegisterUser() {
               }}
             />
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="סיסמה"
               className="forms-input"
               value={password}
@@ -197,8 +212,16 @@ function RegisterUser() {
                 resetWarnings();
               }}
             />
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowPassword}
+              edge="end"
+              className="visibility-icon"
+            >
+              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
             <input
-              type="password"
+              type={showPasswordConfirm ? 'text' : 'password'}
               placeholder="אמת סיסמה"
               className="forms-input"
               value={verifyPassword}
@@ -207,6 +230,14 @@ function RegisterUser() {
                 resetWarnings();
               }}
             />
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowPasswordConfirm}
+              edge="end"
+              className="visibility-icon"
+            >
+              {showPasswordConfirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
           </div>
           <button type="submit" className="primary-button extra-reg">
             הירשם

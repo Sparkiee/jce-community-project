@@ -1,6 +1,8 @@
 import "../styles/Styles.css";
 import "../styles/ChangePassword.css";
-
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 import React, { useState, useEffect } from "react";
 import { auth } from "../firebase";
 import { Alert } from "@mui/material";
@@ -15,6 +17,22 @@ function ChangePassword(props) {
   const [warningMessage, setWarningMessage] = useState("");
   const [formWarning, setFormWarning] = useState(false);
   const [user, setUser] = useState(null);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
+  const handleClickShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const handleClickShowCurrentPassword = () => {
+    setShowCurrentPassword(!showCurrentPassword);
+  };
+
+  const handleClickShowPasswordConfirm = () => {
+    setShowPasswordConfirm(!showPasswordConfirm);
+  };
+
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
@@ -81,7 +99,7 @@ function ChangePassword(props) {
       <h1 className="change-password-title">שינוי סיסמה</h1>
       <div className="change-password-input-container">
         <input
-          type="password"
+          type={showCurrentPassword ? 'text' : 'password'}
           placeholder="סיסמה נוכחית"
           className="forms-input"
           value={currentPassword}
@@ -90,8 +108,16 @@ function ChangePassword(props) {
             resetAlerts();
           }}
         />
+        <IconButton
+          aria-label="toggle password visibility"
+          onClick={handleClickShowCurrentPassword}
+          edge="end"
+          className="visibility-icon"
+        >
+          {showCurrentPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        </IconButton>
         <input
-          type="password"
+          type={showNewPassword ? 'text' : 'password'}
           placeholder="סיסמה חדשה"
           className="forms-input"
           value={newPassword}
@@ -100,8 +126,16 @@ function ChangePassword(props) {
             resetAlerts();
           }}
         />
+        <IconButton
+          aria-label="toggle password visibility"
+          onClick={handleClickShowNewPassword}
+          edge="end"
+          className="visibility-icon"
+        >
+          {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        </IconButton>
         <input
-          type="password"
+          type={showPasswordConfirm ? 'text' : 'password'}
           placeholder="אימות סיסמה חדשה"
           className="forms-input"
           value={confirmNewPassword}
@@ -110,6 +144,14 @@ function ChangePassword(props) {
             resetAlerts();
           }}
         />
+        <IconButton
+          aria-label="toggle password visibility"
+          onClick={handleClickShowPasswordConfirm}
+          edge="end"
+          className="visibility-icon"
+        >
+          {showPasswordConfirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        </IconButton>
       </div>
       <button type="button" className="primary-button" onClick={handleChangePassword}>
         אפס סיסמה

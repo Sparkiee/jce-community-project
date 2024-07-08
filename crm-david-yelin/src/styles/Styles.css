@@ -107,3 +107,7 @@ body {
 .status-finished {
   background-color: #36b37e;
 }
+
+.MuiDataGrid-root {
+  box-shadow: 0 0.3125rem 1rem -0.1875rem #000;
+}

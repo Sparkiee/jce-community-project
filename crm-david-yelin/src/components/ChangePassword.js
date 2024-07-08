@@ -1,8 +1,8 @@
 import "../styles/Styles.css";
 import "../styles/ChangePassword.css";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import IconButton from '@mui/material/IconButton';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
 import React, { useState, useEffect } from "react";
 import { auth } from "../firebase";
 import { Alert } from "@mui/material";
@@ -32,7 +32,6 @@ function ChangePassword(props) {
   const handleClickShowPasswordConfirm = () => {
     setShowPasswordConfirm(!showPasswordConfirm);
   };
-
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
@@ -91,67 +90,97 @@ function ChangePassword(props) {
         onClick={() => {
           props.onClose();
         }}>
-        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
       <h1 className="change-password-title">שינוי סיסמה</h1>
       <div className="change-password-input-container">
-        <input
-          type={showCurrentPassword ? 'text' : 'password'}
-          placeholder="סיסמה נוכחית"
-          className="forms-input"
-          value={currentPassword}
-          onChange={(e) => {
-            setCurrentPassword(e.target.value);
-            resetAlerts();
-          }}
-        />
-        <IconButton
-          aria-label="toggle password visibility"
-          onClick={handleClickShowCurrentPassword}
-          edge="end"
-          className="visibility-icon"
-        >
-          {showCurrentPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        </IconButton>
-        <input
-          type={showNewPassword ? 'text' : 'password'}
-          placeholder="סיסמה חדשה"
-          className="forms-input"
-          value={newPassword}
-          onChange={(e) => {
-            setNewPassword(e.target.value);
-            resetAlerts();
-          }}
-        />
-        <IconButton
-          aria-label="toggle password visibility"
-          onClick={handleClickShowNewPassword}
-          edge="end"
-          className="visibility-icon"
-        >
-          {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        </IconButton>
-        <input
-          type={showPasswordConfirm ? 'text' : 'password'}
-          placeholder="אימות סיסמה חדשה"
-          className="forms-input"
-          value={confirmNewPassword}
-          onChange={(e) => {
-            setConfirmNewPassword(e.target.value);
-            resetAlerts();
-          }}
-        />
-        <IconButton
-          aria-label="toggle password visibility"
-          onClick={handleClickShowPasswordConfirm}
-          edge="end"
-          className="visibility-icon"
-        >
-          {showPasswordConfirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        </IconButton>
+        <div className="show-password-input-container">
+          <input
+            type={showCurrentPassword ? "text" : "password"}
+            placeholder="סיסמה נוכחית"
+            className="forms-input"
+            value={currentPassword}
+            onChange={(e) => {
+              setCurrentPassword(e.target.value);
+              resetAlerts();
+            }}
+          />
+          <div className="password-icon-container">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowCurrentPassword}
+              edge="end"
+              className="visibility-icon">
+              {showCurrentPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
+          </div>
+        </div>
+        <div className="show-password-input-container">
+          <input
+            type={showNewPassword ? "text" : "password"}
+            placeholder="סיסמה חדשה"
+            className="forms-input"
+            value={newPassword}
+            onChange={(e) => {
+              setNewPassword(e.target.value);
+              resetAlerts();
+            }}
+          />
+          <div className="password-icon-container">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowNewPassword}
+              edge="end"
+              className="visibility-icon">
+              {showNewPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
+          </div>
+        </div>
+        <div className="show-password-input-container">
+          <input
+            type={showPasswordConfirm ? "text" : "password"}
+            placeholder="אימות סיסמה חדשה"
+            className="forms-input"
+            value={confirmNewPassword}
+            onChange={(e) => {
+              setConfirmNewPassword(e.target.value);
+              resetAlerts();
+            }}
+          />
+          <div className="password-icon-container">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowPasswordConfirm}
+              edge="end"
+              className="visibility-icon">
+              {showPasswordConfirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+            </IconButton>
+          </div>
+        </div>
       </div>
       <button type="button" className="primary-button" onClick={handleChangePassword}>
         אפס סיסמה

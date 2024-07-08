@@ -6,9 +6,9 @@ import { doc, getDoc } from "firebase/firestore";
 import "../styles/LoginForm.css";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import IconButton from '@mui/material/IconButton';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -23,7 +23,6 @@ function LoginForm() {
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
-
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -129,25 +128,28 @@ function LoginForm() {
             />
           </div>
           <div className="input-container">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="סיסמה"
-              className="forms-input"
-              value={password}
-              onChange={(event) => {
-                setWrongCredentials(false);
-                setIsEmailVerified(true);
-                setPassword(event.target.value);
-          }}
-            />
-            <IconButton
-              aria-label="toggle password visibility"
-              onClick={handleClickShowPassword}
-              edge="end"
-              className="visibility-icon"
-            >
-              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon  />}
-            </IconButton>
+            <div className="show-password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="סיסמה"
+                className="forms-input"
+                value={password}
+                onChange={(event) => {
+                  setWrongCredentials(false);
+                  setIsEmailVerified(true);
+                  setPassword(event.target.value);
+                }}
+              />
+              <div className="password-icon-container">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                  className="visibility-icon">
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </div>
+            </div>
           </div>
           <div className="form-checkbox">
             <input

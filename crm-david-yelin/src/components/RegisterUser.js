@@ -8,9 +8,9 @@ import PhoneInput from "react-phone-number-input/input";
 import "../styles/Styles.css";
 import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import IconButton from '@mui/material/IconButton';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
 
 const checkPendingRegistration = async (email) => {
   const docRef = doc(db, "awaiting_registration", email);
@@ -53,7 +53,6 @@ function RegisterUser() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
-
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -61,7 +60,6 @@ function RegisterUser() {
   const handleClickShowPasswordConfirm = () => {
     setShowPasswordConfirm(!showPasswordConfirm);
   };
-
 
   useEffect(() => {
     const session = sessionStorage.getItem("user");
@@ -202,42 +200,48 @@ function RegisterUser() {
                 resetWarnings();
               }}
             />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="סיסמה"
-              className="forms-input"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-                resetWarnings();
-              }}
-            />
-            <IconButton
-              aria-label="toggle password visibility"
-              onClick={handleClickShowPassword}
-              edge="end"
-              className="visibility-icon"
-            >
-              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-            </IconButton>
-            <input
-              type={showPasswordConfirm ? 'text' : 'password'}
-              placeholder="אמת סיסמה"
-              className="forms-input"
-              value={verifyPassword}
-              onChange={(event) => {
-                setVerifyPassword(event.target.value);
-                resetWarnings();
-              }}
-            />
-            <IconButton
-              aria-label="toggle password visibility"
-              onClick={handleClickShowPasswordConfirm}
-              edge="end"
-              className="visibility-icon"
-            >
-              {showPasswordConfirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
-            </IconButton>
+            <div className="show-password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="סיסמה"
+                className="forms-input"
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  resetWarnings();
+                }}
+              />
+              <div className="password-icon-container">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                  className="visibility-icon">
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </div>
+            </div>
+            <div className="show-password-input-container">
+              <input
+                type={showPasswordConfirm ? "text" : "password"}
+                placeholder="אמת סיסמה"
+                className="forms-input"
+                value={verifyPassword}
+                onChange={(event) => {
+                  setVerifyPassword(event.target.value);
+                  resetWarnings();
+                }}
+              />
+              <div className="password-icon-container">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPasswordConfirm}
+                  edge="end"
+                  className="visibility-icon">
+                  {showPasswordConfirm ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </div>
+            </div>
           </div>
           <button type="submit" className="primary-button extra-reg">
             הירשם

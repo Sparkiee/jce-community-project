@@ -76,6 +76,24 @@
   width: 100%;
 }
 
+.show-password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.password-icon-container {
+  position: absolute;
+  left: 7%;
+}
+
+.password-icon-container svg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 .forms-input {
   width: 85%;
   padding: 1.5rem;

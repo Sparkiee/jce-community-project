@@ -585,6 +585,7 @@ function Chat() {
           )}
         </div>
       )}
+      <div className="footer"></div>
     </div>
   );
 }

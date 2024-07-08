@@ -23,7 +23,7 @@
   backdrop-filter: blur(19px) saturate(180%);
   border-radius: 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.125);
-  top: 52%;
+  top: 53%;
   left: 50%;
   translate: -50% -50%;
 }

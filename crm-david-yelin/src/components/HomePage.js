@@ -425,7 +425,7 @@ function HomePage() {
         {user &&
           user &&
           Array.isArray(user.adminAccess) &&
-          user.adminAccess.includes("createTask") &&
+          user.adminAccess.includes("createEvent") &&
           showCreateEvent && (
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">

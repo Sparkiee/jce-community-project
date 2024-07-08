@@ -25,8 +25,8 @@ function HomePage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -54,21 +54,21 @@ function HomePage() {
       headerName: "אינדקס",
       width: "3%",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "taskName",
       headerName: "משימה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "taskBudget",
@@ -77,8 +77,10 @@ function HomePage() {
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>;
-      }
+        return (
+          <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
+        );
+      },
     },
     {
       field: "taskStartDate",
@@ -90,7 +92,7 @@ function HomePage() {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskEndDate",
@@ -102,14 +104,14 @@ function HomePage() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskStatus",
@@ -125,8 +127,8 @@ function HomePage() {
             {params.row.taskStatus}
           </div>
         );
-      }
-    }
+      },
+    },
   ];
 
   const columnsEvents = [
@@ -136,21 +138,21 @@ function HomePage() {
       width: "3%",
       align: "right",
       colors: "red",
-      flex: 1
+      flex: 1,
     },
     {
       field: "eventName",
       headerName: "שם האירוע",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       width: 150,
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "eventBudget",
@@ -159,8 +161,12 @@ function HomePage() {
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>{params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}</div>;
-      }
+        return (
+          <div>
+            {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
+          </div>
+        );
+      },
     },
     {
       field: "eventStartDate",
@@ -172,7 +178,7 @@ function HomePage() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventEndDate",
@@ -184,14 +190,14 @@ function HomePage() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventTime",
       headerName: "שעה",
       width: 150,
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventStatus",
@@ -207,15 +213,15 @@ function HomePage() {
             {params.row.eventStatus}
           </div>
         );
-      }
+      },
     },
     {
       field: "completionPercentage",
       headerName: "אחוז השלמה",
       width: 150,
       align: "right",
-      flex: 1
-    }
+      flex: 1,
+    },
   ];
 
   const createTaskRef = useRef(null);
@@ -230,7 +236,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id
+          docRef: doc.id,
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
 
@@ -246,7 +252,7 @@ function HomePage() {
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
         taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus
+        taskStatus: task.taskStatus,
       }));
       setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
@@ -261,7 +267,10 @@ function HomePage() {
         return 100;
       }
 
-      const tasksQuery = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${eventId}`));
+      const tasksQuery = query(
+        collection(db, "tasks"),
+        where("relatedEvent", "==", `events/${eventId}`)
+      );
       const tasksSnapshot = await getDocs(tasksQuery);
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
 
@@ -287,7 +296,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id
+          docRef: doc.id,
         }))
         .filter((event) => event.eventStatus !== "הסתיים");
       setNumEvents(eventsArray.length); // Update event count
@@ -305,7 +314,7 @@ function HomePage() {
             eventTime: event.eventTime,
             eventBudget: event.eventBudget,
             eventStatus: event.eventStatus,
-            completionPercentage: `${completionPercentage}%`
+            completionPercentage: `${completionPercentage}%`,
           };
         })
       );
@@ -317,7 +326,10 @@ function HomePage() {
 
   useEffect(() => {
     const eventsRef = collection(db, "events");
-    const eventsQuery = query(eventsRef, where("assignees", "array-contains", "members/" + user?.email));
+    const eventsQuery = query(
+      eventsRef,
+      where("assignees", "array-contains", "members/" + user?.email)
+    );
 
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
@@ -328,7 +340,10 @@ function HomePage() {
     });
 
     const tasksRef = collection(db, "tasks");
-    const tasksQuery = query(tasksRef, where("assignees", "array-contains", "members/" + user?.email));
+    const tasksQuery = query(
+      tasksRef,
+      where("assignees", "array-contains", "members/" + user?.email)
+    );
     const unsubscribeTasks = onSnapshot(tasksQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added" || change.type === "modified") {
@@ -396,20 +411,28 @@ function HomePage() {
   return (
     <div className="home-content">
       <div className="display-create">
-        {user && user.privileges > 1 && showCreateTask && (
-          <div className="popup-overlay">
-            <div ref={createTaskRef} className="popup-content">
-              <CreateTask onClose={handleCloseForms} />
+        {user &&
+          user &&
+          Array.isArray(user.adminAccess) &&
+          user.adminAccess.includes("createTask") &&
+          showCreateTask && (
+            <div className="popup-overlay">
+              <div ref={createTaskRef} className="popup-content">
+                <CreateTask onClose={handleCloseForms} />
+              </div>
             </div>
-          </div>
-        )}
-        {user && user.privileges > 1 && showCreateEvent && (
-          <div className="popup-overlay">
-            <div ref={createEventRef} className="popup-content">
-              <CreateEvent onClose={handleCloseForms} />
+          )}
+        {user &&
+          user &&
+          Array.isArray(user.adminAccess) &&
+          user.adminAccess.includes("createTask") &&
+          showCreateEvent && (
+            <div className="popup-overlay">
+              <div ref={createEventRef} className="popup-content">
+                <CreateEvent onClose={handleCloseForms} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       <h1 className="page-title-home">היי {user?.fullName}</h1>
@@ -419,7 +442,12 @@ function HomePage() {
           ((user && Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||
             user.privileges == 2) && (
             <div className="action-button add-task-button" onClick={handleShowCreateTask}>
-              <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -436,9 +464,15 @@ function HomePage() {
           )}
         {user &&
           user &&
-          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges == 2) && (
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges == 2) && (
             <div className="action-button add-event-button" onClick={handleShowCreateEvent}>
-              <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -470,8 +504,8 @@ function HomePage() {
             columns={columnsTasks}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
+                paginationModel: { page: 0, pageSize: 5 },
+              },
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
@@ -479,8 +513,8 @@ function HomePage() {
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
-              }
+                labelRowsPerPage: "שורות בכל עמוד:", // Optional: customize other texts
+              },
             }}
             onRowDoubleClick={(params) => {
               navigate(`/task/${params.row.taskDoc}`);
@@ -504,16 +538,16 @@ function HomePage() {
             columns={columnsEvents}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
+                paginationModel: { page: 0, pageSize: 5 },
+              },
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:"
-              }
+                labelRowsPerPage: "שורות בכל עמוד:",
+              },
             }}
             onRowDoubleClick={(params) => {
               navigate(`/event/${params.row.eventDoc}`);

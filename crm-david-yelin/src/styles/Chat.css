@@ -1,14 +1,13 @@
 .chat-body {
-  background-image: url("../assets/bg.png");
-  background-color: #c0c2e4;
-  position: relative;
+  /* background-image: url("../assets/bg.png");
+  background-color: #c0c2e4; */
   font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  height: 100%;
-  width: 100%;
+  /* height: 100%;
+  width: 100%; */
 }
 
 .chat-body p {
@@ -22,8 +21,8 @@
 .chat-container {
   position: absolute;
   display: flex;
-  width: 80%;
-  height: 90%;
+  width: 70%;
+  height: 80%;
   background-color: rgba(2, 4, 79, 0.7);
   backdrop-filter: blur(19px) saturate(180%);
   border-radius: 1.2rem;

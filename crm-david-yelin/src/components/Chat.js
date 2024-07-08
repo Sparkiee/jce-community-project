@@ -185,7 +185,7 @@ function Chat() {
         collection(db, "members"),
         where("fullName", ">=", searchValue),
         where("fullName", "<=", searchValue + "\uf8ff"),
-        where("privileges", ">", 0)
+        where("privileges", ">", 0),
       );
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => doc.data());

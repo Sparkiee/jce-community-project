@@ -199,19 +199,44 @@ function Chat() {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchBoxref.current && !searchBoxref.current.contains(event.target)) {
-        setSearchResults([]);
-        setSearchQuery("");
+    // Function to close the search box
+    const closeSearchBox = () => {
+      if (searchBoxref) {
+        // Check if the search box is open
         setAddMode(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    // Add event listener to the document
+    document.addEventListener("click", closeSearchBox);
+
+    // Cleanup function to remove the event listener
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", closeSearchBox);
     };
-  }, []);
+  }, [searchBoxref]); // Re-run when searchBoxref changes
+
+  const handleChatListSearchAddMinusClick = (event) => {
+    event.stopPropagation(); // Prevent click from propagating to the document
+    if (searchBoxref) {
+      setAddMode(!addMode); // Toggle or set addMode as needed
+    }
+  };
+
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (searchBoxref.current && !searchBoxref.current.contains(event.target)) {
+  //       setSearchResults([]);
+  //       setSearchQuery("");
+  //       setAddMode(false);
+  //     }
+  //   };
+
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
   const handleAddUser = async (userToAdd) => {
     try {
@@ -391,13 +416,11 @@ function Chat() {
                       onChange={handleChatSearch}
                     />
                   </div>
-                  <div className="chat-list-search-add-minus">
+                  <div
+                    className="chat-list-search-add-minus"
+                    onClick={(event) => handleChatListSearchAddMinusClick(event)}>
                     {!addMode ? (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        onClick={() => setAddMode(true)}>
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"
@@ -408,11 +431,7 @@ function Chat() {
                         </g>
                       </svg>
                     ) : (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        onClick={() => setAddMode(false)}>
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"

@@ -391,13 +391,11 @@ function Chat() {
                       onChange={handleChatSearch}
                     />
                   </div>
-                  <div className="chat-list-search-add-minus">
+                  <div
+                    className="chat-list-search-add-minus"
+                    onClick={() => setAddMode((prev) => !prev)}>
                     {!addMode ? (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        onClick={() => setAddMode(true)}>
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"
@@ -408,11 +406,7 @@ function Chat() {
                         </g>
                       </svg>
                     ) : (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        onClick={() => setAddMode(false)}>
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"

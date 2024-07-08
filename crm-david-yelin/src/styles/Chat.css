@@ -1,13 +1,9 @@
 .chat-body {
-  /* background-image: url("../assets/bg.png");
-  background-color: #c0c2e4; */
   font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  /* height: 100%;
-  width: 100%; */
 }
 
 .chat-body p {
@@ -27,7 +23,7 @@
   backdrop-filter: blur(19px) saturate(180%);
   border-radius: 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.125);
-  top: 50%;
+  top: 52%;
   left: 50%;
   translate: -50% -50%;
 }

@@ -15,6 +15,7 @@ import EventPage from "./components/EventPage";
 import ManageDepartments from "./components/ManageDepartments";
 import Navbar from "./components/Navbar";
 import Chat from "./components/Chat";
+import Statistics from "./components/Statistics";
 
 const App = () => {
   return (
@@ -43,6 +44,14 @@ const App = () => {
         />
         <Route path="/chat" element={<Chat />} />
         {/* PRIVATE PAGES */}
+        <Route
+          path="/statistics"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <Statistics />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/users"
           element={

@@ -259,6 +259,11 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
+              <li>
+                <a to="#" onClick={() => navigate("/statistics")}>
+                  סטטיסטיקות
+                </a>
+              </li>
               {user &&
                 ((user.privileges > 0 && user.privileges == 2) ||
                   (Array.isArray(user.adminAccess) &&

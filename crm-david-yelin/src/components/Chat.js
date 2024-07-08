@@ -200,19 +200,24 @@ function Chat() {
 
   useEffect(() => {
     // Function to close the search box
-    const closeSearchBox = () => {
-      if (searchBoxref) {
-        // Check if the search box is open
+    const closeSearchBox = (event) => {
+      if (
+        searchBoxref.current &&
+        !searchBoxref.current.contains(event.target) &&
+        !event.target.closest(".chat-list-search-add-minus")
+      ) {
         setAddMode(false);
+        setSearchResults([]);
+        setSearchQuery("");
       }
     };
 
     // Add event listener to the document
-    document.addEventListener("click", closeSearchBox);
+    document.addEventListener("mousedown", closeSearchBox);
 
     // Cleanup function to remove the event listener
     return () => {
-      document.removeEventListener("click", closeSearchBox);
+      document.removeEventListener("mousedown", closeSearchBox);
     };
   }, [searchBoxref]); // Re-run when searchBoxref changes
 
@@ -222,21 +227,6 @@ function Chat() {
       setAddMode(!addMode); // Toggle or set addMode as needed
     }
   };
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (searchBoxref.current && !searchBoxref.current.contains(event.target)) {
-  //       setSearchResults([]);
-  //       setSearchQuery("");
-  //       setAddMode(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
 
   const handleAddUser = async (userToAdd) => {
     try {

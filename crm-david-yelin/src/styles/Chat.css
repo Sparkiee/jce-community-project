@@ -228,12 +228,22 @@
 }
 
 .chat-messages-center {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   padding: 2rem;
   overflow-y: auto;
+}
+
+.chat-messages-center .chose-chat {
+  position: absolute;
+  font-size: 2.5rem;
+  top: 45%;
+  left: 40%;
+  font-weight: 300;
+  color: #a5a5a5;
 }
 
 .chat-messages-center-message-other {

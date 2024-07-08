@@ -185,7 +185,7 @@ function Chat() {
         collection(db, "members"),
         where("fullName", ">=", searchValue),
         where("fullName", "<=", searchValue + "\uf8ff"),
-        where("privileges", ">", 0),
+        where("privileges", ">", 0)
       );
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => doc.data());
@@ -470,7 +470,7 @@ function Chat() {
             )}
           </div>
         </div>
-        {selectedChat && (
+        {selectedChat ? (
           <>
             <div className="chat-messages-container">
               <div className="chat-messages-top">
@@ -544,6 +544,12 @@ function Chat() {
               </div>
             </div>
           </>
+        ) : (
+          <div className="chat-messages-container">
+            <div className="chat-messages-center">
+              <p className="chose-chat">בחר משתמש כדי להתחיל שיחה.</p>
+            </div>
+          </div>
         )}
       </div>
       {addMode && (

@@ -18,6 +18,7 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import Checkbox from "@mui/material/Checkbox";
 import { v4 as uuidv4 } from "uuid";
 
 function CreateEvent(props) {
@@ -47,6 +48,17 @@ function CreateEvent(props) {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) setUser(userData);
     }
+
+    async function fetchMembers() {
+      const membersRef = collection(db, "members");
+      const querySnapshot = await getDocs(membersRef);
+      const allMembers = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMembers(allMembers.filter(member => member.privileges > 0));
+    }
+    fetchMembers();
   }, []);
 
   async function handleSubmit(event) {
@@ -120,7 +132,7 @@ function CreateEvent(props) {
           // Set the timestamp separately
           await updateDoc(memberRef, {
             Notifications: arrayUnion({
-              eventID: docRef,
+              eventID: docRef.id,
               message: `הינך משובץ לאירוע חדש: ${eventDetails.eventName}`,
               link: `/event/${docRef.id}`,
               id: uuidv4()
@@ -148,9 +160,10 @@ function CreateEvent(props) {
   }
 
   async function handleSearchMember(event) {
+    setSearch(event.target.value);
     if (event.target.value.length >= 2) {
       const membersRef = collection(db, "members");
-      const q = query(membersRef, where("fullName", ">=", search), where("fullName", "<=", search + "\uf8ff"));
+      const q = query(membersRef, where("fullName", ">=", event.target.value), where("fullName", "<=", event.target.value + "\uf8ff"));
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs
         .map((doc) => ({
@@ -160,20 +173,17 @@ function CreateEvent(props) {
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
+            !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
         );
       setMembers(results);
     } else {
-      setMembers([]);
-    }
-  }
-
-  function handleSelectMember(value) {
-    const selectedMember = members.find((member) => member.fullName === value);
-    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
-      setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearch(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+      const membersRef = collection(db, "members");
+      const querySnapshot = await getDocs(membersRef);
+      const allMembers = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setMembers(allMembers.filter(member => member.privileges > 0));
     }
   }
 
@@ -186,6 +196,20 @@ function CreateEvent(props) {
   const handleRemoveMember = (id) => {
     setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
   };
+
+  const handleSelectChange = (selectedOptions) => {
+    setSelectedMembers(selectedOptions ? selectedOptions.map(option => option.value) : []);
+  };
+
+  const customOption = ({ innerRef, innerProps, data }) => (
+    <div ref={innerRef} {...innerProps} style={{ display: 'flex', alignItems: 'center' }}>
+      <Checkbox
+        checked={selectedMembers.some((selectedMember) => selectedMember.id === data.value.id)}
+        style={{ marginRight: 8 }}
+      />
+      {data.label}
+    </div>
+  );
 
   return (
     <div className="create-event">
@@ -298,21 +322,27 @@ function CreateEvent(props) {
             <option value="בתהליך">בתהליך</option>
             <option value="הסתיים">הסתיים</option>
           </select>
-          <Select
-            placeholder="הוסף חבר וועדה"
-            className="create-event-input extra-create-event-input"
-            onInputChange={(inputValue) => {
-              handleSearchMember({ target: { value: inputValue } });
-            }}
-            onChange={(e) => {
-              handleSelectMember(e.value);
-              resetAlerts();
-            }}
-            options={members.map((member) => ({
-              value: member.fullName,
-              label: member.fullName
-            }))}
-          />
+          <div className="create-event-select-container">
+            <Select
+              placeholder="הוסף חבר וועדה"
+              className="create-event-input extra-create-event-input"
+              onInputChange={(inputValue) => {
+                handleSearchMember({ target: { value: inputValue } });
+              }}
+              onChange={handleSelectChange}
+              options={members.map((member) => ({
+                value: member,
+                label: member.fullName
+              }))}
+              isMulti
+              closeMenuOnSelect={false}
+              components={{ Option: customOption }}
+              value={selectedMembers.map(member => ({
+                value: member,
+                label: member.fullName
+              }))}
+            />
+          </div>
           <div className="create-task-selected-members">
             {selectedMembers.map((member, index) => (
               <Stack direction="row" spacing={1} key={index}>

@@ -27,7 +27,7 @@
   padding: 2rem 2rem 2rem 0;
   background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.1rem 1rem -0.1875rem #000;
 }
 
 .event-details h1 {
@@ -74,7 +74,7 @@
   padding: 2rem 2rem 2rem 0;
   background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.1rem 1rem -0.1875rem #000;
 }
 
 .event-page-participants h2 {

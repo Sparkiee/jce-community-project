@@ -6,25 +6,40 @@ import Checkbox from "@mui/material/Checkbox";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
 import { Alert } from "@mui/material";
-import CreateDepartment from "./CreateDepartment.js";
 
 function EditAccess(props) {
   const [permSuccess, setPermSuccess] = useState(false);
   const [checkAll, setCheckAll] = useState(false);
   const [access, setAccess] = useState({
-    createTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
-    editTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editTask"),
-    deleteTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteTask"),
-    createEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createEvent"),
-    editEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editEvent"),
-    deleteEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteEvent"),
-    createUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createUser"),
-    manageUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
-    manageAdmin: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
-    deleteComment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment"),
-    editDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editDepartment"),
-    deleteDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteDepartment"),
-    createDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createDepartment")
+    createTask:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
+    editTask:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editTask"),
+    deleteTask:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteTask"),
+    createEvent:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createEvent"),
+    editEvent:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editEvent"),
+    deleteEvent:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteEvent"),
+    createUser:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createUser"),
+    manageUser:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
+    manageAdmin:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
+    deleteComment:
+      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment"),
+    editDepartment:
+      Array.isArray(props.target.adminAccess) &&
+      props.target.adminAccess.includes("editDepartment"),
+    deleteDepartment:
+      Array.isArray(props.target.adminAccess) &&
+      props.target.adminAccess.includes("deleteDepartment"),
+    createDepartment:
+      Array.isArray(props.target.adminAccess) &&
+      props.target.adminAccess.includes("createDepartment"),
   });
 
   const handleCheckAllChange = (event) => {
@@ -43,7 +58,7 @@ function EditAccess(props) {
       deleteComment: newCheckAll,
       editDepartment: newCheckAll,
       deleteDepartment: newCheckAll,
-      createDepartment: newCheckAll
+      createDepartment: newCheckAll,
     });
   };
 
@@ -68,7 +83,7 @@ function EditAccess(props) {
     try {
       const memberRef = doc(db, "members", props.target.email);
       await updateDoc(memberRef, {
-        adminAccess: updatedAdminAccess
+        adminAccess: updatedAdminAccess,
       });
       setPermSuccess(true);
       setTimeout(() => {
@@ -83,9 +98,30 @@ function EditAccess(props) {
   return (
     <div className="edit-access">
       <div className="action-close" onClick={props.onClose}>
-        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
       <form className="edit-access-form" onSubmit={handleSubmit}>

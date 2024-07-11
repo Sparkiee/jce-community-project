@@ -69,7 +69,7 @@ function Chat() {
   const [isChatsLoading, setIsChatsLoading] = useState(true);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(true);
-
+  let unsubscribeMessagesSnapshot = null;
   const navigate = useNavigate();
 
   const [chatSearchQuery, setChatSearchQuery] = useState("");
@@ -156,26 +156,37 @@ function Chat() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
     let unsubscribeChatsSnapshot = null;
+    let unsubscribeMessagesSnapshot = null;
+
     if (user && user.email) {
+      fetchUserChats();
+
       const chatRef = collection(db, "chats");
       const q = query(chatRef, where("members", "array-contains", user.email));
       unsubscribeChatsSnapshot = onSnapshot(q, (querySnapshot) => {
-        querySnapshot.docChanges().forEach((change) => {
-          if (change.type === "modified") {
-            fetchUserChats();
-          }
-        });
-      });
-      return () => {
-        if (unsubscribeChatsSnapshot) {
-          unsubscribeChatsSnapshot();
+        if (isMounted) {
+          querySnapshot.docChanges().forEach((change) => {
+            if (change.type === "modified") {
+              fetchUserChats();
+            }
+          });
         }
-        // Reset chat state when component unmounts
-        setSelectedChat(null);
-        setChats([]);
-      };
+      });
     }
+
+    return () => {
+      setIsMounted(false);
+      if (unsubscribeChatsSnapshot) {
+        unsubscribeChatsSnapshot();
+      }
+      if (unsubscribeMessagesSnapshot) {
+        unsubscribeMessagesSnapshot();
+      }
+      setSelectedChat(null);
+      setMessages([]);
+    };
   }, [user]);
 
   useEffect(() => {
@@ -287,15 +298,17 @@ function Chat() {
   };
 
   const handleChatSelection = async (chat) => {
-    setSelectedChat(chat);
-    fetchMessagesforChat(chat);
-    if (chat.unseenCount > 0) {
-      const chatRef = doc(db, "chats", chat.chatId);
-      const updatedMessages = chat.messages.map((message) =>
-        message.sender !== user.email && !message.seen ? { ...message, seen: true } : message
-      );
-      await updateDoc(chatRef, { messages: updatedMessages });
-      fetchUserChats();
+    if (isMounted) {
+      setSelectedChat(chat);
+      fetchMessagesforChat(chat);
+      if (chat.unseenCount > 0) {
+        const chatRef = doc(db, "chats", chat.chatId);
+        const updatedMessages = chat.messages.map((message) =>
+          message.sender !== user.email && !message.seen ? { ...message, seen: true } : message
+        );
+        await updateDoc(chatRef, { messages: updatedMessages });
+        fetchUserChats();
+      }
     }
   };
 
@@ -323,41 +336,47 @@ function Chat() {
   };
 
   const fetchMessagesforChat = async (selectedChat) => {
+    if (unsubscribeMessagesSnapshot) {
+      unsubscribeMessagesSnapshot();
+    }
+
     const chatRef = doc(db, "chats", selectedChat.chatId);
-    onSnapshot(chatRef, async (docSnapshot) => {
-      const chatData = docSnapshot.data();
-      let messages = chatData.messages;
-      let needsUpdate = false;
+    unsubscribeMessagesSnapshot = onSnapshot(chatRef, async (docSnapshot) => {
+      if (isMounted) {
+        const chatData = docSnapshot.data();
+        let messages = chatData.messages;
+        let needsUpdate = false;
 
-      const lastViewed = chatData.lastViewed?.[user.email];
-      const lastViewedDate =
-        lastViewed && lastViewed.toDate ? lastViewed.toDate() : new Date(lastViewed || 0);
+        const lastViewed = chatData.lastViewed?.[user.email];
+        const lastViewedDate =
+          lastViewed && lastViewed.toDate ? lastViewed.toDate() : new Date(lastViewed || 0);
 
-      messages = messages.map((message) => {
-        const messageDate =
-          message.timestamp && message.timestamp.toDate
-            ? message.timestamp.toDate()
-            : new Date(message.timestamp || 0);
+        messages = messages.map((message) => {
+          const messageDate =
+            message.timestamp && message.timestamp.toDate
+              ? message.timestamp.toDate()
+              : new Date(message.timestamp || 0);
 
-        if (message.sender !== user.email && !message.seen && messageDate > lastViewedDate) {
-          message.seen = true;
-          needsUpdate = true;
-        }
-        return message;
-      });
-
-      setMessages(messages);
-
-      if (needsUpdate) {
-        await updateDoc(chatRef, {
-          messages: messages,
-          [`lastViewed.${user.email}`]: serverTimestamp(),
+          if (message.sender !== user.email && !message.seen && messageDate > lastViewedDate) {
+            message.seen = true;
+            needsUpdate = true;
+          }
+          return message;
         });
-        setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
-          )
-        );
+
+        setMessages(messages);
+
+        if (needsUpdate) {
+          await updateDoc(chatRef, {
+            messages: messages,
+            [`lastViewed.${user.email}`]: serverTimestamp(),
+          });
+          setChats((prevChats) =>
+            prevChats.map((chat) =>
+              chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
+            )
+          );
+        }
       }
     });
   };

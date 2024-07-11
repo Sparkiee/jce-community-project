@@ -654,9 +654,6 @@ function EventPage() {
             }}>
             <DownloadIcon />
           </IconButton>
-          <IconButton aria-label="edit" onClick={() => handleEditTaskClick(params.row)}>
-            <EditIcon />
-          </IconButton>
           <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
             <DeleteForeverIcon />
           </IconButton>

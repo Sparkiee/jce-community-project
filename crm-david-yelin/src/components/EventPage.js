@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { db } from "../firebase";
-import { collection, doc, getDoc, getDocs, query, where, orderBy, updateDoc, deleteDoc } from "firebase/firestore";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { db, storage } from "../firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  updateDoc,
+  deleteDoc,
+  arrayUnion
+} from "firebase/firestore";
+import { ref, listAll, uploadBytesResumable, getDownloadURL, getMetadata, deleteObject } from "firebase/storage";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -12,6 +23,7 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
+import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Forum from "./Forum";
 import Box from "@mui/material/Box";
@@ -22,7 +34,19 @@ import ChangeLog from "./ChangeLog";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditTask from "./EditTask";
 import ConfirmAction from "./ConfirmAction";
+import { FilePond, registerPlugin } from "react-filepond";
+import "filepond/dist/filepond.min.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import Chart from "chart.js/auto";
+
+// Register the plugins
+registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview, FilePondPluginFileValidateSize);
 
 function stringToColor(string) {
   let hash = 0;
@@ -37,6 +61,13 @@ function stringToColor(string) {
   return color;
 }
 
+function formatFileSize(bytes) {
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 Byte";
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
 function stringAvatar(name) {
   return {
     sx: {
@@ -45,6 +76,10 @@ function stringAvatar(name) {
     children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
   };
 }
+
+const CustomAlert = React.forwardRef(function CustomAlert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} action={null} />;
+});
 
 function getRandomColor() {
   const r = Math.floor(Math.random() * 256); // Random between 0-255
@@ -82,9 +117,17 @@ function EventPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [user, setUser] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const [fileError, setFileError] = useState(false);
+  const [fileErrorMessage, setFileErrorMessage] = useState("");
   const createEventRef = useRef(null);
   const editTaskRef = useRef(null);
   const changelogRef = useRef(null);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [deleteFile, setDeleteFile] = useState(null);
+
+  const confirmActionRef = useRef(null);
+
+  const [fileRows, setFileRows] = useState([]);
 
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
@@ -164,7 +207,7 @@ function EventPage() {
         );
 
         const userIsAssignee =
-          assigneesData && assigneesData.some((assignee) => assignee && assignee.email === user.email);
+          assigneesData && assigneesData.some((assignee) => assignee && assignee.email === user?.email);
 
         setEvent({ ...eventData, id: eventDoc.id, assigneesData, eventCreatorFullName });
         setIsUserAnAssignee(userIsAssignee);
@@ -274,6 +317,7 @@ function EventPage() {
     fetchEvent();
     fetchTasks();
     fetchHistory();
+    fetchFiles();
   }, [user]);
 
   const handleEditClick = () => {
@@ -607,6 +651,111 @@ function EventPage() {
     }
   ];
 
+  const downloadFile = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = url.split("/").pop(); // Set the filename as the last part of the URL
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const fileColumns = [
+    {
+      field: "preview",
+      headerName: "תצוגה מקדימה",
+      align: "right",
+      flex: 0.6,
+      renderCell: (params) => (
+        <div>
+          {params.row.type.includes("image") ? (
+            <img className="event-file-image-preview" src={`${params.row.itemUrl}`} />
+          ) : (
+            ""
+          )}
+        </div>
+      )
+    },
+    { field: "name", headerName: "שם הקובץ", align: "right", flex: 3 },
+    {
+      field: "size",
+      headerName: "גודל הקובץ",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => <div className="event-file-size">{params.row.size}</div>
+    },
+    {
+      field: "type",
+      headerName: "סוג הקובץ",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => <div>{params.row.type.split("/")[1]}</div>
+    },
+    {
+      field: "uploadedAt",
+      headerName: "תאריך העלאה",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => <div>{params.value ? params.value.toDate().toLocaleDateString("he-IL") : ""}</div>
+    },
+    {
+      field: "edit",
+      headerName: "עריכה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <>
+          <IconButton
+            aria-label="download"
+            onClick={() => {
+              downloadFile(params.row.itemUrl);
+            }}>
+            <DownloadIcon />
+          </IconButton>
+          <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
+            <DeleteForeverIcon />
+          </IconButton>
+        </>
+      )
+    }
+  ];
+
+  const fetchItemUrl = async (imagePath) => {
+    const imageRef = ref(storage, imagePath);
+    try {
+      const metadata = await getDownloadURL(imageRef); // Use await to wait for the promise to resolve
+      return metadata; // This will return the URL (or metadata) to the caller
+    } catch (error) {
+      console.error("Error fetching item URL:", error); // Log or handle the error as needed
+      return null; // Return null or an appropriate value to indicate failure
+    }
+  };
+
+  const fetchFiles = async () => {
+    try {
+      const eventDoc = await getDoc(doc(db, "events", id));
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        const fileData = eventData.eventFiles || [];
+
+        // Fetch URLs for each file
+        const filesWithUrls = await Promise.all(
+          fileData.map(async (file) => {
+            const itemPath = `events/${id}/${file.name}`;
+            const itemUrl = await fetchItemUrl(itemPath); // Use fetchItemUrl to get the URL
+            const collectionType = "events";
+            const collectionID = id;
+            return { ...file, id: file.name, itemUrl, itemPath, collectionID, collectionType }; // Include imageUrl in the returned object
+          })
+        );
+
+        setFileRows(filesWithUrls); // Update state with the new data
+      }
+    } catch (e) {
+      console.error("Error fetching files: ", e);
+    }
+  };
+
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
@@ -669,7 +818,119 @@ function EventPage() {
           </div>
         );
       case pages[2]:
-        return <h2>פה יהיו הקבצים</h2>;
+        return (
+          <div className="event-files">
+            <h2>העלאת קבצים</h2>
+            <FilePond
+              files={uploadedFiles}
+              allowMultiple={true}
+              maxFiles={5}
+              maxFileSize={"1000MB"}
+              labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
+              credits={false}
+              labelMaxFileSizeExceeded="הקובץ גדול מדי"
+              onprocessfile={(error, file) => {
+                if (!error) {
+                  setTimeout(() => {
+                    setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
+                    fetchFiles(); // Fetch files again to update the DataGrid
+                  }, 2000);
+                }
+              }}
+              server={{
+                process: async (fieldName, file, metadata, load, error, progress, abort) => {
+                  const storageRef = ref(storage, `events/${id}/${file.name}`);
+
+                  const listRef = ref(storage, `events/${id}/`);
+                  try {
+                    const existingFiles = await listAll(listRef);
+                    const fileNames = existingFiles.items.map((item) => item.name);
+
+                    if (fileNames.includes(file.name)) {
+                      setFileError(true);
+                      setFileErrorMessage(`קובץ עם השם ${file.name} כבר קיים במערכת.`);
+                      abort();
+                      return;
+                    }
+                  } catch (listError) {
+                    console.log("Error listing files: ", listError);
+                    error(listError.message);
+                    return;
+                  }
+
+                  const uploadTask = uploadBytesResumable(storageRef, file);
+
+                  uploadTask.on(
+                    "state_changed",
+                    (snapshot) => {
+                      progress(true, snapshot.bytesTransferred, snapshot.totalBytes);
+                    },
+                    (uploadError) => {
+                      error(uploadError.message);
+                    },
+                    async () => {
+                      try {
+                        const fileMetadata = await getMetadata(uploadTask.snapshot.ref);
+                        const formattedFileSize = formatFileSize(fileMetadata.size);
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        const eventDocRef = doc(db, "events", id);
+                        await updateDoc(eventDocRef, {
+                          eventFiles: arrayUnion({
+                            name: file.name,
+                            size: formattedFileSize,
+                            type: file.type,
+                            uploadedAt: new Date()
+                          })
+                        });
+                        load(downloadURL);
+                      } catch (downloadURLError) {
+                        console.log("Error getting download URL: ", downloadURLError);
+                        error(downloadURLError.message);
+                      }
+                    }
+                  );
+                  return {
+                    abort: () => {
+                      uploadTask.cancel();
+                      abort();
+                    }
+                  };
+                }
+              }}
+              name="files"
+              labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
+            />
+            <Snackbar
+              open={fileError}
+              autoHideDuration={3000}
+              onClose={() => setFileError(false)}
+              anchorOrigin={{ vertical: "center", horizontal: "center" }}>
+              <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
+            </Snackbar>
+            <h2>רשימת קבצים</h2>
+            <div className="event-files-table">
+              <ThemeProvider theme={theme}>
+                <DataGrid
+                  rows={fileRows}
+                  columns={fileColumns}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 10 }
+                    }
+                  }}
+                  pageSizeOptions={[10, 20, 50]}
+                  localeText={{
+                    MuiTablePagination: {
+                      labelDisplayedRows: ({ from, to, count }) =>
+                        `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                      labelRowsPerPage: "שורות בכל עמוד:"
+                    }
+                  }}
+                />
+              </ThemeProvider>
+            </div>
+          </div>
+        );
       case pages[3]:
         return (
           <div className="event-history">
@@ -710,6 +971,27 @@ function EventPage() {
     }
   }
 
+  async function handleDeleteFile() {
+    console.log(deleteFile);
+    try {
+      const docRef = doc(db, "events", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const eventData = docSnap.data();
+        const updatedFiles = eventData.eventFiles.filter((file) => file.name !== deleteFile.name);
+        await updateDoc(docRef, { eventFiles: updatedFiles });
+        console.log(`File ${deleteFile.name} deleted successfully`);
+      }
+
+      const fileRef = ref(storage, `events/${id}/${deleteFile.name}`);
+      await deleteObject(fileRef);
+      fetchFiles();
+    } catch (e) {
+      console.log("Error deleting file: ", e);
+    }
+    setDeleteFile(null);
+  }
+
   return (
     <div className="event-page">
       {editingTask && (
@@ -722,6 +1004,11 @@ function EventPage() {
       {deleteTaskTarget && (
         <div className="popup-overlay">
           <ConfirmAction onConfirm={handleDeleteTask} onCancel={() => setDeleteTaskTarget("")} />
+        </div>
+      )}
+      {deleteFile && (
+        <div className="popup-overlay">
+          <ConfirmAction onConfirm={handleDeleteFile} onCancel={() => setDeleteFile(null)} />
         </div>
       )}
       <div className="event-page-container">

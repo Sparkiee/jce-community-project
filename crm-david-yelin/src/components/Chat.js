@@ -165,7 +165,6 @@ function Chat() {
           }
         });
       });
-
       return () => unsubscribe();
     }
   }, [user]);
@@ -312,7 +311,11 @@ function Chat() {
 
       // Check if there are any unseen messages from the other user
       messages = messages.map((message) => {
-        if (message.sender !== user.email && !message.seen) {
+        if (
+          message.sender !== user.email &&
+          !message.seen &&
+          selectedChat.chatId === docSnapshot.id
+        ) {
           message.seen = true;
           needsUpdate = true;
         }

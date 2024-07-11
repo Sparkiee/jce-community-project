@@ -109,7 +109,7 @@
   top: 11rem;
 }
 
-@media screen and (max-width: 1333px) {
+@media screen and (max-width: 1440px) {
   .add-user-button {
     top: 9.5rem;
   }

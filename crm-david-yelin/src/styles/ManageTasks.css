@@ -33,6 +33,14 @@
   }
 }
 
+@media screen and (max-width: 1440px) {
+  .add-tasks-manage-tasks {
+    position: absolute;
+    top: 6.5rem;
+    right: 5%;
+  }
+}
+
 .manage-task-avatar-group {
   direction: ltr;
 }

@@ -12,7 +12,7 @@
 
 .add-department-button {
   position: absolute;
-  padding-right: 1rem;
+  padding: 0.4rem 0rem 0.4rem 2rem !important;
   top: 7rem;
   right: 5%;
 }

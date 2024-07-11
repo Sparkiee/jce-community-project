@@ -33,6 +33,14 @@
   }
 }
 
+@media screen and (max-width: 1440px) {
+  .add-events-manage-events {
+    position: absolute;
+    top: 6.5rem;
+    right: 5%;
+  }
+}
+
 .manage-events-avatar-group {
   direction: ltr;
 }

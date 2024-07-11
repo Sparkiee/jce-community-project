@@ -54,6 +54,17 @@
   }
 }
 
+@media screen and (max-width: 1440px) {
+  .pending-actions {
+    top: 16.5rem;
+  }
+  .action-button {
+    padding: 0.4rem 0rem 0.4rem 2rem;
+    min-width: 10rem;
+  }
+  
+}
+
 .action-button:hover {
   background-color: rgb(18, 21, 116);
 }

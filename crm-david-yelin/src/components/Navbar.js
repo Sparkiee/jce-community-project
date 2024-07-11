@@ -85,13 +85,11 @@ function Navbar() {
         (doc) => {
           const data = doc.data();
           sessionStorage.setItem("user", JSON.stringify(data));
-          // Assuming setNotifications and setFullName are state setters from useState
           setNotifications(data?.Notifications?.length || 0);
           setFullName(data?.fullName || "");
         },
         (error) => {
           console.error("Error fetching document: ", error);
-          // Handle the error appropriately
         }
       );
 
@@ -106,13 +104,19 @@ function Navbar() {
           let count = 0;
           querySnapshot.forEach((doc) => {
             const chatData = doc.data();
-            const lastViewed = chatData.lastViewed?.[user.email] || new Date(0);
+            const lastViewed = chatData.lastViewed?.[user.email];
+
+            // Convert lastViewed to a Date object if it's a Firestore Timestamp
+            const lastViewedDate =
+              lastViewed && lastViewed.toDate ? lastViewed.toDate() : new Date(lastViewed || 0);
+
             chatData.messages.forEach((message) => {
-              if (
-                message.sender !== user.email &&
-                !message.seen &&
-                message.timestamp.toDate() > lastViewed.toDate()
-              ) {
+              const messageDate =
+                message.timestamp && message.timestamp.toDate
+                  ? message.timestamp.toDate()
+                  : new Date(message.timestamp || 0);
+
+              if (message.sender !== user.email && !message.seen && messageDate > lastViewedDate) {
                 count++;
               }
             });
@@ -121,7 +125,6 @@ function Navbar() {
         },
         (error) => {
           console.error("Error fetching chats: ", error);
-          // Handle the error appropriately
         }
       );
 

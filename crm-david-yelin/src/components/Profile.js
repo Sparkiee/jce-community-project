@@ -878,10 +878,6 @@ function Profile() {
               {...stringAvatar(`${profile && profile.fullName}`)}
             />
             <div className="profile-stats">
-              <div className="profile-stats-row profile-stats-contact profile-personal-info">
-                <SendIcon />
-                <h3>צור קשר עם {profile && profile.fullName}</h3>
-              </div>
               <h2 className="title-info">התקדמות אישית</h2>
               <div className="profile-stats-row">
                 <AssignmentIcon />

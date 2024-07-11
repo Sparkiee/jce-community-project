@@ -98,10 +98,6 @@ div .profile-avatar:hover {
   font-weight: bold;
 }
 
-.profile-stats-contact {
-  color: rgb(2, 4, 79);
-}
-
 .profile-phone {
   direction: ltr;
   color: black;

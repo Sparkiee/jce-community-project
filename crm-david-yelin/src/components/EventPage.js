@@ -1042,18 +1042,6 @@ function EventPage() {
                       <strong>שעת סיום: </strong>
                       {event.eventTime}
                     </p>
-                    {(user.privileges === 2 || isUserAnAssignee) && (
-                      <div>
-                        <p>
-                          <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/
-                          {remainingBudget < 0 ? (
-                            <b className="overdraft">₪{Math.abs(remainingBudget).toLocaleString()}-</b>
-                          ) : (
-                            `₪${remainingBudget.toLocaleString()}`
-                          )}
-                        </p>
-                      </div>
-                    )}
                     <p>
                       <strong>אחוז השלמה: </strong>
                       {completionPercentage}%

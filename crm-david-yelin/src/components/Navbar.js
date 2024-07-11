@@ -78,7 +78,6 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
-    let unsubscribeChatsSnapshot = () => {};
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
     if (user && user.email && user.privileges >= 1) {
       const unsubscribeMembersSnapshot = onSnapshot(
@@ -95,24 +94,30 @@ function Navbar() {
           // Handle the error appropriately
         }
       );
+
       const chatsQuery = query(
         collection(db, "chats"),
         where("members", "array-contains", user.email)
       );
-      unsubscribeChatsSnapshot = onSnapshot(
+
+      const unsubscribeChatsSnapshot = onSnapshot(
         chatsQuery,
         (querySnapshot) => {
-          const chatsData = [];
           let count = 0;
           querySnapshot.forEach((doc) => {
-            // Process each document, for example, pushing to an array
-            chatsData.push({ id: doc.id, ...doc.data() });
-            doc.data().messages.forEach((message) => {
-              if (!message.sender.includes(user.email) && !message.seen) count++;
+            const chatData = doc.data();
+            const lastViewed = chatData.lastViewed?.[user.email] || new Date(0);
+            chatData.messages.forEach((message) => {
+              if (
+                message.sender !== user.email &&
+                !message.seen &&
+                message.timestamp.toDate() > lastViewed.toDate()
+              ) {
+                count++;
+              }
             });
           });
           setMessageUnseenCount(count);
-          // Example: Update state with the fetched chats data
         },
         (error) => {
           console.error("Error fetching chats: ", error);
@@ -120,10 +125,11 @@ function Navbar() {
         }
       );
 
-      // Cleanup function to unsubscribe from the snapshot when the component unmounts
       return () => {
         unsubscribeMembersSnapshot();
-        unsubscribeChatsSnapshot();
+        if (unsubscribeChatsSnapshot) {
+          unsubscribeChatsSnapshot();
+        }
       };
     }
   }, [user]);

@@ -177,6 +177,17 @@ function Chat() {
     }
   }, [user]);
 
+  useEffect(() => {
+    return () => {
+      if (user && selectedChat) {
+        const chatRef = doc(db, "chats", selectedChat.chatId);
+        updateDoc(chatRef, {
+          [`lastViewed.${user.email}`]: serverTimestamp(),
+        });
+      }
+    };
+  }, [user, selectedChat]);
+
   const handleSearch = async (e) => {
     e.preventDefault();
     const searchValue = e.target.username.value;
@@ -317,12 +328,13 @@ function Chat() {
       let messages = chatData.messages;
       let needsUpdate = false;
 
-      // Check if there are any unseen messages from the other user
+      const lastViewed = chatData.lastViewed?.[user.email] || new Date(0);
+
       messages = messages.map((message) => {
         if (
           message.sender !== user.email &&
           !message.seen &&
-          selectedChat.chatId === docSnapshot.id
+          message.timestamp.toDate() > lastViewed.toDate()
         ) {
           message.seen = true;
           needsUpdate = true;
@@ -332,9 +344,11 @@ function Chat() {
 
       setMessages(messages);
 
-      // If we marked any messages as seen, update the database
       if (needsUpdate) {
-        await updateDoc(chatRef, { messages: messages });
+        await updateDoc(chatRef, {
+          messages: messages,
+          [`lastViewed.${user.email}`]: serverTimestamp(),
+        });
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat

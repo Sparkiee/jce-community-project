@@ -402,13 +402,11 @@ function EventPage() {
 
   useEffect(() => {
     if (event || tasks.length > 0) {
-    
-      console.log("the budget is", event.eventBudget);
       let totalTaskBudget = 0;
       tasks.forEach((task) => {
         totalTaskBudget += task.taskBudget;
       });
-      const newRemainingBudget = event.eventBudget - totalTaskBudget;
+      const newRemainingBudget = event?.eventBudget - totalTaskBudget;
       console.log("the task total", totalTaskBudget);
       setRemainingBudget(newRemainingBudget);
     }

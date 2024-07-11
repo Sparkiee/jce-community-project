@@ -324,37 +324,6 @@ function Chat() {
     } catch (e) {
       console.error("Error fetching messages for chat:", e);
     }
-
-    // onSnapshot(chatRef, async (docSnapshot) => {
-    //   const chatData = docSnapshot.data();
-    //   let messages = chatData.messages;
-    //   let needsUpdate = false;
-    //   console.log("im in this listener still");
-    //   // Check if there are any unseen messages from the other user
-    //   messages = messages.map((message) => {
-    //     if (
-    //       message.sender !== user.email &&
-    //       !message.seen &&
-    //       selectedChat.chatId === docSnapshot.id
-    //     ) {
-    //       // message.seen = true;
-    //       // needsUpdate = true;
-    //     }
-    //     return message;
-    //   });
-
-    //   setMessages(messages);
-
-    //   // If we marked any messages as seen, update the database
-    //   if (needsUpdate) {
-    //     await updateDoc(chatRef, { messages: messages });
-    //     setChats((prevChats) =>
-    //       prevChats.map((chat) =>
-    //         chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
-    //       )
-    //     );
-    //   }
-    // });
   };
 
   useEffect(() => {

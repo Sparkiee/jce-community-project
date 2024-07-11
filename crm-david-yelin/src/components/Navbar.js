@@ -64,8 +64,8 @@ function Navbar() {
   const [messageUnseenCount, setMessageUnseenCount] = useState(0); // [1
   const [user, setUser] = useState(null);
   const location = useLocation();
-
   const notificationsRef = useRef(null);
+  const [isInChat, setIsInChat] = useState(false);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
@@ -140,6 +140,10 @@ function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    setIsInChat(location.pathname.startsWith("/chat"));
+  }, [location.pathname]);
 
   const disconnect = () => {
     navigate("/");
@@ -224,9 +228,13 @@ function Navbar() {
     navigate(`/profile/${user.email}`);
   }
 
-  const handleRefresh = (path) => {
-    navigate(path);
-    window.location.reload();
+  const handleNavigation = (path) => {
+    if (isInChat) {
+      navigate(path);
+      window.location.reload();
+    } else {
+      navigate(path);
+    }
   };
 
   useEffect(() => {
@@ -239,7 +247,7 @@ function Navbar() {
       <div className="navbar-container">
         <div className="navbar">
           <div className="logo">
-            <a to="#" onClick={() => handleRefresh("/home")}>
+            <a to="#" onClick={() => handleNavigation("/home")}>
               <img className="logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
               <p>
                 אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
@@ -249,22 +257,22 @@ function Navbar() {
           <div className="nav-items">
             <ul>
               <li>
-                <a to="#" onClick={() => handleRefresh("/home")}>
+                <a to="#" onClick={() => handleNavigation("/home")}>
                   ראשי
                 </a>
               </li>
               <li>
-                <a to="#" onClick={() => handleRefresh("/tasks")}>
+                <a to="#" onClick={() => handleNavigation("/tasks")}>
                   משימות
                 </a>
               </li>
               <li>
-                <a to="#" onClick={() => handleRefresh("/events")}>
+                <a to="#" onClick={() => handleNavigation("/events")}>
                   אירועים
                 </a>
               </li>
               <li>
-                <a to="#" onClick={() => handleRefresh("/statistics")}>
+                <a to="#" onClick={() => handleNavigation("/statistics")}>
                   סטטיסטיקות
                 </a>
               </li>
@@ -275,7 +283,7 @@ function Navbar() {
                       user.adminAccess.includes("manageUser") ||
                       user.adminAccess.includes("manageAdmin")))) && (
                   <li>
-                    <a to="#" onClick={() => handleRefresh("/users")}>
+                    <a to="#" onClick={() => handleNavigation("/users")}>
                       ניהול משתמשים
                     </a>
                   </li>
@@ -288,7 +296,7 @@ function Navbar() {
                         "deleteDepartment" || user.adminAccess.includes("createDepartment")
                       )))) && (
                   <li>
-                    <a to="#" onClick={() => handleRefresh("/departments")}>
+                    <a to="#" onClick={() => handleNavigation("/departments")}>
                       ניהול מחלקות
                     </a>
                   </li>
@@ -338,7 +346,7 @@ function Navbar() {
                           <React.Fragment key={index}>
                             {index > 0 && <Divider />}
                             <div
-                              onClick={() => handleRefresh(`/profile/${result.email}`)}
+                              onClick={() => handleNavigation(`/profile/${result.email}`)}
                               className={`search-result-item ${
                                 result.privileges === 0 ? "strikethrough" : ""
                               }`}>
@@ -355,7 +363,7 @@ function Navbar() {
               </li>
             </ul>
             <div className="left-side-nav">
-              <IconButton color="primary" onClick={() => handleRefresh(`/chat`)}>
+              <IconButton color="primary" onClick={() => handleNavigation(`/chat`)}>
                 <Badge badgeContent={messageUnseenCount} color="primary">
                   <MessageIcon className="message-icon" />
                 </Badge>

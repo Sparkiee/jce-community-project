@@ -78,6 +78,7 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
+    let unsubscribeChatsSnapshot = () => {};
     // AUTOMATIC UPDATE FOR NOTIFICATIONS, DO NOT REMOVE THIS CODE
     if (user && user.email && user.privileges >= 1) {
       const unsubscribeMembersSnapshot = onSnapshot(
@@ -85,54 +86,44 @@ function Navbar() {
         (doc) => {
           const data = doc.data();
           sessionStorage.setItem("user", JSON.stringify(data));
+          // Assuming setNotifications and setFullName are state setters from useState
           setNotifications(data?.Notifications?.length || 0);
           setFullName(data?.fullName || "");
         },
         (error) => {
           console.error("Error fetching document: ", error);
+          // Handle the error appropriately
         }
       );
-
       const chatsQuery = query(
         collection(db, "chats"),
         where("members", "array-contains", user.email)
       );
-
-      const unsubscribeChatsSnapshot = onSnapshot(
+      unsubscribeChatsSnapshot = onSnapshot(
         chatsQuery,
         (querySnapshot) => {
+          const chatsData = [];
           let count = 0;
           querySnapshot.forEach((doc) => {
-            const chatData = doc.data();
-            const lastViewed = chatData.lastViewed?.[user.email];
-
-            // Convert lastViewed to a Date object if it's a Firestore Timestamp
-            const lastViewedDate =
-              lastViewed && lastViewed.toDate ? lastViewed.toDate() : new Date(lastViewed || 0);
-
-            chatData.messages.forEach((message) => {
-              const messageDate =
-                message.timestamp && message.timestamp.toDate
-                  ? message.timestamp.toDate()
-                  : new Date(message.timestamp || 0);
-
-              if (message.sender !== user.email && !message.seen && messageDate > lastViewedDate) {
-                count++;
-              }
+            // Process each document, for example, pushing to an array
+            chatsData.push({ id: doc.id, ...doc.data() });
+            doc.data().messages.forEach((message) => {
+              if (!message.sender.includes(user.email) && !message.seen) count++;
             });
           });
           setMessageUnseenCount(count);
+          // Example: Update state with the fetched chats data
         },
         (error) => {
           console.error("Error fetching chats: ", error);
+          // Handle the error appropriately
         }
       );
 
+      // Cleanup function to unsubscribe from the snapshot when the component unmounts
       return () => {
         unsubscribeMembersSnapshot();
-        if (unsubscribeChatsSnapshot) {
-          unsubscribeChatsSnapshot();
-        }
+        unsubscribeChatsSnapshot();
       };
     }
   }, [user]);

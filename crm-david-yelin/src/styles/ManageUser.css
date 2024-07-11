@@ -1,3 +1,5 @@
+
+
 .manage-users-container {
   position: relative;
   display: flex;
@@ -105,6 +107,12 @@
   position: absolute;
   right: 5%;
   top: 11rem;
+}
+
+@media screen and (max-width: 1333px) {
+  .add-user-button {
+    top: 9.5rem;
+  }
 }
 
 .user-privilege-indicator {

@@ -262,13 +262,25 @@
   gap: 0.5rem;
 }
 
-.chat-messages-center-message-other .chat-messages-center-message-texts pre {
+.chat-messages-center-message-other .chat-messages-center-message-box {
   font-family: inherit;
   margin: 0;
   background-color: rgba(2, 4, 79, 0.3);
   padding: 2rem;
   border-radius: 1rem;
   white-space: pre-wrap;
+}
+
+.chat-messages-center-message-box {
+  position: relative;
+}
+
+.chat-messages-center-message-seen-icon {
+  position: absolute;
+  bottom: 0.3rem;
+  left: 0.5rem;
+  font-size: 2rem !important;
+  border-radius: 50%;
 }
 
 .chat-messages-center-message-texts span {

@@ -42,8 +42,15 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/chat" element={<Chat />} />
         {/* PRIVATE PAGES */}
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute privilegeLevel={1}>
+              <Chat />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/statistics"
           element={

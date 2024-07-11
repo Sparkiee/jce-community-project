@@ -112,7 +112,7 @@ function CreateEvent(props) {
       eventEndDate: eventDetails.eventEndDate,
       eventTime: eventDetails.eventTime,
       eventLocation: eventDetails.eventLocation,
-      eventBudget: eventDetails.eventBudget,
+      eventBudget: Number(eventDetails.eventBudget),
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
       eventCreator: "members/" + user.email,

@@ -199,6 +199,23 @@ function ManageDepartments() {
       <div className="manage-departments">
         <h1>ניהול מחלקות</h1>
         {user && ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createDepartment")) || user.privileges >= 2) &&(<div className="action-button add-department-button" onClick={() => setShowAddForm(true)}>
+        <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"></path>
+              </g>
+            </svg>
           יצירת מחלקה חדשה
         </div>)}
         <div style={{ height: 995, width: "90%" }}>

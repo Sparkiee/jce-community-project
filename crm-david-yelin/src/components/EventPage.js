@@ -313,9 +313,6 @@ function EventPage() {
       taskColors = "rgb(255, 0, 0)";
     }
     const ctx = document.getElementById("budget-chart");
-    console.log(tasksBudgets);
-    console.log(taskNames);
-    console.log(taskColors);
     if (!ctx) return;
     const data = {
       labels: taskNames,
@@ -348,12 +345,6 @@ function EventPage() {
       searchInputRef.current.focus();
     }
   }, [searchValue]);
-
-  // test effect - to be removed
-  useEffect(() => {
-    if(tasks)
-      console.log(tasks.length)
-  }, [tasks]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -407,7 +398,6 @@ function EventPage() {
         totalTaskBudget += task.taskBudget;
       });
       const newRemainingBudget = event?.eventBudget - totalTaskBudget;
-      console.log("the task total", totalTaskBudget);
       setRemainingBudget(newRemainingBudget);
     }
   }, [event, tasks]);

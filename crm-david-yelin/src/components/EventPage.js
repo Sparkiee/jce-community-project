@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { db } from "../firebase";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { db, storage } from "../firebase";
 import {
   collection,
   doc,
@@ -12,7 +11,9 @@ import {
   orderBy,
   updateDoc,
   deleteDoc,
+  arrayUnion
 } from "firebase/firestore";
+import { ref, listAll, uploadBytesResumable, getDownloadURL, getMetadata } from 'firebase/storage';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -22,6 +23,7 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditEvent from "./EditEvent";
+import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Forum from "./Forum";
 import Box from "@mui/material/Box";
@@ -32,6 +34,18 @@ import ChangeLog from "./ChangeLog";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditTask from "./EditTask";
 import ConfirmAction from "./ConfirmAction";
+import { FilePond, registerPlugin } from "react-filepond";
+import "filepond/dist/filepond.min.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+// Register the plugins
+registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview, FilePondPluginFileValidateSize);
 
 function stringToColor(string) {
   let hash = 0;
@@ -46,6 +60,13 @@ function stringToColor(string) {
   return color;
 }
 
+function formatFileSize(bytes) {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Byte';
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
 function stringAvatar(name) {
   return {
     sx: {
@@ -54,6 +75,10 @@ function stringAvatar(name) {
     children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
 }
+
+const CustomAlert = React.forwardRef(function CustomAlert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} action={null} />;
+});
 
 function EventPage() {
   const pages = ["משימות קשורות", "פורום", "קבצים", "שינויים"];
@@ -75,9 +100,14 @@ function EventPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [user, setUser] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const [fileError, setFileError] = useState(false);
+  const [fileErrorMessage, setFileErrorMessage] = useState("");
   const createEventRef = useRef(null);
   const editTaskRef = useRef(null);
   const changelogRef = useRef(null);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+
+  const [fileRows, setFileRows] = useState([]);
 
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
@@ -391,19 +421,19 @@ function EventPage() {
     },
     ...(user && (user.privileges === 2 || isUserAnAssignee)
       ? [
-          {
-            field: "taskBudget",
-            headerName: "תקציב",
-            width: 150,
-            align: "right",
-            flex: 1,
-            renderCell: (params) => {
-              return (
-                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
-              );
-            },
+        {
+          field: "taskBudget",
+          headerName: "תקציב",
+          width: 150,
+          align: "right",
+          flex: 1,
+          renderCell: (params) => {
+            return (
+              <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
+            );
           },
-        ]
+        },
+      ]
       : []),
     {
       field: "taskStatus",
@@ -452,32 +482,32 @@ function EventPage() {
   const taskColumns = [
     ...baseTaskColumns,
     ...(user &&
-    (user.privileges >= 2 ||
-      user.adminAccess.includes("deleteTask") ||
-      user.adminAccess.includes("editTask"))
+      (user.privileges >= 2 ||
+        user.adminAccess.includes("deleteTask") ||
+        user.adminAccess.includes("editTask"))
       ? [
-          {
-            field: "edit",
-            headerName: "עריכה",
-            width: 150,
-            align: "right",
-            flex: 1.5,
-            renderCell: (params) => (
-              <div>
-                {(user.privileges >= 2 || user.adminAccess.includes("editTask")) && (
-                  <IconButton aria-label="edit" onClick={() => handleEditTaskClick(params.row)}>
-                    <EditIcon />
-                  </IconButton>
-                )}
-                {(user.privileges >= 2 || user.adminAccess.includes("deleteTask")) && (
-                  <IconButton aria-label="delete" onClick={() => setDeleteTaskTarget(params.row)}>
-                    <DeleteForeverIcon />
-                  </IconButton>
-                )}
-              </div>
-            ),
-          },
-        ]
+        {
+          field: "edit",
+          headerName: "עריכה",
+          width: 150,
+          align: "right",
+          flex: 1.5,
+          renderCell: (params) => (
+            <div>
+              {(user.privileges >= 2 || user.adminAccess.includes("editTask")) && (
+                <IconButton aria-label="edit" onClick={() => handleEditTaskClick(params.row)}>
+                  <EditIcon />
+                </IconButton>
+              )}
+              {(user.privileges >= 2 || user.adminAccess.includes("deleteTask")) && (
+                <IconButton aria-label="delete" onClick={() => setDeleteTaskTarget(params.row)}>
+                  <DeleteForeverIcon />
+                </IconButton>
+              )}
+            </div>
+          ),
+        },
+      ]
       : []),
   ];
 
@@ -570,6 +600,51 @@ function EventPage() {
     },
   ];
 
+  const fileColumns = [
+    { field: "name", headerName: "שם הקובץ", align: "right", flex: 3 },
+    { field: "size", headerName: "גודל הקובץ", align: "right", flex: 1 },
+    { field: "type", headerName: "סוג הקובץ", align: "right", flex: 1 },
+    {
+      field: "uploadedAt",
+      headerName: "תאריך העלאה",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => (
+        <div>{params.value ? params.value.toDate().toLocaleDateString("he-IL") : ""}</div>
+      ),
+    },
+    {
+      field: "edit", headerName: "עריכה", align: "right", flex: 0.8,
+      renderCell: (params) => (
+        <>
+          <IconButton aria-label="download" onClick={() => console.log("hello")}>
+            <DownloadIcon />
+          </IconButton>
+          <IconButton aria-label="delete" onClick={() => console.log("hello")}>
+            <DeleteForeverIcon />
+          </IconButton>
+        </>
+      )
+    },
+  ];
+
+  const fetchFiles = async () => {
+    try {
+      const eventDoc = await getDoc(doc(db, "events", id));
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        const fileData = eventData.eventFiles || [];
+        setFileRows(fileData.map((file, index) => ({ ...file, id: index })));
+      }
+    } catch (e) {
+      console.error("Error fetching files: ", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
@@ -639,7 +714,120 @@ function EventPage() {
           </div>
         );
       case pages[2]:
-        return <h2>פה יהיו הקבצים</h2>;
+        return (
+          <div className="event-files">
+            <h2>העלאת קבצים</h2>
+            <FilePond
+              files={uploadedFiles}
+              allowMultiple={true}
+              maxFiles={5}
+              maxFileSize={"1000MB"}
+              labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
+              credits={false}
+              labelMaxFileSizeExceeded="הקובץ גדול מדי"
+              onprocessfile={(error, file) => {
+                if (!error) {
+                  setTimeout(() => {
+                    setUploadedFiles(prevFiles => prevFiles.filter(f => f.id !== file.id));
+                    fetchFiles(); // Fetch files again to update the DataGrid
+                  }, 3000);
+                }
+              }}
+              server={{
+                process: async (fieldName, file, metadata, load, error, progress, abort) => {
+                  const storageRef = ref(storage, `events/${id}/${file.name}`);
+
+                  const listRef = ref(storage, `events/${id}/`);
+                  try {
+                    const existingFiles = await listAll(listRef);
+                    const fileNames = existingFiles.items.map(item => item.name);
+
+                    if (fileNames.includes(file.name)) {
+                      setFileError(true);
+                      setFileErrorMessage(`קובץ עם השם ${file.name} כבר קיים במערכת.`);
+                      abort();
+                      return;
+                    }
+                  } catch (listError) {
+                    console.log("Error listing files: ", listError);
+                    error(listError.message);
+                    return;
+                  }
+
+                  const uploadTask = uploadBytesResumable(storageRef, file);
+
+                  uploadTask.on(
+                    'state_changed',
+                    (snapshot) => {
+                      progress(true, snapshot.bytesTransferred, snapshot.totalBytes);
+                    },
+                    (uploadError) => {
+                      error(uploadError.message);
+                    },
+                    async () => {
+                      try {
+                        const fileMetadata = await getMetadata(uploadTask.snapshot.ref);
+                        const formattedFileSize = formatFileSize(fileMetadata.size);
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        const eventDocRef = doc(db, "events", id);
+                        await updateDoc(eventDocRef, {
+                          eventFiles: arrayUnion({
+                            name: file.name,
+                            size: formattedFileSize,
+                            type: file.type,
+                            uploadedAt: new Date()
+                          })
+                        });
+                        load(downloadURL);
+                      } catch (downloadURLError) {
+                        console.log("Error getting download URL: ", downloadURLError);
+                        error(downloadURLError.message);
+                      }
+                    }
+                  );
+                  return {
+                    abort: () => {
+                      uploadTask.cancel();
+                      abort();
+                    }
+                  };
+                }
+              }}
+              name="files"
+              labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
+            />
+            <Snackbar
+              open={fileError}
+              autoHideDuration={3000}
+              onClose={() => setFileError(false)}
+              anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
+            >
+              <CustomAlert severity="error">
+                {fileErrorMessage}
+              </CustomAlert>
+            </Snackbar>
+            <h2>רשימת קבצים</h2>
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                rows={fileRows}
+                columns={fileColumns}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
+                }}
+                pageSizeOptions={[10, 20, 50]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
+                }}
+              />
+            </ThemeProvider>
+          </div>
+        );
       case pages[3]:
         return (
           <div className="event-history">

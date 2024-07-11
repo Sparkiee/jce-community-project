@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -14,6 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 async function updateUserData(email) {
   const docRef = doc(db, "members", email);
@@ -23,4 +25,4 @@ async function updateUserData(email) {
   }
 }
 
-export { db, app, auth, updateUserData };
+export { db, app, auth, storage, updateUserData };

@@ -139,6 +139,12 @@
   height: 631px;
 }
 
+.event-files-table {
+  width: 100%;
+  height: 631px;
+
+}
+
 .search-related-bar {
   position: relative;
   align-self: flex-end;
@@ -149,4 +155,13 @@
   height: 60%;
   top: 21%;
   right: 5%;
+}
+
+.event-file-size {
+  direction: ltr;
+}
+
+.event-file-image-preview {
+  width: 5rem;
+  height: 100%;
 }

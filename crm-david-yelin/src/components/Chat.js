@@ -155,17 +155,25 @@ function Chat() {
   };
 
   useEffect(() => {
-    if (user) {
+    let unsubscribeChatsSnapshot = null;
+    if (user && user.email) {
       const chatRef = collection(db, "chats");
       const q = query(chatRef, where("members", "array-contains", user.email));
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      unsubscribeChatsSnapshot = onSnapshot(q, (querySnapshot) => {
         querySnapshot.docChanges().forEach((change) => {
           if (change.type === "modified") {
             fetchUserChats();
           }
         });
       });
-      return () => unsubscribe();
+      return () => {
+        if (unsubscribeChatsSnapshot) {
+          unsubscribeChatsSnapshot();
+        }
+        // Reset chat state when component unmounts
+        setSelectedChat(null);
+        setMessages([]);
+      };
     }
   }, [user]);
 

@@ -280,18 +280,20 @@ function Chat() {
   };
 
   const handleSendMessage = async () => {
-    if (!text || !selectedChat) return;
+    // Trim the text to remove leading and trailing whitespace
+    const trimmedText = text.trim();
+    if (!trimmedText || !selectedChat) return;
     const chatRef = doc(db, "chats", selectedChat.chatId);
     try {
       const now = new Date();
       const message = {
-        text: text,
+        text: trimmedText,
         sender: user.email,
         timestamp: now,
         seen: false,
       };
       await updateDoc(chatRef, {
-        lastMessage: text,
+        lastMessage: trimmedText,
         updatedAt: now,
         messages: arrayUnion(message),
       });
@@ -356,6 +358,7 @@ function Chat() {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && text.trim() !== "") {
+      e.preventDefault();
       handleSendMessage();
     }
   };

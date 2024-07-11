@@ -104,7 +104,6 @@ function Navbar() {
         (querySnapshot) => {
           const chatsData = [];
           let count = 0;
-          console.log("change in chats!!!");
           querySnapshot.forEach((doc) => {
             // Process each document, for example, pushing to an array
             chatsData.push({ id: doc.id, ...doc.data() });
@@ -112,7 +111,6 @@ function Navbar() {
               if (!message.sender.includes(user.email) && !message.seen) count++;
             });
           });
-          console.log("unseen count", count);
           setMessageUnseenCount(count);
           // Example: Update state with the fetched chats data
         },

@@ -192,7 +192,7 @@ function EditTask(props) {
         taskStartDate: taskDetails.taskStartDate,
         taskEndDate: taskDetails.taskEndDate,
         taskTime: taskDetails.taskTime,
-        taskBudget: taskDetails.taskBudget || 0,
+        taskBudget: Number(taskDetails.taskBudget) || 0,
         taskStatus: taskDetails.taskStatus,
         assignees: assigneeRefs,
         relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : "",

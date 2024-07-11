@@ -141,7 +141,7 @@ function EditEvent(props) {
         eventEndDate: eventDetails.eventEndDate,
         eventTime: eventDetails.eventTime,
         eventLocation: eventDetails.eventLocation,
-        eventBudget: eventDetails.eventBudget,
+        eventBudget: Number(eventDetails.eventBudget),
         eventCreator: eventDetails.eventCreator,
         eventCreated: eventDetails.eventCreated,
         eventStatus: eventDetails.eventStatus,

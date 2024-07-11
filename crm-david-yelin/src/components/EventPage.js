@@ -2,17 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where, orderBy, updateDoc, deleteDoc } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -32,6 +22,7 @@ import ChangeLog from "./ChangeLog";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditTask from "./EditTask";
 import ConfirmAction from "./ConfirmAction";
+import Chart from "chart.js/auto";
 
 function stringToColor(string) {
   let hash = 0;
@@ -49,10 +40,26 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     sx: {
-      bgcolor: stringToColor(name),
+      bgcolor: stringToColor(name)
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
   };
+}
+
+function getRandomColor() {
+  const r = Math.floor(Math.random() * 256); // Random between 0-255
+  const g = Math.floor(Math.random() * 190); // Random between 0-255
+  const b = Math.floor(Math.random() * 256); // Random between 0-255
+  // const a = 0.2; // Fixed alpha for background
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+// Function to generate random RGBA color with full opacity for border
+function getRandomBorderColor() {
+  const r = Math.floor(Math.random() * 256); // Random between 0-255
+  const g = Math.floor(Math.random() * 256); // Random between 0-255
+  const b = Math.floor(Math.random() * 256); // Random between 0-255
+  return `rgba(${r}, ${g}, ${b}, 1)`;
 }
 
 function EventPage() {
@@ -95,8 +102,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -105,8 +112,8 @@ function EventPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36,
-      },
+        fontSize: 36
+      }
     },
     heIL
   );
@@ -140,6 +147,7 @@ function EventPage() {
   }
 
   const fetchEvent = async () => {
+    if (!user) return;
     try {
       const eventDoc = await getDoc(doc(db, "events", id));
       if (eventDoc.exists()) {
@@ -156,8 +164,7 @@ function EventPage() {
         );
 
         const userIsAssignee =
-          assigneesData &&
-          assigneesData.some((assignee) => assignee && assignee.email === user.email);
+          assigneesData && assigneesData.some((assignee) => assignee && assignee.email === user.email);
 
         setEvent({ ...eventData, id: eventDoc.id, assigneesData, eventCreatorFullName });
         setIsUserAnAssignee(userIsAssignee);
@@ -177,7 +184,7 @@ function EventPage() {
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        taskDoc: doc.id, // Ensure taskDoc is set correctly
+        taskDoc: doc.id // Ensure taskDoc is set correctly
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -197,9 +204,9 @@ function EventPage() {
             taskStartDate: task.taskStartDate,
             taskEndDate: task.taskEndDate,
             taskTime: task.taskTime,
-            taskBudget: task.taskBudget,
+            taskBudget: Number(task.taskBudget),
             taskStatus: task.taskStatus,
-            assignTo: assigneeData,
+            assignTo: assigneeData
           };
         })
       );
@@ -212,11 +219,7 @@ function EventPage() {
 
   async function fetchHistory() {
     try {
-      const q = query(
-        collection(db, "log_events"),
-        where("event", "==", `events/${id}`),
-        orderBy("timestamp", "desc")
-      );
+      const q = query(collection(db, "log_events"), where("event", "==", `events/${id}`), orderBy("timestamp", "desc"));
       const querySnapshot = await getDocs(q);
       const historyArray = querySnapshot.docs.map((doc) => doc.data());
       const history = historyArray.map((item, index) => {
@@ -224,7 +227,7 @@ function EventPage() {
           id: index + 1,
           date: item.timestamp.toDate().toLocaleDateString("he-IL"),
           time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
-          ...item,
+          ...item
         };
       });
       const nonEmptyHistory = history.filter(
@@ -250,16 +253,14 @@ function EventPage() {
         const assigneeEmails = (taskData.assignees || []).map((email) => email.split("/")[1]); // Ensure taskData.assignees is an array
         const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
         const assigneeDocs = await Promise.all(assigneePromises);
-        const assigneeData = assigneeDocs
-          .map((doc) => (doc.exists() ? doc.data() : []))
-          .filter((data) => data);
+        const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : [])).filter((data) => data);
         setEditingTask({
           ...taskData,
           taskDoc: row.taskDoc,
           assignTo: assigneeData.map((assignee) => ({
             value: assignee.email,
-            label: assignee.fullName,
-          })),
+            label: assignee.fullName
+          }))
         });
       } else {
         console.error("No such document!");
@@ -298,10 +299,61 @@ function EventPage() {
   };
 
   useEffect(() => {
+    let tasksBudgets = tasks.map((task) => task.taskBudget || 0);
+    let taskNames = tasks.map((task) => task.taskName);
+    let taskColors = taskNames.map(() => getRandomColor());
+
+    if (remainingBudget >= 0) {
+      taskNames.push("תקציב נותר");
+      tasksBudgets.push(remainingBudget);
+      taskColors.push("rgb(54, 163, 65)");
+    } else {
+      taskNames = ["חריגה!"];
+      tasksBudgets = [Math.abs(remainingBudget)];
+      taskColors = "rgb(255, 0, 0)";
+    }
+    const ctx = document.getElementById("budget-chart");
+    console.log(tasksBudgets);
+    console.log(taskNames);
+    console.log(taskColors);
+    if (!ctx) return;
+    const data = {
+      labels: taskNames,
+      datasets: [
+        {
+          data: tasksBudgets,
+          backgroundColor: taskColors,
+          hoverBackgroundColor: taskColors
+        }
+      ]
+    };
+    let chart = new Chart(ctx, {
+      type: "pie",
+      data: data,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom"
+          }
+        }
+      }
+    });
+
+    return () => chart.destroy();
+  }, [tasks, remainingBudget]);
+
+  useEffect(() => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [searchValue]);
+
+  // test effect - to be removed
+  useEffect(() => {
+    if(tasks)
+      console.log(tasks.length)
+  }, [tasks]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -349,9 +401,15 @@ function EventPage() {
   }, [tasks, event]);
 
   useEffect(() => {
-    if (event && tasks.length > 0) {
-      const totalTaskBudget = tasks.reduce((sum, task) => sum + (task.taskBudget || 0), 0);
+    if (event || tasks.length > 0) {
+    
+      console.log("the budget is", event.eventBudget);
+      let totalTaskBudget = 0;
+      tasks.forEach((task) => {
+        totalTaskBudget += task.taskBudget;
+      });
       const newRemainingBudget = event.eventBudget - totalTaskBudget;
+      console.log("the task total", totalTaskBudget);
       setRemainingBudget(newRemainingBudget);
     }
   }, [event, tasks]);
@@ -380,14 +438,14 @@ function EventPage() {
       headerName: "שם המשימה",
       width: 150,
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       width: 150,
       align: "right",
-      flex: 4,
+      flex: 4
     },
     ...(user && (user.privileges === 2 || isUserAnAssignee)
       ? [
@@ -398,11 +456,9 @@ function EventPage() {
             align: "right",
             flex: 1,
             renderCell: (params) => {
-              return (
-                <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>
-              );
-            },
-          },
+              return <div>₪{params.row.taskBudget ? params.row.taskBudget.toLocaleString() : "אין"}</div>;
+            }
+          }
         ]
       : []),
     {
@@ -418,7 +474,7 @@ function EventPage() {
             {params.row.taskStatus}
           </div>
         );
-      },
+      }
     },
     {
       field: "assignTo",
@@ -433,7 +489,7 @@ function EventPage() {
             ))}
           </AvatarGroup>
         );
-      },
+      }
     },
     {
       field: "view",
@@ -445,16 +501,14 @@ function EventPage() {
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const taskColumns = [
     ...baseTaskColumns,
     ...(user &&
-    (user.privileges >= 2 ||
-      user.adminAccess.includes("deleteTask") ||
-      user.adminAccess.includes("editTask"))
+    (user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask"))
       ? [
           {
             field: "edit",
@@ -475,10 +529,10 @@ function EventPage() {
                   </IconButton>
                 )}
               </div>
-            ),
-          },
+            )
+          }
         ]
-      : []),
+      : [])
   ];
 
   function replaceFieldString(fieldName) {
@@ -523,7 +577,7 @@ function EventPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.date}</div>;
-      },
+      }
     },
     {
       field: "changeTime",
@@ -532,7 +586,7 @@ function EventPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.time}</div>;
-      },
+      }
     },
     {
       field: "changedBy",
@@ -546,7 +600,7 @@ function EventPage() {
             {params.row.fullName}
           </div>
         );
-      },
+      }
     },
     {
       field: "changeDescription",
@@ -555,7 +609,7 @@ function EventPage() {
       flex: 3,
       renderCell: (params) => {
         return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
-      },
+      }
     },
     {
       field: "view",
@@ -566,8 +620,8 @@ function EventPage() {
         <IconButton aria-label="view" onClick={() => setChanges(params.row.updatedFields)}>
           <VisibilityIcon />
         </IconButton>
-      ),
-    },
+      )
+    }
   ];
 
   const PageContent = ({ pageName }) => {
@@ -584,11 +638,7 @@ function EventPage() {
                 value={searchValue}
                 onChange={handleSearchChange}
               />
-              <svg
-                viewBox="0 0 32 32"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="#000000">
+              <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -596,10 +646,7 @@ function EventPage() {
                   <desc>Created with Sketch Beta.</desc>
                   <defs></defs>
                   <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                    <g
-                      id="Icon-Set"
-                      transform="translate(-256.000000, -1139.000000)"
-                      fill="#000000">
+                    <g id="Icon-Set" transform="translate(-256.000000, -1139.000000)" fill="#000000">
                       <path
                         d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
                         id="search"></path>
@@ -614,16 +661,16 @@ function EventPage() {
                 columns={taskColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 },
-                  },
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
                 }}
                 onRowDoubleClick={(params) => {
                   navigate(`/task/${params.row.taskDoc}`);
@@ -649,16 +696,16 @@ function EventPage() {
                 columns={HistoryColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 10 },
-                  },
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
                 }}
               />
             </ThemeProvider>
@@ -685,11 +732,7 @@ function EventPage() {
       {editingTask && (
         <div className="popup-overlay">
           <div ref={editTaskRef} className="popup-content">
-            <EditTask
-              task={editingTask}
-              onClose={() => setEditingTask(null)}
-              onTaskUpdated={fetchTasks}
-            />
+            <EditTask task={editingTask} onClose={() => setEditingTask(null)} onTaskUpdated={fetchTasks} />
           </div>
         </div>
       )}
@@ -721,10 +764,7 @@ function EventPage() {
                     <p>
                       <span className="status-cell">
                         <strong>סטטוס:</strong>
-                        <span
-                          className={`status-circle ${getStatusColorClass(
-                            event.eventStatus
-                          )} circle-space`}></span>
+                        <span className={`status-circle ${getStatusColorClass(event.eventStatus)} circle-space`}></span>
                         {event.eventStatus}
                       </span>
                     </p>
@@ -732,20 +772,6 @@ function EventPage() {
                       <strong>שעת סיום: </strong>
                       {event.eventTime}
                     </p>
-                    {(user.privileges === 2 || isUserAnAssignee) && (
-                      <div>
-                        <p>
-                          <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/
-                          {remainingBudget < 0 ? (
-                            <b className="overdraft">
-                              ₪{Math.abs(remainingBudget).toLocaleString()}-
-                            </b>
-                          ) : (
-                            `₪${remainingBudget.toLocaleString()}`
-                          )}
-                        </p>
-                      </div>
-                    )}
                     <p>
                       <strong>אחוז השלמה: </strong>
                       {completionPercentage}%
@@ -755,11 +781,23 @@ function EventPage() {
                       {event.eventCreatorFullName}
                     </p>
                   </div>
+                  {(user.privileges === 2 || isUserAnAssignee) && (
+                    <div>
+                      <p>
+                        <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/
+                        {remainingBudget < 0 ? (
+                          <b className="overdraft">₪{Math.abs(remainingBudget).toLocaleString()}-</b>
+                        ) : (
+                          `₪${remainingBudget.toLocaleString()}`
+                        )}
+                      </p>
+                    </div>
+                  )}
+                  {(tasks.length > 0 || event.eventBudget > 0) && <div className="event-budget-chart-container">
+                    <canvas id="budget-chart"></canvas>
+                  </div>}
                   {(user.privileges === 2 || user.adminAccess.includes("editEvent")) && (
-                    <IconButton
-                      className="event-page-edit-icon"
-                      aria-label="edit"
-                      onClick={handleEditClick}>
+                    <IconButton className="event-page-edit-icon" aria-label="edit" onClick={handleEditClick}>
                       <EditIcon />
                     </IconButton>
                   )}

@@ -4,7 +4,7 @@
   justify-content: center;
   margin: 5rem 12rem 0 auto;
   width: 90%;
-  gap: 5rem;
+  gap: 7rem;
 }
 
 .event-page-right-side {
@@ -24,7 +24,7 @@
 .event-details {
   position: relative;
   width: 100%;
-  padding: 2rem 2rem 2rem 0;
+  padding: 2rem 2rem 2rem 2rem;
   background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
   box-shadow: 0 0.1rem 1rem -0.1875rem #000;
@@ -71,7 +71,7 @@
 
 .event-page-participants {
   width: 100%;
-  padding: 2rem 2rem 2rem 0;
+  padding: 2rem 2rem 2rem 2rem;
   background-color: rgb(64, 142, 198, 0.25);
   border-radius: 1rem;
   box-shadow: 0 0.1rem 1rem -0.1875rem #000;
@@ -149,4 +149,8 @@
   height: 60%;
   top: 21%;
   right: 5%;
+}
+
+.event-budget-chart-container {
+  width: 100%;
 }

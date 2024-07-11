@@ -282,7 +282,7 @@ function Profile() {
 
     // Cleanup function to destroy chart on component unmount
     return () => chart.destroy();
-  }, []);
+  }, [numEvents, numCompletedEvents]);
 
   useEffect(() => {
     const ctx = document.getElementById("taskCompletionChart");
@@ -313,7 +313,7 @@ function Profile() {
 
     // Cleanup function to destroy chart on component unmount
     return () => chart.destroy();
-  }, []);
+  }, [numTasks, numCompletedTasks]);
 
   const columnsEvents = [
     {

@@ -72,8 +72,8 @@ function ManageUsers() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24,
-      },
+        fontSize: 24
+      }
     },
     heIL
   );
@@ -83,26 +83,26 @@ function ManageUsers() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1,
+      flex: 1
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2,
-    },
+      flex: 2
+    }
   ];
 
   const awaitingColumns = [
@@ -125,10 +125,10 @@ function ManageUsers() {
                   <DeleteIcon />
                 </IconButton>
               </div>
-            ),
-          },
+            )
+          }
         ]
-      : []),
+      : [])
   ];
 
   const columns = [
@@ -137,46 +137,46 @@ function ManageUsers() {
       headerName: "אינדקס",
       align: "right",
       flex: 1,
-      edittable: true,
+      edittable: true
     },
     {
       field: "firstName",
       headerName: "שם פרטי",
       align: "right",
       flex: 2,
-      edittable: true,
+      edittable: true
     },
     {
       field: "lastName",
       headerName: "שם משפחה",
       align: "right",
       flex: 2,
-      edittable: true,
+      edittable: true
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3,
+      flex: 3
     },
     {
       field: "phone",
       headerName: "טלפון",
       align: "right",
       flex: 2,
-      renderCell: (params) => <span dir="ltr">{params.value}</span>,
+      renderCell: (params) => <span dir="ltr">{params.value}</span>
     },
     {
       field: "department",
       headerName: "מחלקה",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "role",
       headerName: "תפקיד",
       align: "right",
-      flex: 2,
+      flex: 2
     },
     {
       field: "privileges",
@@ -185,8 +185,7 @@ function ManageUsers() {
       flex: 2,
       renderCell: (params) => {
         const privileges = params.row.privileges;
-        const hasAdminAccess =
-          Array.isArray(params.row.adminAccess) && params.row.adminAccess.length > 0;
+        const hasAdminAccess = Array.isArray(params.row.adminAccess) && params.row.adminAccess.length > 0;
 
         if (privileges === 1) {
           return (
@@ -203,16 +202,14 @@ function ManageUsers() {
           return "ללא הרשאות";
         }
         return "לא מוגדר";
-      },
-    },
+      }
+    }
   ];
 
   const editEnabled = [
     ...columns,
     ...(user &&
-    (user.privileges == 2 ||
-      user.adminAccess.includes("manageUser") ||
-      user.adminAccess.includes("manageAdmin"))
+    (user.privileges == 2 || user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin"))
       ? [
           {
             field: "edit",
@@ -255,8 +252,8 @@ function ManageUsers() {
                   </IconButton>
                 )}
               </div>
-            ),
-          },
+            )
+          }
         ]
       : []),
     {
@@ -266,15 +263,12 @@ function ManageUsers() {
       flex: 0.8,
       renderCell: (params) => (
         <div>
-          <IconButton
-            aria-label="edit"
-            title="הצגה"
-            onClick={() => navigate(`/profile/${params.row.email}`)}>
+          <IconButton aria-label="edit" title="הצגה" onClick={() => navigate(`/profile/${params.row.email}`)}>
             <VisibilityIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   async function handleRemovePermissions() {
@@ -295,7 +289,7 @@ function ManageUsers() {
       const targetUserRef = doc(usersRef, removePermmisionTarget.email);
       await updateDoc(targetUserRef, {
         privileges: 0,
-        adminAccess: [],
+        adminAccess: []
       });
       fetchUsers();
     } catch (error) {
@@ -324,8 +318,8 @@ function ManageUsers() {
                   <EditIcon />
                 </IconButton>
               </div>
-            ),
-          },
+            )
+          }
         ]
       : []),
     {
@@ -335,15 +329,12 @@ function ManageUsers() {
       flex: 0.8,
       renderCell: (params) => (
         <div>
-          <IconButton
-            aria-label="edit"
-            title="הצגה"
-            onClick={() => navigate(`/profile/${params.row.email}`)}>
+          <IconButton aria-label="edit" title="הצגה" onClick={() => navigate(`/profile/${params.row.email}`)}>
             <VisibilityIcon />
           </IconButton>
         </div>
-      ),
-    },
+      )
+    }
   ];
   async function deleteUser(email) {
     try {
@@ -371,7 +362,7 @@ function ManageUsers() {
           phone: member.phone || 0,
           department: member.department || "",
           role: member.role || "",
-          privileges: member.privileges || 0,
+          privileges: member.privileges || 0
         };
       });
       const enabledMembersFormatted = enabledMembers.map((member, index) => {
@@ -384,7 +375,7 @@ function ManageUsers() {
           department: member.department || "",
           role: member.role || "",
           privileges: member.privileges || 0,
-          adminAccess: member.adminAccess || [],
+          adminAccess: member.adminAccess || []
         };
       });
       setDisabledMemberRows(disabledMembersFormatted);
@@ -405,7 +396,7 @@ function ManageUsers() {
           id: index + 1,
           email: member.email || "",
           department: member.department || "",
-          role: member.role || "",
+          role: member.role || ""
         };
       });
       setPendingMemberRows(membersFormatted);
@@ -507,12 +498,7 @@ function ManageUsers() {
         <div className="page-title-manage-users">ניהול משתמשים</div>
         {user && (user.privileges == 2 || user.adminAccess.includes("createUser")) && (
           <div className="action-button add-user-button" onClick={() => setShowCreateUser(true)}>
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
+            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
@@ -572,16 +558,16 @@ function ManageUsers() {
               columns={editEnabled}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
+                  paginationModel: { page: 0, pageSize: 5 }
+                }
               }}
               pageSizeOptions={[5, 10, 20]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:",
-                },
+                  labelRowsPerPage: "שורות בכל עמוד:"
+                }
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />
@@ -591,11 +577,7 @@ function ManageUsers() {
           <hr className="divider-manage-users" />
           <div className="table-title">משתמשים לא פעילים</div>
           <div className="search-unactive-users-table">
-            <svg
-              viewBox="0 0 32 32"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#000000">
+            <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
@@ -633,16 +615,16 @@ function ManageUsers() {
                 columns={editDisabled}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
                 }}
                 pageSizeOptions={[5, 10, 20]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
                 }}
                 onRowDoubleClick={handleRowDoubleClick}
               />
@@ -653,11 +635,7 @@ function ManageUsers() {
           <hr className="divider-manage-users" />
           <div className="table-title">משתמשים שמחכים להרשמה</div>
           <div className="search-waiting-users-table">
-            <svg
-              viewBox="0 0 32 32"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#000000">
+            <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
@@ -694,16 +672,16 @@ function ManageUsers() {
                 columns={awaitingColumns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 5 },
-                  },
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
                 }}
                 pageSizeOptions={[5, 10, 20]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:",
-                  },
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
                 }}
               />
             </ThemeProvider>

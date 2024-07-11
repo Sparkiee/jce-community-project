@@ -63,7 +63,6 @@ function Navbar() {
   const [searchResults, setSearchResults] = useState([]);
   const [messageUnseenCount, setMessageUnseenCount] = useState(0); // [1
   const [user, setUser] = useState(null);
-
   const location = useLocation();
 
   const notificationsRef = useRef(null);
@@ -225,6 +224,11 @@ function Navbar() {
     navigate(`/profile/${user.email}`);
   }
 
+  const handleRefresh = (path) => {
+    navigate(path);
+    window.location.reload();
+  };
+
   useEffect(() => {
     setSearchQuery("");
     setSearchResults([]);
@@ -235,7 +239,7 @@ function Navbar() {
       <div className="navbar-container">
         <div className="navbar">
           <div className="logo">
-            <a to="#" onClick={() => navigate("/home")}>
+            <a to="#" onClick={() => handleRefresh("/home")}>
               <img className="logo-img" src={require("../assets/aguda.png")} alt="aguda icon" />
               <p>
                 אגודת הסטודנטים <br /> והסטודנטיות דוד ילין
@@ -245,22 +249,22 @@ function Navbar() {
           <div className="nav-items">
             <ul>
               <li>
-                <a to="#" onClick={() => navigate("/home")}>
+                <a to="#" onClick={() => handleRefresh("/home")}>
                   ראשי
                 </a>
               </li>
               <li>
-                <a to="#" onClick={() => navigate("/tasks")}>
+                <a to="#" onClick={() => handleRefresh("/tasks")}>
                   משימות
                 </a>
               </li>
               <li>
-                <a to="#" onClick={() => navigate("/events")}>
+                <a to="#" onClick={() => handleRefresh("/events")}>
                   אירועים
                 </a>
               </li>
               <li>
-                <a to="#" onClick={() => navigate("/statistics")}>
+                <a to="#" onClick={() => handleRefresh("/statistics")}>
                   סטטיסטיקות
                 </a>
               </li>
@@ -271,7 +275,7 @@ function Navbar() {
                       user.adminAccess.includes("manageUser") ||
                       user.adminAccess.includes("manageAdmin")))) && (
                   <li>
-                    <a to="#" onClick={() => navigate("/users")}>
+                    <a to="#" onClick={() => handleRefresh("/users")}>
                       ניהול משתמשים
                     </a>
                   </li>
@@ -284,7 +288,7 @@ function Navbar() {
                         "deleteDepartment" || user.adminAccess.includes("createDepartment")
                       )))) && (
                   <li>
-                    <a to="#" onClick={() => navigate("/departments")}>
+                    <a to="#" onClick={() => handleRefresh("/departments")}>
                       ניהול מחלקות
                     </a>
                   </li>
@@ -334,7 +338,7 @@ function Navbar() {
                           <React.Fragment key={index}>
                             {index > 0 && <Divider />}
                             <div
-                              onClick={() => navigate(`/profile/${result.email}`)}
+                              onClick={() => handleRefresh(`/profile/${result.email}`)}
                               className={`search-result-item ${
                                 result.privileges === 0 ? "strikethrough" : ""
                               }`}>
@@ -351,7 +355,7 @@ function Navbar() {
               </li>
             </ul>
             <div className="left-side-nav">
-              <IconButton color="primary" onClick={() => navigate(`/chat`)}>
+              <IconButton color="primary" onClick={() => handleRefresh(`/chat`)}>
                 <Badge badgeContent={messageUnseenCount} color="primary">
                   <MessageIcon className="message-icon" />
                 </Badge>

@@ -328,14 +328,17 @@ function Chat() {
       let messages = chatData.messages;
       let needsUpdate = false;
 
-      const lastViewed = chatData.lastViewed?.[user.email] || new Date(0);
+      const lastViewed = chatData.lastViewed?.[user.email];
+      const lastViewedDate =
+        lastViewed && lastViewed.toDate ? lastViewed.toDate() : new Date(lastViewed || 0);
 
       messages = messages.map((message) => {
-        if (
-          message.sender !== user.email &&
-          !message.seen &&
-          message.timestamp.toDate() > lastViewed.toDate()
-        ) {
+        const messageDate =
+          message.timestamp && message.timestamp.toDate
+            ? message.timestamp.toDate()
+            : new Date(message.timestamp || 0);
+
+        if (message.sender !== user.email && !message.seen && messageDate > lastViewedDate) {
           message.seen = true;
           needsUpdate = true;
         }

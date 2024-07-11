@@ -52,28 +52,24 @@ function HomePage() {
     {
       field: "id",
       headerName: "אינדקס",
-      width: "3%",
       align: "right",
       flex: 1,
     },
     {
       field: "taskName",
       headerName: "משימה",
-      width: 150,
       align: "right",
       flex: 2,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
-      width: 150,
       align: "right",
       flex: 3,
     },
     {
       field: "taskBudget",
       headerName: "תקציב",
-      width: 150,
       align: "right",
       flex: 1,
       renderCell: (params) => {
@@ -85,7 +81,6 @@ function HomePage() {
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -97,7 +92,6 @@ function HomePage() {
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -109,14 +103,12 @@ function HomePage() {
     {
       field: "taskTime",
       headerName: "שעת סיום",
-      width: 150,
       align: "right",
       flex: 2,
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -135,7 +127,6 @@ function HomePage() {
     {
       field: "id",
       headerName: "אינדקס",
-      width: "3%",
       align: "right",
       colors: "red",
       flex: 1,
@@ -143,21 +134,18 @@ function HomePage() {
     {
       field: "eventName",
       headerName: "שם האירוע",
-      width: 150,
       align: "right",
       flex: 2,
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
-      width: 150,
       align: "right",
       flex: 3,
     },
     {
       field: "eventBudget",
       headerName: "תקציב",
-      width: 150,
       align: "right",
       flex: 1,
       renderCell: (params) => {
@@ -171,7 +159,6 @@ function HomePage() {
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -183,7 +170,6 @@ function HomePage() {
     {
       field: "eventEndDate",
       headerName: "תאריך יעד",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -195,14 +181,12 @@ function HomePage() {
     {
       field: "eventTime",
       headerName: "שעה",
-      width: 150,
       align: "right",
       flex: 2,
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -218,7 +202,6 @@ function HomePage() {
     {
       field: "completionPercentage",
       headerName: "אחוז השלמה",
-      width: 150,
       align: "right",
       flex: 1,
     },

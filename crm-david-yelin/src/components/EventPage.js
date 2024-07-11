@@ -424,14 +424,12 @@ function EventPage() {
     {
       field: "taskName",
       headerName: "שם המשימה",
-      width: 150,
       align: "right",
       flex: 3
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
-      width: 150,
       align: "right",
       flex: 4
     },
@@ -440,7 +438,6 @@ function EventPage() {
           {
             field: "taskBudget",
             headerName: "תקציב",
-            width: 150,
             align: "right",
             flex: 1,
             renderCell: (params) => {
@@ -482,7 +479,6 @@ function EventPage() {
     {
       field: "view",
       headerName: "צפייה",
-      width: 80,
       align: "center",
       flex: 0.8,
       renderCell: (params) => (
@@ -501,7 +497,6 @@ function EventPage() {
           {
             field: "edit",
             headerName: "עריכה",
-            width: 150,
             align: "right",
             flex: 1.5,
             renderCell: (params) => (

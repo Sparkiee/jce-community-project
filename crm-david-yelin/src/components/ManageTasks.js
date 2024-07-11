@@ -107,21 +107,18 @@ function ManageTasks() {
     {
       field: "taskName",
       headerName: "שם המשימה",
-      width: 150,
       align: "right",
       flex: 2.5
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
-      width: 150,
       align: "right",
       flex: 3
     },
     {
       field: "relatedEvent",
       headerName: "שייך לאירוע",
-      width: 150,
       align: "right",
       flex: 2
     },
@@ -130,7 +127,6 @@ function ManageTasks() {
           {
             field: "taskBudget",
             headerName: "תקציב",
-            width: 150,
             align: "right",
             flex: 1,
             renderCell: (params) => {
@@ -146,7 +142,6 @@ function ManageTasks() {
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
-      width: 150,
       align: "right",
       flex: 1.5,
       renderCell: (params) => {
@@ -158,7 +153,6 @@ function ManageTasks() {
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
-      width: 150,
       align: "right",
       flex: 1.5,
       renderCell: (params) => {
@@ -170,14 +164,12 @@ function ManageTasks() {
     {
       field: "taskTime",
       headerName: "שעת סיום",
-      width: 150,
       align: "right",
       flex: 1
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
-      width: 150,
       align: "right",
       flex: 1.5,
       renderCell: (params) => {
@@ -193,7 +185,6 @@ function ManageTasks() {
     {
       field: "assignTo",
       headerName: "משוייכים",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -214,7 +205,6 @@ function ManageTasks() {
     {
       field: "view",
       headerName: "צפייה",
-      width: 80,
       align: "center",
       flex: 0.8,
       renderCell: (params) => (
@@ -232,7 +222,6 @@ function ManageTasks() {
           {
             field: "edit",
             headerName: "עריכה",
-            width: 150,
             align: "right",
             flex: 1.5,
             renderCell: (params) => (

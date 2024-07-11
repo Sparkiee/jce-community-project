@@ -170,21 +170,18 @@ function Profile() {
     {
       field: "taskName",
       headerName: "משימה",
-      width: 150,
       align: "right",
       flex: 2
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
-      width: 150,
       align: "right",
       flex: 3
     },
     {
       field: "taskBudget",
       headerName: "תקציב",
-      width: 150,
       align: "right",
       flex: 1,
       renderCell: (params) => {
@@ -194,7 +191,6 @@ function Profile() {
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -206,7 +202,6 @@ function Profile() {
     {
       field: "taskEndDate",
       headerName: "תאריך יעד",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -218,14 +213,12 @@ function Profile() {
     {
       field: "taskTime",
       headerName: "שעת סיום",
-      width: 150,
       align: "right",
       flex: 2
     },
     {
       field: "taskStatus",
       headerName: "סטטוס",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -325,21 +318,18 @@ function Profile() {
     {
       field: "eventName",
       headerName: "שם האירוע",
-      width: 150,
       align: "right",
       flex: 2
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
-      width: 150,
       align: "right",
       flex: 3
     },
     {
       field: "eventBudget",
       headerName: "תקציב",
-      width: 150,
       align: "right",
       flex: 1,
       renderCell: (params) => {
@@ -349,7 +339,6 @@ function Profile() {
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -361,7 +350,6 @@ function Profile() {
     {
       field: "eventEndDate",
       headerName: "תאריך יעד",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -373,14 +361,12 @@ function Profile() {
     {
       field: "eventTime",
       headerName: "שעת סיום",
-      width: 150,
       align: "right",
       flex: 2
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {

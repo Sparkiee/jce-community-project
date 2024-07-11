@@ -106,14 +106,12 @@ function ManageEvents() {
     {
       field: "eventName",
       headerName: "שם האירוע",
-      width: 150,
       align: "right",
       flex: 3
     },
     {
       field: "eventLocation",
       headerName: "מיקום",
-      width: 150,
       align: "right",
       flex: 2.5
     },
@@ -122,7 +120,6 @@ function ManageEvents() {
           {
             field: "eventBudget",
             headerName: "תקציב",
-            width: 150,
             align: "right",
             flex: 1,
             renderCell: (params) => {
@@ -138,7 +135,6 @@ function ManageEvents() {
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
-      width: 150,
       align: "right",
       flex: 1.5,
       renderCell: (params) => {
@@ -182,14 +178,12 @@ function ManageEvents() {
     {
       field: "completedPercentage",
       headerName: "אחוז השלמה",
-      width: 150,
       align: "right",
       flex: 1
     },
     {
       field: "assignTo",
       headerName: "משוייכים",
-      width: 150,
       align: "right",
       flex: 2,
       renderCell: (params) => {
@@ -211,7 +205,6 @@ function ManageEvents() {
     {
       field: "view",
       headerName: "צפייה",
-      width: 80,
       align: "center",
       flex: 0.8,
       renderCell: (params) => (
@@ -229,7 +222,6 @@ function ManageEvents() {
           {
             field: "edit",
             headerName: "עריכה",
-            width: 150,
             align: "right",
             flex: 1.5,
             renderCell: (params) => (

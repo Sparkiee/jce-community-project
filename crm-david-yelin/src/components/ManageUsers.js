@@ -112,7 +112,6 @@ function ManageUsers() {
           {
             field: "edit",
             headerName: "מחיקה",
-            width: 150,
             align: "right",
             flex: 1.5,
             renderCell: (params) => (
@@ -219,7 +218,6 @@ function ManageUsers() {
             field: "edit",
             field: "edit",
             headerName: "עריכה",
-            width: 150,
             align: "right",
             flex: 1.5,
             renderCell: (params) => (
@@ -312,7 +310,6 @@ function ManageUsers() {
           {
             field: "edit",
             headerName: "עריכה",
-            width: 150,
             align: "right",
             flex: 1.5,
             renderCell: (params) => (

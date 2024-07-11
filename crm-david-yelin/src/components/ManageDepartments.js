@@ -64,7 +64,6 @@ function ManageDepartments() {
     {
       field: "view",
       headerName: "עריכה",
-      width: 80,
       align: "right",
       flex: 0.5,
       renderCell: (params) => (

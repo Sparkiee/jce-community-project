@@ -14,7 +14,6 @@ import {
   getDoc,
   doc,
   serverTimestamp,
-  setDoc,
   getDocs,
   collection,
   onSnapshot,
@@ -74,6 +73,8 @@ function Chat() {
 
   const [chatSearchQuery, setChatSearchQuery] = useState("");
 
+  const searchBoxref = useRef(null);
+
   const handleChatSearch = (e) => {
     setChatSearchQuery(e.target.value);
   };
@@ -108,9 +109,6 @@ function Chat() {
 
   const fetchUserChats = async () => {
     if (!user) return;
-    if (!selectedChat) {
-      setIsChatsLoading(true);
-    }
 
     try {
       const chatRef = collection(db, "chats");
@@ -185,7 +183,8 @@ function Chat() {
       const q = query(
         collection(db, "members"),
         where("fullName", ">=", searchValue),
-        where("fullName", "<=", searchValue + "\uf8ff")
+        where("fullName", "<=", searchValue + "\uf8ff"),
+        where("privileges", ">", 0)
       );
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => doc.data());
@@ -195,6 +194,36 @@ function Chat() {
       setSearchResults([]);
     } finally {
       setIsSearchLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Function to close the search box
+    const closeSearchBox = (event) => {
+      if (
+        searchBoxref.current &&
+        !searchBoxref.current.contains(event.target) &&
+        !event.target.closest(".chat-list-search-add-minus")
+      ) {
+        setAddMode(false);
+        setSearchResults([]);
+        setSearchQuery("");
+      }
+    };
+
+    // Add event listener to the document
+    document.addEventListener("mousedown", closeSearchBox);
+
+    // Cleanup function to remove the event listener
+    return () => {
+      document.removeEventListener("mousedown", closeSearchBox);
+    };
+  }, [searchBoxref]); // Re-run when searchBoxref changes
+
+  const handleChatListSearchAddMinusClick = (event) => {
+    event.stopPropagation(); // Prevent click from propagating to the document
+    if (searchBoxref) {
+      setAddMode(!addMode); // Toggle or set addMode as needed
     }
   };
 
@@ -260,7 +289,7 @@ function Chat() {
         text: text,
         sender: user.email,
         timestamp: now,
-        seen: true,
+        seen: false,
       };
       await updateDoc(chatRef, {
         lastMessage: text,
@@ -376,13 +405,11 @@ function Chat() {
                       onChange={handleChatSearch}
                     />
                   </div>
-                  <div className="chat-list-search-add-minus">
+                  <div
+                    className="chat-list-search-add-minus"
+                    onClick={(event) => handleChatListSearchAddMinusClick(event)}>
                     {!addMode ? (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        onClick={() => setAddMode(true)}>
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"
@@ -393,11 +420,7 @@ function Chat() {
                         </g>
                       </svg>
                     ) : (
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        onClick={() => setAddMode(false)}>
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"
@@ -446,7 +469,7 @@ function Chat() {
             )}
           </div>
         </div>
-        {selectedChat && (
+        {selectedChat ? (
           <>
             <div className="chat-messages-container">
               <div className="chat-messages-top">
@@ -520,10 +543,16 @@ function Chat() {
               </div>
             </div>
           </>
+        ) : (
+          <div className="chat-messages-container">
+            <div className="chat-messages-center">
+              <p className="chose-chat">בחר משתמש כדי להתחיל שיחה.</p>
+            </div>
+          </div>
         )}
       </div>
       {addMode && (
-        <div className="chat-add-user">
+        <div ref={searchBoxref} className="chat-add-user">
           <form onSubmit={handleSearch}>
             <input type="text" placeholder="שם משתמש" name="username" />
             <button type="submit">חפש</button>
@@ -549,12 +578,13 @@ function Chat() {
                   </div>
                 ))
               ) : (
-                <p>לא נמצא משתמש</p>
+                <p>לא נמצא משתמש פעיל</p>
               )}
             </div>
           )}
         </div>
       )}
+      <div className="footer"></div>
     </div>
   );
 }

@@ -6,14 +6,14 @@
 }
 
 .manage-departments h1 {
-  margin: 2rem 0 2rem 0;
+  margin: 2rem 0 5rem;
   font-size: 3.5rem;
 }
 
 .add-department-button {
   position: absolute;
   padding-right: 1rem;
-  top: 4rem;
+  top: 7rem;
   right: 5%;
 }
 

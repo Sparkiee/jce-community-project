@@ -1,14 +1,9 @@
 .chat-body {
-  background-image: url("../assets/bg.png");
-  background-color: #c0c2e4;
-  position: relative;
   font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  height: 100%;
-  width: 100%;
 }
 
 .chat-body p {
@@ -22,13 +17,13 @@
 .chat-container {
   position: absolute;
   display: flex;
-  width: 80%;
-  height: 90%;
+  width: 70%;
+  height: 80%;
   background-color: rgba(2, 4, 79, 0.7);
   backdrop-filter: blur(19px) saturate(180%);
   border-radius: 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.125);
-  top: 50%;
+  top: 53%;
   left: 50%;
   translate: -50% -50%;
 }
@@ -228,12 +223,22 @@
 }
 
 .chat-messages-center {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   padding: 2rem;
   overflow-y: auto;
+}
+
+.chat-messages-center .chose-chat {
+  position: absolute;
+  font-size: 2.5rem;
+  top: 45%;
+  left: 40%;
+  font-weight: 300;
+  color: #a5a5a5;
 }
 
 .chat-messages-center-message-other {

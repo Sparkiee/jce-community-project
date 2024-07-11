@@ -7,7 +7,7 @@
 }
 
 .manage-events-styles h1 {
-  margin: 2rem 0 0;
+  margin: 2rem 0 5rem;
   font-size: 3.5rem;
 }
 
@@ -51,8 +51,9 @@
 }
 
 .search-events-bar {
-  position: relative;
-  margin-bottom: 1rem;
+  position: absolute;
+  top: 7rem;
+  left: 5%;
 }
 
 .search-events-bar svg {

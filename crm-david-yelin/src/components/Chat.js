@@ -21,7 +21,7 @@ import {
   where,
   arrayUnion,
   updateDoc,
-  addDoc,
+  addDoc
 } from "firebase/firestore";
 
 function Chat() {
@@ -51,9 +51,9 @@ function Chat() {
     const secondInitial = names[1] ? names[1][0] : "";
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: stringToColor(name)
       },
-      children: `${firstInitial}${secondInitial}`,
+      children: `${firstInitial}${secondInitial}`
     };
   }
 
@@ -121,9 +121,7 @@ function Chat() {
         const chat = doc.data();
         const unseenCount = chat.messages.filter(
           (message) =>
-            message.sender !== user.email &&
-            !message.seen &&
-            (!selectedChat || selectedChat.chatId !== doc.id)
+            message.sender !== user.email && !message.seen && (!selectedChat || selectedChat.chatId !== doc.id)
         ).length;
         chatArray.push({ chatId: doc.id, otherUserEmail, fullName, unseenCount, ...chat });
       }
@@ -165,7 +163,6 @@ function Chat() {
           }
         });
       });
-
       return () => unsubscribe();
     }
   }, [user]);
@@ -257,7 +254,7 @@ function Chat() {
       await addDoc(collection(db, "chats"), {
         members: [currentUserEmail, targetEmail],
         messages: [],
-        updatedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
       setSearchResults([]);
       setSearchQuery("");
@@ -289,12 +286,12 @@ function Chat() {
         text: text,
         sender: user.email,
         timestamp: now,
-        seen: false,
+        seen: false
       };
       await updateDoc(chatRef, {
         lastMessage: text,
         updatedAt: now,
-        messages: arrayUnion(message),
+        messages: arrayUnion(message)
       });
       setText("");
       fetchMessagesforChat(selectedChat);
@@ -305,12 +302,11 @@ function Chat() {
 
   const fetchMessagesforChat = async (selectedChat) => {
     const chatRef = doc(db, "chats", selectedChat.chatId);
-    onSnapshot(chatRef, async (docSnapshot) => {
-      const chatData = docSnapshot.data();
+    try {
+      const chatDoc = await getDoc(chatRef);
+      const chatData = chatDoc.data();
       let messages = chatData.messages;
       let needsUpdate = false;
-
-      // Check if there are any unseen messages from the other user
       messages = messages.map((message) => {
         if (message.sender !== user.email && !message.seen) {
           message.seen = true;
@@ -318,20 +314,73 @@ function Chat() {
         }
         return message;
       });
-
-      setMessages(messages);
-
-      // If we marked any messages as seen, update the database
+      setMessages(chatData.messages);
       if (needsUpdate) {
         await updateDoc(chatRef, { messages: messages });
         setChats((prevChats) =>
-          prevChats.map((chat) =>
-            chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
-          )
+          prevChats.map((chat) => (chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat))
         );
       }
-    });
+    } catch (e) {
+      console.error("Error fetching messages for chat:", e);
+    }
+
+    // onSnapshot(chatRef, async (docSnapshot) => {
+    //   const chatData = docSnapshot.data();
+    //   let messages = chatData.messages;
+    //   let needsUpdate = false;
+    //   console.log("im in this listener still");
+    //   // Check if there are any unseen messages from the other user
+    //   messages = messages.map((message) => {
+    //     if (
+    //       message.sender !== user.email &&
+    //       !message.seen &&
+    //       selectedChat.chatId === docSnapshot.id
+    //     ) {
+    //       // message.seen = true;
+    //       // needsUpdate = true;
+    //     }
+    //     return message;
+    //   });
+
+    //   setMessages(messages);
+
+    //   // If we marked any messages as seen, update the database
+    //   if (needsUpdate) {
+    //     await updateDoc(chatRef, { messages: messages });
+    //     setChats((prevChats) =>
+    //       prevChats.map((chat) =>
+    //         chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
+    //       )
+    //     );
+    //   }
+    // });
   };
+
+  useEffect(() => {
+    const subscribeCurrentChat = async () => {
+      // Ensure db and selectedChat?.chatId are defined
+      if (!db || !selectedChat?.chatId) {
+        console.log("db or selectedChat.chatId is undefined");
+        return;
+      }
+
+      const unsubscribe = onSnapshot(doc(db, "chats", selectedChat.chatId), async (docSnapshot) => {
+        fetchMessagesforChat(selectedChat);
+      });
+
+      return unsubscribe;
+    };
+
+    const unsubscribePromise = subscribeCurrentChat();
+    return () => {
+      unsubscribePromise.then((unsub) => {
+        if (unsub) {
+          unsub();
+        }
+      });
+    };
+  }, [selectedChat, db]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && text.trim() !== "") {
@@ -363,7 +412,7 @@ function Chat() {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  height: "100%",
+                  height: "100%"
                 }}>
                 <CircularProgress />
               </Box>
@@ -371,25 +420,15 @@ function Chat() {
               <>
                 <div className="chat-list-search">
                   <div className="chat-list-search-bar">
-                    <svg
-                      viewBox="0 0 32 32"
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="#000000">
+                    <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                       <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                      <g
-                        id="SVGRepo_tracerCarrier"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"></g>
+                      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                       <g id="SVGRepo_iconCarrier">
                         <title>search</title>
                         <desc>Created with Sketch Beta.</desc>
                         <defs></defs>
                         <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                          <g
-                            id="Icon-Set"
-                            transform="translate(-256.000000, -1139.000000)"
-                            fill="#000000">
+                          <g id="Icon-Set" transform="translate(-256.000000, -1139.000000)" fill="#000000">
                             <path
                               d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
                               id="search"></path>
@@ -411,10 +450,7 @@ function Chat() {
                     {!addMode ? (
                       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                        <g
-                          id="SVGRepo_tracerCarrier"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"></g>
+                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                         <g id="SVGRepo_iconCarrier">
                           <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="#ffffff"></path>
                         </g>
@@ -422,10 +458,7 @@ function Chat() {
                     ) : (
                       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                        <g
-                          id="SVGRepo_tracerCarrier"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"></g>
+                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                         <g id="SVGRepo_iconCarrier">
                           <path
                             d="M6 12L18 12"
@@ -457,11 +490,7 @@ function Chat() {
                       </div>
                     </div>
                     {chat.unseenCount > 0 && (
-                      <Badge
-                        badgeContent={chat.unseenCount}
-                        color="primary"
-                        className="chat-list-item-badge"
-                      />
+                      <Badge badgeContent={chat.unseenCount} color="primary" className="chat-list-item-badge" />
                     )}
                   </div>
                 ))}
@@ -488,9 +517,7 @@ function Chat() {
                     onClick={() =>
                       navigate(
                         `/profile/${
-                          selectedChat.otherUserEmail === user.email
-                            ? user.email
-                            : selectedChat.otherUserEmail
+                          selectedChat.otherUserEmail === user.email ? user.email : selectedChat.otherUserEmail
                         }`
                       )
                     }
@@ -502,16 +529,13 @@ function Chat() {
                   messages.map((message, index) => (
                     <div
                       key={index}
-                      className={`chat-messages-center-message-${
-                        message.sender === user.email ? "own" : "other"
-                      }`}>
+                      className={`chat-messages-center-message-${message.sender === user.email ? "own" : "other"}`}>
                       <div className="chat-messages-center-message-texts">
                         {message.img && <img src={message.img} />}
                         <pre>{message.text}</pre>
                         <span>
                           {new Date(
-                            message.timestamp.seconds * 1000 +
-                              message.timestamp.nanoseconds / 1000000
+                            message.timestamp.seconds * 1000 + message.timestamp.nanoseconds / 1000000
                           ).toLocaleString("en-GB", { hour12: false })}
                         </span>
                       </div>

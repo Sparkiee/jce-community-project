@@ -68,6 +68,7 @@ function Chat() {
   const [user, setUser] = useState(null);
   const [isChatsLoading, setIsChatsLoading] = useState(true);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
 
   const navigate = useNavigate();
 
@@ -172,7 +173,7 @@ function Chat() {
         }
         // Reset chat state when component unmounts
         setSelectedChat(null);
-        setMessages([]);
+        setChats([]);
       };
     }
   }, [user]);

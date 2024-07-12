@@ -6,12 +6,12 @@
   margin-top: 5rem;
 }
 
-h2 {
+.statistics-container h2 {
   font-size: 3rem;
   font-weight: 500;
 }
 
-p {
+.statistics-container p {
   font-size: 2rem;
   font-weight: 400;
   margin-bottom: 0;

@@ -83,19 +83,12 @@ const CustomAlert = React.forwardRef(function CustomAlert(props, ref) {
 
 function getRandomColor() {
   const r = Math.floor(Math.random() * 256); // Random between 0-255
-  const g = Math.floor(Math.random() * 190); // Random between 0-255
+  const g = Math.floor(Math.random() * 130); // Random between 0-255
   const b = Math.floor(Math.random() * 256); // Random between 0-255
   // const a = 0.2; // Fixed alpha for background
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-// Function to generate random RGBA color with full opacity for border
-function getRandomBorderColor() {
-  const r = Math.floor(Math.random() * 256); // Random between 0-255
-  const g = Math.floor(Math.random() * 256); // Random between 0-255
-  const b = Math.floor(Math.random() * 256); // Random between 0-255
-  return `rgba(${r}, ${g}, ${b}, 1)`;
-}
 
 function EventPage() {
   const pages = ["משימות קשורות", "פורום", "קבצים", "שינויים"];

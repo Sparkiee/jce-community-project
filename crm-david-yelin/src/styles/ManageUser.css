@@ -106,7 +106,7 @@
 .add-user-button {
   position: absolute;
   right: 5%;
-  top: 11rem;
+  top: 10.5rem;
 }
 
 @media screen and (max-width: 1440px) {

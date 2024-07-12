@@ -846,14 +846,6 @@ function EventPage() {
                     labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
                     credits={false}
                     labelMaxFileSizeExceeded="הקובץ גדול מדי"
-                    onprocessfile={(error, file) => {
-                      if (!error) {
-                        setTimeout(() => {
-                          setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
-                          fetchFiles(); // Fetch files again to update the DataGrid
-                        }, 2000);
-                      }
-                    }}
                     server={{
                       process: async (fieldName, file, metadata, load, error, progress, abort) => {
                         const storageRef = ref(storage, `events/${id}/${file.name}`);

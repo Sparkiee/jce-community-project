@@ -473,13 +473,8 @@ function TaskPage() {
               labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
               credits={false}
               labelMaxFileSizeExceeded="הקובץ גדול מדי"
-              onprocessfile={(error, file) => {
-                if (!error) {
-                  setTimeout(() => {
-                    setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
+              onremovefile={() => {
                     fetchFiles();
-                  }, 2000);
-                }
               }}
               server={{
                 process: async (fieldName, file, metadata, load, error, progress, abort) => {

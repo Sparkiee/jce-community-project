@@ -775,7 +775,7 @@ function EventPage() {
                 if (!error) {
                   setTimeout(() => {
                     setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
-                    fetchFiles(); // Fetch files again to update the DataGrid
+                    fetchFiles();
                   }, 2000);
                 }
               }}

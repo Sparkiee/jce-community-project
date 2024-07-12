@@ -20,7 +20,6 @@
   width: 70%;
   height: 80%;
   background-color: rgba(2, 4, 79, 0.7);
-  backdrop-filter: blur(19px) saturate(180%);
   border-radius: 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.125);
   top: 53%;
@@ -276,13 +275,9 @@
 }
 
 .chat-messages-center-message-box a {
-  color: #0000ee;
-  text-decoration: underline;
-  word-break: break-all;
-}
-
-.chat-messages-center-message-box a:hover {
+  color: #a0deff;
   text-decoration: none;
+  word-break: break-all;
 }
 
 .chat-messages-center-message-seen-icon {

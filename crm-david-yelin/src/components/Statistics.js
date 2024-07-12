@@ -3,6 +3,7 @@ import { Bar, Pie } from "react-chartjs-2";
 import { db } from "../firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import "../styles/Statistics.css";
+import { Ticks } from "chart.js";
 
 function Statistics() {
   const [eventsCount, setEventsCount] = useState([]);
@@ -106,7 +107,6 @@ function Statistics() {
     labels: years,
     datasets: [
       {
-        label: "מספר אירועים בשנה",
         data: eventsCount,
         backgroundColor: eventsCount.map((_, index) => getColor(index)),
       },
@@ -117,7 +117,6 @@ function Statistics() {
     labels: years,
     datasets: [
       {
-        label: "מספר משימות בשנה",
         data: tasksCount,
         backgroundColor: tasksCount.map((_, index) => getColor(index)),
       },
@@ -154,6 +153,19 @@ function Statistics() {
     ],
   };
 
+  const yearEventsTasksOptions = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
   const options = {
     type: "bar",
     scales: {
@@ -165,21 +177,28 @@ function Statistics() {
 
   return (
     <div>
-      <div>
-        <h2>מספר אירועים בשנה</h2>
-        <Bar data={eventData} options={options} />
-      </div>
-      <div>
-        <h2>מספר משימות בשנה</h2>
-        <Bar data={taskData} options={options} />
-      </div>
-      <div>
-        <h2>תקציב כולל ותקציב שנוצל בשנה</h2>
-        <Bar data={budgetChartData} options={options} />
-      </div>
-      <div>
-        <h3>סטטוס משימות לשנת {new Date().getFullYear()}</h3>
-        <Pie data={taskStatusChartData} />
+      <div className="statistics-container">
+        <div className="statistics-top">
+          <div className="year-events-statistics">
+            <h2>מספר אירועים בשנה</h2>
+            <Bar data={eventData} options={yearEventsTasksOptions} />
+          </div>
+          <div className="year-tasks-statistics">
+            <h2>מספר משימות בשנה</h2>
+            <Bar data={taskData} options={yearEventsTasksOptions} />
+          </div>
+        </div>
+        <div className="statistics-middle">
+          <div className="year-budget-statistics">
+            <h2>תקציב כולל ותקציב שנוצל בשנה</h2>
+            <Bar data={budgetChartData} options={options} />
+          </div>
+          <div className="current-year-tasks-status-statistics">
+            <h2>סטטוס משימות לשנת {new Date().getFullYear()}</h2>
+            <Pie data={taskStatusChartData} />
+          </div>
+        </div>
+        <div className="statistics-bottom"></div>
       </div>
     </div>
   );

@@ -1,0 +1,52 @@
+.statistics-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  margin-top: 5rem;
+}
+
+h2 {
+  font-size: 3rem;
+  font-weight: 500;
+}
+
+.statistics-top {
+  width: 80%;
+  display: flex;
+  gap: 5rem;
+}
+
+.year-events-statistics {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.year-tasks-statistics {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statistics-middle {
+  width: 80%;
+  display: flex;
+  gap: 5rem;
+}
+
+.year-budget-statistics {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.current-year-tasks-status-statistics {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

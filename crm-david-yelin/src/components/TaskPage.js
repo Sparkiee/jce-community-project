@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { db } from "../firebase";
-import { doc, getDoc, query, collection, where, getDocs, orderBy } from "firebase/firestore";
+import { db, storage } from "../firebase";
+import { doc, getDoc, query, collection, where, getDocs, orderBy, updateDoc, arrayUnion} from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL, listAll,getMetadata, deleteObject } from "firebase/storage";
 import Avatar from "@mui/material/Avatar";
 import "../styles/TaskPage.css";
 import "../styles/Styles.css";
@@ -18,6 +19,20 @@ import { Tab } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { DataGrid } from "@mui/x-data-grid";
 import ChangeLog from "./ChangeLog";
+import { FilePond, registerPlugin } from "react-filepond";
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import ConfirmAction from "./ConfirmAction";
+import DownloadIcon from "@mui/icons-material/Download";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+// Register the plugins
+registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview, FilePondPluginFileValidateSize);
 
 function stringToColor(string) {
   let hash = 0;
@@ -45,6 +60,17 @@ function stringAvatar(name) {
     children: initials
   };
 }
+
+function formatFileSize(bytes) {
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 Byte";
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
+const CustomAlert = React.forwardRef(function CustomAlert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} action={null} />;
+});
 
 function TaskPage() {
   const pages = ["פורום", "קבצים", "שינויים"];
@@ -109,6 +135,12 @@ function TaskPage() {
     }
   }
 
+  const [fileError, setFileError] = useState(false);
+  const [fileErrorMessage, setFileErrorMessage] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [deleteFile, setDeleteFile] = useState(null);
+  const [fileRows, setFileRows] = useState([]);
+
   const theme = createTheme(
     {
       direction: "rtl",
@@ -128,6 +160,7 @@ function TaskPage() {
     },
     heIL
   );
+
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
@@ -188,6 +221,7 @@ function TaskPage() {
         } else {
           setEventName("");
         }
+        fetchFiles(); // Fetch files related to the task
       } else {
         console.error("No such document!");
         navigate("/tasks");
@@ -229,6 +263,56 @@ function TaskPage() {
     }
   }
 
+  const fetchItemUrl = async (imagePath) => {
+    const imageRef = ref(storage, imagePath);
+    try {
+      const metadata = await getDownloadURL(imageRef);
+      return metadata;
+    } catch (error) {
+      console.error("Error fetching item URL:", error);
+      return null;
+    }
+  };
+
+  const fetchFiles = async () => {
+    try {
+      const taskDoc = await getDoc(doc(db, "tasks", taskId));
+      if (taskDoc.exists()) {
+        const taskData = taskDoc.data();
+        const fileData = taskData.taskFiles || [];
+
+        const filesWithUrls = await Promise.all(
+          fileData.map(async (file) => {
+            const itemPath = `tasks/${taskId}/${file.name}`;
+            const itemUrl = await fetchItemUrl(itemPath);
+            return { ...file, id: file.name, itemUrl, itemPath };
+          })
+        );
+
+        setFileRows(filesWithUrls);
+      }
+    } catch (e) {
+      console.error("Error fetching files: ", e);
+    }
+  };
+
+  const handleDeleteFile = async () => {
+    try {
+      const taskDocRef = doc(db, "tasks", taskId);
+      const taskDoc = await getDoc(taskDocRef);
+      if (taskDoc.exists()) {
+        const taskData = taskDoc.data();
+        const updatedFiles = taskData.taskFiles.filter((file) => file.name !== deleteFile.name);
+        await updateDoc(taskDocRef, { taskFiles: updatedFiles });
+      }
+      await deleteObject(ref(storage, `tasks/${taskId}/${deleteFile.name}`));
+      fetchFiles();
+    } catch (e) {
+      console.error("Error deleting file:", e);
+    }
+    setDeleteFile(null);
+  };
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -239,7 +323,6 @@ function TaskPage() {
 
   const handleSaveEdit = () => {
     setIsEditing(false);
-    // Fetch task details again to refresh the data
     fetchTask();
   };
 
@@ -249,7 +332,6 @@ function TaskPage() {
         setIsEditing(false);
       }
       if (changelogRef.current && !changelogRef.current.contains(event.target)) {
-        console.log("click outside");
         setChanges("");
       }
     };
@@ -284,10 +366,11 @@ function TaskPage() {
       .map(([fieldName]) => {
         return `${replaceFieldString(fieldName)}`;
       })
-      .join(", "); // Modified this line to add a comma and space
+      .join(", ");
 
     return formatted;
   }
+  
   const HistoryColumns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
     {
@@ -344,6 +427,32 @@ function TaskPage() {
     }
   ];
 
+  const fileColumns = [
+    { field: "preview", headerName: "תצוגה מקדימה", align: "right", flex: 0.6, renderCell: (params) => <div>{params.row.type.includes("image") ? <img className="event-file-image-preview" src={params.row.itemUrl} /> : ""}</div> },
+    { field: "name", headerName: "שם הקובץ", align: "right", flex: 3 },
+    { field: "size", headerName: "גודל הקובץ", align: "right", flex: 1, renderCell: (params) => <div className="event-file-size">{params.row.size}</div> },
+    { field: "type", headerName: "סוג הקובץ", align: "right", flex: 1, renderCell: (params) => <div>{params.row.type.split("/")[1]}</div> },
+    { field: "uploadedAt", headerName: "תאריך העלאה", align: "right", flex: 1, renderCell: (params) => <div>{params.value ? params.value.toDate().toLocaleDateString("he-IL") : ""}</div> },
+    { field: "edit", headerName: "עריכה", align: "right", flex: 0.8, renderCell: (params) =>
+     <>
+     <IconButton aria-label="download" onClick={() => downloadFile(params.row.itemUrl)}>
+      <DownloadIcon />
+    </IconButton><IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
+      <DeleteForeverIcon />
+      </IconButton>
+      </>
+       }
+  ];
+
+  const downloadFile = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = url.split("/").pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
@@ -353,7 +462,117 @@ function TaskPage() {
           </div>
         );
       case pages[1]:
-        return <h2>פה יהיו הקבצים</h2>;
+        return (
+          <div className="task-files">
+            <h2>העלאת קבצים</h2>
+            <FilePond
+              files={uploadedFiles}
+              allowMultiple
+              maxFiles={5}
+              maxFileSize="1000MB"
+              labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
+              credits={false}
+              labelMaxFileSizeExceeded="הקובץ גדול מדי"
+              onprocessfile={(error, file) => {
+                if (!error) {
+                  setTimeout(() => {
+                    setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
+                    fetchFiles();
+                  }, 2000);
+                }
+              }}
+              server={{
+                process: async (fieldName, file, metadata, load, error, progress, abort) => {
+                  const storageRef = ref(storage, `tasks/${taskId}/${file.name}`);
+                  const listRef = ref(storage, `tasks/${taskId}/`);
+                  try {
+                    const existingFiles = await listAll(listRef);
+                    const fileNames = existingFiles.items.map((item) => item.name);
+
+                    if (fileNames.includes(file.name)) {
+                      setFileError(true);
+                      setFileErrorMessage(`קובץ עם השם ${file.name} כבר קיים במערכת.`);
+                      abort();
+                      return;
+                    }
+                  } catch (listError) {
+                    console.error("Error listing files:", listError);
+                    error(listError.message);
+                    return;
+                  }
+
+                  const uploadTask = uploadBytesResumable(storageRef, file);
+
+                  uploadTask.on(
+                    "state_changed",
+                    (snapshot) => {
+                      progress(true, snapshot.bytesTransferred, snapshot.totalBytes);
+                    },
+                    (uploadError) => {
+                      error(uploadError.message);
+                    },
+                    async () => {
+                      try {
+                        const fileMetadata = await getMetadata(uploadTask.snapshot.ref);
+                        const formattedFileSize = formatFileSize(fileMetadata.size);
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        const taskDocRef = doc(db, "tasks", taskId);
+                        await updateDoc(taskDocRef, {
+                          taskFiles: arrayUnion({
+                            name: file.name,
+                            size: formattedFileSize,
+                            type: file.type,
+                            uploadedAt: new Date()
+                          })
+                        });
+                        load(downloadURL);
+                      } catch (downloadURLError) {
+                        console.error("Error getting download URL:", downloadURLError);
+                        error(downloadURLError.message);
+                      }
+                    }
+                  );
+
+                  return {
+                    abort: () => {
+                      uploadTask.cancel();
+                      abort();
+                    }
+                  };
+                }
+              }}
+              name="files"
+              labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
+            />
+            <Snackbar
+              open={fileError}
+              autoHideDuration={3000}
+              onClose={() => setFileError(false)}
+              anchorOrigin={{ vertical: "center", horizontal: "center" }}>
+              <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
+            </Snackbar>
+            <h2>רשימת קבצים</h2>
+            <div className="task-files-table">
+              <ThemeProvider theme={theme}>
+                <DataGrid
+                  rows={fileRows}
+                  columns={fileColumns}
+                  initialState={{
+                    pagination: { paginationModel: { page: 0, pageSize: 10 } }
+                  }}
+                  pageSizeOptions={[10, 20, 50]}
+                  localeText={{
+                    MuiTablePagination: {
+                      labelDisplayedRows: ({ from, to, count }) =>
+                        `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                      labelRowsPerPage: "שורות בכל עמוד:"
+                    }
+                  }}
+                />
+              </ThemeProvider>
+            </div>
+          </div>
+        );
       case pages[2]:
         return (
           <div className="task-history">
@@ -362,9 +581,7 @@ function TaskPage() {
                 rows={history}
                 columns={HistoryColumns}
                 initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 10 }
-                  }
+                  pagination: { paginationModel: { page: 0, pageSize: 10 } }
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
@@ -390,6 +607,11 @@ function TaskPage() {
           <div ref={changelogRef} className="popup-content">
             <ChangeLog fields={changes} onClose={() => setChanges("")} />
           </div>
+        </div>
+      )}
+      {deleteFile && (
+        <div className="popup-overlay">
+          <ConfirmAction onConfirm={handleDeleteFile} onCancel={() => setDeleteFile(null)} />
         </div>
       )}
       <div className="task-page-container">

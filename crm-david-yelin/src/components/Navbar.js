@@ -6,16 +6,7 @@ import { auth } from "../firebase.js";
 import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import IconButton from "@mui/material/IconButton";
-import {
-  updateDoc,
-  doc,
-  onSnapshot,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { updateDoc, doc, onSnapshot, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
@@ -48,9 +39,9 @@ function Navbar() {
     const secondInitial = names[1] ? names[1][0] : "";
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: stringToColor(name)
       },
-      children: `${firstInitial}${secondInitial}`,
+      children: `${firstInitial}${secondInitial}`
     };
   }
 
@@ -95,10 +86,7 @@ function Navbar() {
           // Handle the error appropriately
         }
       );
-      const chatsQuery = query(
-        collection(db, "chats"),
-        where("members", "array-contains", user.email)
-      );
+      const chatsQuery = query(collection(db, "chats"), where("members", "array-contains", user.email));
       unsubscribeChatsSnapshot = onSnapshot(
         chatsQuery,
         (querySnapshot) => {
@@ -259,11 +247,15 @@ function Navbar() {
                   אירועים
                 </a>
               </li>
-              <li>
-                <a to="#" onClick={() => navigate("/statistics")}>
-                  סטטיסטיקות
-                </a>
-              </li>
+              {user &&
+                (user.privileges >= 2 ||
+                  (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewStatistics"))) && (
+                  <li>
+                    <a to="#" onClick={() => navigate("/statistics")}>
+                      סטטיסטיקות
+                    </a>
+                  </li>
+                )}
               {user &&
                 ((user.privileges > 0 && user.privileges == 2) ||
                   (Array.isArray(user.adminAccess) &&
@@ -290,11 +282,7 @@ function Navbar() {
                   </li>
                 )}
               <li className="search-li-nav">
-                <svg
-                  viewBox="0 0 32 32"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="#000000">
+                <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                   <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                   <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                   <g id="SVGRepo_iconCarrier">
@@ -302,10 +290,7 @@ function Navbar() {
                     <desc>Created with Sketch Beta.</desc>
                     <defs></defs>
                     <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                      <g
-                        id="Icon-Set"
-                        transform="translate(-256.000000, -1139.000000)"
-                        fill="#000000">
+                      <g id="Icon-Set" transform="translate(-256.000000, -1139.000000)" fill="#000000">
                         <path
                           d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
                           id="search"></path>
@@ -335,9 +320,7 @@ function Navbar() {
                             {index > 0 && <Divider />}
                             <div
                               onClick={() => navigate(`/profile/${result.email}`)}
-                              className={`search-result-item ${
-                                result.privileges === 0 ? "strikethrough" : ""
-                              }`}>
+                              className={`search-result-item ${result.privileges === 0 ? "strikethrough" : ""}`}>
                               {result.fullName}
                             </div>
                           </React.Fragment>
@@ -385,10 +368,7 @@ function Navbar() {
                   )}
                   <Divider />
                   <div className="notification-actions">
-                    <a
-                      href="#"
-                      className="notification-button"
-                      onClick={() => setNotificationsVisible(false)}>
+                    <a href="#" className="notification-button" onClick={() => setNotificationsVisible(false)}>
                       סגור
                     </a>
                     <a
@@ -403,11 +383,7 @@ function Navbar() {
                 </div>
               )}
               {user && (
-                <Avatar
-                  {...stringAvatar(user.fullName)}
-                  title={fullName}
-                  onClick={() => handleProfileClick()}
-                />
+                <Avatar {...stringAvatar(user.fullName)} title={fullName} onClick={() => handleProfileClick()} />
               )}
               <a className="logout-button" to="/logout" onClick={() => disconnect()}>
                 התנתק

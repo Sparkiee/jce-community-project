@@ -11,35 +11,22 @@ function EditAccess(props) {
   const [permSuccess, setPermSuccess] = useState(false);
   const [checkAll, setCheckAll] = useState(false);
   const [access, setAccess] = useState({
-    createTask:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
-    editTask:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editTask"),
-    deleteTask:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteTask"),
-    createEvent:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createEvent"),
-    editEvent:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editEvent"),
-    deleteEvent:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteEvent"),
-    createUser:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createUser"),
-    manageUser:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
-    manageAdmin:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
-    deleteComment:
-      Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment"),
-    editDepartment:
-      Array.isArray(props.target.adminAccess) &&
-      props.target.adminAccess.includes("editDepartment"),
-    deleteDepartment:
-      Array.isArray(props.target.adminAccess) &&
-      props.target.adminAccess.includes("deleteDepartment"),
-    createDepartment:
-      Array.isArray(props.target.adminAccess) &&
-      props.target.adminAccess.includes("createDepartment"),
+    createTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createTask"),
+    editTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editTask"),
+    deleteTask: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteTask"),
+    createEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createEvent"),
+    editEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editEvent"),
+    deleteEvent: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteEvent"),
+    createUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createUser"),
+    manageUser: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageUser"),
+    manageAdmin: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("manageAdmin"),
+    deleteComment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteComment"),
+    editDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("editDepartment"),
+    deleteDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteDepartment"),
+    createDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createDepartment"),
+    uploadFile: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("uploadFile"),
+    deleteFile: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteFile"),
+    viewStatistics: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("viewStatistics")
   });
 
   const handleCheckAllChange = (event) => {
@@ -59,6 +46,9 @@ function EditAccess(props) {
       editDepartment: newCheckAll,
       deleteDepartment: newCheckAll,
       createDepartment: newCheckAll,
+      uploadFile: newCheckAll,
+      deleteFile: newCheckAll,
+      viewStatistics: newCheckAll,
     });
   };
 
@@ -83,7 +73,7 @@ function EditAccess(props) {
     try {
       const memberRef = doc(db, "members", props.target.email);
       await updateDoc(memberRef, {
-        adminAccess: updatedAdminAccess,
+        adminAccess: updatedAdminAccess
       });
       setPermSuccess(true);
       setTimeout(() => {
@@ -98,30 +88,9 @@ function EditAccess(props) {
   return (
     <div className="edit-access">
       <div className="action-close" onClick={props.onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <form className="edit-access-form" onSubmit={handleSubmit}>
@@ -216,6 +185,17 @@ function EditAccess(props) {
                 יצירת מחלקה
               </label>
             </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="viewStatistics"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.viewStatistics}
+                  onChange={handleChange}
+                />
+                צפיה בסטטיסטיקות
+              </label>
+            </div>
           </div>
           <div className="edit-access-box-left">
             <div className="edit-access-input">
@@ -282,6 +262,28 @@ function EditAccess(props) {
                   onChange={handleChange}
                 />
                 מחיקת אירוע
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="uploadFile"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.uploadFile}
+                  onChange={handleChange}
+                />
+                העלאת קבצים
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="deleteFile"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.deleteFile}
+                  onChange={handleChange}
+                />
+                מחיקת קבצים
               </label>
             </div>
           </div>

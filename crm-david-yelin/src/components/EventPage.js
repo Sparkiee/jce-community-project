@@ -83,19 +83,12 @@ const CustomAlert = React.forwardRef(function CustomAlert(props, ref) {
 
 function getRandomColor() {
   const r = Math.floor(Math.random() * 256); // Random between 0-255
-  const g = Math.floor(Math.random() * 190); // Random between 0-255
+  const g = Math.floor(Math.random() * 130); // Random between 0-255
   const b = Math.floor(Math.random() * 256); // Random between 0-255
   // const a = 0.2; // Fixed alpha for background
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-// Function to generate random RGBA color with full opacity for border
-function getRandomBorderColor() {
-  const r = Math.floor(Math.random() * 256); // Random between 0-255
-  const g = Math.floor(Math.random() * 256); // Random between 0-255
-  const b = Math.floor(Math.random() * 256); // Random between 0-255
-  return `rgba(${r}, ${g}, ${b}, 1)`;
-}
 
 function EventPage() {
   const pages = ["משימות קשורות", "פורום", "קבצים", "שינויים"];
@@ -712,9 +705,12 @@ function EventPage() {
             }}>
             <DownloadIcon />
           </IconButton>
-          <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
-            <DeleteForeverIcon />
-          </IconButton>
+          {user &&
+            (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
+              <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
+                <DeleteForeverIcon />
+              </IconButton>
+            )}
         </>
       )
     }
@@ -820,93 +816,98 @@ function EventPage() {
       case pages[2]:
         return (
           <div className="event-files">
-            <h2>העלאת קבצים</h2>
-            <FilePond
-              files={uploadedFiles}
-              allowMultiple={true}
-              maxFiles={5}
-              maxFileSize={"1000MB"}
-              labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
-              credits={false}
-              labelMaxFileSizeExceeded="הקובץ גדול מדי"
-              onprocessfile={(error, file) => {
-                if (!error) {
-                  setTimeout(() => {
-                    setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
-                    fetchFiles(); // Fetch files again to update the DataGrid
-                  }, 2000);
-                }
-              }}
-              server={{
-                process: async (fieldName, file, metadata, load, error, progress, abort) => {
-                  const storageRef = ref(storage, `events/${id}/${file.name}`);
-
-                  const listRef = ref(storage, `events/${id}/`);
-                  try {
-                    const existingFiles = await listAll(listRef);
-                    const fileNames = existingFiles.items.map((item) => item.name);
-
-                    if (fileNames.includes(file.name)) {
-                      setFileError(true);
-                      setFileErrorMessage(`קובץ עם השם ${file.name} כבר קיים במערכת.`);
-                      abort();
-                      return;
-                    }
-                  } catch (listError) {
-                    console.log("Error listing files: ", listError);
-                    error(listError.message);
-                    return;
-                  }
-
-                  const uploadTask = uploadBytesResumable(storageRef, file);
-
-                  uploadTask.on(
-                    "state_changed",
-                    (snapshot) => {
-                      progress(true, snapshot.bytesTransferred, snapshot.totalBytes);
-                    },
-                    (uploadError) => {
-                      error(uploadError.message);
-                    },
-                    async () => {
-                      try {
-                        const fileMetadata = await getMetadata(uploadTask.snapshot.ref);
-                        const formattedFileSize = formatFileSize(fileMetadata.size);
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        const eventDocRef = doc(db, "events", id);
-                        await updateDoc(eventDocRef, {
-                          eventFiles: arrayUnion({
-                            name: file.name,
-                            size: formattedFileSize,
-                            type: file.type,
-                            uploadedAt: new Date()
-                          })
-                        });
-                        load(downloadURL);
-                      } catch (downloadURLError) {
-                        console.log("Error getting download URL: ", downloadURLError);
-                        error(downloadURLError.message);
+            {user &&
+              (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
+                <div>
+                  <h2>העלאת קבצים</h2>
+                  <FilePond
+                    files={uploadedFiles}
+                    allowMultiple={true}
+                    maxFiles={5}
+                    maxFileSize={"1000MB"}
+                    labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
+                    credits={false}
+                    labelMaxFileSizeExceeded="הקובץ גדול מדי"
+                    onprocessfile={(error, file) => {
+                      if (!error) {
+                        setTimeout(() => {
+                          setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
+                          fetchFiles(); // Fetch files again to update the DataGrid
+                        }, 2000);
                       }
-                    }
-                  );
-                  return {
-                    abort: () => {
-                      uploadTask.cancel();
-                      abort();
-                    }
-                  };
-                }
-              }}
-              name="files"
-              labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
-            />
-            <Snackbar
-              open={fileError}
-              autoHideDuration={3000}
-              onClose={() => setFileError(false)}
-              anchorOrigin={{ vertical: "center", horizontal: "center" }}>
-              <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
-            </Snackbar>
+                    }}
+                    server={{
+                      process: async (fieldName, file, metadata, load, error, progress, abort) => {
+                        const storageRef = ref(storage, `events/${id}/${file.name}`);
+
+                        const listRef = ref(storage, `events/${id}/`);
+                        try {
+                          const existingFiles = await listAll(listRef);
+                          const fileNames = existingFiles.items.map((item) => item.name);
+
+                          if (fileNames.includes(file.name)) {
+                            setFileError(true);
+                            setFileErrorMessage(`קובץ עם השם ${file.name} כבר קיים במערכת.`);
+                            abort();
+                            return;
+                          }
+                        } catch (listError) {
+                          console.log("Error listing files: ", listError);
+                          error(listError.message);
+                          return;
+                        }
+
+                        const uploadTask = uploadBytesResumable(storageRef, file);
+
+                        uploadTask.on(
+                          "state_changed",
+                          (snapshot) => {
+                            progress(true, snapshot.bytesTransferred, snapshot.totalBytes);
+                          },
+                          (uploadError) => {
+                            error(uploadError.message);
+                          },
+                          async () => {
+                            try {
+                              const fileMetadata = await getMetadata(uploadTask.snapshot.ref);
+                              const formattedFileSize = formatFileSize(fileMetadata.size);
+                              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                              const eventDocRef = doc(db, "events", id);
+                              await updateDoc(eventDocRef, {
+                                eventFiles: arrayUnion({
+                                  name: file.name,
+                                  size: formattedFileSize,
+                                  type: file.type,
+                                  uploadedAt: new Date()
+                                })
+                              });
+                              load(downloadURL);
+                            } catch (downloadURLError) {
+                              console.log("Error getting download URL: ", downloadURLError);
+                              error(downloadURLError.message);
+                            }
+                          }
+                        );
+                        return {
+                          abort: () => {
+                            uploadTask.cancel();
+                            abort();
+                          }
+                        };
+                      }
+                    }}
+                    name="files"
+                    labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
+                  />
+                  <Snackbar
+                    open={fileError}
+                    autoHideDuration={3000}
+                    onClose={() => setFileError(false)}
+                    anchorOrigin={{ vertical: "center", horizontal: "center" }}>
+                    <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
+                  </Snackbar>
+                </div>
+              )}
             <h2>רשימת קבצים</h2>
             <div className="event-files-table">
               <ThemeProvider theme={theme}>
@@ -1063,9 +1064,11 @@ function EventPage() {
                       </p>
                     </div>
                   )}
-                  {(tasks.length > 0 || event.eventBudget > 0) && <div className="event-budget-chart-container">
-                    <canvas id="budget-chart"></canvas>
-                  </div>}
+                  {(tasks.length > 0 || event.eventBudget > 0) && (
+                    <div className="event-budget-chart-container">
+                      <canvas id="budget-chart"></canvas>
+                    </div>
+                  )}
                   {(user.privileges === 2 || user.adminAccess.includes("editEvent")) && (
                     <IconButton className="event-page-edit-icon" aria-label="edit" onClick={handleEditClick}>
                       <EditIcon />

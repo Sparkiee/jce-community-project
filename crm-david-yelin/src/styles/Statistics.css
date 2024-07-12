@@ -11,6 +11,12 @@ h2 {
   font-weight: 500;
 }
 
+p {
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
 .statistics-top {
   width: 80%;
   display: flex;
@@ -22,6 +28,9 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 50%;
+  padding: 1rem 2rem;
+  box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }
 
 .year-tasks-statistics {
@@ -29,6 +38,9 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 50%;
+  padding: 1rem 2rem;
+  box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }
 
 .statistics-middle {
@@ -42,6 +54,9 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 50%;
+  padding: 1rem 2rem;
+  box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }
 
 .current-year-tasks-status-statistics {
@@ -49,4 +64,25 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 50%;
+  padding: 1rem 2rem;
+  box-shadow: 0rem 0rem 3rem -2.1875rem #000;
+}
+
+.current-year-tasks-status-statistics-pie {
+  width: 55rem !important;
+  height: 55rem !important;
+}
+
+.statistics-bottom {
+  width: 80%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.current-year-department-based-events-tasks-statistics {
+  width: 100%;
+  padding: 1rem 2rem;
+  box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }

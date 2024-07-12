@@ -89,7 +89,6 @@ function getRandomColor() {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-
 function EventPage() {
   const pages = ["משימות קשורות", "פורום", "קבצים", "שינויים"];
   const handlePageSwitch = (event, newValue) => {
@@ -351,6 +350,7 @@ function EventPage() {
     }
     const ctx = document.getElementById("budget-chart");
     if (!ctx) return;
+     
     const data = {
       labels: taskNames,
       datasets: [
@@ -368,7 +368,25 @@ function EventPage() {
         responsive: true,
         plugins: {
           legend: {
-            position: "bottom"
+            position: "bottom",
+            labels: {
+              font: {
+                size: 18
+              },
+
+              color: "#000000"
+            }
+          },
+          tooltip: {
+            titleFont: {
+              size: 18
+            },
+            bodyFont: {
+              size: 18
+            },
+            footerFont: {
+              size: 18
+            }
           }
         }
       }

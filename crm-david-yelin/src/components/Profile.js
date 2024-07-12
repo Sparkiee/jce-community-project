@@ -267,7 +267,25 @@ function Profile() {
         responsive: true,
         plugins: {
           legend: {
-            position: "bottom"
+            position: "bottom",
+            labels: {
+              font: {
+                size: 14
+              },
+
+              color: "#000000"
+            }
+          },
+          tooltip: {
+            titleFont: {
+              size: 18
+            },
+            bodyFont: {
+              size: 18
+            },
+            footerFont: {
+              size: 18
+            }
           }
         }
       }
@@ -298,7 +316,25 @@ function Profile() {
         responsive: true,
         plugins: {
           legend: {
-            position: "bottom"
+            position: "bottom",
+            labels: {
+              font: {
+                size: 14
+              },
+
+              color: "#000000"
+            }
+          },
+          tooltip: {
+            titleFont: {
+              size: 18
+            },
+            bodyFont: {
+              size: 18
+            },
+            footerFont: {
+              size: 18
+            }
           }
         }
       }

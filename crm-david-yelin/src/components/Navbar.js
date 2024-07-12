@@ -257,7 +257,7 @@ function Navbar() {
                   </li>
                 )}
               {user &&
-                ((user.privileges > 0 && user.privileges == 2) ||
+                ((user.privileges >= 2) ||
                   (Array.isArray(user.adminAccess) &&
                     (user.adminAccess.includes("createUser") ||
                       user.adminAccess.includes("manageUser") ||

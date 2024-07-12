@@ -54,7 +54,7 @@ const App = () => {
         <Route
           path="/statistics"
           element={
-            <ProtectedRoute privilegeLevel={1}>
+            <ProtectedRoute privilegeLevel={1} extraAccess={["viewStatistics"]}>
               <Statistics />
             </ProtectedRoute>
           }
@@ -62,7 +62,7 @@ const App = () => {
         <Route
           path="/users"
           element={
-            <ProtectedRoute privilegeLevel={1}>
+            <ProtectedRoute privilegeLevel={1} extraAccess={["createUser", "manageUser", "manageAdmin"]}>
               <ManageUsers />
             </ProtectedRoute>
           }
@@ -70,7 +70,7 @@ const App = () => {
         <Route
           path="/departments"
           element={
-            <ProtectedRoute privilegeLevel={1}>
+            <ProtectedRoute privilegeLevel={1} extraAccess={["editDepartment", "deleteDepartment", "createDepartment"]}>
               <ManageDepartments />
             </ProtectedRoute>
           }

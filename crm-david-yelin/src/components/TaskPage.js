@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
-import { doc, getDoc, query, collection, where, getDocs, orderBy, updateDoc, arrayUnion} from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL, listAll,getMetadata, deleteObject } from "firebase/storage";
+import { doc, getDoc, query, collection, where, getDocs, orderBy, updateDoc, arrayUnion } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL, listAll, getMetadata, deleteObject } from "firebase/storage";
 import Avatar from "@mui/material/Avatar";
 import "../styles/TaskPage.css";
 import "../styles/Styles.css";
@@ -161,7 +161,6 @@ function TaskPage() {
     heIL
   );
 
-
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
     if (userData) setUser(userData);
@@ -172,7 +171,7 @@ function TaskPage() {
   }, []);
 
   const getMemberFullName = async (email) => {
-    if(!email) return;
+    if (!email) return;
     try {
       const memberDoc = await getDoc(doc(db, "members", email));
       if (memberDoc.exists()) {
@@ -371,7 +370,7 @@ function TaskPage() {
 
     return formatted;
   }
-  
+
   const HistoryColumns = [
     { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
     {
@@ -429,20 +428,62 @@ function TaskPage() {
   ];
 
   const fileColumns = [
-    { field: "preview", headerName: "תצוגה מקדימה", align: "right", flex: 0.6, renderCell: (params) => <div>{params.row.type.includes("image") ? <img className="event-file-image-preview" src={params.row.itemUrl} /> : ""}</div> },
+    {
+      field: "preview",
+      headerName: "תצוגה מקדימה",
+      align: "right",
+      flex: 0.6,
+      renderCell: (params) => (
+        <div>
+          {params.row.type.includes("image") ? (
+            <img className="event-file-image-preview" src={params.row.itemUrl} />
+          ) : (
+            ""
+          )}
+        </div>
+      )
+    },
     { field: "name", headerName: "שם הקובץ", align: "right", flex: 3 },
-    { field: "size", headerName: "גודל הקובץ", align: "right", flex: 1, renderCell: (params) => <div className="event-file-size">{params.row.size}</div> },
-    { field: "type", headerName: "סוג הקובץ", align: "right", flex: 1, renderCell: (params) => <div>{params.row.type.split("/")[1]}</div> },
-    { field: "uploadedAt", headerName: "תאריך העלאה", align: "right", flex: 1, renderCell: (params) => <div>{params.value ? params.value.toDate().toLocaleDateString("he-IL") : ""}</div> },
-    { field: "edit", headerName: "עריכה", align: "right", flex: 0.8, renderCell: (params) =>
-     <>
-     <IconButton aria-label="download" onClick={() => downloadFile(params.row.itemUrl)}>
-      <DownloadIcon />
-    </IconButton><IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
-      <DeleteForeverIcon />
-      </IconButton>
-      </>
-       }
+    {
+      field: "size",
+      headerName: "גודל הקובץ",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => <div className="event-file-size">{params.row.size}</div>
+    },
+    {
+      field: "type",
+      headerName: "סוג הקובץ",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => <div>{params.row.type.split("/")[1]}</div>
+    },
+    {
+      field: "uploadedAt",
+      headerName: "תאריך העלאה",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => <div>{params.value ? params.value.toDate().toLocaleDateString("he-IL") : ""}</div>
+    },
+    {
+      field: "edit",
+      headerName: "עריכה",
+      align: "right",
+      flex: 0.8,
+      renderCell: (params) => (
+        <>
+          <IconButton aria-label="download" onClick={() => downloadFile(params.row.itemUrl)}>
+            <DownloadIcon />
+          </IconButton>
+          {user &&
+            (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
+              <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
+                <DeleteForeverIcon />
+              </IconButton>
+            )}
+        </>
+      )
+    }
   ];
 
   const downloadFile = (url) => {
@@ -465,88 +506,93 @@ function TaskPage() {
       case pages[1]:
         return (
           <div className="task-files">
-            <h2>העלאת קבצים</h2>
-            <FilePond
-              files={uploadedFiles}
-              allowMultiple
-              maxFiles={5}
-              maxFileSize="1000MB"
-              labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
-              credits={false}
-              labelMaxFileSizeExceeded="הקובץ גדול מדי"
-              onremovefile={() => {
-                    fetchFiles();
-              }}
-              server={{
-                process: async (fieldName, file, metadata, load, error, progress, abort) => {
-                  const storageRef = ref(storage, `tasks/${taskId}/${file.name}`);
-                  const listRef = ref(storage, `tasks/${taskId}/`);
-                  try {
-                    const existingFiles = await listAll(listRef);
-                    const fileNames = existingFiles.items.map((item) => item.name);
+            {user &&
+              (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
+                <div>
+                  <h2>העלאת קבצים</h2>
+                  <FilePond
+                    files={uploadedFiles}
+                    allowMultiple
+                    maxFiles={5}
+                    maxFileSize="1000MB"
+                    labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
+                    credits={false}
+                    labelMaxFileSizeExceeded="הקובץ גדול מדי"
+                    onremovefile={() => {
+                      fetchFiles();
+                    }}
+                    server={{
+                      process: async (fieldName, file, metadata, load, error, progress, abort) => {
+                        const storageRef = ref(storage, `tasks/${taskId}/${file.name}`);
+                        const listRef = ref(storage, `tasks/${taskId}/`);
+                        try {
+                          const existingFiles = await listAll(listRef);
+                          const fileNames = existingFiles.items.map((item) => item.name);
 
-                    if (fileNames.includes(file.name)) {
-                      setFileError(true);
-                      setFileErrorMessage(`קובץ עם השם ${file.name} כבר קיים במערכת.`);
-                      abort();
-                      return;
-                    }
-                  } catch (listError) {
-                    console.error("Error listing files:", listError);
-                    error(listError.message);
-                    return;
-                  }
+                          if (fileNames.includes(file.name)) {
+                            setFileError(true);
+                            setFileErrorMessage(`קובץ עם השם ${file.name} כבר קיים במערכת.`);
+                            abort();
+                            return;
+                          }
+                        } catch (listError) {
+                          console.error("Error listing files:", listError);
+                          error(listError.message);
+                          return;
+                        }
 
-                  const uploadTask = uploadBytesResumable(storageRef, file);
+                        const uploadTask = uploadBytesResumable(storageRef, file);
 
-                  uploadTask.on(
-                    "state_changed",
-                    (snapshot) => {
-                      progress(true, snapshot.bytesTransferred, snapshot.totalBytes);
-                    },
-                    (uploadError) => {
-                      error(uploadError.message);
-                    },
-                    async () => {
-                      try {
-                        const fileMetadata = await getMetadata(uploadTask.snapshot.ref);
-                        const formattedFileSize = formatFileSize(fileMetadata.size);
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        const taskDocRef = doc(db, "tasks", taskId);
-                        await updateDoc(taskDocRef, {
-                          taskFiles: arrayUnion({
-                            name: file.name,
-                            size: formattedFileSize,
-                            type: file.type,
-                            uploadedAt: new Date()
-                          })
-                        });
-                        load(downloadURL);
-                      } catch (downloadURLError) {
-                        console.error("Error getting download URL:", downloadURLError);
-                        error(downloadURLError.message);
+                        uploadTask.on(
+                          "state_changed",
+                          (snapshot) => {
+                            progress(true, snapshot.bytesTransferred, snapshot.totalBytes);
+                          },
+                          (uploadError) => {
+                            error(uploadError.message);
+                          },
+                          async () => {
+                            try {
+                              const fileMetadata = await getMetadata(uploadTask.snapshot.ref);
+                              const formattedFileSize = formatFileSize(fileMetadata.size);
+                              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                              const taskDocRef = doc(db, "tasks", taskId);
+                              await updateDoc(taskDocRef, {
+                                taskFiles: arrayUnion({
+                                  name: file.name,
+                                  size: formattedFileSize,
+                                  type: file.type,
+                                  uploadedAt: new Date()
+                                })
+                              });
+                              load(downloadURL);
+                            } catch (downloadURLError) {
+                              console.error("Error getting download URL:", downloadURLError);
+                              error(downloadURLError.message);
+                            }
+                          }
+                        );
+
+                        return {
+                          abort: () => {
+                            uploadTask.cancel();
+                            abort();
+                          }
+                        };
                       }
-                    }
-                  );
-
-                  return {
-                    abort: () => {
-                      uploadTask.cancel();
-                      abort();
-                    }
-                  };
-                }
-              }}
-              name="files"
-              labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
-            />
-            <Snackbar
-              open={fileError}
-              autoHideDuration={3000}
-              onClose={() => setFileError(false)}
-              anchorOrigin={{ vertical: "center", horizontal: "center" }}>
-              <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
-            </Snackbar>
+                    }}
+                    name="files"
+                    labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
+                  />
+                  <Snackbar
+                    open={fileError}
+                    autoHideDuration={3000}
+                    onClose={() => setFileError(false)}
+                    anchorOrigin={{ vertical: "center", horizontal: "center" }}>
+                    <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
+                  </Snackbar>
+                </div>
+              )}
             <h2>רשימת קבצים</h2>
             <div className="task-files-table">
               <ThemeProvider theme={theme}>

@@ -89,7 +89,6 @@ function getRandomColor() {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-
 function EventPage() {
   const pages = ["משימות קשורות", "פורום", "קבצים", "שינויים"];
   const handlePageSwitch = (event, newValue) => {
@@ -351,6 +350,7 @@ function EventPage() {
     }
     const ctx = document.getElementById("budget-chart");
     if (!ctx) return;
+     
     const data = {
       labels: taskNames,
       datasets: [
@@ -368,7 +368,25 @@ function EventPage() {
         responsive: true,
         plugins: {
           legend: {
-            position: "bottom"
+            position: "bottom",
+            labels: {
+              font: {
+                size: 18
+              },
+
+              color: "#000000"
+            }
+          },
+          tooltip: {
+            titleFont: {
+              size: 18
+            },
+            bodyFont: {
+              size: 18
+            },
+            footerFont: {
+              size: 18
+            }
           }
         }
       }
@@ -706,7 +724,7 @@ function EventPage() {
             <DownloadIcon />
           </IconButton>
           {user &&
-            (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
+            (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
               <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
                 <DeleteForeverIcon />
               </IconButton>
@@ -817,7 +835,7 @@ function EventPage() {
         return (
           <div className="event-files">
             {user &&
-              (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
+              (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
                 <div>
                   <h2>העלאת קבצים</h2>
                   <FilePond
@@ -828,14 +846,6 @@ function EventPage() {
                     labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
                     credits={false}
                     labelMaxFileSizeExceeded="הקובץ גדול מדי"
-                    onprocessfile={(error, file) => {
-                      if (!error) {
-                        setTimeout(() => {
-                          setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id));
-                          fetchFiles(); // Fetch files again to update the DataGrid
-                        }, 2000);
-                      }
-                    }}
                     server={{
                       process: async (fieldName, file, metadata, load, error, progress, abort) => {
                         const storageRef = ref(storage, `events/${id}/${file.name}`);

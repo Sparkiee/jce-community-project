@@ -434,7 +434,7 @@ function ManageEvents() {
             </div>
           )}
         </div>
-        {(user && ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges == 2)) && (
+        {(user && ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges >= 2)) && (
           <div
             className="action-button add-events-manage-events"
             onClick={handleShowCreateEvents}>

@@ -356,6 +356,26 @@ function Chat() {
     };
   }, [selectedChat, db]);
 
+  const convertTextToLinksJSX = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, index) => {
+      if (part?.match(urlRegex)) {
+        let href = part;
+        if (part.startsWith("www.")) {
+          href = "http://" + part;
+        }
+        return (
+          <a key={index} href={href} target="_blank" rel="noopener noreferrer">
+            {part}
+          </a>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && text.trim() !== "") {
       e.preventDefault();
@@ -532,7 +552,7 @@ function Chat() {
                       <div className="chat-messages-center-message-texts">
                         {message.img && <img src={message.img} />}
                         <pre className="chat-messages-center-message-box">
-                          {message.text}
+                          {convertTextToLinksJSX(message.text)}
                           {message.sender === user.email && (
                             <DoneAllIcon
                               className="chat-messages-center-message-seen-icon"
@@ -542,7 +562,7 @@ function Chat() {
                             />
                           )}
                         </pre>
-                        <span>
+                        <span className="chat-messages-center-time-stamp">
                           {new Date(
                             message.timestamp.seconds * 1000 +
                               message.timestamp.nanoseconds / 1000000

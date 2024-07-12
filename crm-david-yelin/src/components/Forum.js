@@ -12,7 +12,7 @@ import {
   deleteDoc,
   getDoc,
   arrayUnion,
-  serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
 import "../styles/Forum.css";
 import IconButton from "@mui/material/IconButton";
@@ -32,6 +32,28 @@ const Forum = ({ eventId, type, name }) => {
   const [editReply, setEditReply] = useState("");
   const [user, setUser] = useState(null);
 
+  const convertTextToLinksJSX = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
+    const parts = text.split(/(\n|(?:https?:\/\/[^\s]+)|(?:www\.[^\s]+))/g);
+
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        let href = part;
+        if (part.startsWith("www.")) {
+          href = "http://" + part;
+        }
+        return (
+          <a key={index} href={href} target="_blank" rel="noopener noreferrer">
+            {part}
+          </a>
+        );
+      } else if (part === "\n") {
+        return <br key={index} />;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   // load on page load
   useEffect(() => {
     fetchComments();
@@ -39,12 +61,10 @@ const Forum = ({ eventId, type, name }) => {
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData)
-      setUser(userData);
+    if (userData) setUser(userData);
     else {
       const userData = JSON.parse(localStorage.getItem("user"));
-      if (userData)
-        setUser(userData);
+      if (userData) setUser(userData);
     }
   }, []);
 
@@ -74,7 +94,7 @@ const Forum = ({ eventId, type, name }) => {
                 return {
                   ...reply,
                   author: replyAuthorDetails.fullName,
-                  timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date()
+                  timestamp: reply.timestamp ? reply.timestamp.toDate() : new Date(),
                 };
               })
             )
@@ -84,7 +104,7 @@ const Forum = ({ eventId, type, name }) => {
           id: doc.id,
           author: authorDetails.fullName,
           timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
-          replies
+          replies,
         };
       })
     );
@@ -98,7 +118,7 @@ const Forum = ({ eventId, type, name }) => {
       eventId,
       text: newComment,
       authorEmail: user.email,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
     setNewComment("");
     fetchComments();
@@ -108,7 +128,7 @@ const Forum = ({ eventId, type, name }) => {
     if (editComment.trim() === "") return;
     const commentRef = doc(db, "comments", commentId);
     await updateDoc(commentRef, {
-      text: editComment
+      text: editComment,
     });
     setEditingCommentId(null);
     setEditComment("");
@@ -131,10 +151,10 @@ const Forum = ({ eventId, type, name }) => {
       updatedReplies.push({
         text: newReply,
         timestamp: new Date(),
-        authorEmail: user.email
+        authorEmail: user.email,
       });
       await updateDoc(commentRef, {
-        replies: updatedReplies
+        replies: updatedReplies,
       });
       setNewReply("");
       setReplyCommentId(null);
@@ -157,8 +177,8 @@ const Forum = ({ eventId, type, name }) => {
           event: eventId,
           message: message,
           link: link,
-          id: uuidv4()
-        })
+          id: uuidv4(),
+        }),
       });
     }
   };
@@ -172,7 +192,7 @@ const Forum = ({ eventId, type, name }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies[replyIndex].text = editReply;
       await updateDoc(commentRef, {
-        replies: updatedReplies
+        replies: updatedReplies,
       });
       setEditingReply({ commentId: null, replyIndex: null });
       setEditReply("");
@@ -188,7 +208,7 @@ const Forum = ({ eventId, type, name }) => {
       const updatedReplies = commentData.replies || [];
       updatedReplies.splice(replyIndex, 1);
       await updateDoc(commentRef, {
-        replies: updatedReplies
+        replies: updatedReplies,
       });
       fetchComments();
     }
@@ -201,7 +221,10 @@ const Forum = ({ eventId, type, name }) => {
     }
   };
 
-  const totalReplies = comments.reduce((acc, comment) => acc + (comment.replies ? comment.replies.length : 0), 0);
+  const totalReplies = comments.reduce(
+    (acc, comment) => acc + (comment.replies ? comment.replies.length : 0),
+    0
+  );
   const totalCommentsAndReplies = comments.length + totalReplies;
 
   return (
@@ -229,7 +252,7 @@ const Forum = ({ eventId, type, name }) => {
                 </div>
                 <div className="comment-timestamp">
                   {new Date(comment.timestamp).toLocaleString("en-GB", {
-                    hour12: false
+                    hour12: false,
                   })}
                 </div>
               </div>
@@ -241,7 +264,7 @@ const Forum = ({ eventId, type, name }) => {
                 />
               ) : (
                 <div className="comment-content">
-                  <p>{comment.text}</p>
+                  <p>{convertTextToLinksJSX(comment.text)}</p>
                 </div>
               )}
               <div className="discussion-actions">
@@ -288,7 +311,7 @@ const Forum = ({ eventId, type, name }) => {
                       </div>
                       <div className="comment-timestamp">
                         {new Date(reply.timestamp).toLocaleString("en-GB", {
-                          hour12: false
+                          hour12: false,
                         })}
                       </div>
                     </div>
@@ -296,16 +319,21 @@ const Forum = ({ eventId, type, name }) => {
                       <textarea
                         value={editReply}
                         onChange={(e) => setEditReply(e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(e, () => handleEditReply(comment.id, index))}
+                        onKeyDown={(e) =>
+                          handleKeyDown(e, () => handleEditReply(comment.id, index))
+                        }
                       />
                     ) : (
                       <div className="reply-content">
-                        <p>{reply.text}</p>
+                        <p>{convertTextToLinksJSX(reply.text)}</p>
                       </div>
                     )}
                     <div className="discussion-actions">
-                      {editingReply.commentId === comment.id && editingReply.replyIndex === index ? (
-                        <button className="save-icon" onClick={() => handleEditReply(comment.id, index)}>
+                      {editingReply.commentId === comment.id &&
+                      editingReply.replyIndex === index ? (
+                        <button
+                          className="save-icon"
+                          onClick={() => handleEditReply(comment.id, index)}>
                           שמור שינויים
                         </button>
                       ) : (
@@ -325,7 +353,9 @@ const Forum = ({ eventId, type, name }) => {
                             reply.authorEmail === user.email ||
                             user.adminAccess.includes("deleteComment")) && (
                             <>
-                              <IconButton title="מחק" onClick={() => handleDeleteReply(comment.id, index)}>
+                              <IconButton
+                                title="מחק"
+                                onClick={() => handleDeleteReply(comment.id, index)}>
                                 <DeleteIcon />
                               </IconButton>
                             </>

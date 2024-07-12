@@ -275,6 +275,16 @@
   position: relative;
 }
 
+.chat-messages-center-message-box a {
+  color: #0000ee;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.chat-messages-center-message-box a:hover {
+  text-decoration: none;
+}
+
 .chat-messages-center-message-seen-icon {
   position: absolute;
   bottom: 0.3rem;
@@ -283,7 +293,7 @@
   border-radius: 50%;
 }
 
-.chat-messages-center-message-texts span {
+.chat-messages-center-message-texts .chat-messages-center-time-stamp {
   font-size: 1.6rem;
   font-weight: 300;
   color: #a5a5a5;

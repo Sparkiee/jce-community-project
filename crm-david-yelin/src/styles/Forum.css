@@ -210,3 +210,21 @@
   border-radius: 1rem;
   resize: none;
 }
+
+.comment-content a,
+.reply-content a {
+  color: #0000ee;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.comment-content a:hover,
+.reply-content a:hover {
+  text-decoration: none;
+}
+
+.comment-content,
+.reply-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+}

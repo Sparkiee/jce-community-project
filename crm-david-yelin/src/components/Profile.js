@@ -892,13 +892,13 @@ function Profile() {
                 <h3>{numCompletedTasks} משימות שהושלמו</h3>
                 <h3>({taskPercentage ? taskPercentage : 0}%)</h3>
               </div>
-              <canvas id="taskCompletionChart"></canvas>
+              {numCompletedTasks > 0 || numTasks > 0 ? <canvas id="taskCompletionChart"></canvas> : ""}
               <div className="profile-stats-row">
                 <TaskIcon />
                 <h3>{numCompletedEvents} אירועים שהסתיימו</h3>
                 <h3>({eventPercentage ? eventPercentage : 0}%)</h3>
               </div>
-              <canvas id="eventCompletionChart"></canvas>
+              {numCompletedEvents > 0 || numEvents > 0 ? <canvas id="eventCompletionChart"></canvas> : ""}
             </div>
             <div className="profile-stats">
               <h2 className="title-info">פרטים אישיים</h2>

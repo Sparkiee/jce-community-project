@@ -152,13 +152,15 @@ function Statistics() {
       setBudgetData(budgetDataPerYear);
       setYears(yearsArray);
       setTaskStatusData(newTaskStatusData);
-      const departmentDataArray = Object.entries(departmentStats).map(([name, data]) => ({
-        name,
-        events: data.events,
-        tasks: data.tasks,
-      }));
+      setTimeout(() => {
+        const departmentDataArray = Object.entries(departmentStats).map(([name, data]) => ({
+          name,
+          events: data.events,
+          tasks: data.tasks,
+        }));
 
-      setDepartmentData(departmentDataArray);
+        setDepartmentData(departmentDataArray);
+      }, 5000);
     };
 
     fetchData();

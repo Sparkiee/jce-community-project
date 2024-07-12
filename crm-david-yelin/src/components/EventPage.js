@@ -724,7 +724,7 @@ function EventPage() {
             <DownloadIcon />
           </IconButton>
           {user &&
-            (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
+            (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
               <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
                 <DeleteForeverIcon />
               </IconButton>
@@ -835,7 +835,7 @@ function EventPage() {
         return (
           <div className="event-files">
             {user &&
-              (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
+              (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
                 <div>
                   <h2>העלאת קבצים</h2>
                   <FilePond

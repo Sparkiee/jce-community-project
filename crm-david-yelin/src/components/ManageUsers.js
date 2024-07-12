@@ -107,7 +107,7 @@ function ManageUsers() {
 
   const awaitingColumns = [
     ...awaitingCol,
-    ...(user && (user.privileges == 2 || user.adminAccess.includes("createUser"))
+    ...(user && (user.privileges >= 2 || user.adminAccess.includes("createUser"))
       ? [
           {
             field: "edit",
@@ -209,7 +209,7 @@ function ManageUsers() {
   const editEnabled = [
     ...columns,
     ...(user &&
-    (user.privileges == 2 || user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin"))
+    (user.privileges >= 2 || user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin"))
       ? [
           {
             field: "edit",
@@ -219,7 +219,7 @@ function ManageUsers() {
             flex: 1.5,
             renderCell: (params) => (
               <div>
-                {(user.privileges == 2 || user.adminAccess.includes("manageUser")) && (
+                {(user.privileges >= 2 || user.adminAccess.includes("manageUser")) && (
                   <>
                     <IconButton
                       aria-label="edit"
@@ -240,7 +240,7 @@ function ManageUsers() {
                     </IconButton>
                   </>
                 )}
-                {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (
+                {(user.privileges >= 2 || user.adminAccess.includes("manageAdmin")) && (
                   <IconButton
                     aria-label="adminAccess"
                     title="עדכן גישות"
@@ -299,7 +299,7 @@ function ManageUsers() {
 
   const editDisabled = [
     ...columns,
-    ...(user && (user.privileges == 2 || user.adminAccess.includes("manageUser"))
+    ...(user && (user.privileges >= 2 || user.adminAccess.includes("manageUser"))
       ? [
           {
             field: "edit",
@@ -496,7 +496,7 @@ function ManageUsers() {
       )}
       <div className="manage-users-container">
         <div className="page-title-manage-users">ניהול משתמשים</div>
-        {user && (user.privileges == 2 || user.adminAccess.includes("createUser")) && (
+        {user && (user.privileges >= 2 || user.adminAccess.includes("createUser")) && (
           <div className="action-button add-user-button" onClick={() => setShowCreateUser(true)}>
             <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

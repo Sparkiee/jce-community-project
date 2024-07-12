@@ -423,7 +423,7 @@ function HomePage() {
       <div className="pending-actions">
         {user &&
           ((user && Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||
-            user.privileges == 2) && (
+            user.privileges >= 2) && (
             <div className="action-button add-task-button" onClick={handleShowCreateTask}>
               <svg
                 width="24px"
@@ -448,7 +448,7 @@ function HomePage() {
         {user &&
           user &&
           ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
-            user.privileges == 2) && (
+            user.privileges >= 2) && (
             <div className="action-button add-event-button" onClick={handleShowCreateEvent}>
               <svg
                 width="24px"

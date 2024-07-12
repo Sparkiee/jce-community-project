@@ -476,7 +476,7 @@ function TaskPage() {
             <DownloadIcon />
           </IconButton>
           {user &&
-            (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
+            (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
               <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
                 <DeleteForeverIcon />
               </IconButton>
@@ -507,7 +507,7 @@ function TaskPage() {
         return (
           <div className="task-files">
             {user &&
-              (user.privileges > 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
+              (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
                 <div>
                   <h2>העלאת קבצים</h2>
                   <FilePond
@@ -687,7 +687,7 @@ function TaskPage() {
                   <p>
                     <strong>שעת סיום:</strong> {task.taskTime}
                   </p>
-                  {(user.privileges == 2 || isUserAnAssignee) && (
+                  {(user.privileges >= 2 || isUserAnAssignee) && (
                     <p>
                       <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
                     </p>
@@ -697,7 +697,7 @@ function TaskPage() {
                     {taskCreatorFullName}
                   </p>
                 </div>
-                {(user.adminAccess.includes("editTask") || user.privileges == 2) && (
+                {(user.adminAccess.includes("editTask") || user.privileges >= 2) && (
                   <IconButton className="task-page-edit-icon" aria-label="edit" onClick={handleEditClick}>
                     <EditIcon />
                   </IconButton>

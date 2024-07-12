@@ -267,7 +267,7 @@ function EditUser(props) {
                     resetAlerts();
                   }}
                   className="forms-input">
-                  {(user.privileges == 2 || user.adminAccess.includes("manageAdmin")) && (
+                  {(user.privileges >= 2 || user.adminAccess.includes("manageAdmin")) && (
                     <option value={2}>מנהל ראשי</option>
                   )}
                   <option value={1}>משתמש פעיל</option>

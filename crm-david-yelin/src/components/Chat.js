@@ -10,7 +10,7 @@ import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Box from "@mui/material/Box";
-import { db } from "../firebase";
+import { db, storage } from "../firebase"; // Make sure you have initialized Firebase storage
 import {
   getDoc,
   doc,
@@ -24,6 +24,7 @@ import {
   updateDoc,
   addDoc,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function Chat() {
   function stringToColor(string) {
@@ -72,8 +73,11 @@ function Chat() {
   const navigate = useNavigate();
 
   const [chatSearchQuery, setChatSearchQuery] = useState("");
+  const [filePondFiles, setFilePondFiles] = useState([]);
 
   const searchBoxref = useRef(null);
+  const endRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const handleChatSearch = (e) => {
     setChatSearchQuery(e.target.value);
@@ -93,8 +97,6 @@ function Chat() {
       if (userData) setUser(userData);
     }
   }, []);
-
-  const endRef = useRef(null);
 
   async function getMemberFullName(email) {
     try {
@@ -197,7 +199,6 @@ function Chat() {
   };
 
   useEffect(() => {
-    // Function to close the search box
     const closeSearchBox = (event) => {
       if (
         searchBoxref.current &&
@@ -210,20 +211,21 @@ function Chat() {
       }
     };
 
-    // Add event listener to the document
     document.addEventListener("mousedown", closeSearchBox);
 
-    // Cleanup function to remove the event listener
     return () => {
       document.removeEventListener("mousedown", closeSearchBox);
     };
-  }, [searchBoxref]); // Re-run when searchBoxref changes
+  }, [searchBoxref]);
 
   const handleChatListSearchAddMinusClick = (event) => {
-    event.stopPropagation(); // Prevent click from propagating to the document
-    if (searchBoxref) {
-      setAddMode(!addMode); // Toggle or set addMode as needed
-    }
+    event.stopPropagation();
+    setAddMode((prev) => !prev);
+  };
+
+  const handleImageIconClick = (event) => {
+    event.stopPropagation();
+    fileInputRef.current.click();
   };
 
   const handleAddUser = async (userToAdd) => {
@@ -235,11 +237,9 @@ function Chat() {
 
       const chatRef = collection(db, "chats");
 
-      // Query for chats where members contain currentUserEmail
       const q = query(chatRef, where("members", "array-contains", currentUserEmail));
       const querySnapshot = await getDocs(q);
 
-      // Filter the results to check if any chat contains targetEmail as well
       let chatExists = false;
       querySnapshot.forEach((doc) => {
         const members = doc.data().members;
@@ -280,21 +280,19 @@ function Chat() {
   };
 
   const handleSendMessage = async () => {
-    // Trim the text to remove leading and trailing whitespace
     const trimmedText = text.trim();
     if (!trimmedText || !selectedChat) return;
     const chatRef = doc(db, "chats", selectedChat.chatId);
     try {
-      const now = new Date();
       const message = {
         text: trimmedText,
         sender: user.email,
-        timestamp: now,
+        timestamp: new Date(), // Set the timestamp as a date object
         seen: false,
       };
       await updateDoc(chatRef, {
         lastMessage: trimmedText,
-        updatedAt: now,
+        updatedAt: serverTimestamp(),
         messages: arrayUnion(message),
       });
       setText("");
@@ -334,7 +332,6 @@ function Chat() {
 
   useEffect(() => {
     const subscribeCurrentChat = async () => {
-      // Ensure db and selectedChat?.chatId are defined
       if (!db || !selectedChat?.chatId) {
         return;
       }
@@ -357,9 +354,13 @@ function Chat() {
   }, [selectedChat, db]);
 
   const convertTextToLinksJSX = (text) => {
+    if (!text) {
+      return null; // Return null if text is undefined or null
+    }
+  
     const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
     const parts = text.split(urlRegex);
-
+  
     return parts.map((part, index) => {
       if (part?.match(urlRegex)) {
         let href = part;
@@ -375,11 +376,35 @@ function Chat() {
       return <span key={index}>{part}</span>;
     });
   };
+  
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && text.trim() !== "") {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file && selectedChat) {
+      const storageRef = ref(storage, `chat/${selectedChat.chatId}/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      const chatRef = doc(db, "chats", selectedChat.chatId);
+      const message = {
+        img: url,
+        sender: user.email,
+        timestamp: new Date(), // Set the timestamp as a date object
+        seen: false,
+      };
+      await updateDoc(chatRef, {
+        lastMessage: "[Image]",
+        updatedAt: serverTimestamp(),
+        messages: arrayUnion(message),
+      });
+      fetchMessagesforChat(selectedChat);
     }
   };
 
@@ -550,7 +575,13 @@ function Chat() {
                         message.sender === user.email ? "own" : "other"
                       }`}>
                       <div className="chat-messages-center-message-texts">
-                        {message.img && <img src={message.img} />}
+                        {message.img && (
+                          <img
+                            src={message.img}
+                            onClick={() => window.open(message.img, "_blank")}
+                            style={{ cursor: "pointer", maxWidth: "200px" }}
+                          />
+                        )}
                         <pre className="chat-messages-center-message-box">
                           {convertTextToLinksJSX(message.text)}
                           {message.sender === user.email && (
@@ -575,7 +606,13 @@ function Chat() {
               </div>
               <div className="chat-messages-bottom">
                 <div className="chat-messages-bottom-icons">
-                  <ImageIcon />
+                  <ImageIcon onClick={handleImageIconClick} />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                  />
                 </div>
                 <textarea
                   className="chat-messages-bottom-input"

@@ -139,6 +139,7 @@ function TaskPage() {
   }, []);
 
   const getMemberFullName = async (email) => {
+    if(!email) return;
     try {
       const memberDoc = await getDoc(doc(db, "members", email));
       if (memberDoc.exists()) {

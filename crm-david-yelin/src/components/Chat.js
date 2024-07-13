@@ -273,7 +273,6 @@ function Chat() {
 
   const handleChatSelection = async (chat) => {
     setSelectedChat(chat);
-    console.log("chat", chat);
     fetchMessagesforChat(chat);
     if (chat.unseenCount > 0) {
       const chatRef = doc(db, "chats", chat.chatId);
@@ -309,32 +308,46 @@ function Chat() {
   };
 
   const fetchMessagesforChat = async (selectedChat, loadMore = false) => {
+    if (!db || !selectedChat?.chatId || !user) return; // Add user check here
+
     const chatRef = doc(db, "chats", selectedChat.chatId);
     try {
       const chatDoc = await getDoc(chatRef);
-      const chatData = chatDoc.data();
-      let allMessages = chatData.messages;
-      let messages = allMessages.slice(-messagesPerPage);
+      updateMessagesState(chatDoc, loadMore);
+    } catch (e) {
+      console.error("Error fetching messages for chat:", e);
+    }
+  };
 
-      setHasMoreMessages(allMessages.length > messages.length);
+  const updateMessagesState = (chatDoc, loadMore = false) => {
+    if (chatDoc.exists() && user) {
+      // Add user check here
+      const chatData = chatDoc.data();
+      const allMessages = chatData.messages;
+      const newMessages = allMessages.slice(-messagesPerPage);
+      setHasMoreMessages(allMessages.length > newMessages.length);
 
       let needsUpdate = false;
-      messages = messages.map((message) => {
+      const updatedMessages = newMessages.map((message) => {
         if (message.sender !== user.email && !message.seen) {
-          message.seen = true;
           needsUpdate = true;
+          return { ...message, seen: true };
         }
         return message;
       });
 
       if (loadMore) {
-        setMessages((prevMessages) => [...messages, ...prevMessages]);
+        setMessages((prevMessages) => [...updatedMessages, ...prevMessages]);
       } else {
-        setMessages(messages);
+        setMessages(updatedMessages);
       }
 
       if (needsUpdate) {
-        await updateDoc(chatRef, { messages: allMessages });
+        updateDoc(chatDoc.ref, {
+          messages: allMessages.map((message) =>
+            message.sender !== user.email && !message.seen ? { ...message, seen: true } : message
+          ),
+        });
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat.chatId === selectedChat.chatId
@@ -343,39 +356,18 @@ function Chat() {
           )
         );
       }
-    } catch (e) {
-      console.error("Error fetching messages for chat:", e);
     }
   };
 
   useEffect(() => {
-    const subscribeCurrentChat = async () => {
-      if (!db || !selectedChat?.chatId) {
-        return;
-      }
+    if (!db || !selectedChat?.chatId || !user) return; // Add user check here
 
-      const unsubscribe = onSnapshot(doc(db, "chats", selectedChat.chatId), async (docSnapshot) => {
-        const chatData = docSnapshot.data();
-        if (chatData) {
-          const allMessages = chatData.messages;
-          const newMessages = allMessages.slice(-messagesPerPage);
-          setHasMoreMessages(allMessages.length > newMessages.length);
-          setMessages(newMessages);
-        }
-      });
+    const unsubscribe = onSnapshot(doc(db, "chats", selectedChat.chatId), (docSnapshot) => {
+      updateMessagesState(docSnapshot);
+    });
 
-      return unsubscribe;
-    };
-
-    const unsubscribePromise = subscribeCurrentChat();
-    return () => {
-      unsubscribePromise.then((unsub) => {
-        if (unsub) {
-          unsub();
-        }
-      });
-    };
-  }, [selectedChat, db, messagesPerPage]);
+    return unsubscribe;
+  }, [selectedChat, db, messagesPerPage, user]); // Add user to dependency array
 
   const convertTextToLinksJSX = (text) => {
     if (!text) {

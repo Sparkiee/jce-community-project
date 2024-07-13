@@ -231,6 +231,24 @@
   overflow-y: auto;
 }
 
+.load-more-button {
+  background-color: #5183fe;
+  color: white;
+  padding: 1.5rem 2rem;
+  border: none;
+  border-radius: 1rem;
+  font-size: 2rem;
+  width: fit-content;
+  align-self: center;
+  margin: 0 0 2rem;
+  cursor: pointer;
+  transition: all 0.2s linear;
+}
+
+.load-more-button:hover {
+  transform: scale(1.1);
+}
+
 .chat-messages-center .chose-chat {
   position: absolute;
   font-size: 2.5rem;

@@ -76,6 +76,7 @@ function Chat() {
   const [chatSearchQuery, setChatSearchQuery] = useState("");
 
   const searchBoxref = useRef(null);
+  const endRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const handleChatSearch = (e) => {
@@ -148,6 +149,12 @@ function Chat() {
   useEffect(() => {
     setMessages(selectedChat?.messages);
   }, [selectedChat]);
+
+  useEffect(() => {
+    if (endRef.current) {
+      endRef.current.scrollIntoView();
+    }
+  }, [messages]);
 
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji);
@@ -623,7 +630,7 @@ function Chat() {
                       </div>
                     </div>
                   ))}
-                <div></div>
+                <div ref={endRef}></div>
               </div>
               <div className="chat-messages-bottom">
                 <div className="chat-messages-bottom-icons">

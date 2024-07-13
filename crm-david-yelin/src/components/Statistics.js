@@ -3,6 +3,8 @@ import { Bar, Pie } from "react-chartjs-2";
 import { db } from "../firebase";
 import { collection, getDocs, query, orderBy, getDoc, doc } from "firebase/firestore";
 import "../styles/Statistics.css";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 function Statistics() {
   const [eventsCount, setEventsCount] = useState([]);
@@ -342,9 +344,118 @@ function Statistics() {
     },
   };
 
+  const exportToExcel = () => {
+    const wb = XLSX.utils.book_new();
+
+    // Events per Year
+    const eventsSheet = XLSX.utils.json_to_sheet(
+      years.map((year, index) => ({
+        Year: year,
+        "Events Count": eventsCount[index],
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, eventsSheet, "Events per Year");
+
+    // Tasks per Year
+    const tasksSheet = XLSX.utils.json_to_sheet(
+      years.map((year, index) => ({
+        Year: year,
+        "Tasks Count": tasksCount[index],
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, tasksSheet, "Tasks per Year");
+
+    // Budget Data
+    const budgetSheet = XLSX.utils.json_to_sheet(
+      budgetData.map((data) => ({
+        Year: data.year,
+        "Total Event Budget": data.totalEventBudget,
+        "Total Spent Budget": data.totalSpentBudget,
+      }))
+    );
+    XLSX.utils.book_append_sheet(wb, budgetSheet, "Budget Data");
+
+    // Task Status Data
+    const taskStatusSheet = XLSX.utils.json_to_sheet([
+      { Status: "Complete", Count: taskStatusData.complete },
+      { Status: "In Progress", Count: taskStatusData.inProgress },
+      { Status: "Not Started", Count: taskStatusData.notStarted },
+    ]);
+    XLSX.utils.book_append_sheet(wb, taskStatusSheet, "Task Status");
+
+    // Department Data
+    const departmentSheet = XLSX.utils.json_to_sheet(departmentData);
+    XLSX.utils.book_append_sheet(wb, departmentSheet, "Department Data");
+
+    // Averages
+    const averagesSheet = XLSX.utils.json_to_sheet([
+      { Metric: "Average Events per Year", Value: averages.eventsPerYear },
+      { Metric: "Average Tasks per Year", Value: averages.tasksPerYear },
+      { Metric: "Average Tasks per Event per Year", Value: averages.tasksPerEventPerYear },
+      { Metric: "Average Total Budget per Year", Value: averages.totalBudgetPerYear },
+      { Metric: "Average Spent Budget per Year", Value: averages.spentBudgetPerYear },
+    ]);
+    XLSX.utils.book_append_sheet(wb, averagesSheet, "Averages");
+
+    // Generate Excel file
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    // Save the file
+    saveAs(data, "statistics_data.xlsx");
+  };
+
   return (
     <div>
       <div className="statistics-container">
+        <div className="excel-icon" onClick={exportToExcel}>
+          <p className="excel-p">ייצוא לאקסל</p>
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+              <title>file_type_excel2</title>
+              <path
+                d="M28.781,4.405H18.651V2.018L2,4.588V27.115l16.651,2.868V26.445H28.781A1.162,1.162,0,0,0,30,25.349V5.5A1.162,1.162,0,0,0,28.781,4.405Zm.16,21.126H18.617L18.6,23.642h2.487v-2.2H18.581l-.012-1.3h2.518v-2.2H18.55l-.012-1.3h2.549v-2.2H18.53v-1.3h2.557v-2.2H18.53v-1.3h2.557v-2.2H18.53v-2H28.941Z"
+                style={{ fill: "#20744a", fillRule: "evenodd" }}></path>
+              <rect
+                x="22.487"
+                y="7.439"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="10.94"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="14.441"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="17.942"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="21.443"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <polygon
+                points="6.347 10.673 8.493 10.55 9.842 14.259 11.436 10.397 13.582 10.274 10.976 15.54 13.582 20.819 11.313 20.666 9.781 16.642 8.248 20.513 6.163 20.329 8.585 15.666 6.347 10.673"
+                style={{ fill: "#ffffff", fillRule: "evenodd" }}></polygon>
+            </g>
+          </svg>{" "}
+        </div>
         <div className="statistics-top">
           <div className="year-events-statistics">
             <h2>מספר אירועים בשנה</h2>

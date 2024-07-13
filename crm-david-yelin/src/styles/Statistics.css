@@ -6,6 +6,24 @@
   margin-top: 5rem;
 }
 
+.excel-icon {
+  position: absolute;
+  top: 10rem;
+  left: 3rem;
+  display: flex;
+  cursor: pointer;
+}
+
+.excel-icon .excel-p {
+  font-size: 2.2rem;
+  margin: auto 0 auto 1rem;
+}
+
+.excel-icon svg {
+  width: 5rem;
+  height: 5rem;
+}
+
 .statistics-container h2 {
   font-size: 3rem;
   font-weight: 500;

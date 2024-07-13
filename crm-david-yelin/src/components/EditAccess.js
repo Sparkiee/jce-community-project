@@ -26,7 +26,8 @@ function EditAccess(props) {
     createDepartment: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("createDepartment"),
     uploadFile: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("uploadFile"),
     deleteFile: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("deleteFile"),
-    viewStatistics: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("viewStatistics")
+    viewStatistics: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("viewStatistics"),
+    viewBudget: Array.isArray(props.target.adminAccess) && props.target.adminAccess.includes("viewBudget")
   });
 
   const handleCheckAllChange = (event) => {
@@ -49,6 +50,7 @@ function EditAccess(props) {
       uploadFile: newCheckAll,
       deleteFile: newCheckAll,
       viewStatistics: newCheckAll,
+      viewBudget: newCheckAll,
     });
   };
 
@@ -194,6 +196,17 @@ function EditAccess(props) {
                   onChange={handleChange}
                 />
                 צפיה בסטטיסטיקות
+              </label>
+            </div>
+            <div className="edit-access-input">
+              <label>
+                <Checkbox
+                  name="viewBudget"
+                  sx={{ "& .MuiSvgIcon-root": { fontSize: 28 } }}
+                  checked={access.viewBudget}
+                  onChange={handleChange}
+                />
+               צפיה בתקציב
               </label>
             </div>
           </div>

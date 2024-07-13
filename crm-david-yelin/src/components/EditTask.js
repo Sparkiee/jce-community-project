@@ -346,7 +346,7 @@ function EditTask(props) {
                 id="budget"
                 value={taskDetails.taskBudget}
                 onChange={(e) => {
-                  setTask({ ...taskDetails, taskBudget: e.target.value });
+                  setTask({ ...taskDetails, taskBudget:Number(e.target.value) });
                   resetAlerts();
                 }}
               />

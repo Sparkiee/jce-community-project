@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import Select from "react-select";
 import "../styles/CreateTask.css";
@@ -37,7 +37,7 @@ function CreateTask(props) {
     taskBudget: 0,
     taskStatus: "טרם החלה",
     relatedEvent: selectedEvent,
-    assignees: selectedMembers
+    assignees: selectedMembers,
   });
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
@@ -56,7 +56,12 @@ function CreateTask(props) {
     setFormWarning(false);
     setTaskExists(false);
     setWarningText("");
-    if (!taskDetails.taskName || !taskDetails.taskDescription || !taskDetails.taskEndDate || !taskDetails.taskTime) {
+    if (
+      !taskDetails.taskName ||
+      !taskDetails.taskDescription ||
+      !taskDetails.taskEndDate ||
+      !taskDetails.taskTime
+    ) {
       setFormWarning(true);
       let warning = "אנא מלא את כל השדות";
       setWarningText(warning);
@@ -95,7 +100,7 @@ function CreateTask(props) {
       taskBudget: Number(taskDetails.taskBudget),
       taskCreated: serverTimestamp(),
       taskCreator: "members/" + user.email,
-      taskStatus: taskDetails.taskStatus
+      taskStatus: taskDetails.taskStatus,
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -105,7 +110,8 @@ function CreateTask(props) {
 
     if (await taskExistsAndOpen(updatedTaskDetails.taskName, updatedTaskDetails.relatedEvent)) {
       setFormWarning(true);
-      if (updatedTaskDetails.relatedEvent) setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
+      if (updatedTaskDetails.relatedEvent)
+        setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
       else setWarningText("קיימת משימה כללית פתוחה עם שם זהה (ללא אירוע)");
       return;
     }
@@ -141,8 +147,8 @@ function CreateTask(props) {
               taskID: docRef,
               message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
               link: `/task/${docRef.id}`,
-              id: uuidv4()
-            })
+              id: uuidv4(),
+            }),
           });
         })
       );
@@ -187,7 +193,7 @@ function CreateTask(props) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setEvents(results);
     } else setEvents([]);
@@ -204,7 +210,7 @@ function CreateTask(props) {
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
@@ -249,9 +255,30 @@ function CreateTask(props) {
   return (
     <div className="create-task">
       <div className="action-close" onClick={props.onClose}>
-        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
       <form className="create-task-form" onSubmit={handleSubmit}>
@@ -274,7 +301,7 @@ function CreateTask(props) {
             onChange={(e) => {
               setTaskDetails({
                 ...taskDetails,
-                taskDescription: e.target.value
+                taskDescription: e.target.value,
               });
               resetAlerts();
             }}
@@ -292,7 +319,7 @@ function CreateTask(props) {
                   {
                     setTaskDetails({
                       ...taskDetails,
-                      taskStartDate: e.target.value
+                      taskStartDate: e.target.value,
                     });
                     resetAlerts();
                   }
@@ -310,7 +337,7 @@ function CreateTask(props) {
                   {
                     setTaskDetails({
                       ...taskDetails,
-                      taskEndDate: e.target.value
+                      taskEndDate: e.target.value,
                     });
                     resetAlerts();
                   }
@@ -371,13 +398,17 @@ function CreateTask(props) {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName
+              label: event.eventName,
             }))}
           />
           <div className="create-task-selected-task">
             {selectedEvent && (
               <Stack direction="row" spacing={1}>
-                <Chip label={selectedEvent.eventName} onDelete={() => handleRemoveEvent()} variant="outlined" />
+                <Chip
+                  label={selectedEvent.eventName}
+                  onDelete={() => handleRemoveEvent()}
+                  variant="outlined"
+                />
               </Stack>
             )}
           </div>
@@ -393,13 +424,14 @@ function CreateTask(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
           <div className="create-task-selected-members">
             {selectedMembers.map((member, index) => (
               <Stack key={index} direction="row" spacing={1}>
                 <Chip
+                  key={member.id}
                   avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}

@@ -143,16 +143,14 @@
   margin: 0 auto;
 }
 
-.task-files .filepond--wrapper .filepond--hopper {
-  padding-bottom: 2rem;
-}
-
 .task-files .filepond--drop-label {
   font-size: 2rem;
 }
 
 .task-files .filepond--wrapper .filepond--hopper {
   background-color: #f1f0ef !important;
+  max-height: 25rem;
+  overflow-y: auto;
 }
 
 .task-files
@@ -165,6 +163,7 @@
   height: auto !important;
   background-color: #369763;
   border-radius: 1rem;
+  margin-bottom: 1rem;
 }
 
 .task-files

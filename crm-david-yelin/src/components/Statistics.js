@@ -351,51 +351,51 @@ function Statistics() {
     const eventsSheet = XLSX.utils.json_to_sheet(
       years.map((year, index) => ({
         Year: year,
-        "Events Count": eventsCount[index],
+        "מספר אירועים": eventsCount[index],
       }))
     );
-    XLSX.utils.book_append_sheet(wb, eventsSheet, "Events per Year");
+    XLSX.utils.book_append_sheet(wb, eventsSheet, "מספר אירועים בשנה");
 
     // Tasks per Year
     const tasksSheet = XLSX.utils.json_to_sheet(
       years.map((year, index) => ({
         Year: year,
-        "Tasks Count": tasksCount[index],
+        "מספר מסימות": tasksCount[index],
       }))
     );
-    XLSX.utils.book_append_sheet(wb, tasksSheet, "Tasks per Year");
+    XLSX.utils.book_append_sheet(wb, tasksSheet, "מספר משימות בשנה");
 
     // Budget Data
     const budgetSheet = XLSX.utils.json_to_sheet(
       budgetData.map((data) => ({
         Year: data.year,
-        "Total Event Budget": data.totalEventBudget,
-        "Total Spent Budget": data.totalSpentBudget,
+        "תקיצוב אירועים בשנה": data.totalEventBudget,
+        "תקציב משימות בשנה": data.totalSpentBudget,
       }))
     );
-    XLSX.utils.book_append_sheet(wb, budgetSheet, "Budget Data");
+    XLSX.utils.book_append_sheet(wb, budgetSheet, "נתוני תקציב");
 
     // Task Status Data
     const taskStatusSheet = XLSX.utils.json_to_sheet([
-      { Status: "Complete", Count: taskStatusData.complete },
-      { Status: "In Progress", Count: taskStatusData.inProgress },
-      { Status: "Not Started", Count: taskStatusData.notStarted },
+      { Status: "הושלמו", Count: taskStatusData.complete },
+      { Status: "בתהליך", Count: taskStatusData.inProgress },
+      { Status: "טרם החלו", Count: taskStatusData.notStarted },
     ]);
-    XLSX.utils.book_append_sheet(wb, taskStatusSheet, "Task Status");
+    XLSX.utils.book_append_sheet(wb, taskStatusSheet, "סטטוס משימות");
 
     // Department Data
     const departmentSheet = XLSX.utils.json_to_sheet(departmentData);
-    XLSX.utils.book_append_sheet(wb, departmentSheet, "Department Data");
+    XLSX.utils.book_append_sheet(wb, departmentSheet, "נתוני מחלקות");
 
     // Averages
     const averagesSheet = XLSX.utils.json_to_sheet([
-      { Metric: "Average Events per Year", Value: averages.eventsPerYear },
-      { Metric: "Average Tasks per Year", Value: averages.tasksPerYear },
-      { Metric: "Average Tasks per Event per Year", Value: averages.tasksPerEventPerYear },
-      { Metric: "Average Total Budget per Year", Value: averages.totalBudgetPerYear },
-      { Metric: "Average Spent Budget per Year", Value: averages.spentBudgetPerYear },
+      { Metric: "ממוצע אירועים לשנה", Value: averages.eventsPerYear },
+      { Metric: "ממצוע משימות לשנה", Value: averages.tasksPerYear },
+      { Metric: "ממצוע משימות לאירוע לשנה", Value: averages.tasksPerEventPerYear },
+      { Metric: "ממוצע תקציב אירועים בשנה", Value: averages.totalBudgetPerYear },
+      { Metric: "ממוצע תקציב משימות בשנה", Value: averages.spentBudgetPerYear },
     ]);
-    XLSX.utils.book_append_sheet(wb, averagesSheet, "Averages");
+    XLSX.utils.book_append_sheet(wb, averagesSheet, "ממוצעים");
 
     // Generate Excel file
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
@@ -404,7 +404,7 @@ function Statistics() {
     });
 
     // Save the file
-    saveAs(data, "statistics_data.xlsx");
+    saveAs(data, "נתוני_סטטיסטיקה.xlsx");
   };
 
   return (

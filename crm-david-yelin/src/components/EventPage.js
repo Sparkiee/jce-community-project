@@ -944,7 +944,7 @@ function EventPage() {
                     open={fileError}
                     autoHideDuration={3000}
                     onClose={() => setFileError(false)}
-                    anchorOrigin={{ vertical: "center", horizontal: "center" }}>
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}>
                     <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
                   </Snackbar>
                 </div>

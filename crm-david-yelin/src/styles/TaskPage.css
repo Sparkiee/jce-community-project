@@ -184,7 +184,7 @@
 
 .MuiSnackbar-root {
   position: absolute !important;
-  top: -94% !important;
+  top: -1% !important;
 }
 
 .MuiSnackbar-root .MuiPaper-root {

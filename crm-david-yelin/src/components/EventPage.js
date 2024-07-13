@@ -758,10 +758,10 @@ function EventPage() {
     },
   ];
 
-  const fetchItemUrl = async (imagePath) => {
-    const imageRef = ref(storage, imagePath);
+  const fetchItemUrl = async (itemPath) => {
+    const itemRef = ref(storage, itemPath);
     try {
-      const metadata = await getDownloadURL(imageRef); // Use await to wait for the promise to resolve
+      const metadata = await getDownloadURL(itemRef); // Use await to wait for the promise to resolve
       return metadata; // This will return the URL (or metadata) to the caller
     } catch (error) {
       console.error("Error fetching item URL:", error); // Log or handle the error as needed

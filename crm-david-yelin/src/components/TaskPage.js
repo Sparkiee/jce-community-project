@@ -1,8 +1,25 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
-import { doc, getDoc, query, collection, where, getDocs, orderBy, updateDoc, arrayUnion } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL, listAll, getMetadata, deleteObject } from "firebase/storage";
+import {
+  doc,
+  getDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+  orderBy,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  listAll,
+  getMetadata,
+  deleteObject,
+} from "firebase/storage";
 import Avatar from "@mui/material/Avatar";
 import "../styles/TaskPage.css";
 import "../styles/Styles.css";
@@ -32,7 +49,11 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
 // Register the plugins
-registerPlugin(FilePondPluginFileValidateType, FilePondPluginImagePreview, FilePondPluginFileValidateSize);
+registerPlugin(
+  FilePondPluginFileValidateType,
+  FilePondPluginImagePreview,
+  FilePondPluginFileValidateSize
+);
 
 function stringToColor(string) {
   let hash = 0;
@@ -55,9 +76,9 @@ function stringAvatar(name) {
   }
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: initials
+    children: initials,
   };
 }
 
@@ -145,8 +166,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -155,8 +176,8 @@ function TaskPage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 36
-      }
+        fontSize: 36,
+      },
     },
     heIL
   );
@@ -202,7 +223,9 @@ function TaskPage() {
         const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
         const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
         const assigneeDocs = await Promise.all(assigneePromises);
-        const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : null)).filter((data) => data);
+        const assigneeData = assigneeDocs
+          .map((doc) => (doc.exists() ? doc.data() : null))
+          .filter((data) => data);
         setAssignees(assigneeData);
 
         if (user && assigneeEmails.includes(user.email)) {
@@ -245,7 +268,7 @@ function TaskPage() {
           id: index + 1,
           date: item.timestamp.toDate().toLocaleDateString("he-IL"),
           time: item.timestamp.toDate().toLocaleTimeString("he-IL"),
-          ...item
+          ...item,
         };
       });
       const nonEmptyHistory = history.filter(
@@ -380,7 +403,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.date}</div>;
-      }
+      },
     },
     {
       field: "changeTime",
@@ -389,7 +412,7 @@ function TaskPage() {
       flex: 1.5,
       renderCell: (params) => {
         return <div>{params.row.time}</div>;
-      }
+      },
     },
     {
       field: "changedBy",
@@ -403,7 +426,7 @@ function TaskPage() {
             {params.row.fullName}
           </div>
         );
-      }
+      },
     },
     {
       field: "changeDescription",
@@ -412,7 +435,7 @@ function TaskPage() {
       flex: 3,
       renderCell: (params) => {
         return <div>{generateHtmlListForFieldChanges(params.row.updatedFields)}</div>;
-      }
+      },
     },
     {
       field: "view",
@@ -420,11 +443,14 @@ function TaskPage() {
       align: "right",
       flex: 0.8,
       renderCell: (params) => (
-        <IconButton aria-label="view" onClick={() => setChanges(params.row.updatedFields)} style={{ padding: 0 }}>
+        <IconButton
+          aria-label="view"
+          onClick={() => setChanges(params.row.updatedFields)}
+          style={{ padding: 0 }}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const fileColumns = [
@@ -441,7 +467,7 @@ function TaskPage() {
             ""
           )}
         </div>
-      )
+      ),
     },
     { field: "name", headerName: "שם הקובץ", align: "right", flex: 3 },
     {
@@ -449,21 +475,23 @@ function TaskPage() {
       headerName: "גודל הקובץ",
       align: "right",
       flex: 1,
-      renderCell: (params) => <div className="event-file-size">{params.row.size}</div>
+      renderCell: (params) => <div className="event-file-size">{params.row.size}</div>,
     },
     {
       field: "type",
       headerName: "סוג הקובץ",
       align: "right",
       flex: 1,
-      renderCell: (params) => <div>{params.row.type.split("/")[1]}</div>
+      renderCell: (params) => <div>{params.row.type.split("/")[1]}</div>,
     },
     {
       field: "uploadedAt",
       headerName: "תאריך העלאה",
       align: "right",
       flex: 1,
-      renderCell: (params) => <div>{params.value ? params.value.toDate().toLocaleDateString("he-IL") : ""}</div>
+      renderCell: (params) => (
+        <div>{params.value ? params.value.toDate().toLocaleDateString("he-IL") : ""}</div>
+      ),
     },
     {
       field: "edit",
@@ -476,14 +504,15 @@ function TaskPage() {
             <DownloadIcon />
           </IconButton>
           {user &&
-            (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
+            (user.privileges >= 2 ||
+              (Array.isArray(user.adminAccess) && user.adminAccess.includes("deleteFile"))) && (
               <IconButton aria-label="delete" onClick={() => setDeleteFile(params.row)}>
                 <DeleteForeverIcon />
               </IconButton>
             )}
         </>
-      )
-    }
+      ),
+    },
   ];
 
   const downloadFile = (url) => {
@@ -500,14 +529,20 @@ function TaskPage() {
       case pages[0]:
         return (
           <div className="task-discussion">
-            <Forum eventId={taskId} type="task" name={task.taskName} onShowFullDiscussion={handleShowFullDiscussion} />
+            <Forum
+              eventId={taskId}
+              type="task"
+              name={task.taskName}
+              onShowFullDiscussion={handleShowFullDiscussion}
+            />
           </div>
         );
       case pages[1]:
         return (
           <div className="task-files">
             {user &&
-              (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
+              (user.privileges >= 2 ||
+                (Array.isArray(user.adminAccess) && user.adminAccess.includes("uploadFile"))) && (
                 <div>
                   <h2>העלאת קבצים</h2>
                   <FilePond
@@ -562,8 +597,8 @@ function TaskPage() {
                                   name: file.name,
                                   size: formattedFileSize,
                                   type: file.type,
-                                  uploadedAt: new Date()
-                                })
+                                  uploadedAt: new Date(),
+                                }),
                               });
                               load(downloadURL);
                             } catch (downloadURLError) {
@@ -577,16 +612,16 @@ function TaskPage() {
                           abort: () => {
                             uploadTask.cancel();
                             abort();
-                          }
+                          },
                         };
-                      }
+                      },
                     }}
                     name="files"
                     labelIdle='גרור ושחרר קבצים או <span class="filepond--label-action">בחר קבצים</span>'
                   />
                   <Snackbar
                     open={fileError}
-                    autoHideDuration={3000}
+                    // autoHideDuration={3000}
                     onClose={() => setFileError(false)}
                     anchorOrigin={{ vertical: "center", horizontal: "center" }}>
                     <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
@@ -600,15 +635,15 @@ function TaskPage() {
                   rows={fileRows}
                   columns={fileColumns}
                   initialState={{
-                    pagination: { paginationModel: { page: 0, pageSize: 10 } }
+                    pagination: { paginationModel: { page: 0, pageSize: 10 } },
                   }}
                   pageSizeOptions={[10, 20, 50]}
                   localeText={{
                     MuiTablePagination: {
                       labelDisplayedRows: ({ from, to, count }) =>
                         `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                      labelRowsPerPage: "שורות בכל עמוד:"
-                    }
+                      labelRowsPerPage: "שורות בכל עמוד:",
+                    },
                   }}
                 />
               </ThemeProvider>
@@ -623,15 +658,15 @@ function TaskPage() {
                 rows={history}
                 columns={HistoryColumns}
                 initialState={{
-                  pagination: { paginationModel: { page: 0, pageSize: 10 } }
+                  pagination: { paginationModel: { page: 0, pageSize: 10 } },
                 }}
                 pageSizeOptions={[10, 20, 50]}
                 localeText={{
                   MuiTablePagination: {
                     labelDisplayedRows: ({ from, to, count }) =>
                       `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:"
-                  }
+                    labelRowsPerPage: "שורות בכל עמוד:",
+                  },
                 }}
               />
             </ThemeProvider>
@@ -668,7 +703,8 @@ function TaskPage() {
                   </p>
                   {eventId && (
                     <p className="link-to-event-from-task-page">
-                      <strong>שייך לאירוע :</strong> <Link to={`/event/${eventId}`}>{eventName}</Link>
+                      <strong>שייך לאירוע :</strong>{" "}
+                      <Link to={`/event/${eventId}`}>{eventName}</Link>
                     </p>
                   )}
                   <p>
@@ -680,7 +716,10 @@ function TaskPage() {
                   <p>
                     <span className="status-cell">
                       <strong>סטטוס: </strong>
-                      <span className={`status-circle ${getStatusColorClass(task.taskStatus)} circle-space`}></span>
+                      <span
+                        className={`status-circle ${getStatusColorClass(
+                          task.taskStatus
+                        )} circle-space`}></span>
                       {task.taskStatus}
                     </span>
                   </p>
@@ -698,7 +737,10 @@ function TaskPage() {
                   </p>
                 </div>
                 {(user.adminAccess.includes("editTask") || user.privileges >= 2) && (
-                  <IconButton className="task-page-edit-icon" aria-label="edit" onClick={handleEditClick}>
+                  <IconButton
+                    className="task-page-edit-icon"
+                    aria-label="edit"
+                    onClick={handleEditClick}>
                     <EditIcon />
                   </IconButton>
                 )}

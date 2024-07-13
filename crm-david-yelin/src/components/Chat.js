@@ -10,7 +10,7 @@ import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Box from "@mui/material/Box";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import {
   getDoc,
   doc,
@@ -24,6 +24,7 @@ import {
   updateDoc,
   addDoc,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function Chat() {
   function stringToColor(string) {
@@ -70,13 +71,20 @@ function Chat() {
   const [isChatsLoading, setIsChatsLoading] = useState(true);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const navigate = useNavigate();
-
+  const [messagesPerPage, setMessagesPerPage] = useState(20);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [chatSearchQuery, setChatSearchQuery] = useState("");
 
   const searchBoxref = useRef(null);
+  const fileInputRef = useRef(null);
 
   const handleChatSearch = (e) => {
     setChatSearchQuery(e.target.value);
+  };
+
+  const handleLoadMore = () => {
+    setMessagesPerPage((prevCount) => prevCount + 20);
+    fetchMessagesforChat(selectedChat, true);
   };
 
   const filteredChats = chats.filter(
@@ -93,8 +101,6 @@ function Chat() {
       if (userData) setUser(userData);
     }
   }, []);
-
-  const endRef = useRef(null);
 
   async function getMemberFullName(email) {
     try {
@@ -142,12 +148,6 @@ function Chat() {
   useEffect(() => {
     setMessages(selectedChat?.messages);
   }, [selectedChat]);
-
-  useEffect(() => {
-    if (endRef.current) {
-      endRef.current.scrollIntoView();
-    }
-  }, [messages]);
 
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji);
@@ -197,7 +197,6 @@ function Chat() {
   };
 
   useEffect(() => {
-    // Function to close the search box
     const closeSearchBox = (event) => {
       if (
         searchBoxref.current &&
@@ -210,20 +209,21 @@ function Chat() {
       }
     };
 
-    // Add event listener to the document
     document.addEventListener("mousedown", closeSearchBox);
 
-    // Cleanup function to remove the event listener
     return () => {
       document.removeEventListener("mousedown", closeSearchBox);
     };
-  }, [searchBoxref]); // Re-run when searchBoxref changes
+  }, [searchBoxref]);
 
   const handleChatListSearchAddMinusClick = (event) => {
-    event.stopPropagation(); // Prevent click from propagating to the document
-    if (searchBoxref) {
-      setAddMode(!addMode); // Toggle or set addMode as needed
-    }
+    event.stopPropagation();
+    setAddMode((prev) => !prev);
+  };
+
+  const handleImageIconClick = (event) => {
+    event.stopPropagation();
+    fileInputRef.current.click();
   };
 
   const handleAddUser = async (userToAdd) => {
@@ -235,11 +235,9 @@ function Chat() {
 
       const chatRef = collection(db, "chats");
 
-      // Query for chats where members contain currentUserEmail
       const q = query(chatRef, where("members", "array-contains", currentUserEmail));
       const querySnapshot = await getDocs(q);
 
-      // Filter the results to check if any chat contains targetEmail as well
       let chatExists = false;
       querySnapshot.forEach((doc) => {
         const members = doc.data().members;
@@ -268,6 +266,7 @@ function Chat() {
 
   const handleChatSelection = async (chat) => {
     setSelectedChat(chat);
+    console.log("chat", chat);
     fetchMessagesforChat(chat);
     if (chat.unseenCount > 0) {
       const chatRef = doc(db, "chats", chat.chatId);
@@ -280,36 +279,38 @@ function Chat() {
   };
 
   const handleSendMessage = async () => {
-    // Trim the text to remove leading and trailing whitespace
     const trimmedText = text.trim();
     if (!trimmedText || !selectedChat) return;
     const chatRef = doc(db, "chats", selectedChat.chatId);
     try {
-      const now = new Date();
       const message = {
         text: trimmedText,
         sender: user.email,
-        timestamp: now,
+        timestamp: new Date(),
         seen: false,
       };
       await updateDoc(chatRef, {
         lastMessage: trimmedText,
-        updatedAt: now,
+        updatedAt: serverTimestamp(),
         messages: arrayUnion(message),
       });
       setText("");
-      fetchMessagesforChat(selectedChat);
+      setMessages((prevMessages) => [...prevMessages, message]);
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
-  const fetchMessagesforChat = async (selectedChat) => {
+  const fetchMessagesforChat = async (selectedChat, loadMore = false) => {
     const chatRef = doc(db, "chats", selectedChat.chatId);
     try {
       const chatDoc = await getDoc(chatRef);
       const chatData = chatDoc.data();
-      let messages = chatData.messages;
+      let allMessages = chatData.messages;
+      let messages = allMessages.slice(-messagesPerPage);
+
+      setHasMoreMessages(allMessages.length > messages.length);
+
       let needsUpdate = false;
       messages = messages.map((message) => {
         if (message.sender !== user.email && !message.seen) {
@@ -318,12 +319,20 @@ function Chat() {
         }
         return message;
       });
-      setMessages(chatData.messages);
+
+      if (loadMore) {
+        setMessages((prevMessages) => [...messages, ...prevMessages]);
+      } else {
+        setMessages(messages);
+      }
+
       if (needsUpdate) {
-        await updateDoc(chatRef, { messages: messages });
+        await updateDoc(chatRef, { messages: allMessages });
         setChats((prevChats) =>
           prevChats.map((chat) =>
-            chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
+            chat.chatId === selectedChat.chatId
+              ? { ...chat, messages: allMessages, unseenCount: 0 }
+              : chat
           )
         );
       }
@@ -334,13 +343,18 @@ function Chat() {
 
   useEffect(() => {
     const subscribeCurrentChat = async () => {
-      // Ensure db and selectedChat?.chatId are defined
       if (!db || !selectedChat?.chatId) {
         return;
       }
 
       const unsubscribe = onSnapshot(doc(db, "chats", selectedChat.chatId), async (docSnapshot) => {
-        fetchMessagesforChat(selectedChat);
+        const chatData = docSnapshot.data();
+        if (chatData) {
+          const allMessages = chatData.messages;
+          const newMessages = allMessages.slice(-messagesPerPage);
+          setHasMoreMessages(allMessages.length > newMessages.length);
+          setMessages(newMessages);
+        }
       });
 
       return unsubscribe;
@@ -354,9 +368,13 @@ function Chat() {
         }
       });
     };
-  }, [selectedChat, db]);
+  }, [selectedChat, db, messagesPerPage]);
 
   const convertTextToLinksJSX = (text) => {
+    if (!text) {
+      return null; // Return null if text is undefined or null
+    }
+
     const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
     const parts = text.split(urlRegex);
 
@@ -380,6 +398,29 @@ function Chat() {
     if (e.key === "Enter" && !e.shiftKey && text.trim() !== "") {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file && selectedChat) {
+      const storageRef = ref(storage, `chat/${selectedChat.chatId}/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      const chatRef = doc(db, "chats", selectedChat.chatId);
+      const message = {
+        img: url,
+        sender: user.email,
+        timestamp: new Date(), // Set the timestamp as a date object
+        seen: false,
+      };
+      await updateDoc(chatRef, {
+        lastMessage: "[Image]",
+        updatedAt: serverTimestamp(),
+        messages: arrayUnion(message),
+      });
+      fetchMessagesforChat(selectedChat);
     }
   };
 
@@ -542,6 +583,11 @@ function Chat() {
                 </div>
               </div>
               <div className="chat-messages-center">
+                {hasMoreMessages && (
+                  <button onClick={handleLoadMore} className="load-more-button">
+                    Load More
+                  </button>
+                )}
                 {messages &&
                   messages.map((message, index) => (
                     <div
@@ -550,8 +596,14 @@ function Chat() {
                         message.sender === user.email ? "own" : "other"
                       }`}>
                       <div className="chat-messages-center-message-texts">
-                        {message.img && <img src={message.img} />}
                         <pre className="chat-messages-center-message-box">
+                          {message.img && (
+                            <img
+                              src={message.img}
+                              onClick={() => window.open(message.img, "_blank")}
+                              style={{ cursor: "pointer", maxWidth: "200px" }}
+                            />
+                          )}
                           {convertTextToLinksJSX(message.text)}
                           {message.sender === user.email && (
                             <DoneAllIcon
@@ -571,11 +623,17 @@ function Chat() {
                       </div>
                     </div>
                   ))}
-                <div ref={endRef}></div>
+                <div></div>
               </div>
               <div className="chat-messages-bottom">
                 <div className="chat-messages-bottom-icons">
-                  <ImageIcon />
+                  <ImageIcon onClick={handleImageIconClick} />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                  />
                 </div>
                 <textarea
                   className="chat-messages-bottom-input"

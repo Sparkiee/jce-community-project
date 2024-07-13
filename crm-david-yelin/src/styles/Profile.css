@@ -58,6 +58,14 @@ div .profile-avatar:hover {
   gap: 0.8rem;
 }
 
+.profile-stats-personal {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+}
+
 .profile-info-header .profile-stats h2 {
   font-size: 2.2rem;
 }

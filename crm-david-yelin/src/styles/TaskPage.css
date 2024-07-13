@@ -184,7 +184,7 @@
 
 .MuiSnackbar-root {
   position: absolute !important;
-  top: -94% !important;
+  top: -1% !important;
 }
 
 .MuiSnackbar-root .MuiPaper-root {
@@ -192,4 +192,11 @@
   align-items: center;
   gap: 1rem;
   font-size: 1.8rem;
+}
+
+.options-for-files {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }

@@ -47,6 +47,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { saveAs } from "file-saver";
 
 // Register the plugins
 registerPlugin(
@@ -499,8 +500,10 @@ function TaskPage() {
       align: "right",
       flex: 0.8,
       renderCell: (params) => (
-        <>
-          <IconButton aria-label="download" onClick={() => downloadFile(params.row.itemUrl)}>
+        <div className="options-for-files">
+          <IconButton
+            aria-label="download"
+            onClick={() => downloadFile(params.row.itemUrl, params.row.name)}>
             <DownloadIcon />
           </IconButton>
           {user &&
@@ -510,18 +513,19 @@ function TaskPage() {
                 <DeleteForeverIcon />
               </IconButton>
             )}
-        </>
+        </div>
       ),
     },
   ];
 
-  const downloadFile = (url) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = url.split("/").pop();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const downloadFile = async (url, fileName) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      saveAs(blob, fileName);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
   };
 
   const PageContent = ({ pageName }) => {
@@ -623,7 +627,7 @@ function TaskPage() {
                     open={fileError}
                     autoHideDuration={3000}
                     onClose={() => setFileError(false)}
-                    anchorOrigin={{ vertical: "center", horizontal: "center" }}>
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}>
                     <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>
                   </Snackbar>
                 </div>

@@ -486,7 +486,7 @@ function Profile() {
       field: "edit",
       headerName: "עריכה",
       align: "right",
-      flex: 1,
+      flex: 1.5,
       renderCell: (params) => (
         <div>
           <IconButton aria-label="edit" title="עריכה" onClick={() => setEditLog(params.row)}>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { collection, getDocs, getDoc, doc, deleteDoc, query, orderBy } from "firebase/firestore";
+import { ref, listAll, deleteObject } from "firebase/storage";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -373,9 +374,23 @@ function ManageTasks() {
     setRows(filteredRows);
   };
 
+  const deleteFolder = async (folderPath) => {
+    try {
+      const listRef = ref(storage, folderPath);
+      const list = await listAll(listRef);
+      if (list.items.length > 0) {
+        for (const itemKey of list.items) {
+          await deleteObject(ref(storage, itemKey.fullPath));
+        }
+      }
+      console.log(list);
+    } catch (error) {}
+  };
+
   async function handleDeleteTask() {
     try {
       const docRef = doc(db, "tasks", deleteTarget.taskDoc);
+      deleteFolder(`tasks/${deleteTarget.taskDoc}`);
       await deleteDoc(docRef);
       setDeleteTarget("");
       getTasks();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { collection, getDoc, doc, getDocs, deleteDoc, where, query, orderBy } from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
@@ -16,6 +16,7 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateEvent from "./CreateEvent";
 import ConfirmAction from "./ConfirmAction";
 import EditEvent from "./EditEvent";
+import { ref, listAll, deleteObject } from "firebase/storage";
 
 function stringToColor(string) {
   let hash = 0;
@@ -217,7 +218,8 @@ function ManageEvents() {
 
   const columns = [
     ...baseColumns,
-    ...(user && (user.privileges >= 2 || user.adminAccess.includes("deleteEvent") || user.adminAccess.includes("editEvent"))
+    ...(user &&
+    (user.privileges >= 2 || user.adminAccess.includes("deleteEvent") || user.adminAccess.includes("editEvent"))
       ? [
           {
             field: "edit",
@@ -354,9 +356,24 @@ function ManageEvents() {
     setShowCreateEvent(false);
   };
 
+  const deleteFolder = async (folderPath) => {
+    try {
+      const listRef = ref(storage, folderPath);
+      const list = await listAll(listRef);
+      if (list.items.length > 0) {
+        for (const itemKey of list.items) {
+          await deleteObject(ref(storage, itemKey.fullPath));
+        }
+      }
+      console.log(list);
+    } catch (error) {}
+  };
+  
   async function handleDeleteEvent() {
     try {
+      // const s
       const docRef = doc(db, "events", deleteTarget.eventDoc);
+      deleteFolder(`events/${deleteTarget.eventDoc}`);
       await deleteDoc(docRef);
       setDeleteTarget("");
       getEvents();
@@ -434,30 +451,24 @@ function ManageEvents() {
             </div>
           )}
         </div>
-        {(user && ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges >= 2)) && (
-          <div
-            className="action-button add-events-manage-events"
-            onClick={handleShowCreateEvents}>
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-              <g id="SVGRepo_iconCarrier">
-                <path
-                  d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"></path>
-              </g>
-            </svg>
-            הוסף אירוע
-          </div>
-        )}
+        {user &&
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges >= 2) && (
+            <div className="action-button add-events-manage-events" onClick={handleShowCreateEvents}>
+              <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"></path>
+                </g>
+              </svg>
+              הוסף אירוע
+            </div>
+          )}
         <div className="search-events-bar">
           <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

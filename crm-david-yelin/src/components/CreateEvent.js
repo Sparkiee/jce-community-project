@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
@@ -38,7 +38,7 @@ function CreateEvent(props) {
     eventBudget: 0,
     eventLocation: "",
     eventStatus: "טרם החל",
-    assignees: selectedMembers
+    assignees: selectedMembers,
   });
 
   useEffect(() => {
@@ -54,9 +54,9 @@ function CreateEvent(props) {
       const querySnapshot = await getDocs(membersRef);
       const allMembers = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
-      setMembers(allMembers.filter(member => member.privileges > 0));
+      setMembers(allMembers.filter((member) => member.privileges > 0));
     }
     fetchMembers();
   }, []);
@@ -116,7 +116,7 @@ function CreateEvent(props) {
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
       eventCreator: "members/" + user.email,
-      eventStatus: eventDetails.eventStatus
+      eventStatus: eventDetails.eventStatus,
     };
 
     try {
@@ -135,8 +135,8 @@ function CreateEvent(props) {
               eventID: docRef.id,
               message: `הינך משובץ לאירוע חדש: ${eventDetails.eventName}`,
               link: `/event/${docRef.id}`,
-              id: uuidv4()
-            })
+              id: uuidv4(),
+            }),
           });
         })
       );
@@ -160,30 +160,27 @@ function CreateEvent(props) {
   }
 
   async function handleSearchMember(event) {
-    setSearch(event.target.value);
     if (event.target.value.length >= 2) {
       const membersRef = collection(db, "members");
-      const q = query(membersRef, where("fullName", ">=", event.target.value), where("fullName", "<=", event.target.value + "\uf8ff"));
+      const q = query(
+        membersRef,
+        where("fullName", ">=", search),
+        where("fullName", "<=", search + "\uf8ff")
+      );
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs
         .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         .filter(
           (member) =>
             member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
         );
       setMembers(results);
     } else {
-      const membersRef = collection(db, "members");
-      const querySnapshot = await getDocs(membersRef);
-      const allMembers = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setMembers(allMembers.filter(member => member.privileges > 0));
+      setMembers([]);
     }
   }
 
@@ -193,30 +190,46 @@ function CreateEvent(props) {
     setWarningText("");
   }
 
+  function handleSelectMember(value) {
+    const selectedMember = members.find((member) => member.fullName === value);
+    if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
+      setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
+      setSearch(""); // Clear the search input after selection
+      setMembers([]); // Clear the dropdown options
+    }
+  }
+
   const handleRemoveMember = (id) => {
     setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
   };
 
-  const handleSelectChange = (selectedOptions) => {
-    setSelectedMembers(selectedOptions ? selectedOptions.map(option => option.value) : []);
-  };
-
-  const customOption = ({ innerRef, innerProps, data }) => (
-    <div ref={innerRef} {...innerProps} style={{ display: 'flex', alignItems: 'center' }}>
-      <Checkbox
-        checked={selectedMembers.some((selectedMember) => selectedMember.id === data.value.id)}
-        style={{ marginRight: 8 }}
-      />
-      {data.label}
-    </div>
-  );
-
   return (
     <div className="create-event">
       <div className="action-close" onClick={props.onClose}>
-        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
       <form className="create-event-form" onSubmit={handleSubmit}>
@@ -244,7 +257,7 @@ function CreateEvent(props) {
                   //change the start date
                   setEventDetails({
                     ...eventDetails,
-                    eventStartDate: e.target.value
+                    eventStartDate: e.target.value,
                   });
                   resetAlerts();
                 }}
@@ -261,7 +274,7 @@ function CreateEvent(props) {
                   //change the due date
                   setEventDetails({
                     ...eventDetails,
-                    eventEndDate: e.target.value
+                    eventEndDate: e.target.value,
                   });
                   resetAlerts();
                 }}
@@ -307,7 +320,7 @@ function CreateEvent(props) {
             onChange={(e) => {
               setEventDetails({
                 ...eventDetails,
-                eventLocation: e.target.value
+                eventLocation: e.target.value,
               });
               resetAlerts();
             }}
@@ -322,27 +335,21 @@ function CreateEvent(props) {
             <option value="בתהליך">בתהליך</option>
             <option value="הסתיים">הסתיים</option>
           </select>
-          <div className="create-event-select-container">
-            <Select
-              placeholder="הוסף חבר וועדה"
-              className="create-event-input extra-create-event-input"
-              onInputChange={(inputValue) => {
-                handleSearchMember({ target: { value: inputValue } });
-              }}
-              onChange={handleSelectChange}
-              options={members.map((member) => ({
-                value: member,
-                label: member.fullName
-              }))}
-              isMulti
-              closeMenuOnSelect={false}
-              components={{ Option: customOption }}
-              value={selectedMembers.map(member => ({
-                value: member,
-                label: member.fullName
-              }))}
-            />
-          </div>
+          <Select
+            placeholder="הוסף חבר וועדה"
+            className="create-event-input extra-create-event-input"
+            onInputChange={(inputValue) => {
+              handleSearchMember({ target: { value: inputValue } });
+            }}
+            onChange={(e) => {
+              handleSelectMember(e.value);
+              resetAlerts();
+            }}
+            options={members.map((member) => ({
+              value: member.fullName,
+              label: member.fullName,
+            }))}
+          />
           <div className="create-task-selected-members">
             {selectedMembers.map((member, index) => (
               <Stack direction="row" spacing={1} key={index}>

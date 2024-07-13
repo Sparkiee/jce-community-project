@@ -18,7 +18,6 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
-import Checkbox from "@mui/material/Checkbox";
 import { v4 as uuidv4 } from "uuid";
 
 function CreateEvent(props) {
@@ -48,17 +47,6 @@ function CreateEvent(props) {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) setUser(userData);
     }
-
-    async function fetchMembers() {
-      const membersRef = collection(db, "members");
-      const querySnapshot = await getDocs(membersRef);
-      const allMembers = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMembers(allMembers.filter((member) => member.privileges > 0));
-    }
-    fetchMembers();
   }, []);
 
   async function handleSubmit(event) {

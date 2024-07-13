@@ -246,6 +246,10 @@ function Profile() {
     }
   ];
 
+  const remToPixels = (rem) => {
+    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+  };
+
   useEffect(() => {
     // Assuming your canvas element has an id of 'myChart'
     const ctx = document.getElementById("eventCompletionChart");
@@ -260,6 +264,7 @@ function Profile() {
         }
       ]
     };
+
     let chart = new Chart(ctx, {
       type: "pie",
       data: data,
@@ -270,7 +275,7 @@ function Profile() {
             position: "bottom",
             labels: {
               font: {
-                size: 14
+                size: remToPixels(1.4)
               },
 
               color: "#000000"
@@ -319,7 +324,7 @@ function Profile() {
             position: "bottom",
             labels: {
               font: {
-                size: 14
+                size: remToPixels(1.4)
               },
 
               color: "#000000"

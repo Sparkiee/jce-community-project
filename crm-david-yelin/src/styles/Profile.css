@@ -1,12 +1,7 @@
-.profile-information h1 {
-  margin-top: 0;
-  margin-bottom: 0;
-  font-size: 2.5rem;
-}
-
-.profile-information h2 {
-  margin-top: 0;
-  font-size: 1.8rem;
+.profile-page {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 div .profile-avatar {
@@ -20,22 +15,40 @@ div .profile-avatar:hover {
 }
 
 .profile-page-container {
-  gap: 5rem;
   display: flex;
-  width: 90%;
+  width: 85%;
+  gap: 5rem;
+  justify-content: center;
   margin-top: 5rem;
-  margin-right: 17rem;
-  margin-left: auto;
 }
 
 .profile-information {
-  width: 25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border-radius: 1rem;
   border: 0.5px solid #ccc;
   position: relative;
   box-shadow: 0 0.1rem 1rem -0.1875rem #000;
   background-color: rgb(64, 142, 198, 0.25);
-  padding: 3rem;
+  padding: 2rem;
+}
+
+.profile-information h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 3rem;
+}
+
+.profile-information h2 {
+  margin-top: 0;
+  font-size: 1.8rem;
+}
+
+.profile-info-header {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
 }
 
 .profile-stats {
@@ -43,6 +56,54 @@ div .profile-avatar:hover {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+}
+
+.profile-info-header .profile-stats h2 {
+  font-size: 2.2rem;
+}
+
+.profile-info-header .profile-stats .profile-personal-info svg {
+  font-size: 2.5rem;
+}
+
+.profile-info-header .profile-stats .profile-personal-info h3 {
+  font-size: 1.8rem;
+}
+
+.profile-info-progress {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-prsonal-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-tasks-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+#taskCompletionChart {
+  width: 25rem !important;
+  height: 25rem !important;
+}
+
+.profile-events-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+#eventCompletionChart {
+  width: 25rem !important;
+  height: 25rem !important;
 }
 
 .profile-stats-row {
@@ -70,7 +131,7 @@ div .profile-avatar:hover {
 
 .profile-edit-icon {
   position: absolute !important;
-  right: 26rem !important;
+  left: 0 !important;
   top: 0.5rem !important;
 }
 

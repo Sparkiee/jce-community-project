@@ -61,7 +61,7 @@ function Statistics() {
               ? docData.eventEndDate.toDate()
               : new Date(docData.eventEndDate);
             if (eventEndDate >= startOfYear && eventEndDate <= endOfYear) {
-              totalEventBudget += docData.eventBudget;
+              totalEventBudget += Number(docData.eventBudget);
               if (year === currentYear && docData.assignees) {
                 // Check if assignees is defined
                 docData.assignees.forEach(async (assignee) => {
@@ -114,7 +114,7 @@ function Statistics() {
                   });
                 }
               }
-              totalSpentBudget += docData.taskBudget;
+              totalSpentBudget += Number(docData.taskBudget);
               return true;
             }
             return false;

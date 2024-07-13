@@ -357,10 +357,10 @@ function Chat() {
     if (!text) {
       return null; // Return null if text is undefined or null
     }
-  
+
     const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
     const parts = text.split(urlRegex);
-  
+
     return parts.map((part, index) => {
       if (part?.match(urlRegex)) {
         let href = part;
@@ -376,7 +376,6 @@ function Chat() {
       return <span key={index}>{part}</span>;
     });
   };
-  
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && text.trim() !== "") {
@@ -575,14 +574,14 @@ function Chat() {
                         message.sender === user.email ? "own" : "other"
                       }`}>
                       <div className="chat-messages-center-message-texts">
-                        {message.img && (
-                          <img
-                            src={message.img}
-                            onClick={() => window.open(message.img, "_blank")}
-                            style={{ cursor: "pointer", maxWidth: "200px" }}
-                          />
-                        )}
                         <pre className="chat-messages-center-message-box">
+                          {message.img && (
+                            <img
+                              src={message.img}
+                              onClick={() => window.open(message.img, "_blank")}
+                              style={{ cursor: "pointer", maxWidth: "200px" }}
+                            />
+                          )}
                           {convertTextToLinksJSX(message.text)}
                           {message.sender === user.email && (
                             <DoneAllIcon

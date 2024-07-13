@@ -36,7 +36,7 @@
 @media screen and (max-width: 1440px) {
   .add-tasks-manage-tasks {
     position: absolute;
-    top: 6.5rem;
+    top: 6rem;
     right: 5%;
   }
 }

@@ -27,7 +27,7 @@ body {
   }
 }
 
-@media screen and (max-width: 1333px) {
+@media screen and (max-width: 1440px) {
   html {
     font-size: 6px;
   }

@@ -37,7 +37,7 @@
   transition: all 0.2s linear;
 }
 
-@media screen and(max-width: 1860px) {
+@media screen and (max-width: 1860px) {
   .action-button {
     padding: 0.4rem 0rem 0.4rem 2rem;
     min-width: 10rem;
@@ -56,7 +56,7 @@
 
 @media screen and (max-width: 1440px) {
   .pending-actions {
-    top: 16.5rem;
+    top: 15.5rem;
   }
   .action-button {
     padding: 0.4rem 0rem 0.4rem 2rem;

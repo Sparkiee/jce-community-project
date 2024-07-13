@@ -261,8 +261,20 @@ function Statistics() {
       },
     },
     scales: {
+      x: {
+        ticks: {
+          font: {
+            size: 20,
+          },
+        },
+      },
       y: {
         beginAtZero: true,
+        ticks: {
+          font: {
+            size: 20,
+          },
+        },
       },
     },
   };
@@ -289,8 +301,20 @@ function Statistics() {
       },
     },
     scales: {
+      x: {
+        ticks: {
+          font: {
+            size: 20,
+          },
+        },
+      },
       y: {
         beginAtZero: true,
+        ticks: {
+          font: {
+            size: 20,
+          },
+        },
       },
     },
   };
@@ -300,7 +324,7 @@ function Statistics() {
       legend: {
         labels: {
           font: {
-            size: 18,
+            size: 23,
           },
         },
       },

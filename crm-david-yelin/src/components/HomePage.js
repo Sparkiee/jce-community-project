@@ -128,7 +128,6 @@ function HomePage() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      colors: "red",
       flex: 1,
     },
     {

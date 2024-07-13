@@ -621,7 +621,7 @@ function TaskPage() {
                   />
                   <Snackbar
                     open={fileError}
-                    // autoHideDuration={3000}
+                    autoHideDuration={3000}
                     onClose={() => setFileError(false)}
                     anchorOrigin={{ vertical: "center", horizontal: "center" }}>
                     <CustomAlert severity="error">{fileErrorMessage}</CustomAlert>

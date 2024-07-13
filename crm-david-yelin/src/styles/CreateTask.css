@@ -42,6 +42,13 @@
   outline: 0;
 }
 
+.create-task-input-box > textarea{
+  
+  font-family: inherit;
+  height: 5rem;
+  resize: none;
+}
+
 .text-area {
   font-family: inherit;
   height: 10rem;

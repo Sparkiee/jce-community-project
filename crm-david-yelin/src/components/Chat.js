@@ -10,7 +10,7 @@ import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import Box from "@mui/material/Box";
-import { db, storage } from "../firebase"; // Make sure you have initialized Firebase storage
+import { db, storage } from "../firebase";
 import {
   getDoc,
   doc,
@@ -71,16 +71,20 @@ function Chat() {
   const [isChatsLoading, setIsChatsLoading] = useState(true);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const navigate = useNavigate();
-
+  const [messagesPerPage, setMessagesPerPage] = useState(20);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [chatSearchQuery, setChatSearchQuery] = useState("");
-  const [filePondFiles, setFilePondFiles] = useState([]);
 
   const searchBoxref = useRef(null);
-  const endRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const handleChatSearch = (e) => {
     setChatSearchQuery(e.target.value);
+  };
+
+  const handleLoadMore = () => {
+    setMessagesPerPage((prevCount) => prevCount + 20);
+    fetchMessagesforChat(selectedChat, true);
   };
 
   const filteredChats = chats.filter(
@@ -144,12 +148,6 @@ function Chat() {
   useEffect(() => {
     setMessages(selectedChat?.messages);
   }, [selectedChat]);
-
-  useEffect(() => {
-    if (endRef.current) {
-      endRef.current.scrollIntoView();
-    }
-  }, [messages]);
 
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji);
@@ -268,6 +266,7 @@ function Chat() {
 
   const handleChatSelection = async (chat) => {
     setSelectedChat(chat);
+    console.log("chat", chat);
     fetchMessagesforChat(chat);
     if (chat.unseenCount > 0) {
       const chatRef = doc(db, "chats", chat.chatId);
@@ -287,7 +286,7 @@ function Chat() {
       const message = {
         text: trimmedText,
         sender: user.email,
-        timestamp: new Date(), // Set the timestamp as a date object
+        timestamp: new Date(),
         seen: false,
       };
       await updateDoc(chatRef, {
@@ -296,18 +295,22 @@ function Chat() {
         messages: arrayUnion(message),
       });
       setText("");
-      fetchMessagesforChat(selectedChat);
+      setMessages((prevMessages) => [...prevMessages, message]);
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
-  const fetchMessagesforChat = async (selectedChat) => {
+  const fetchMessagesforChat = async (selectedChat, loadMore = false) => {
     const chatRef = doc(db, "chats", selectedChat.chatId);
     try {
       const chatDoc = await getDoc(chatRef);
       const chatData = chatDoc.data();
-      let messages = chatData.messages;
+      let allMessages = chatData.messages;
+      let messages = allMessages.slice(-messagesPerPage);
+
+      setHasMoreMessages(allMessages.length > messages.length);
+
       let needsUpdate = false;
       messages = messages.map((message) => {
         if (message.sender !== user.email && !message.seen) {
@@ -316,12 +319,20 @@ function Chat() {
         }
         return message;
       });
-      setMessages(chatData.messages);
+
+      if (loadMore) {
+        setMessages((prevMessages) => [...messages, ...prevMessages]);
+      } else {
+        setMessages(messages);
+      }
+
       if (needsUpdate) {
-        await updateDoc(chatRef, { messages: messages });
+        await updateDoc(chatRef, { messages: allMessages });
         setChats((prevChats) =>
           prevChats.map((chat) =>
-            chat.chatId === selectedChat.chatId ? { ...chat, messages, unseenCount: 0 } : chat
+            chat.chatId === selectedChat.chatId
+              ? { ...chat, messages: allMessages, unseenCount: 0 }
+              : chat
           )
         );
       }
@@ -337,7 +348,13 @@ function Chat() {
       }
 
       const unsubscribe = onSnapshot(doc(db, "chats", selectedChat.chatId), async (docSnapshot) => {
-        fetchMessagesforChat(selectedChat);
+        const chatData = docSnapshot.data();
+        if (chatData) {
+          const allMessages = chatData.messages;
+          const newMessages = allMessages.slice(-messagesPerPage);
+          setHasMoreMessages(allMessages.length > newMessages.length);
+          setMessages(newMessages);
+        }
       });
 
       return unsubscribe;
@@ -351,7 +368,7 @@ function Chat() {
         }
       });
     };
-  }, [selectedChat, db]);
+  }, [selectedChat, db, messagesPerPage]);
 
   const convertTextToLinksJSX = (text) => {
     if (!text) {
@@ -566,6 +583,11 @@ function Chat() {
                 </div>
               </div>
               <div className="chat-messages-center">
+                {hasMoreMessages && (
+                  <button onClick={handleLoadMore} className="load-more-button">
+                    Load More
+                  </button>
+                )}
                 {messages &&
                   messages.map((message, index) => (
                     <div
@@ -601,7 +623,7 @@ function Chat() {
                       </div>
                     </div>
                   ))}
-                <div ref={endRef}></div>
+                <div></div>
               </div>
               <div className="chat-messages-bottom">
                 <div className="chat-messages-bottom-icons">

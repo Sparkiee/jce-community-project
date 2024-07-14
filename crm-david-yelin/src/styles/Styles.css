@@ -16,7 +16,7 @@ body {
 
 @media (max-width: 1860px) {
   html {
-    font-size: 7px;
+    font-size: 8px;
   }
   .MuiPaper-root {
     padding: 5px 11px !important;
@@ -29,7 +29,7 @@ body {
 
 @media screen and (max-width: 1440px) {
   html {
-    font-size: 7px;
+    font-size: 6px;
   }
   .MuiPaper-root {
     padding: 0px 4px !important;

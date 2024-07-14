@@ -61,17 +61,6 @@ function RegisterUser() {
     setShowPasswordConfirm(!showPasswordConfirm);
   };
 
-  useEffect(() => {
-    const session = sessionStorage.getItem("user");
-    if (session !== null && session.privileges > 0) {
-      navigate("/home");
-    }
-    const user = localStorage.getItem("user");
-    if (user !== null && session.privileges > 0) {
-      navigate("/home");
-    }
-  }, []);
-
   async function handleSubmit(event) {
     event.preventDefault();
     if (!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
@@ -140,7 +129,7 @@ function RegisterUser() {
   return (
     <div className="container">
       <div className="registration-style">
-        <a href="/" className="back-home">
+        <a href="#" onClick={() => navigate("/")} className="back-home">
           → חזרה להתחברות
         </a>
         <div className="forms-box">

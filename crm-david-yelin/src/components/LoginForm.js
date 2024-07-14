@@ -54,18 +54,6 @@ function LoginForm() {
     }
   }
 
-  useEffect(() => {
-    const session = JSON.parse(sessionStorage.getItem("user"));
-    if (session !== null && session.privileges > 0) {
-      navigate("/home");
-    }
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user !== null && user.privileges > 0) {
-      console.log()
-      navigate("/home");
-    }
-  }, []);
-
   return (
     <div className="container">
       <div className="login-style">

@@ -1,6 +1,6 @@
 import "./App.css";
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
@@ -130,6 +130,20 @@ const App = () => {
 };
 
 const Navigation = () => {
+
+  const navigate = useNavigate();
+  // Check if user is already logged in / session is stored with remember me, forwards him into the site
+  useEffect(() => {
+    const session = JSON.parse(sessionStorage.getItem("user"));
+    if (session !== null && session.privileges > 0) {
+      navigate("/home");
+    }
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user !== null && user.privileges > 0) {
+      navigate("/home");
+    }
+  }, []);
+
   const location = useLocation();
   const noNavbarRoutes = ["/", "/register", "/forgot-password"]; // Add paths where Navbar should not be rendered
   const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);

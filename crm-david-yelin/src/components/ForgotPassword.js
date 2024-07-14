@@ -13,17 +13,6 @@ function ForgotPassword() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const session = sessionStorage.getItem("user");
-    if (session !== null && session.privileges > 0) {
-      navigate("/home");
-    }
-    const user = localStorage.getItem("user");
-    if (user !== null && user.privileges > 0) {
-      navigate("/home");
-    }
-  }, []);
-
   function handleSubmit(event) {
     event.preventDefault();
     sendPasswordResetEmail(auth, email)

@@ -205,7 +205,7 @@ function HomePage() {
   const createTaskRef = useRef(null);
   const createEventRef = useRef(null);
 
-  async function getCreatedTasks() {
+  async function grabCreatedTasks() {
     try {
       const tasksRef = collection(db, "tasks");
       const q = query(tasksRef, where("taskCreator", "==", "members/" + user?.email));
@@ -236,7 +236,7 @@ function HomePage() {
     }
   }
 
-  async function getCreatedEvents() {
+  async function grabCreatedEvents() {
     try {
       const eventsRef = collection(db, "events");
       const q = query(eventsRef, where("eventCreator", "==", "members/" + user?.email));
@@ -268,7 +268,6 @@ function HomePage() {
         })
       );
       setRowsCreatedEvents(rowsEventsData); // Update event rows state
-      console.log(rowsEventsData);
     } catch (error) {
       console.error("Failed to fetch events:", error);
     }
@@ -390,10 +389,32 @@ function HomePage() {
       });
     });
 
+    const createdTasksRef = collection(db, "tasks");
+    const createdTasksQuery = query(createdTasksRef, where("taskCreator", "==", "members/" + user?.email));
+    const unsubscribeCreatedTasks = onSnapshot(createdTasksQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added" ) {
+          grabCreatedTasks();
+        }
+      });
+    });
+
+    const createdEventsRef = collection(db, "events");
+    const createdEventsQuery = query(createdEventsRef, where("eventCreator", "==", "members/" + user?.email));
+    const unsubscribeCreatedEvents = onSnapshot(createdEventsQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          grabCreatedEvents();
+        }
+      });
+    });
+
     // Cleanup function to unsubscribe from both snapshots
     return () => {
       unsubscribeEvents();
       unsubscribeTasks();
+      unsubscribeCreatedTasks();
+      unsubscribeCreatedEvents();
     };
   }, []);
 
@@ -401,8 +422,8 @@ function HomePage() {
     // Fetch tasks and events when the user changes
     grabMyTasks();
     grabMyEvents();
-    getCreatedTasks();
-    getCreatedEvents();
+    grabCreatedTasks();
+    grabCreatedEvents();
   }, [user]);
 
   const handleShowCreateTask = () => {

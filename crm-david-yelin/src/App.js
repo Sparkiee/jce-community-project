@@ -134,6 +134,9 @@ const App = () => {
 const Navigation = () => {
   const navigate = useNavigate();
 
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Check if user is already logged in / session is stored with remember me, forwards him into the site
   // useEffect(() => {
   //   const session = JSON.parse(sessionStorage.getItem("user"));
@@ -147,15 +150,37 @@ const Navigation = () => {
   //     navigate("/home");
   //   }
   // }, []);
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const session = JSON.parse(sessionStorage.getItem("user"));
-      if (currentUser && (user !== null || session !== null)) {
-        if ((user && user.privileges > 0) || (session && session.privileges > 0)) {
+      if (currentUser) {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const session = JSON.parse(sessionStorage.getItem("user"));
+        if (
+          currentUser &&
+          (user !== null || session !== null) &&
+          ((user && user.privileges > 0) || (session && session.privileges > 0))
+        ) {
           navigate("/home");
+        } else {
+          navigate("/");
         }
+      } else {
+        navigate("/");
       }
+      // const user = JSON.parse(localStorage.getItem("user"));
+      // const session = JSON.parse(sessionStorage.getItem("user"));
+      // if (currentUser && (user !== null || session !== null)) {
+      //   if ((user && user.privileges > 0) || (session && session.privileges > 0)) {
+      //     navigate("/home");
+      //     return;
+      //   }
+      // }
+      // navigate("/");
     });
 
     return () => unsubscribe();

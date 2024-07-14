@@ -352,6 +352,10 @@ function EventPage() {
     setFilteredTasks(filteredRows);
   };
 
+  const remToPixels = (rem) => {
+    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+  };
+
   useEffect(() => {
     let tasksBudgets = tasks.map((task) => task.taskBudget || 0);
     let taskNames = tasks.map((task) => task.taskName);
@@ -389,7 +393,7 @@ function EventPage() {
             position: "bottom",
             labels: {
               font: {
-                size: 20,
+                size: remToPixels(1.8),
               },
               color: "#000000",
             },

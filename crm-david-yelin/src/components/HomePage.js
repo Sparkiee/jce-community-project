@@ -393,7 +393,7 @@ function HomePage() {
     const createdTasksQuery = query(createdTasksRef, where("taskCreator", "==", "members/" + user?.email));
     const unsubscribeCreatedTasks = onSnapshot(createdTasksQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
-        if (change.type === "added" ) {
+        if (change.type === "added") {
           grabCreatedTasks();
         }
       });
@@ -403,7 +403,7 @@ function HomePage() {
     const createdEventsQuery = query(createdEventsRef, where("eventCreator", "==", "members/" + user?.email));
     const unsubscribeCreatedEvents = onSnapshot(createdEventsQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
+        if (change.type === "added" || change.type === "modified") {
           grabCreatedEvents();
         }
       });
@@ -541,7 +541,7 @@ function HomePage() {
       ) : (
         <h2 className="title-home">יש לך {numTasks} משימות פתוחות</h2>
       )}
-      <div style={{ height: 371, width: "90%" }}>
+      <div style={{ height: 372, width: "90%" }}>
         <ThemeProvider theme={theme}>
           <DataGrid
             direction="rtl"
@@ -576,7 +576,7 @@ function HomePage() {
       ) : (
         <h2 className="title-home">יש לך {numEvents} אירועים פתוחים</h2>
       )}
-      <div style={{ height: 371, width: "90%" }}>
+      <div style={{ height: 372, width: "90%" }}>
         <ThemeProvider theme={theme}>
           <DataGrid
             className="data-grid"
@@ -601,74 +601,78 @@ function HomePage() {
           />
         </ThemeProvider>
       </div>
-      <hr className="divider" />
-      {rowsCreatedTasks.length === 0 ? (
-        <h2 className="title-home">אין משימות שפתחת!</h2>
-      ) : rowsCreatedTasks.length === 1 ? (
-        <h2 className="title-home">יש לך משימה אחת שפתחת</h2>
-      ) : (
-        <h2 className="title-home">יש לך {rowsCreatedTasks.length} משימות שפתחת</h2>
+      {rowsCreatedTasks.length > 0 && (
+        <div className="table-optional-wrapper">
+          <hr className="divider" />
+          {rowsCreatedTasks.length === 1 ? (
+            <h2 className="title-home">יש לך משימה אחת שפתחת</h2>
+          ) : (
+            <h2 className="title-home">יש לך {rowsCreatedTasks.length} משימות שפתחת</h2>
+          )}
+          <div style={{ height: 372, width: "90%" }}>
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                direction="rtl"
+                className="data-grid"
+                rows={rowsCreatedTasks}
+                columns={columnsTasks}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
+                }}
+                pageSizeOptions={[5, 10, 20]}
+                localeText={{
+                  // Customizing displayed rows text
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
+                  }
+                }}
+                onRowDoubleClick={(params) => {
+                  navigate(`/task/${params.row.taskDoc}`);
+                }}
+              />
+            </ThemeProvider>
+          </div>
+        </div>
       )}
-      <div style={{ height: 371, width: "90%" }}>
-        <ThemeProvider theme={theme}>
-          <DataGrid
-            direction="rtl"
-            className="data-grid"
-            rows={rowsCreatedTasks}
-            columns={columnsTasks}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
-            }}
-            pageSizeOptions={[5, 10, 20]}
-            localeText={{
-              // Customizing displayed rows text
-              MuiTablePagination: {
-                labelDisplayedRows: ({ from, to, count }) =>
-                  `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
-              }
-            }}
-            onRowDoubleClick={(params) => {
-              navigate(`/task/${params.row.taskDoc}`);
-            }}
-          />
-        </ThemeProvider>
-      </div>
-      <hr className="divider" />
-      {rowsCreatedEvents.length === 0 ? (
-        <h2 className="title-home">אין אירועים שפתחת!</h2>
-      ) : rowsCreatedEvents.length === 1 ? (
-        <h2 className="title-home">יש לך אירוע אחד שפתחת</h2>
-      ) : (
-        <h2 className="title-home">יש לך {rowsCreatedEvents.length} אירועים שפתחת</h2>
+      {rowsCreatedEvents.length > 0 && (
+        <div className="table-optional-wrapper">
+          <hr className="divider" />
+          {rowsCreatedEvents.length === 1 ? (
+            <h2 className="title-home">יש לך אירוע אחד שפתחת</h2>
+          ) : (
+            <h2 className="title-home">יש לך {rowsCreatedEvents.length} אירועים שפתחת</h2>
+          )}
+          <div style={{ height: 372, width: "90%" }}>
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                className="data-grid"
+                rows={rowsCreatedEvents}
+                columns={columnsEvents}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5 }
+                  }
+                }}
+                pageSizeOptions={[5, 10, 20]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
+                }}
+                onRowDoubleClick={(params) => {
+                  navigate(`/event/${params.row.eventDoc}`);
+                }}
+              />
+            </ThemeProvider>
+          </div>
+        </div>
       )}
-      <div style={{ height: 371, width: "90%" }}>
-        <ThemeProvider theme={theme}>
-          <DataGrid
-            className="data-grid"
-            rows={rowsCreatedEvents}
-            columns={columnsEvents}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
-            }}
-            pageSizeOptions={[5, 10, 20]}
-            localeText={{
-              MuiTablePagination: {
-                labelDisplayedRows: ({ from, to, count }) =>
-                  `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:"
-              }
-            }}
-            onRowDoubleClick={(params) => {
-              navigate(`/event/${params.row.eventDoc}`);
-            }}
-          />
-        </ThemeProvider>
-      </div>
       <div className="footer"></div>
     </div>
   );

@@ -55,12 +55,13 @@ function LoginForm() {
   }
 
   useEffect(() => {
-    const session = sessionStorage.getItem("user");
+    const session = JSON.parse(sessionStorage.getItem("user"));
     if (session !== null && session.privileges > 0) {
       navigate("/home");
     }
-    const user = localStorage.getItem("user");
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user !== null && user.privileges > 0) {
+      console.log()
       navigate("/home");
     }
   }, []);

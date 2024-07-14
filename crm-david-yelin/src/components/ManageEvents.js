@@ -116,7 +116,7 @@ function ManageEvents() {
       align: "right",
       flex: 2.5
     },
-    ...(user && user.privileges >= 2
+    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")))
       ? [
           {
             field: "eventBudget",

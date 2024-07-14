@@ -28,7 +28,6 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import IconButton from "@mui/material/IconButton";
-import SendIcon from "@mui/icons-material/Send";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -189,6 +188,7 @@ function Profile() {
       align: "right",
       flex: 3,
     },
+    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")) || profile.email === user.email) ? [
     {
       field: "taskBudget",
       headerName: "תקציב",
@@ -199,7 +199,7 @@ function Profile() {
           <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
         );
       },
-    },
+    },] : []),
     {
       field: "taskStartDate",
       headerName: "תאריך התחלה",
@@ -383,6 +383,7 @@ function Profile() {
       align: "right",
       flex: 3,
     },
+    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")) || user.email === profile.email) ? [
     {
       field: "eventBudget",
       headerName: "תקציב",
@@ -395,7 +396,7 @@ function Profile() {
           </div>
         );
       },
-    },
+    },] : []),
     {
       field: "eventStartDate",
       headerName: "תאריך התחלה",

@@ -558,7 +558,7 @@ function EventPage() {
       field: "view",
       headerName: "צפייה",
       align: "center",
-      flex: 0.8,
+      flex: 0.95,
       renderCell: (params) => (
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
           <VisibilityIcon />
@@ -1104,7 +1104,7 @@ function EventPage() {
                       {event.eventCreatorFullName}
                     </p>
                   </div>
-                  {(user.privileges === 2 || isUserAnAssignee) && (
+                  {(user && user.privileges === 2 || isUserAnAssignee || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget"))) && (
                     <div>
                       <p>
                         <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/
@@ -1116,11 +1116,11 @@ function EventPage() {
                           `₪${remainingBudget.toLocaleString()}`
                         )}
                       </p>
-                    </div>
-                  )}
-                  {(tasks.length > 0 || event.eventBudget > 0) && (
-                    <div className="event-budget-chart-container">
-                      <canvas id="budget-chart"></canvas>
+                      {(tasks.length > 0 || event.eventBudget > 0) && (
+                        <div className="event-budget-chart-container">
+                          <canvas id="budget-chart"></canvas>
+                        </div>
+                      )}
                     </div>
                   )}
                   {(user.privileges === 2 || user.adminAccess.includes("editEvent")) && (

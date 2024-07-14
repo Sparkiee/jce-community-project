@@ -148,13 +148,7 @@ function Navbar() {
   };
 
   const isActive = (path) => {
-    if (path === "/tasks") {
-      return location.pathname === "/tasks" || location.pathname.startsWith("/task/");
-    }
-    if (path === "events") {
-      return location.pathname === "/events" || location.pathname.startsWith("/event/");
-    }
-    return location.pathname === path;
+    return location.pathname.includes(path.slice(0, -1));
   };
 
   const handleNotifications = async () => {

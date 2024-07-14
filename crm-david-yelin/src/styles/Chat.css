@@ -231,6 +231,11 @@
   overflow-y: auto;
 }
 
+.chat-messages-center.dragging {
+  border: 2px dashed #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
 .load-more-button {
   background-color: #5183fe;
   color: white;

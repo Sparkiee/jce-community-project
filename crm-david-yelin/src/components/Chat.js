@@ -9,6 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import Box from "@mui/material/Box";
 import { db, storage } from "../firebase";
 import {
@@ -74,10 +75,10 @@ function Chat() {
   const [messagesPerPage, setMessagesPerPage] = useState(20);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [chatSearchQuery, setChatSearchQuery] = useState("");
-
   const searchBoxref = useRef(null);
   const endRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleChatSearch = (e) => {
     setChatSearchQuery(e.target.value);
@@ -403,24 +404,59 @@ function Chat() {
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file && selectedChat) {
-      const storageRef = ref(storage, `chat/${selectedChat.chatId}/${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-
-      const chatRef = doc(db, "chats", selectedChat.chatId);
-      const message = {
-        img: url,
-        sender: user.email,
-        timestamp: new Date(), // Set the timestamp as a date object
-        seen: false,
-      };
-      await updateDoc(chatRef, {
-        lastMessage: "[Image]",
-        updatedAt: serverTimestamp(),
-        messages: arrayUnion(message),
-      });
-      fetchMessagesforChat(selectedChat);
+      await uploadFile(file);
     }
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      uploadFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const uploadFile = async (file) => {
+    const storageRef = ref(storage, `chat/${selectedChat.chatId}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+
+    const chatRef = doc(db, "chats", selectedChat.chatId);
+    const isImage = file.type.startsWith("image/");
+    const message = {
+      fileUrl: url,
+      fileName: file.name,
+      fileType: file.type,
+      isImage: isImage,
+      sender: user.email,
+      timestamp: new Date(),
+      seen: false,
+    };
+    await updateDoc(chatRef, {
+      lastMessage: isImage ? "[Image]" : "[File]",
+      updatedAt: serverTimestamp(),
+      messages: arrayUnion(message),
+    });
+    fetchMessagesforChat(selectedChat);
   };
 
   return (
@@ -581,7 +617,12 @@ function Chat() {
                   />
                 </div>
               </div>
-              <div className="chat-messages-center">
+              <div
+                className={`chat-messages-center ${isDragging ? "dragging" : ""}`}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}>
                 {hasMoreMessages && (
                   <button onClick={handleLoadMore} className="load-more-button">
                     Load More
@@ -596,13 +637,20 @@ function Chat() {
                       }`}>
                       <div className="chat-messages-center-message-texts">
                         <pre className="chat-messages-center-message-box">
-                          {message.img && (
+                          {message.isImage ? (
                             <img
-                              src={message.img}
-                              onClick={() => window.open(message.img, "_blank")}
-                              style={{ cursor: "pointer", maxWidth: "200px" }}
+                              src={message.fileUrl}
+                              onClick={() => window.open(message.fileUrl, "_blank")}
+                              style={{ cursor: "pointer" }}
                             />
-                          )}
+                          ) : message.fileUrl ? (
+                            <div
+                              onClick={() => window.open(message.fileUrl, "_blank")}
+                              style={{ cursor: "pointer" }}>
+                              <InsertDriveFileIcon />
+                              <span>{message.fileName}</span>
+                            </div>
+                          ) : null}
                           {convertTextToLinksJSX(message.text)}
                           {message.sender === user.email && (
                             <DoneAllIcon

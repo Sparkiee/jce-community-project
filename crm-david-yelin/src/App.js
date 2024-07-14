@@ -172,15 +172,6 @@ const Navigation = () => {
       } else {
         navigate("/");
       }
-      // const user = JSON.parse(localStorage.getItem("user"));
-      // const session = JSON.parse(sessionStorage.getItem("user"));
-      // if (currentUser && (user !== null || session !== null)) {
-      //   if ((user && user.privileges > 0) || (session && session.privileges > 0)) {
-      //     navigate("/home");
-      //     return;
-      //   }
-      // }
-      // navigate("/");
     });
 
     return () => unsubscribe();

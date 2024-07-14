@@ -133,7 +133,6 @@ function CreateTask(props) {
 
     try {
       const docRef = await addDoc(collection(db, "tasks"), updatedTaskDetails);
-      console.log("Task recorded with ID: ", docRef.id);
       setTaskExists(true);
 
       // Use forEach for side effects

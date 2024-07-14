@@ -44,7 +44,6 @@ function LoginForm() {
         sessionStorage.setItem("user", JSON.stringify(docSnap.data()));
         if (rememberMe) {
           localStorage.setItem("user", JSON.stringify(docSnap.data()));
-          console.log("remember me!!1");
         }
       }
       setWrongCredentials(false);

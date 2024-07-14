@@ -98,7 +98,6 @@ function RegisterUser() {
         const userDepartment = await grabDepartment(email);
 
         try {
-          console.log("Writing document...");
           const docRef = doc(db, "members", email);
           await setDoc(docRef, {
             email: email,
@@ -112,17 +111,14 @@ function RegisterUser() {
             role: await grabRole(email),
             createdOn: serverTimestamp(),
           });
-          console.log("Document successfully written!");
           setAccountExists(true);
 
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
-          console.log(`User registered with UID: ${user.uid}`);
           await sendEmailVerification(user);
           // Delete the document from the awaiting_registration collection
           const awaitingRegistrationDocRef = doc(db, "awaiting_registration", email);
           await deleteDoc(awaitingRegistrationDocRef);
-          console.log("Document successfully deleted from awaiting_registration!");
         } catch (e) {
           console.error("Error writing document: ", e);
         }

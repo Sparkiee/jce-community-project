@@ -255,7 +255,6 @@ function Chat() {
       });
 
       if (chatExists) {
-        console.log("Chat already exists with this user");
         return;
       }
 

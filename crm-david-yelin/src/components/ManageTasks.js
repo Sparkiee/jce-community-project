@@ -46,9 +46,9 @@ function stringAvatar(name) {
   const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: initials
+    children: initials,
   };
 }
 
@@ -69,20 +69,18 @@ function ManageTasks() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData)
-      setUser(userData);
+    if (userData) setUser(userData);
     else {
       const userData = JSON.parse(localStorage.getItem("user"));
-      if (userData)
-        setUser(userData);
+      if (userData) setUser(userData);
     }
   }, []);
 
@@ -109,19 +107,19 @@ function ManageTasks() {
       field: "taskName",
       headerName: "שם המשימה",
       align: "right",
-      flex: 2.5
+      flex: 2.5,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "relatedEvent",
       headerName: "שייך לאירוע",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     ...(user && user.privileges >= 2
       ? [
@@ -132,12 +130,15 @@ function ManageTasks() {
             flex: 1,
             renderCell: (params) => {
               return (
-                <div title={params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}>
+                <div
+                  title={
+                    params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"
+                  }>
                   {params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}
                 </div>
               );
-            }
-          }
+            },
+          },
         ]
       : []),
     {
@@ -149,7 +150,7 @@ function ManageTasks() {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskEndDate",
@@ -160,13 +161,13 @@ function ManageTasks() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "taskStatus",
@@ -181,7 +182,7 @@ function ManageTasks() {
             {params.row.taskStatus}
           </div>
         );
-      }
+      },
     },
     {
       field: "assignTo",
@@ -201,7 +202,7 @@ function ManageTasks() {
             ))}
           </AvatarGroup>
         );
-      }
+      },
     },
     {
       field: "view",
@@ -212,13 +213,16 @@ function ManageTasks() {
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const columns = [
     ...baseColumns,
-    ...(user && (user.privileges >= 2 || user.adminAccess.includes("deleteTask") || user.adminAccess.includes("editTask"))
+    ...(user &&
+    (user.privileges >= 2 ||
+      user.adminAccess.includes("deleteTask") ||
+      user.adminAccess.includes("editTask"))
       ? [
           {
             field: "edit",
@@ -238,10 +242,10 @@ function ManageTasks() {
                   </IconButton>
                 )}
               </div>
-            )
-          }
+            ),
+          },
         ]
-      : [])
+      : []),
   ];
 
   async function getMemberFullName(email) {
@@ -274,12 +278,17 @@ function ManageTasks() {
   async function getTasks() {
     try {
       const taskRef = collection(db, "tasks");
-      const q = query(taskRef, orderBy("taskEndDate", "desc"), orderBy("taskTime", "desc"), orderBy("taskName", "desc"));
+      const q = query(
+        taskRef,
+        orderBy("taskEndDate", "desc"),
+        orderBy("taskTime", "desc"),
+        orderBy("taskName", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        taskDoc: doc.id // Ensure taskDoc is set correctly
+        taskDoc: doc.id, // Ensure taskDoc is set correctly
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -303,7 +312,7 @@ function ManageTasks() {
             taskTime: task.taskTime,
             taskBudget: task.taskBudget,
             taskStatus: task.taskStatus,
-            assignTo: assigneeData
+            assignTo: assigneeData,
           };
         })
       );
@@ -322,14 +331,16 @@ function ManageTasks() {
         const assigneeEmails = (taskData.assignees || []).map((email) => email.split("/")[1]); // Ensure taskData.assignees is an array
         const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
         const assigneeDocs = await Promise.all(assigneePromises);
-        const assigneeData = assigneeDocs.map((doc) => (doc.exists() ? doc.data() : [])).filter((data) => data);
+        const assigneeData = assigneeDocs
+          .map((doc) => (doc.exists() ? doc.data() : []))
+          .filter((data) => data);
         setEditingTask({
           ...taskData,
           taskDoc: row.taskDoc,
           assignTo: assigneeData.map((assignee) => ({
             value: assignee.email,
-            label: assignee.fullName
-          }))
+            label: assignee.fullName,
+          })),
         });
       } else {
         console.error("No such document!");
@@ -383,7 +394,6 @@ function ManageTasks() {
           await deleteObject(ref(storage, itemKey.fullPath));
         }
       }
-      console.log(list);
     } catch (error) {}
   };
 
@@ -404,7 +414,11 @@ function ManageTasks() {
       {editingTask && (
         <div className="popup-overlay">
           <div ref={editTaskRef} className="popup-content">
-            <EditTask task={editingTask} onClose={() => setEditingTask(null)} onTaskUpdated={getTasks} />
+            <EditTask
+              task={editingTask}
+              onClose={() => setEditingTask(null)}
+              onTaskUpdated={getTasks}
+            />
           </div>
         </div>
       )}
@@ -429,9 +443,16 @@ function ManageTasks() {
             </div>
           )}
         </div>
-        {(user && (user.adminAccess.includes("createTask") || user.privileges >= 2)) && (
-          <div className="action-button add-tasks-button add-tasks-manage-tasks" onClick={handleShowCreateTask}>
-            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {user && (user.adminAccess.includes("createTask") || user.privileges >= 2) && (
+          <div
+            className="action-button add-tasks-button add-tasks-manage-tasks"
+            onClick={handleShowCreateTask}>
+            <svg
+              width="24px"
+              height="24px"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
               <g id="SVGRepo_iconCarrier">
@@ -478,16 +499,16 @@ function ManageTasks() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 }
-                }
+                  paginationModel: { page: 0, pageSize: 17 },
+                },
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
               onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
             />

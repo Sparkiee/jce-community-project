@@ -74,7 +74,6 @@ const Forum = ({ eventId, type, name }) => {
     if (userSnap.exists()) {
       return userSnap.data();
     } else {
-      console.log("No such user!");
       return { fullName: "Unknown User" };
     }
   };

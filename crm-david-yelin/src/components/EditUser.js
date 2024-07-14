@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { doc, serverTimestamp, setDoc, getDocs, collection, where, query } from "firebase/firestore";
+import {
+  doc,
+  serverTimestamp,
+  setDoc,
+  getDocs,
+  collection,
+  where,
+  query,
+} from "firebase/firestore";
 import { db } from "../firebase.js";
 import "../styles/Styles.css";
 import "../styles/EditUser.css";
@@ -69,12 +77,6 @@ function EditUser(props) {
       if (querySnapshot.empty) {
         return;
       } else {
-        querySnapshot.forEach((doc) => {
-          console.log(doc.id, " => ", doc.data());
-        });
-
-        console.log(querySnapshot.size);
-
         // Check if there is only one document with level 3 privileges
         if (querySnapshot.size <= 1) {
           setIsNoSuperAdmin(true);
@@ -98,7 +100,7 @@ function EditUser(props) {
         department: department,
         privileges: privileges,
         lastUpdate: serverTimestamp(),
-        adminAccess: adminAccess
+        adminAccess: adminAccess,
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {
@@ -117,7 +119,7 @@ function EditUser(props) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment
+          name: newDepartment,
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -151,9 +153,30 @@ function EditUser(props) {
   return (
     <div className="edit-user">
       <div className="action-close" onClick={props.onClose}>
-        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
       <form className="edit-user-form" onSubmit={handleSubmit}>
@@ -203,7 +226,8 @@ function EditUser(props) {
           {user &&
             (user.privileges >= 2 ||
               (Array.isArray(user.adminAccess) &&
-                (user.adminAccess.includes("manageUser") || user.adminAccess.includes("manageAdmin")))) && (
+                (user.adminAccess.includes("manageUser") ||
+                  user.adminAccess.includes("manageAdmin")))) && (
               <>
                 <select
                   id="department-select"
@@ -223,7 +247,12 @@ function EditUser(props) {
                       {dept}
                     </option>
                   ))}
-                  {user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("createDepartment"))) && <option value="other">הוסף מחלקה חדשה</option>}
+                  {user &&
+                    (user.privileges >= 2 ||
+                      (Array.isArray(user.adminAccess) &&
+                        user.adminAccess.includes("createDepartment"))) && (
+                      <option value="other">הוסף מחלקה חדשה</option>
+                    )}
                 </select>
                 {isOtherSelected && (
                   <div className="new-department">

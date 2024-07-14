@@ -1018,7 +1018,6 @@ function EventPage() {
   }
 
   async function handleDeleteFile() {
-    console.log(deleteFile);
     try {
       const docRef = doc(db, "events", id);
       const docSnap = await getDoc(docRef);
@@ -1026,7 +1025,6 @@ function EventPage() {
         const eventData = docSnap.data();
         const updatedFiles = eventData.eventFiles.filter((file) => file.name !== deleteFile.name);
         await updateDoc(docRef, { eventFiles: updatedFiles });
-        console.log(`File ${deleteFile.name} deleted successfully`);
       }
 
       const fileRef = ref(storage, `events/${id}/${deleteFile.name}`);
@@ -1104,7 +1102,10 @@ function EventPage() {
                       {event.eventCreatorFullName}
                     </p>
                   </div>
-                  {(user && user.privileges === 2 || isUserAnAssignee || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget"))) && (
+                  {((user && user.privileges === 2) ||
+                    isUserAnAssignee ||
+                    (Array.isArray(user.adminAccess) &&
+                      user.adminAccess.includes("viewBudget"))) && (
                     <div>
                       <p>
                         <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/

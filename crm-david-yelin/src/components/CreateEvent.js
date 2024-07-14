@@ -109,7 +109,6 @@ function CreateEvent(props) {
 
     try {
       const docRef = await addDoc(collection(db, "events"), updatedEventDetails);
-      console.log("Event recorded with ID: ", docRef.id);
       setEventExists(true);
 
       // Use forEach for side effects
@@ -131,7 +130,6 @@ function CreateEvent(props) {
       setTimeout(() => {
         props.onClose();
       }, 1000);
-      console.log("Notifications updated for all members.");
     } catch (e) {
       console.error("Error adding document: ", e);
     }

@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { db, storage } from "../firebase";
-import { collection, getDoc, doc, getDocs, deleteDoc, where, query, orderBy } from "firebase/firestore";
+import {
+  collection,
+  getDoc,
+  doc,
+  getDocs,
+  deleteDoc,
+  where,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
@@ -46,9 +55,9 @@ function stringAvatar(name) {
   const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name[0];
   return {
     sx: {
-      bgcolor: stringToColor(name)
+      bgcolor: stringToColor(name),
     },
-    children: initials
+    children: initials,
   };
 }
 
@@ -70,8 +79,8 @@ function ManageEvents() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -108,15 +117,17 @@ function ManageEvents() {
       field: "eventName",
       headerName: "שם האירוע",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "eventLocation",
       headerName: "מיקום",
       align: "right",
-      flex: 2.5
+      flex: 2.5,
     },
-    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")))
+    ...(user &&
+    (user.privileges >= 2 ||
+      (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")))
       ? [
           {
             field: "eventBudget",
@@ -125,12 +136,15 @@ function ManageEvents() {
             flex: 1,
             renderCell: (params) => {
               return (
-                <div title={params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}>
+                <div
+                  title={
+                    params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"
+                  }>
                   {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
                 </div>
               );
-            }
-          }
+            },
+          },
         ]
       : []),
     {
@@ -142,7 +156,7 @@ function ManageEvents() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventEndDate",
@@ -153,13 +167,13 @@ function ManageEvents() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventTime",
       headerName: "שעת סיום",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "eventStatus",
@@ -174,13 +188,13 @@ function ManageEvents() {
             {params.row.eventStatus}
           </div>
         );
-      }
+      },
     },
     {
       field: "completedPercentage",
       headerName: "אחוז השלמה",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "assignTo",
@@ -201,7 +215,7 @@ function ManageEvents() {
             ))}
           </AvatarGroup>
         );
-      }
+      },
     },
     {
       field: "view",
@@ -212,14 +226,16 @@ function ManageEvents() {
         <IconButton aria-label="view" onClick={() => navigate(`/event/${params.row.eventDoc}`)}>
           <VisibilityIcon />
         </IconButton>
-      )
-    }
+      ),
+    },
   ];
 
   const columns = [
     ...baseColumns,
     ...(user &&
-    (user.privileges >= 2 || user.adminAccess.includes("deleteEvent") || user.adminAccess.includes("editEvent"))
+    (user.privileges >= 2 ||
+      user.adminAccess.includes("deleteEvent") ||
+      user.adminAccess.includes("editEvent"))
       ? [
           {
             field: "edit",
@@ -239,10 +255,10 @@ function ManageEvents() {
                   </IconButton>
                 )}
               </div>
-            )
-          }
+            ),
+          },
         ]
-      : [])
+      : []),
   ];
 
   async function getMemberFullName(email) {
@@ -263,7 +279,10 @@ function ManageEvents() {
         return 100;
       }
 
-      const tasksQuery = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${eventId}`));
+      const tasksQuery = query(
+        collection(db, "tasks"),
+        where("relatedEvent", "==", `events/${eventId}`)
+      );
       const tasksSnapshot = await getDocs(tasksQuery);
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
 
@@ -292,7 +311,7 @@ function ManageEvents() {
       const eventsArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        eventDoc: doc.id
+        eventDoc: doc.id,
       }));
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
@@ -318,7 +337,7 @@ function ManageEvents() {
             assignees: event.assignees,
             eventCreator: event.eventCreator,
             assignTo: assigneeData || [],
-            completedPercentage: `${Math.round(completedPercentage)}%`
+            completedPercentage: `${Math.round(completedPercentage)}%`,
           };
         })
       );
@@ -365,10 +384,9 @@ function ManageEvents() {
           await deleteObject(ref(storage, itemKey.fullPath));
         }
       }
-      console.log(list);
     } catch (error) {}
   };
-  
+
   async function handleDeleteEvent() {
     try {
       // const s
@@ -432,7 +450,10 @@ function ManageEvents() {
       )}
       {deleteTarget && (
         <div className="popup-overlay">
-          <ConfirmAction onConfirm={() => handleDeleteEvent()} onCancel={() => setDeleteTarget("")} />
+          <ConfirmAction
+            onConfirm={() => handleDeleteEvent()}
+            onCancel={() => setDeleteTarget("")}
+          />
         </div>
       )}
       <div className="manage-events-styles">
@@ -452,9 +473,17 @@ function ManageEvents() {
           )}
         </div>
         {user &&
-          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges >= 2) && (
-            <div className="action-button add-events-manage-events" onClick={handleShowCreateEvents}>
-              <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges >= 2) && (
+            <div
+              className="action-button add-events-manage-events"
+              onClick={handleShowCreateEvents}>
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -501,16 +530,16 @@ function ManageEvents() {
               columns={columns}
               initialState={{
                 pagination: {
-                  paginationModel: { page: 0, pageSize: 17 }
-                }
+                  paginationModel: { page: 0, pageSize: 17 },
+                },
               }}
               pageSizeOptions={[17, 25, 50]}
               localeText={{
                 MuiTablePagination: {
                   labelDisplayedRows: ({ from, to, count }) =>
                     `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                  labelRowsPerPage: "שורות בכל עמוד:"
-                }
+                  labelRowsPerPage: "שורות בכל עמוד:",
+                },
               }}
               onRowDoubleClick={handleRowDoubleClick}
             />

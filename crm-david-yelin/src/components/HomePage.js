@@ -348,13 +348,11 @@ function HomePage() {
   }, [user]);
 
   const handleShowCreateTask = () => {
-    console.log("CLICK");
     setShowCreateEvent(false);
     setShowCreateTask(true);
   };
 
   const handleShowCreateEvent = () => {
-    console.log("CLICK");
     setShowCreateTask(false);
     setShowCreateEvent(true);
   };
@@ -396,8 +394,8 @@ function HomePage() {
     <div className="home-content">
       <div className="display-create">
         {user &&
-          ((Array.isArray(user.adminAccess) &&
-          user.adminAccess.includes("createEvent")) || user.privileges >= 2) &&
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges >= 2) &&
           showCreateTask && (
             <div className="popup-overlay">
               <div ref={createTaskRef} className="popup-content">
@@ -406,8 +404,8 @@ function HomePage() {
             </div>
           )}
         {user &&
-          ((Array.isArray(user.adminAccess) &&
-          user.adminAccess.includes("createEvent")) || user.privileges >= 2) &&
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges >= 2) &&
           showCreateEvent && (
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">

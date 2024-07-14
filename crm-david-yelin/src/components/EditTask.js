@@ -45,12 +45,10 @@ function EditTask(props) {
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData)
-      setUser(userData);
+    if (userData) setUser(userData);
     else {
       const userData = JSON.parse(localStorage.getItem("user"));
-      if (userData)
-        setUser(userData);
+      if (userData) setUser(userData);
     }
   }, []);
 
@@ -236,7 +234,6 @@ function EditTask(props) {
   }
 
   const handleRemoveMember = (id) => {
-    console.log(id);
     setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
   };
 
@@ -346,7 +343,7 @@ function EditTask(props) {
                 id="budget"
                 value={taskDetails.taskBudget}
                 onChange={(e) => {
-                  setTask({ ...taskDetails, taskBudget:Number(e.target.value) });
+                  setTask({ ...taskDetails, taskBudget: Number(e.target.value) });
                   resetAlerts();
                 }}
               />

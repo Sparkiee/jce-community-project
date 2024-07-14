@@ -11,8 +11,7 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
-import { v4 as uuidv4 } from 'uuid';
-
+import { v4 as uuidv4 } from "uuid";
 
 function ContactUser(props) {
   const [subject, setSubject] = useState("");
@@ -53,7 +52,6 @@ function ContactUser(props) {
         setContactSubmitted(false);
         props.onClose();
       }, 1000);
-      console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }

@@ -558,7 +558,7 @@ function EventPage() {
       field: "view",
       headerName: "צפייה",
       align: "center",
-      flex: 0.8,
+      flex: 0.95,
       renderCell: (params) => (
         <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
           <VisibilityIcon />

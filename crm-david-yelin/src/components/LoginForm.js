@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { signInWithEmailAndPassword, sendEmailVerification, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
@@ -27,6 +27,10 @@ function LoginForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     try {
+      if (rememberMe) {
+        await setPersistence(auth, browserLocalPersistence);
+      }
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
       if (!userCredential.user.emailVerified) {
@@ -53,18 +57,6 @@ function LoginForm() {
       console.log(error);
     }
   }
-
-  useEffect(() => {
-    const session = JSON.parse(sessionStorage.getItem("user"));
-    if (session !== null && session.privileges > 0) {
-      navigate("/home");
-    }
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user !== null && user.privileges > 0) {
-      console.log()
-      navigate("/home");
-    }
-  }, []);
 
   return (
     <div className="container">

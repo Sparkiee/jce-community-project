@@ -1,6 +1,8 @@
 import "./App.css";
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
@@ -130,6 +132,51 @@ const App = () => {
 };
 
 const Navigation = () => {
+  const navigate = useNavigate();
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Check if user is already logged in / session is stored with remember me, forwards him into the site
+  // useEffect(() => {
+  //   const session = JSON.parse(sessionStorage.getItem("user"));
+  //   if (session !== null && session.privileges > 0) {
+  //     // navigate("/home");
+  //   }
+  //   console.log(session);
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   console.log(user);
+  //   if (user !== null && user.privileges > 0) {
+  //     navigate("/home");
+  //   }
+  // }, []);
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const session = JSON.parse(sessionStorage.getItem("user"));
+        if (
+          currentUser &&
+          (user !== null || session !== null) &&
+          ((user && user.privileges > 0) || (session && session.privileges > 0))
+        ) {
+          navigate("/home");
+        } else {
+          navigate("/");
+        }
+      } else {
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const location = useLocation();
   const noNavbarRoutes = ["/", "/register", "/forgot-password"]; // Add paths where Navbar should not be rendered
   const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);

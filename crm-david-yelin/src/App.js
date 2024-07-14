@@ -1,6 +1,8 @@
 import "./App.css";
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginForm from "./components/LoginForm";
 import HomePage from "./components/HomePage";
@@ -130,18 +132,33 @@ const App = () => {
 };
 
 const Navigation = () => {
-
   const navigate = useNavigate();
+
   // Check if user is already logged in / session is stored with remember me, forwards him into the site
+  // useEffect(() => {
+  //   const session = JSON.parse(sessionStorage.getItem("user"));
+  //   if (session !== null && session.privileges > 0) {
+  //     // navigate("/home");
+  //   }
+  //   console.log(session);
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   console.log(user);
+  //   if (user !== null && user.privileges > 0) {
+  //     navigate("/home");
+  //   }
+  // }, []);
   useEffect(() => {
-    const session = JSON.parse(sessionStorage.getItem("user"));
-    if (session !== null && session.privileges > 0) {
-      navigate("/home");
-    }
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user !== null && user.privileges > 0) {
-      navigate("/home");
-    }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const session = JSON.parse(sessionStorage.getItem("user"));
+      if (currentUser && (user !== null || session !== null)) {
+        if ((user && user.privileges > 0) || (session && session.privileges > 0)) {
+          navigate("/home");
+        }
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const location = useLocation();

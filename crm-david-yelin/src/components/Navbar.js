@@ -148,7 +148,7 @@ function Navbar() {
   };
 
   const isActive = (path) => {
-    return location.pathname === path;
+    return location.pathname.includes(path.slice(0, -1));
   };
 
   const handleNotifications = async () => {

@@ -188,7 +188,7 @@ function Profile() {
       align: "right",
       flex: 3,
     },
-    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")) || profile.email === user.email) ? [
+    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")) || profile && profile.email === user.email) ? [
     {
       field: "taskBudget",
       headerName: "תקציב",
@@ -383,7 +383,7 @@ function Profile() {
       align: "right",
       flex: 3,
     },
-    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")) || user.email === profile.email) ? [
+    ...(user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget")) || profile && user.email === profile.email) ? [
     {
       field: "eventBudget",
       headerName: "תקציב",

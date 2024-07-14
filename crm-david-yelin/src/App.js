@@ -155,6 +155,10 @@ const Navigation = () => {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DON'T DELETE FOR NOW !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+  const location = useLocation();
+  const noNavbarRoutes = ["/", "/register", "/forgot-password"]; // Add paths where Navbar should not be rendered
+  const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
@@ -165,7 +169,7 @@ const Navigation = () => {
           (user !== null || session !== null) &&
           ((user && user.privileges > 0) || (session && session.privileges > 0))
         ) {
-          navigate("/home");
+          if (!shouldDisplayNavbar) navigate("/home");
         } else {
           navigate("/");
         }
@@ -176,10 +180,6 @@ const Navigation = () => {
 
     return () => unsubscribe();
   }, []);
-
-  const location = useLocation();
-  const noNavbarRoutes = ["/", "/register", "/forgot-password"]; // Add paths where Navbar should not be rendered
-  const shouldDisplayNavbar = !noNavbarRoutes.includes(location.pathname);
 
   return shouldDisplayNavbar ? <Navbar /> : null;
 };

@@ -18,8 +18,8 @@
 @media screen and (max-width: 1440px) {
   .excel-icon {
     position: absolute;
-    top: 8.5rem;
-    left: 1.5rem;
+    top: 12rem;
+    left: 1rem;
     display: flex;
     cursor: pointer;
   }

@@ -346,7 +346,7 @@ function EditAccess(props) {
         <button type="submit" className="primary-button extra-reg">
           עדכן פרטים
         </button>
-        <div className="edit-access-feedback">
+        <div className="edit-access-feedback media-alert">
           {permSuccess && (
             <Alert className="feedback-alert" severity="success">
               הרשאות עודכנו בהצלחה

@@ -405,19 +405,19 @@ function EditEvent(props) {
           </div>
         </div>
         <input type="submit" value="שמור שינויים" className="primary-button" />
+        <div className="feedback-edit-event media-alert">
+          {formWarning && (
+            <Alert className="feedback-alert" severity="error">
+              {warningText}
+            </Alert>
+          )}
+          {editedSuccessfully && (
+            <Alert className="feedback-alert" severity="success">
+              השינויים נשמרו בהצלחה
+            </Alert>
+          )}
+        </div>
       </form>
-      <div className="feedback-edit-event">
-        {formWarning && (
-          <Alert className="feedback-alert" severity="error">
-            {warningText}
-          </Alert>
-        )}
-        {editedSuccessfully && (
-          <Alert className="feedback-alert" severity="success">
-            השינויים נשמרו בהצלחה
-          </Alert>
-        )}
-      </div>
     </div>
   );
 }

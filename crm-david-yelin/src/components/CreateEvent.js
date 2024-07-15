@@ -392,7 +392,7 @@ function CreateEvent(props) {
           </div>
         </div>
         <input type="submit" value="צור אירוע" className="primary-button" />
-        <div className="feedback-create-event">
+        <div className="feedback-create-event media-alert">
           {eventExists && (
             <Alert className="feedback-alert" severity="success">
               אירוע נוצר בהצלחה!

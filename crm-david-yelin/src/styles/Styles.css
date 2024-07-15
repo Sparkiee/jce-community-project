@@ -48,11 +48,21 @@ body {
     top: 10%;
   }
   .media-style {
+    position: relative;
     max-height: 70rem;
     overflow-y: auto;
   }
+  .media-alert {
+    position: absolute;
+    bottom: -5.5rem !important;
+  }
   .media-form {
+    position: relative;
     margin-top: auto;
+  }
+  .media-alert2 {
+    position: absolute;
+    bottom: -5.5rem !important;
   }
 }
 
@@ -68,11 +78,21 @@ body {
     top: 18%;
   }
   .media-style {
+    position: relative;
     max-height: 50rem;
     overflow-y: auto;
   }
+  .media-alert {
+    position: absolute;
+    bottom: -5rem !important;
+  }
   .media-form {
+    position: relative;
     margin-top: auto;
+  }
+  .media-alert2 {
+    position: absolute;
+    bottom: -5rem !important;
   }
 }
 

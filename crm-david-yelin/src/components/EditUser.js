@@ -308,7 +308,7 @@ function EditUser(props) {
             עדכן פרטים
           </button>
         </div>
-        <div className="edit-user-feedback">
+        <div className="edit-user-feedback media-alert">
           {isNoSuperAdmin && (
             <Alert severity="warning" className="feedback-alert feedback-edituser">
               חייב להיות לפחות מנהל ראשי אחד במערכת

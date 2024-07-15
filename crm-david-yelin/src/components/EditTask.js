@@ -481,12 +481,12 @@ function EditTask(props) {
             עדכן פרטים
           </button>
           {editedSuccessfully && (
-            <Alert severity="success" className="feedback-alert feedback-edit-task">
+            <Alert severity="success" className="feedback-alert feedback-edit-task media-alert2">
               פרטי המשימה עודכנו בהצלחה
             </Alert>
           )}
           {formWarning && (
-            <Alert severity="error" className="feedback-alert feedback-edit-task">
+            <Alert severity="error" className="feedback-alert feedback-edit-task media-alert2">
               {warningText}
             </Alert>
           )}

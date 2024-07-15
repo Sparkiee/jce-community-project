@@ -107,12 +107,12 @@ function EditContactLog(props) {
           />
         </div>
         {warning && (
-          <Alert className="feedback-alert feedback-contactuser" severity="warning">
+          <Alert className="feedback-alert feedback-contactuser media-alert" severity="warning">
             נא למלא את כל השדות
           </Alert>
         )}
         {contactSubmitted && (
-          <Alert className="feedback-alert feedback-contactuser" severity="success">
+          <Alert className="feedback-alert feedback-contactuser media-alert" severity="success">
             תיעוד עודכן בהצלחה
           </Alert>
         )}

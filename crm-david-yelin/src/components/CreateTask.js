@@ -554,7 +554,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
           </div>
         </div>
         <input type="submit" value="צור משימה" className="primary-button" />
-        <div className="feedback-create-task">
+        <div className="feedback-create-task media-alert">
           {taskExists && (
             <Alert className="feedback-alert" severity="success">
               משימה חדשה התווספה בהצלחה!

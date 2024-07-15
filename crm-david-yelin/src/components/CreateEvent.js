@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
   updateDoc,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import "../styles/CreateEvent.css";
 import Select from "react-select";
@@ -37,9 +37,9 @@ function CreateEvent(props) {
   function stringAvatar(name) {
     return {
       sx: {
-        bgcolor: stringToColor(name)
+        bgcolor: stringToColor(name),
       },
-      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
     };
   }
 
@@ -59,7 +59,7 @@ function CreateEvent(props) {
     eventBudget: 0,
     eventLocation: "",
     eventStatus: "טרם החל",
-    assignees: selectedMembers
+    assignees: selectedMembers,
   });
 
   useEffect(() => {
@@ -68,7 +68,15 @@ function CreateEvent(props) {
       setUser(userData);
       setSelectedMembers((prevMembers) => {
         if (!prevMembers.some((member) => member.email === userData.email)) {
-          return [...prevMembers, { id: userData.email, fullName: userData.fullName, email: userData.email }];
+          return [
+            ...prevMembers,
+            {
+              id: userData.email,
+              fullName: userData.fullName,
+              email: userData.email,
+              profileImage: userData.profileImage,
+            },
+          ];
         }
         return prevMembers;
       });
@@ -82,7 +90,7 @@ function CreateEvent(props) {
       const querySnapshot = await getDocs(q);
       const allMembersData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       const filteredMembers = allMembersData.filter((member) => member.email !== userData.email);
       setAllMembers(filteredMembers);
@@ -147,7 +155,7 @@ function CreateEvent(props) {
       eventCreated: serverTimestamp(),
       assignees: assigneeRefs,
       eventCreator: "members/" + user.email,
-      eventStatus: eventDetails.eventStatus
+      eventStatus: eventDetails.eventStatus,
     };
 
     try {
@@ -165,8 +173,8 @@ function CreateEvent(props) {
               eventID: docRef.id,
               message: `הינך משובץ לאירוע חדש: ${eventDetails.eventName}`,
               link: `/event/${docRef.id}`,
-              id: uuidv4()
-            })
+              id: uuidv4(),
+            }),
           });
         })
       );
@@ -217,7 +225,7 @@ function CreateEvent(props) {
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
-      setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
+      setSelectedMembers((prevMembers) => [...prevMembers, { ...selectedMember }]);
       setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
       setSearch("");
     }
@@ -234,9 +242,30 @@ function CreateEvent(props) {
   return (
     <div className="create-event media-style">
       <div className="action-close" onClick={props.onClose}>
-        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <line
+            x1="17"
+            y1="7"
+            x2="7"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="7"
+            y1="7"
+            x2="17"
+            y2="17"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
       <form className="create-event-form media-form" onSubmit={handleSubmit}>
@@ -261,10 +290,9 @@ function CreateEvent(props) {
                 id="start"
                 className="create-event-input"
                 onChange={(e) => {
-                  //change the start date
                   setEventDetails({
                     ...eventDetails,
-                    eventStartDate: e.target.value
+                    eventStartDate: e.target.value,
                   });
                   resetAlerts();
                 }}
@@ -278,10 +306,9 @@ function CreateEvent(props) {
                 id="due"
                 className="create-event-input"
                 onChange={(e) => {
-                  //change the due date
                   setEventDetails({
                     ...eventDetails,
-                    eventEndDate: e.target.value
+                    eventEndDate: e.target.value,
                   });
                   resetAlerts();
                 }}
@@ -327,7 +354,7 @@ function CreateEvent(props) {
             onChange={(e) => {
               setEventDetails({
                 ...eventDetails,
-                eventLocation: e.target.value
+                eventLocation: e.target.value,
               });
               resetAlerts();
             }}
@@ -354,7 +381,7 @@ function CreateEvent(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName
+              label: member.fullName,
             }))}
           />
           <div className="create-task-selected-members">
@@ -362,7 +389,13 @@ function CreateEvent(props) {
               <Stack direction="row" spacing={1} key={index}>
                 <Chip
                   key={member.id}
-                  avatar={<Avatar {...stringAvatar(member.fullName)} />}
+                  avatar={
+                    <Avatar
+                      {...(member.profileImage
+                        ? { src: member.profileImage }
+                        : stringAvatar(member.fullName))}
+                    />
+                  }
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"

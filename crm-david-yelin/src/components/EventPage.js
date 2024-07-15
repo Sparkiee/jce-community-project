@@ -180,11 +180,16 @@ function EventPage() {
     }
   };
 
-  async function getMemberFullName(email) {
+  async function getMemberData(email) {
     try {
       const memberDoc = await getDoc(doc(collection(db, "members"), email));
       if (memberDoc.exists()) {
-        return memberDoc.data().fullName;
+        const data = memberDoc.data();
+        return {
+          fullName: data.fullName,
+          email: data.email,
+          profileImage: data.profileImage,
+        };
       }
     } catch (e) {
       console.error("Error getting member document: ", e);
@@ -198,13 +203,12 @@ function EventPage() {
       if (eventDoc.exists()) {
         const eventData = eventDoc.data();
 
-        // Fetch event creator's full name
-        const eventCreatorFullName = await getMemberFullName(eventData.eventCreator.split("/")[1]);
+        // Fetch event creator's data
+        const eventCreatorData = await getMemberData(eventData.eventCreator.split("/")[1]);
         const assigneesData = await Promise.all(
           (eventData.assignees || []).map(async (assigneePath) => {
             const email = assigneePath.split("/")[1];
-            const fullName = await getMemberFullName(email);
-            return { email, fullName };
+            return await getMemberData(email);
           })
         );
 
@@ -212,7 +216,13 @@ function EventPage() {
           assigneesData &&
           assigneesData.some((assignee) => assignee && assignee.email === user?.email);
 
-        setEvent({ ...eventData, id: eventDoc.id, assigneesData, eventCreatorFullName });
+        setEvent({
+          ...eventData,
+          id: eventDoc.id,
+          assigneesData,
+          eventCreatorFullName: eventCreatorData.fullName,
+          eventCreatorProfileImage: eventCreatorData.profileImage,
+        });
         setIsUserAnAssignee(userIsAssignee);
       } else {
         console.error("No such document!");
@@ -230,7 +240,7 @@ function EventPage() {
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
         id: index + 1,
-        taskDoc: doc.id, // Ensure taskDoc is set correctly
+        taskDoc: doc.id,
       }));
       const rowsTasksData = await Promise.all(
         taskArray.map(async (task, index) => {
@@ -238,8 +248,7 @@ function EventPage() {
           const assigneeData = await Promise.all(
             assignees.map(async (assigneePath) => {
               const email = assigneePath.split("/")[1];
-              const fullName = await getMemberFullName(email);
-              return { email, fullName };
+              return await getMemberData(email);
             })
           );
           return {
@@ -283,13 +292,13 @@ function EventPage() {
       const nonEmptyHistory = history.filter(
         (item) => item.updatedFields && Object.keys(item.updatedFields).length > 0
       );
-      const historyWithNames = await Promise.all(
+      const historyWithMemberData = await Promise.all(
         nonEmptyHistory.map(async (item) => {
-          const fullName = await getMemberFullName(item.member.split("/")[1]);
-          return { ...item, fullName: fullName };
+          const memberData = await getMemberData(item.member.split("/")[1]);
+          return { ...item, ...memberData };
         })
       );
-      setHistory(historyWithNames);
+      setHistory(historyWithMemberData);
     } catch (e) {
       console.log("Error fetching history: ", e);
     }
@@ -486,7 +495,12 @@ function EventPage() {
         {assignees.map((assignee, index) => (
           <div key={index} className="participant-item">
             <Link to={`/profile/${assignee.email}`}>
-              <Avatar {...stringAvatar(assignee.fullName)} />
+              {console.log("assignee", assignee)}
+              <Avatar
+                {...(assignee.profileImage
+                  ? { src: assignee.profileImage }
+                  : stringAvatar(assignee.fullName))}
+              />
             </Link>
             <Link to={`/profile/${assignee.email}`} className="participants-name">
               <p>{assignee.fullName}</p>
@@ -549,9 +563,19 @@ function EventPage() {
       renderCell: (params) => {
         return (
           <AvatarGroup className="manage-task-avatar-group avatar-position" max={3}>
-            {params.value.map((user, index) => (
-              <Avatar key={index} {...stringAvatar(user.fullName)} />
-            ))}
+            {params.value.map(
+              (user, index) => (
+                console.log("user", user),
+                (
+                  <Avatar
+                    key={index}
+                    {...(user.profileImage
+                      ? { src: user.profileImage }
+                      : stringAvatar(user.fullName))}
+                  />
+                )
+              )
+            )}
           </AvatarGroup>
         );
       },
@@ -661,7 +685,12 @@ function EventPage() {
       renderCell: (params) => {
         return (
           <div className="avatar-position-center" style={{ cursor: "pointer" }}>
-            <Avatar {...stringAvatar(`${params.row.fullName}`)} />
+            {console.log("params", params.row)}
+            <Avatar
+              {...(params.row.profileImage
+                ? { src: params.row.profileImage }
+                : stringAvatar(params.row.fullName))}
+            />
             {params.row.fullName}
           </div>
         );
@@ -830,30 +859,35 @@ function EventPage() {
               )}
             </div>
             <div className="event-tasks-header">
-              {user && ((Array.isArray(user.adminAccess) && (user.adminAccess.includes("createTask")) || user.privileges >= 2)) && (
-                <div
-                  className="action-button add-tasks-button add-tasks-event-page"
-                  onClick={handleShowCreateTask}>
-                  <svg
-                    width="24px"
-                    height="24px"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                    <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                    <g id="SVGRepo_iconCarrier">
-                      <path
-                        d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
-                        stroke="white"
-                        strokeWidth="2"
+              {user &&
+                ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||
+                  user.privileges >= 2) && (
+                  <div
+                    className="action-button add-tasks-button add-tasks-event-page"
+                    onClick={handleShowCreateTask}>
+                    <svg
+                      width="24px"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                      <g
+                        id="SVGRepo_tracerCarrier"
                         strokeLinecap="round"
-                        strokeLinejoin="round"></path>
-                    </g>
-                  </svg>
-                  הוסף משימה
-                </div>
-              )}
+                        strokeLinejoin="round"></g>
+                      <g id="SVGRepo_iconCarrier">
+                        <path
+                          d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"></path>
+                      </g>
+                    </svg>
+                    הוסף משימה
+                  </div>
+                )}
               <div className="search-related-bar">
                 <input
                   type="text"

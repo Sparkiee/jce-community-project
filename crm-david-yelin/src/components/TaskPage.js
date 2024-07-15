@@ -111,7 +111,11 @@ function TaskPage() {
   const [history, setHistory] = useState([]);
   const [changes, setChanges] = useState("");
   const [user, setUser] = useState(null);
-
+  const [fileError, setFileError] = useState(false);
+  const [fileErrorMessage, setFileErrorMessage] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [deleteFile, setDeleteFile] = useState(null);
+  const [fileRows, setFileRows] = useState([]);
   const editTaskRef = useRef(null);
   const changelogRef = useRef(null);
   const navigate = useNavigate();
@@ -156,12 +160,6 @@ function TaskPage() {
     }
   }
 
-  const [fileError, setFileError] = useState(false);
-  const [fileErrorMessage, setFileErrorMessage] = useState("");
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [deleteFile, setDeleteFile] = useState(null);
-  const [fileRows, setFileRows] = useState([]);
-
   const theme = createTheme(
     {
       direction: "rtl",
@@ -191,17 +189,21 @@ function TaskPage() {
     }
   }, []);
 
-  const getMemberFullName = async (email) => {
-    if (!email) return;
+  async function getMemberData(email) {
     try {
-      const memberDoc = await getDoc(doc(db, "members", email));
+      const memberDoc = await getDoc(doc(collection(db, "members"), email));
       if (memberDoc.exists()) {
-        return memberDoc.data().fullName;
+        const data = memberDoc.data();
+        return {
+          fullName: data.fullName,
+          email: data.email,
+          profileImage: data.profileImage,
+        };
       }
     } catch (e) {
       console.error("Error getting member document: ", e);
     }
-  };
+  }
 
   useEffect(() => {
     fetchHistory();
@@ -213,19 +215,23 @@ function TaskPage() {
       const taskDoc = await getDoc(doc(db, "tasks", taskId));
       if (taskDoc.exists()) {
         const taskData = taskDoc.data();
-        setTask({ ...taskData, taskDoc: taskId }); // Ensure taskDoc is included in the task object
 
-        // Fetch task creator's full name
-        const taskCreatorFullName = await getMemberFullName(taskData.taskCreator.split("/")[1]);
-        setTaskCreatorFullName(taskCreatorFullName);
+        // Fetch task creator's data
+        const taskCreatorData = await getMemberData(taskData.taskCreator.split("/")[1]);
+        console.log(taskCreatorData.fullName);
 
         // Fetch assignee data
         const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);
-        const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
-        const assigneeDocs = await Promise.all(assigneePromises);
-        const assigneeData = assigneeDocs
-          .map((doc) => (doc.exists() ? doc.data() : null))
-          .filter((data) => data);
+        const assigneeData = await Promise.all(assigneeEmails.map(getMemberData));
+
+        setTask({
+          ...taskData,
+          taskDoc: taskId,
+          taskCreatorFullName: taskCreatorData.fullName,
+          taskCreatorProfileImage: taskCreatorData.profileImage,
+          assignees: assigneeData,
+        });
+        setTaskCreatorFullName(taskCreatorData.fullName);
         setAssignees(assigneeData);
 
         if (user && assigneeEmails.includes(user.email)) {
@@ -274,13 +280,13 @@ function TaskPage() {
       const nonEmptyHistory = history.filter(
         (item) => item.updatedFields && Object.keys(item.updatedFields).length > 0
       );
-      const historyWithNames = await Promise.all(
+      const historyWithMemberData = await Promise.all(
         nonEmptyHistory.map(async (item) => {
-          const fullName = await getMemberFullName(item.member.split("/")[1]);
-          return { ...item, fullName: fullName };
+          const memberData = await getMemberData(item.member.split("/")[1]);
+          return { ...item, ...memberData };
         })
       );
-      setHistory(historyWithNames);
+      setHistory(historyWithMemberData);
     } catch (e) {
       console.error("Error getting history: ", e);
     }
@@ -419,14 +425,16 @@ function TaskPage() {
       headerName: "שונה על ידי",
       align: "right",
       flex: 2,
-      renderCell: (params) => {
-        return (
-          <div className="avatar-position-center" style={{ cursor: "pointer" }}>
-            <Avatar {...stringAvatar(`${params.row.fullName}`)} />
-            {params.row.fullName}
-          </div>
-        );
-      },
+      renderCell: (params) => (
+        <div className="avatar-position-center" style={{ cursor: "pointer" }}>
+          <Avatar
+            src={params.row.profileImage}
+            alt={params.row.fullName}
+            {...(!params.row.profileImage && stringAvatar(params.row.fullName))}
+          />
+          {params.row.fullName}
+        </div>
+      ),
     },
     {
       field: "changeDescription",
@@ -754,7 +762,11 @@ function TaskPage() {
               {assignees.map((assignee, index) => (
                 <div key={index} className="assignee-task-page-item">
                   <Link className="profile-link" to={`/profile/${assignee.email}`}>
-                    <Avatar {...stringAvatar(assignee.fullName)} />
+                    <Avatar
+                      src={assignee.profileImage}
+                      alt={assignee.fullName}
+                      {...(!assignee.profileImage && stringAvatar(assignee.fullName))}
+                    />
                   </Link>
                   <Link to={`/profile/${assignee.email}`}>
                     <p>{assignee.fullName}</p>

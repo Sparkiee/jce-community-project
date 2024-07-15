@@ -79,6 +79,7 @@ function Chat() {
   const endRef = useRef(null);
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [userProfileImages, setUserProfileImages] = useState({});
 
   const handleChatSearch = (e) => {
     setChatSearchQuery(e.target.value);
@@ -123,9 +124,12 @@ function Chat() {
       const q = query(chatRef, where("members", "array-contains", user.email));
       const querySnapshot = await getDocs(q);
       let chatArray = [];
+      let newProfileImages = {};
       for (const doc of querySnapshot.docs) {
         let otherUserEmail = doc.data().members.find((email) => email !== user.email);
         const fullName = await getMemberFullName(otherUserEmail); // Now it's valid to use await here
+        const profileImage = await fetchUserProfileImage(otherUserEmail);
+        newProfileImages[otherUserEmail] = profileImage;
         const chat = doc.data();
         const unseenCount = chat.messages.filter(
           (message) =>
@@ -136,6 +140,7 @@ function Chat() {
         chatArray.push({ chatId: doc.id, otherUserEmail, fullName, unseenCount, ...chat });
       }
       setChats(chatArray);
+      setUserProfileImages((prevImages) => ({ ...prevImages, ...newProfileImages }));
     } catch (error) {
       console.error("Failed to fetch user chats:", error);
     } finally {
@@ -458,6 +463,19 @@ function Chat() {
     fetchMessagesforChat(selectedChat);
   };
 
+  const fetchUserProfileImage = async (email) => {
+    try {
+      const userDoc = await getDoc(doc(db, "members", email));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        return userData.profileImage || null;
+      }
+    } catch (error) {
+      console.error("Error fetching user profile image:", error);
+    }
+    return null;
+  };
+
   return (
     <div className="chat-body">
       <div className="chat-container">
@@ -466,7 +484,9 @@ function Chat() {
             <div className="chat-user-info-avatar">
               {user && (
                 <Avatar
-                  {...stringAvatar(user.fullName)}
+                  {...(user.profileImage
+                    ? { src: user.profileImage }
+                    : { ...stringAvatar(user.fullName) })}
                   title={user.fullName}
                   className="chat-user-info-profile-avatar"
                   onClick={() => navigate(`/profile/${user.email}`)}
@@ -566,7 +586,9 @@ function Chat() {
                     onClick={() => handleChatSelection(chat)}>
                     <div className="chat-list-item-right-side">
                       <Avatar
-                        {...stringAvatar(chat && chat.fullName)}
+                        {...(userProfileImages[chat.otherUserEmail]
+                          ? { src: userProfileImages[chat.otherUserEmail] }
+                          : { ...stringAvatar(chat.fullName || "Unknown Name") })}
                         title={chat.fullName || "Unknown Name"}
                         className="chat-list-item-avatar"
                       />
@@ -594,7 +616,9 @@ function Chat() {
               <div className="chat-messages-top">
                 <div className="chat-messages-top-avatar">
                   <Avatar
-                    {...stringAvatar(selectedChat?.fullName || "Unknown Name")}
+                    {...(userProfileImages[selectedChat?.otherUserEmail]
+                      ? { src: userProfileImages[selectedChat.otherUserEmail] }
+                      : stringAvatar(selectedChat?.fullName || "Unknown Name"))}
                     title={selectedChat.fullName || "Unknown Name"}
                     className="chat-messages-top-avatar-img"
                   />
@@ -726,7 +750,9 @@ function Chat() {
                   <div className="chat-user-list" key={user.email}>
                     <div className="chat-user-detail">
                       <Avatar
-                        {...stringAvatar(user.fullName || "Unknown Name")}
+                        {...(user.profileImage
+                          ? { src: user.profileImage }
+                          : stringAvatar(user.fullName || "Unknown Name"))}
                         title={user.fullName || "Unknown Name"}
                         className="chat-user-avatar"
                       />

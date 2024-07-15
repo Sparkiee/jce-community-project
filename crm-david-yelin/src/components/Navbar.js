@@ -411,7 +411,9 @@ function Navbar() {
               )}
               {user && (
                 <Avatar
-                  {...stringAvatar(user.fullName)}
+                  {...(user && user.profileImage
+                    ? { src: user.profileImage }
+                    : { ...stringAvatar(user.fullName) })}
                   title={fullName}
                   onClick={() => handleProfileClick()}
                 />

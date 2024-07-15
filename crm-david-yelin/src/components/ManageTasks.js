@@ -195,7 +195,8 @@ function ManageTasks() {
             {params.value.map((user, index) => (
               <Avatar
                 key={index}
-                {...stringAvatar(user.fullName)}
+                src={user.profileImage}
+                {...(!user.profileImage && stringAvatar(user.fullName))}
                 title={user.fullName}
                 onClick={() => navigate(`/profile/${user.email}`)}
               />
@@ -248,11 +249,15 @@ function ManageTasks() {
       : []),
   ];
 
-  async function getMemberFullName(email) {
+  async function getMemberData(email) {
     try {
       const memberDoc = await getDoc(doc(collection(db, "members"), email));
       if (memberDoc.exists()) {
-        return memberDoc.data().fullName;
+        const data = memberDoc.data();
+        return {
+          fullName: data.fullName,
+          profileImage: data.profileImage,
+        };
       }
     } catch (e) {
       console.error("Error getting member document: ", e);
@@ -297,8 +302,12 @@ function ManageTasks() {
           const assigneeData = await Promise.all(
             assignees.map(async (assigneePath) => {
               const email = assigneePath.split("/")[1];
-              const fullName = await getMemberFullName(email);
-              return { email, fullName };
+              const memberData = await getMemberData(email);
+              return {
+                email,
+                fullName: memberData.fullName,
+                profileImage: memberData.profileImage,
+              };
             })
           );
           return {
@@ -328,11 +337,11 @@ function ManageTasks() {
       const taskDoc = await getDoc(doc(db, "tasks", row.taskDoc));
       if (taskDoc.exists()) {
         const taskData = taskDoc.data();
-        const assigneeEmails = (taskData.assignees || []).map((email) => email.split("/")[1]); // Ensure taskData.assignees is an array
+        const assigneeEmails = (taskData.assignees || []).map((email) => email.split("/")[1]);
         const assigneePromises = assigneeEmails.map((email) => getDoc(doc(db, "members", email)));
         const assigneeDocs = await Promise.all(assigneePromises);
         const assigneeData = assigneeDocs
-          .map((doc) => (doc.exists() ? doc.data() : []))
+          .map((doc) => (doc.exists() ? doc.data() : null))
           .filter((data) => data);
         setEditingTask({
           ...taskData,
@@ -340,6 +349,7 @@ function ManageTasks() {
           assignTo: assigneeData.map((assignee) => ({
             value: assignee.email,
             label: assignee.fullName,
+            profileImage: assignee.profileImage,
           })),
         });
       } else {

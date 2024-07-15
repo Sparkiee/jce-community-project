@@ -208,7 +208,8 @@ function ManageEvents() {
             {assignees.map((user, index) => (
               <Avatar
                 key={index}
-                {...stringAvatar(user.fullName)}
+                src={user.profileImage}
+                {...(!user.profileImage && stringAvatar(user.fullName))}
                 title={user.fullName}
                 onClick={() => navigate(`/profile/${user.email}`)}
               />
@@ -261,11 +262,15 @@ function ManageEvents() {
       : []),
   ];
 
-  async function getMemberFullName(email) {
+  async function getMemberData(email) {
     try {
       const memberDoc = await getDoc(doc(collection(db, "members"), email));
       if (memberDoc.exists()) {
-        return memberDoc.data().fullName;
+        const data = memberDoc.data();
+        return {
+          fullName: data.fullName,
+          profileImage: data.profileImage,
+        };
       }
     } catch (e) {
       console.error("Error getting member document: ", e);
@@ -319,8 +324,12 @@ function ManageEvents() {
           const assigneeData = await Promise.all(
             assignees.map(async (assignee) => {
               const email = assignee.split("/")[1];
-              const fullName = await getMemberFullName(email);
-              return { email, fullName };
+              const memberData = await getMemberData(email);
+              return {
+                email,
+                fullName: memberData.fullName,
+                profileImage: memberData.profileImage,
+              };
             })
           );
           const completedPercentage = await calculateCompletionPercentage(event.eventDoc);
@@ -412,8 +421,12 @@ function ManageEvents() {
         const assignees = await Promise.all(
           eventData.assignees.map(async (assigneePath) => {
             const email = assigneePath.split("/")[1];
-            const fullName = await getMemberFullName(email);
-            return { email, fullName };
+            const memberData = await getMemberData(email);
+            return {
+              email,
+              fullName: memberData.fullName,
+              profileImage: memberData.profileImage,
+            };
           })
         );
         setEditEventDetails({ ...eventData, id: eventDoc.id, assigneesData: assignees });

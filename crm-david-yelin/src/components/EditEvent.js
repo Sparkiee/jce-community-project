@@ -399,7 +399,13 @@ function EditEvent(props) {
               <Stack direction="row" spacing={1} key={index}>
                 <Chip
                   key={member.id}
-                  avatar={<Avatar {...stringAvatar(member.fullName)} />}
+                  avatar={
+                    <Avatar
+                      {...(member.profileImage
+                        ? { src: member.profileImage }
+                        : stringAvatar(member.fullName))}
+                    />
+                  }
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"

@@ -255,3 +255,19 @@ div .profile-avatar:hover {
   right: 5%;
   top: 25%;
 }
+
+#profileImageUpload {
+  display: none;
+}
+
+.editImage {
+  position: relative;
+  display: inline-block;
+}
+
+#editAvatar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+}

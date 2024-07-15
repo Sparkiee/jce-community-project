@@ -17,8 +17,6 @@ function HomePage() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
-  const [rowsCreatedTasks, setRowsCreatedTasks] = useState([]);
-  const [rowsCreatedEvents, setRowsCreatedEvents] = useState([]);
   const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
@@ -205,74 +203,6 @@ function HomePage() {
   const createTaskRef = useRef(null);
   const createEventRef = useRef(null);
 
-  async function grabCreatedTasks() {
-    try {
-      const tasksRef = collection(db, "tasks");
-      const q = query(tasksRef, where("taskCreator", "==", "members/" + user?.email));
-      const querySnapshot = await getDocs(q);
-      const taskArray = querySnapshot.docs
-        .map((doc, index) => ({
-          ...doc.data(),
-          id: index + 1,
-          docRef: doc.id
-        }))
-        .filter((task) => task.taskStatus !== "הושלמה");
-
-      // Map the tasks to the format expected by DataGrid
-      const rowsTasksData = taskArray.map((task, index) => ({
-        id: index + 1,
-        taskDoc: task.docRef,
-        taskName: task.taskName,
-        taskDescription: task.taskDescription,
-        taskStartDate: task.taskStartDate,
-        taskEndDate: task.taskEndDate,
-        taskTime: task.taskTime,
-        taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus
-      }));
-      setRowsCreatedTasks(rowsTasksData); // Update rows state
-    } catch (error) {
-      console.error("Failed to fetch tasks:", error);
-    }
-  }
-
-  async function grabCreatedEvents() {
-    try {
-      const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("eventCreator", "==", "members/" + user?.email));
-      const querySnapshot = await getDocs(q);
-      const eventsArray = querySnapshot.docs
-        .map((doc, index) => ({
-          ...doc.data(),
-          id: index + 1,
-          docRef: doc.id
-        }))
-        .filter((event) => event.eventStatus !== "הסתיים");
-      setNumEvents(eventsArray.length); // Update event count
-
-      const rowsEventsData = await Promise.all(
-        eventsArray.map(async (event, index) => {
-          const completionPercentage = await calculateCompletionPercentage(event.docRef);
-          return {
-            id: index + 1,
-            eventDoc: event.docRef,
-            eventName: event.eventName,
-            eventLocation: event.eventLocation,
-            eventStartDate: event.eventStartDate,
-            eventEndDate: event.eventEndDate,
-            eventTime: event.eventTime,
-            eventBudget: event.eventBudget,
-            eventStatus: event.eventStatus,
-            completionPercentage: `${completionPercentage}%`
-          };
-        })
-      );
-      setRowsCreatedEvents(rowsEventsData); // Update event rows state
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-    }
-  }
-
   async function grabMyTasks() {
     try {
       const tasksRef = collection(db, "tasks");
@@ -389,32 +319,10 @@ function HomePage() {
       });
     });
 
-    const createdTasksRef = collection(db, "tasks");
-    const createdTasksQuery = query(createdTasksRef, where("taskCreator", "==", "members/" + user?.email));
-    const unsubscribeCreatedTasks = onSnapshot(createdTasksQuery, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          grabCreatedTasks();
-        }
-      });
-    });
-
-    const createdEventsRef = collection(db, "events");
-    const createdEventsQuery = query(createdEventsRef, where("eventCreator", "==", "members/" + user?.email));
-    const unsubscribeCreatedEvents = onSnapshot(createdEventsQuery, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "added" || change.type === "modified") {
-          grabCreatedEvents();
-        }
-      });
-    });
-
     // Cleanup function to unsubscribe from both snapshots
     return () => {
       unsubscribeEvents();
       unsubscribeTasks();
-      unsubscribeCreatedTasks();
-      unsubscribeCreatedEvents();
     };
   }, []);
 
@@ -422,8 +330,6 @@ function HomePage() {
     // Fetch tasks and events when the user changes
     grabMyTasks();
     grabMyEvents();
-    grabCreatedTasks();
-    grabCreatedEvents();
   }, [user]);
 
   const handleShowCreateTask = () => {
@@ -601,78 +507,6 @@ function HomePage() {
           />
         </ThemeProvider>
       </div>
-      {rowsCreatedTasks.length > 0 && (
-        <div className="table-optional-wrapper">
-          <hr className="divider" />
-          {rowsCreatedTasks.length === 1 ? (
-            <h2 className="title-home">יש לך משימה אחת שפתחת</h2>
-          ) : (
-            <h2 className="title-home">יש לך {rowsCreatedTasks.length} משימות שפתחת</h2>
-          )}
-          <div style={{ height: 372, width: "90%" }}>
-            <ThemeProvider theme={theme}>
-              <DataGrid
-                direction="rtl"
-                className="data-grid"
-                rows={rowsCreatedTasks}
-                columns={columnsTasks}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 }
-                  }
-                }}
-                pageSizeOptions={[5, 10, 20]}
-                localeText={{
-                  // Customizing displayed rows text
-                  MuiTablePagination: {
-                    labelDisplayedRows: ({ from, to, count }) =>
-                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
-                  }
-                }}
-                onRowDoubleClick={(params) => {
-                  navigate(`/task/${params.row.taskDoc}`);
-                }}
-              />
-            </ThemeProvider>
-          </div>
-        </div>
-      )}
-      {rowsCreatedEvents.length > 0 && (
-        <div className="table-optional-wrapper">
-          <hr className="divider" />
-          {rowsCreatedEvents.length === 1 ? (
-            <h2 className="title-home">יש לך אירוע אחד שפתחת</h2>
-          ) : (
-            <h2 className="title-home">יש לך {rowsCreatedEvents.length} אירועים שפתחת</h2>
-          )}
-          <div style={{ height: 372, width: "90%" }}>
-            <ThemeProvider theme={theme}>
-              <DataGrid
-                className="data-grid"
-                rows={rowsCreatedEvents}
-                columns={columnsEvents}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 5 }
-                  }
-                }}
-                pageSizeOptions={[5, 10, 20]}
-                localeText={{
-                  MuiTablePagination: {
-                    labelDisplayedRows: ({ from, to, count }) =>
-                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                    labelRowsPerPage: "שורות בכל עמוד:"
-                  }
-                }}
-                onRowDoubleClick={(params) => {
-                  navigate(`/event/${params.row.eventDoc}`);
-                }}
-              />
-            </ThemeProvider>
-          </div>
-        </div>
-      )}
       <div className="footer"></div>
     </div>
   );

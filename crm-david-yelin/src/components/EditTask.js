@@ -77,17 +77,31 @@ function EditTask(props) {
   }, []);
 
   useEffect(() => {
-    if (selectedMembers.length == 0 && taskDetails.assignees) {
-      const selected = taskDetails.assignees.map((member) => {
-        return member.split("/")[1];
-      });
-      selected.forEach((member) => {
-        const memberRef = doc(db, "members", member);
-        getDoc(memberRef).then((doc) => {
-          if (doc.exists()) {
-            setSelectedMembers((prevMembers) => [...prevMembers, { id: doc.id, ...doc.data() }]);
-          }
-        });
+    if (selectedMembers.length === 0 && taskDetails.assignees) {
+      console.log("taskDetails.assignees:", taskDetails.assignees);
+
+      taskDetails.assignees.forEach((member) => {
+        console.log("Member:", member);
+
+        if (member && member.email) {
+          const memberRef = doc(db, "members", member.email);
+          getDoc(memberRef)
+            .then((doc) => {
+              if (doc.exists()) {
+                setSelectedMembers((prevMembers) => [
+                  ...prevMembers,
+                  { id: doc.id, ...doc.data(), ...member },
+                ]);
+              } else {
+                console.log("No such document for member email:", member.email);
+              }
+            })
+            .catch((error) => {
+              console.error("Error getting document:", error);
+            });
+        } else {
+          console.error("Member object doesn't have an email:", member);
+        }
       });
     }
 

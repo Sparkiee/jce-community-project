@@ -190,6 +190,10 @@ function TaskPage() {
   }, []);
 
   async function getMemberData(email) {
+    if (!email) {
+      console.warn("Attempted to get member data with empty email");
+      return null;
+    }
     try {
       const memberDoc = await getDoc(doc(collection(db, "members"), email));
       if (memberDoc.exists()) {
@@ -199,6 +203,9 @@ function TaskPage() {
           email: data.email,
           profileImage: data.profileImage,
         };
+      } else {
+        console.warn(`No member document found for email: ${email}`);
+        return null;
       }
     } catch (e) {
       console.error("Error getting member document: ", e);

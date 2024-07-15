@@ -17,8 +17,6 @@ function HomePage() {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rowsTasks, setRowsTasks] = useState([]);
   const [rowsEvents, setRowsEvents] = useState([]);
-  const [rowsCreatedTasks, setRowsCreatedTasks] = useState([]);
-  const [rowsCreatedEvents, setRowsCreatedEvents] = useState([]);
   const [user, setUser] = useState(null);
 
   const navigate = useNavigate();

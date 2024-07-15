@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   updateDoc,
   arrayUnion,
+  getDoc,
 } from "firebase/firestore";
 import Select from "react-select";
 import "../styles/CreateTask.css";
@@ -20,7 +21,29 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import { v4 as uuidv4 } from "uuid";
 
-function CreateTask(props) {
+function CreateTask({ onClose, eventId, eventAssignees }) {
+  function stringToColor(string) {
+    let hash = 0;
+    for (let i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = "#";
+    for (let i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    return color;
+  }
+
+  function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    };
+  }
+
   const [taskExists, setTaskExists] = useState(false);
   const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
@@ -101,6 +124,7 @@ function CreateTask(props) {
       taskCreated: serverTimestamp(),
       taskCreator: "members/" + user.email,
       taskStatus: taskDetails.taskStatus,
+      relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : null,
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -152,7 +176,7 @@ function CreateTask(props) {
         })
       );
       setTimeout(() => {
-        props.onClose();
+        onClose();
       }, 1000);
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -251,9 +275,48 @@ function CreateTask(props) {
   const handleRemoveEvent = () => {
     setSelectedEvent("");
   };
+
+  useEffect(() => {
+    const fetchEventAndAssignees = async () => {
+      if (eventId) {
+        // Fetch and set the event
+        const eventDoc = await getDoc(doc(db, "events", eventId));
+        if (eventDoc.exists()) {
+          const eventData = eventDoc.data();
+          setSelectedEvent({ id: eventId, eventName: eventData.eventName });
+        }
+
+        // Fetch and set the assignees
+        if (eventAssignees && eventAssignees.length > 0) {
+          const assigneePromises = eventAssignees.map(async (assigneePath) => {
+            const email = assigneePath.split("/")[1];
+            const memberDoc = await getDocs(
+              query(collection(db, "members"), where("email", "==", email))
+            );
+            if (!memberDoc.empty) {
+              const memberData = memberDoc.docs[0].data();
+              return {
+                id: memberDoc.docs[0].id,
+                fullName: memberData.fullName,
+                email: memberData.email,
+              };
+            }
+            return null;
+          });
+
+          const assigneeDetails = await Promise.all(assigneePromises);
+          const validAssignees = assigneeDetails.filter((assignee) => assignee !== null);
+          setSelectedMembers(validAssignees);
+        }
+      }
+    };
+
+    fetchEventAndAssignees();
+  }, [eventId, eventAssignees]);
+
   return (
     <div className="create-task">
-      <div className="action-close" onClick={props.onClose}>
+      <div className="action-close" onClick={onClose}>
         <svg
           width="24px"
           height="24px"
@@ -431,7 +494,7 @@ function CreateTask(props) {
               <Stack key={index} direction="row" spacing={1}>
                 <Chip
                   key={member.id}
-                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
+                  avatar={<Avatar {...stringAvatar(member.fullName)} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"

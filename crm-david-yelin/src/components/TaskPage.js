@@ -726,7 +726,10 @@ function TaskPage() {
                   <p>
                     <strong>שעת סיום:</strong> {task.taskTime}
                   </p>
-                  {(user && user.privileges >= 2 || isUserAnAssignee || (Array.isArray(user.adminAccess) && user.adminAccess.includes("viewBudget"))) && (
+                  {((user && user.privileges >= 2) ||
+                    isUserAnAssignee ||
+                    (Array.isArray(user.adminAccess) &&
+                      user.adminAccess.includes("viewBudget"))) && (
                     <p>
                       <strong>תקציב: </strong>₪{task.taskBudget.toLocaleString()}
                     </p>

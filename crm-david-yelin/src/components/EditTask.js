@@ -20,6 +20,28 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
 function EditTask(props) {
+  function stringToColor(string) {
+    let hash = 0;
+    for (let i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = "#";
+    for (let i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    return color;
+  }
+
+  function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    };
+  }
+
   const [taskExists, setTaskExists] = useState(false);
   const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
@@ -406,7 +428,7 @@ function EditTask(props) {
             {selectedMembers.map((member, index) => (
               <Stack key={index} direction="row" spacing={1} flexWrap="wrap">
                 <Chip
-                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
+                  avatar={<Avatar {...stringAvatar(member.fullName)} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"

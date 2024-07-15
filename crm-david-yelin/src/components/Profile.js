@@ -41,7 +41,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import Chart from "chart.js/auto";
 
 function Profile() {
-  const pages = ["פניות", "משימות פתוחות", "אירועים פתוחים"];
+  const pages = ["פניות", "משימות פתוחות", "אירועים פתוחים", "משימות שיצר", "אירועים שיצר"];
   const handlePageSwitch = (event, newValue) => {
     setPage(newValue);
   };
@@ -58,6 +58,8 @@ function Profile() {
   const [numCompletedEvents, setNumCompletedEvents] = useState(0);
   const [taskPercentage, setTaskPercentage] = useState(0);
   const [eventPercentage, setEventPercentage] = useState(0);
+  const [rowsCreatedTasks, setRowsCreatedTasks] = useState([]);
+  const [rowsCreatedEvents, setRowsCreatedEvents] = useState([]);
 
   const [profile, setProfile] = useState();
   const [showResetPassword, setShowResetPassword] = useState(false);
@@ -542,6 +544,73 @@ function Profile() {
     }
   }
 
+  async function grabCreatedTasks() {
+    if (!profile) return;
+    try {
+      const tasksRef = collection(db, "tasks");
+      const q = query(tasksRef, where("taskCreator", "==", "members/" + profile?.email));
+      const querySnapshot = await getDocs(q);
+      const taskArray = querySnapshot.docs
+        .map((doc, index) => ({
+          ...doc.data(),
+          id: index + 1,
+          docRef: doc.id
+        }))
+        .filter((task) => task.taskStatus !== "הושלמה");
+
+      // Map the tasks to the format expected by DataGrid
+      const rowsTasksData = taskArray.map((task, index) => ({
+        id: index + 1,
+        taskDoc: task.docRef,
+        taskName: task.taskName,
+        taskDescription: task.taskDescription,
+        taskStartDate: task.taskStartDate,
+        taskEndDate: task.taskEndDate,
+        taskTime: task.taskTime,
+        taskBudget: task.taskBudget,
+        taskStatus: task.taskStatus
+      }));
+      setRowsCreatedTasks(rowsTasksData); // Update rows state
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+    }
+  }
+
+  async function grabCreatedEvents() {
+    if (!profile) return;
+    try {
+      const eventsRef = collection(db, "events");
+      const q = query(eventsRef, where("eventCreator", "==", "members/" + profile?.email));
+      const querySnapshot = await getDocs(q);
+      const eventsArray = querySnapshot.docs
+        .map((doc, index) => ({
+          ...doc.data(),
+          id: index + 1,
+          docRef: doc.id
+        }))
+        .filter((event) => event.eventStatus !== "הסתיים");
+
+      const rowsEventsData = await Promise.all(
+        eventsArray.map(async (event, index) => {
+          return {
+            id: index + 1,
+            eventDoc: event.docRef,
+            eventName: event.eventName,
+            eventLocation: event.eventLocation,
+            eventStartDate: event.eventStartDate,
+            eventEndDate: event.eventEndDate,
+            eventTime: event.eventTime,
+            eventBudget: event.eventBudget,
+            eventStatus: event.eventStatus,
+          };
+        })
+      );
+      setRowsCreatedEvents(rowsEventsData); // Update event rows state
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+    }
+  }
+
   async function grabMyTasks() {
     if (!profile) return;
     try {
@@ -694,6 +763,8 @@ function Profile() {
     grabMyTasks();
     grabMyEvents();
     fetchContact();
+    grabCreatedTasks();
+    grabCreatedEvents();
   }, [profile]);
 
   useEffect(() => {
@@ -881,6 +952,58 @@ function Profile() {
               <DataGrid
                 className="data-grid"
                 rows={rowsEvents}
+                columns={columnsEvents}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
+                }}
+                pageSizeOptions={[10, 20, 50]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
+                }}
+                onRowDoubleClick={(params) => navigate(`/event/${params.row.eventDoc}`)}
+              />
+            </ThemeProvider>
+          </div>
+        );
+      case pages[3]:
+        return (
+          <div style={{ height: 631, width: "100%" }}>
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                className="data-grid"
+                rows={rowsCreatedTasks}
+                columns={columnsTasks}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 10 }
+                  }
+                }}
+                pageSizeOptions={[10, 20, 50]}
+                localeText={{
+                  MuiTablePagination: {
+                    labelDisplayedRows: ({ from, to, count }) =>
+                      `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
+                    labelRowsPerPage: "שורות בכל עמוד:"
+                  }
+                }}
+                onRowDoubleClick={(params) => navigate(`/task/${params.row.taskDoc}`)}
+              />
+            </ThemeProvider>
+          </div>
+        );
+      case pages[4]:
+        return (
+          <div style={{ height: 631, width: "100%" }}>
+            <ThemeProvider theme={theme}>
+              <DataGrid
+                className="data-grid"
+                rows={rowsCreatedEvents}
                 columns={columnsEvents}
                 initialState={{
                   pagination: {

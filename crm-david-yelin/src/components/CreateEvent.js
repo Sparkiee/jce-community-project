@@ -231,7 +231,7 @@ function CreateEvent(props) {
   };
 
   return (
-    <div className="create-event">
+    <div className="create-event media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -259,7 +259,7 @@ function CreateEvent(props) {
           />
         </svg>
       </div>
-      <form className="create-event-form" onSubmit={handleSubmit}>
+      <form className="create-event-form media-form" onSubmit={handleSubmit}>
         <h2 className="title extra-create-event-title">צור אירוע</h2>
         <div className="create-event-input-box">
           <input

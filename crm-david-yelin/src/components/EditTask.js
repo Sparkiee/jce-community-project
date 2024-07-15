@@ -305,7 +305,7 @@ function EditTask(props) {
   };
 
   return (
-    <div className="edit-task-style">
+    <div className="edit-task-style media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -333,7 +333,7 @@ function EditTask(props) {
           />
         </svg>
       </div>
-      <form className="edit-task-form" onSubmit={handleSubmit}>
+      <form className="edit-task-form media-form" onSubmit={handleSubmit}>
         <h2 className="edit-task-title">עריכת משימה: {taskDetails.taskName}</h2>
         <div className="edit-task-input-box">
           <input

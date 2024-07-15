@@ -8,9 +8,7 @@ import { setDoc, doc } from "firebase/firestore";
 
 function EditContactLog(props) {
   const [subject, setSubject] = useState(props.target.subject || "");
-  const [description, setDescription] = useState(
-    props.target.description || ""
-  );
+  const [description, setDescription] = useState(props.target.description || "");
   const [notes, setNotes] = useState(props.target.notes || "");
 
   const [warning, setWarning] = useState(false);
@@ -43,15 +41,14 @@ function EditContactLog(props) {
   }
 
   return (
-    <div className="contact-user">
+    <div className="contact-user media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
           height="24px"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-        >
+          fill="currentColor">
           <line
             x1="17"
             y1="7"
@@ -72,10 +69,8 @@ function EditContactLog(props) {
           />
         </svg>
       </div>
-      <form className="contact-user-form" onSubmit={handleSubmit}>
-        <h2 className="title extra-registration-form-title">
-          עדכן תיעוד לפניה קיימת
-        </h2>
+      <form className="contact-user-form media-form" onSubmit={handleSubmit}>
+        <h2 className="title extra-registration-form-title">עדכן תיעוד לפניה קיימת</h2>
         <div className="contact-user-input-box">
           <input
             type="text"
@@ -112,18 +107,12 @@ function EditContactLog(props) {
           />
         </div>
         {warning && (
-          <Alert
-            className="feedback-alert feedback-contactuser"
-            severity="warning"
-          >
+          <Alert className="feedback-alert feedback-contactuser" severity="warning">
             נא למלא את כל השדות
           </Alert>
         )}
         {contactSubmitted && (
-          <Alert
-            className="feedback-alert feedback-contactuser"
-            severity="success"
-          >
+          <Alert className="feedback-alert feedback-contactuser" severity="success">
             תיעוד עודכן בהצלחה
           </Alert>
         )}

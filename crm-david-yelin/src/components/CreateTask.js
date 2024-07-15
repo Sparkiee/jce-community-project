@@ -365,7 +365,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
   }, [eventId, eventAssignees]);
 
   return (
-    <div className="create-task">
+    <div className="create-task media-style">
       <div className="action-close" onClick={onClose}>
         <svg
           width="24px"
@@ -393,7 +393,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
           />
         </svg>
       </div>
-      <form className="create-task-form" onSubmit={handleSubmit}>
+      <form className="create-task-form media-form" onSubmit={handleSubmit}>
         <h2 className="title extra-create-task-title">משימה חדשה</h2>
         <div className="create-task-input-box">
           <input

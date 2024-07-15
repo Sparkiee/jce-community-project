@@ -239,7 +239,7 @@ function EditEvent(props) {
   };
 
   return (
-    <div className="edit-event-style">
+    <div className="edit-event-style media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -267,7 +267,7 @@ function EditEvent(props) {
           />
         </svg>
       </div>
-      <form className="edit-event-form" onSubmit={handleSubmit}>
+      <form className="edit-event-form media-form" onSubmit={handleSubmit}>
         <h2 className="title extra-edit-event-title">ערוך אירוע: {eventDetails.eventName}</h2>
         <div className="edit-event-input-box">
           <input

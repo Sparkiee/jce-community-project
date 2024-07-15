@@ -40,7 +40,7 @@ function CreateUser(props) {
       try {
         const docRef = doc(db, "departments", newDepartment);
         setDoc(docRef, {
-          name: newDepartment
+          name: newDepartment,
         });
       } catch (e) {
         console.error("Error adding document: ", e);
@@ -110,7 +110,7 @@ function CreateUser(props) {
         email: email,
         department: department,
         role: role,
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
       });
       setAccountCreated(true);
       setTimeout(() => {
@@ -122,7 +122,7 @@ function CreateUser(props) {
     }
   }
   return (
-    <div className="user-creation-style">
+    <div className="user-creation-style media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -150,7 +150,7 @@ function CreateUser(props) {
           />
         </svg>
       </div>
-      <form className="extra-create-user-form" onSubmit={handleSubmit}>
+      <form className="extra-create-user-form media-form" onSubmit={handleSubmit}>
         <div className="create-user-form">
           <h2 className="title extra-create-user-form-title">יצירת משתמש חדש</h2>
           <div className="create-user-input-box">

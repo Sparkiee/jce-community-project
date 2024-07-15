@@ -813,7 +813,7 @@ function EventPage() {
       case pages[0]:
         return (
           <div className="event-tasks">
-            <div ref={createTaskRef} className="display-create">
+            <div className="display-create">
               {showCreateTask && (
                 <div className="popup-overlay">
                   <div ref={createTaskRef} className="popup-content">
@@ -830,7 +830,7 @@ function EventPage() {
               )}
             </div>
             <div className="event-tasks-header">
-              {user && (user.adminAccess.includes("createTask") || user.privileges >= 2) && (
+              {user && ((Array.isArray(user.adminAccess) && (user.adminAccess.includes("createTask")) || user.privileges >= 2)) && (
                 <div
                   className="action-button add-tasks-button add-tasks-event-page"
                   onClick={handleShowCreateTask}>

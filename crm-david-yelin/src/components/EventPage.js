@@ -562,7 +562,7 @@ function EventPage() {
       align: "center",
       flex: 0.95,
       renderCell: (params) => (
-        <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.id}`)}>
+        <IconButton aria-label="view" onClick={() => navigate(`/task/${params.row.taskDoc}`)}>
           <VisibilityIcon />
         </IconButton>
       ),

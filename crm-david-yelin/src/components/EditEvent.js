@@ -235,7 +235,11 @@ function EditEvent(props) {
   }
 
   const handleRemoveMember = (id) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    const memberToRemove = selectedMembers.find((member) => member.id === id);
+    if (memberToRemove) {
+      setMembers((prevMembers) => [...prevMembers, memberToRemove]);
+      setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    }
   };
 
   return (

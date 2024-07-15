@@ -111,3 +111,7 @@ body {
 .MuiDataGrid-root {
   box-shadow: 0 0.1rem 1rem -0.1875rem #000;
 }
+
+.css-uoam7u-MuiButtonBase-root-MuiChip-root .MuiChip-avatar {
+  color: white !important;
+}

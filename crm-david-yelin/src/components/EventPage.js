@@ -47,7 +47,7 @@ import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
-import Alert from "@mui/material/Alert";
+import CreateTask from "./CreateTask";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Chart from "chart.js/auto";
@@ -127,13 +127,12 @@ function EventPage() {
   const changelogRef = useRef(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [deleteFile, setDeleteFile] = useState(null);
-
+  const [showCreateTask, setShowCreateTask] = useState(false);
   const confirmActionRef = useRef(null);
-
   const [fileRows, setFileRows] = useState([]);
-
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
+  const createTaskRef = useRef(null);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
@@ -432,6 +431,9 @@ function EventPage() {
       }
       if (changelogRef.current && !changelogRef.current.contains(event.target)) {
         setChanges("");
+      }
+      if (createTaskRef.current && !createTaskRef.current.contains(event.target)) {
+        setShowCreateTask(false);
       }
     };
 
@@ -798,43 +800,93 @@ function EventPage() {
     }
   };
 
+  const handleShowCreateTask = () => {
+    setShowCreateTask(true);
+  };
+
+  const handleCloseForms = () => {
+    setShowCreateTask(false);
+  };
+
   const PageContent = ({ pageName }) => {
     switch (pageName) {
       case pages[0]:
         return (
           <div className="event-tasks">
-            <div className="search-related-bar">
-              <input
-                type="text"
-                ref={searchInputRef}
-                className="search-input"
-                placeholder="חיפוש משימות"
-                value={searchValue}
-                onChange={handleSearchChange}
-              />
-              <svg
-                viewBox="0 0 32 32"
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="#000000">
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <title>search</title>
-                  <desc>Created with Sketch Beta.</desc>
-                  <defs></defs>
-                  <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                    <g
-                      id="Icon-Set"
-                      transform="translate(-256.000000, -1139.000000)"
-                      fill="#000000">
+            <div ref={createTaskRef} className="display-create">
+              {showCreateTask && (
+                <div className="popup-overlay">
+                  <div ref={createTaskRef} className="popup-content">
+                    <CreateTask
+                      onClose={() => {
+                        handleCloseForms();
+                        fetchTasks();
+                      }}
+                      eventId={id}
+                      eventAssignees={event?.assignees || []}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="event-tasks-header">
+              {user && (user.adminAccess.includes("createTask") || user.privileges >= 2) && (
+                <div
+                  className="action-button add-tasks-button add-tasks-event-page"
+                  onClick={handleShowCreateTask}>
+                  <svg
+                    width="24px"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                    <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
                       <path
-                        d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
-                        id="search"></path>
+                        d="M7 12L12 12M12 12L17 12M12 12V7M12 12L12 17"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"></path>
+                    </g>
+                  </svg>
+                  הוסף משימה
+                </div>
+              )}
+              <div className="search-related-bar">
+                <input
+                  type="text"
+                  ref={searchInputRef}
+                  className="search-input"
+                  placeholder="חיפוש משימות"
+                  value={searchValue}
+                  onChange={handleSearchChange}
+                />
+                <svg
+                  viewBox="0 0 32 32"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#000000">
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <title>search</title>
+                    <desc>Created with Sketch Beta.</desc>
+                    <defs></defs>
+                    <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                      <g
+                        id="Icon-Set"
+                        transform="translate(-256.000000, -1139.000000)"
+                        fill="#000000">
+                        <path
+                          d="M269.46,1163.45 C263.17,1163.45 258.071,1158.44 258.071,1152.25 C258.071,1146.06 263.17,1141.04 269.46,1141.04 C275.75,1141.04 280.85,1146.06 280.85,1152.25 C280.85,1158.44 275.75,1163.45 269.46,1163.45 L269.46,1163.45 Z M287.688,1169.25 L279.429,1161.12 C281.591,1158.77 282.92,1155.67 282.92,1152.25 C282.92,1144.93 276.894,1139 269.46,1139 C262.026,1139 256,1144.93 256,1152.25 C256,1159.56 262.026,1165.49 269.46,1165.49 C272.672,1165.49 275.618,1164.38 277.932,1162.53 L286.224,1170.69 C286.629,1171.09 287.284,1171.09 287.688,1170.69 C288.093,1170.3 288.093,1169.65 287.688,1169.25 L287.688,1169.25 Z"
+                          id="search"></path>
+                      </g>
                     </g>
                   </g>
-                </g>
-              </svg>
+                </svg>
+              </div>
             </div>
             <ThemeProvider theme={theme}>
               <DataGrid

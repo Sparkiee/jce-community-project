@@ -495,7 +495,6 @@ function EventPage() {
         {assignees.map((assignee, index) => (
           <div key={index} className="participant-item">
             <Link to={`/profile/${assignee.email}`}>
-              {console.log("assignee", assignee)}
               <Avatar
                 {...(assignee.profileImage
                   ? { src: assignee.profileImage }
@@ -565,7 +564,6 @@ function EventPage() {
           <AvatarGroup className="manage-task-avatar-group avatar-position" max={3}>
             {params.value.map(
               (user, index) => (
-                console.log("user", user),
                 (
                   <Avatar
                     key={index}

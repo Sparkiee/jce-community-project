@@ -752,10 +752,32 @@ function Profile() {
       });
     });
 
+    const createdTasksRef = collection(db, "tasks");
+    const createdTasksQuery = query(createdTasksRef, where("taskCreator", "==", "members/" + user?.email));
+    const unsubscribeCreatedTasks = onSnapshot(createdTasksQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          grabCreatedTasks();
+        }
+      });
+    });
+
+    const createdEventsRef = collection(db, "events");
+    const createdEventsQuery = query(createdEventsRef, where("eventCreator", "==", "members/" + user?.email));
+    const unsubscribeCreatedEvents = onSnapshot(createdEventsQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added" || change.type === "modified") {
+          grabCreatedEvents();
+        }
+      });
+    });
+
     // Cleanup function to unsubscribe from both snapshots
     return () => {
       unsubscribeEvents();
       unsubscribeTasks();
+      unsubscribeCreatedTasks();
+      unsubscribeCreatedEvents();
     };
   }, []);
 

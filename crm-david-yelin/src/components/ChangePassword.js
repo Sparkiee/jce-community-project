@@ -42,6 +42,18 @@ function ChangePassword(props) {
     }
   }, []);
 
+  function isValidPassword(password) {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    return (
+      password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar
+    );
+  }
+
   const handleChangePassword = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, user.email, currentPassword);
@@ -60,9 +72,11 @@ function ChangePassword(props) {
         setWarningMessage("הסיסמאות אינן תואמות");
         return;
       }
-      if (newPassword.length < 6) {
+      if (!isValidPassword(newPassword)) {
         setFormWarning(true);
-        setWarningMessage("הסיסמה החדשה חייבת להיות באורך של לפחות 6 תווים");
+        setWarningMessage(
+          "הסיסמה החדשה חייבת לכלול לפחות 8 תווים, אותיות גדולות וקטנות, מספרים ותווים מיוחדים."
+        );
         return;
       }
       await updatePassword(userCredential.user, newPassword);

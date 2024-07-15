@@ -61,6 +61,18 @@ function RegisterUser() {
     setShowPasswordConfirm(!showPasswordConfirm);
   };
 
+  function isValidPassword(password) {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    return (
+      password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar
+    );
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     if (!firstName || !lastName || !phone || !email || !password || !verifyPassword) {
@@ -76,7 +88,7 @@ function RegisterUser() {
       setPasswordsMatch(false);
       return;
     }
-    if (password.length < 6) {
+    if (!isValidPassword(password)) {
       setPasswordLength(true);
       return;
     }
@@ -254,7 +266,7 @@ function RegisterUser() {
             )}
             {passwordLength && (
               <Alert className="feedback-alert" severity="warning">
-                הסיסמה צריכה להכיל לפחות 6 תווים
+                הסיסמה חייבת לכלול לפחות 8 תווים, אותיות גדולות וקטנות, מספרים ותווים מיוחדים
               </Alert>
             )}
             {phoneError && (

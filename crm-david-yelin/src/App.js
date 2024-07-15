@@ -18,6 +18,7 @@ import ManageDepartments from "./components/ManageDepartments";
 import Navbar from "./components/Navbar";
 import Chat from "./components/Chat";
 import Statistics from "./components/Statistics";
+import { idID } from "@mui/material/locale";
 
 const App = () => {
   return (
@@ -171,10 +172,12 @@ const Navigation = () => {
         ) {
           if (!shouldDisplayNavbar) navigate("/home");
         } else {
-          navigate("/");
+          if(shouldDisplayNavbar)
+            navigate("/");
         }
       } else {
-        navigate("/");
+        if(shouldDisplayNavbar)
+          navigate("/");
       }
     });
 

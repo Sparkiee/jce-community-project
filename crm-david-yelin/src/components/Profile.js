@@ -9,8 +9,10 @@ import {
   getDoc,
   deleteDoc,
   orderBy,
+  updateDoc,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { db, storage } from "../firebase";
 import { useParams } from "react-router-dom";
 import "../styles/Styles.css";
 import "../styles/Profile.css";
@@ -22,19 +24,16 @@ import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { heIL } from "@mui/material/locale";
-import { Avatar, Tab } from "@mui/material";
+import { Avatar, Tab, Button, IconButton, Popover, Box } from "@mui/material";
 import TaskIcon from "@mui/icons-material/Task";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import EditIcon from "@mui/icons-material/Edit";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
-import IconButton from "@mui/material/IconButton";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CircularProgress from "@mui/material/CircularProgress";
 import SettingsIcon from "@mui/icons-material/Settings";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-
-import Box from "@mui/material/Box";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import ContactUser from "./ContactUser";
@@ -68,6 +67,8 @@ function Profile() {
 
   const [deleteContact, setDeleteContact] = useState("");
   const [editLog, setEditLog] = useState("");
+
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const navigate = useNavigate();
 
@@ -722,6 +723,9 @@ function Profile() {
       if (editContactLogRef.current && !editContactLogRef.current.contains(event.target)) {
         setEditLog("");
       }
+      if (anchorEl && !anchorEl.contains(event.target)) {
+        setAnchorEl(null);
+      }
     };
 
     // Add event listener when the component mounts
@@ -731,7 +735,7 @@ function Profile() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showResetPassword, showEditProfile]);
+  }, [showResetPassword, showEditProfile, anchorEl]);
 
   const handleSearchChange = (event) => {
     const searchValue = event.target.value.toLowerCase();
@@ -751,6 +755,39 @@ function Profile() {
       searchInputRef.current.focus();
     }
   }, [searchValue]);
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (file && profile) {
+      const storageRef = ref(storage, `profile/${profile.email}/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      await updateDoc(doc(db, "members", profile.email), {
+        profileImage: downloadURL,
+      });
+      fetchProfile();
+      setAnchorEl(null);
+    }
+  };
+
+  const handleDeleteProfileImage = async () => {
+    if (profile && profile.profileImage) {
+      const storageRef = ref(storage, profile.profileImage);
+      await deleteObject(storageRef);
+      await updateDoc(doc(db, "members", profile.email), {
+        profileImage: "",
+      });
+      fetchProfile();
+      setAnchorEl(null);
+    }
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   const PageContent = ({ pageName }) => {
     switch (pageName) {
@@ -965,10 +1002,58 @@ function Profile() {
               {profile && profile.department} • {profile && profile.role}
             </h2>
             <div className="profile-info-header">
-              <Avatar
-                className="profile-avatar"
-                {...stringAvatar(`${profile && profile.fullName}`)}
+              <input
+                type="file"
+                id="profileImageUpload"
+                accept="image/*"
+                onChange={handleProfileImageChange}
               />
+              <div className="editImage">
+                <Avatar
+                  className="profile-avatar"
+                  {...(profile && profile.profileImage
+                    ? { src: profile.profileImage }
+                    : stringAvatar(`${profile && profile.fullName}`))}
+                  onClick={handleAvatarClick}
+                  style={{ cursor: "pointer" }}
+                />
+                <IconButton
+                id="editAvatar"
+                  onClick={handleAvatarClick}
+                >
+                  <EditIcon />
+                </IconButton>
+              </div>
+              <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+              >
+                <Box p={2}>
+                  <label htmlFor="profileImageUpload">
+                    <Button variant="contained" component="span" >
+                     העלאת תמונה
+                    </Button>
+                  </label>
+                  {profile && profile.profileImage && (
+                    <Button
+                      variant="contained"
+                      onClick={handleDeleteProfileImage}
+                    >
+                      מחק תמונה
+                    </Button>
+                  )}
+                </Box>
+              </Popover>
             </div>
             <div className="profile-stats-personal">
               <h2 className="title-info">פרטים אישיים</h2>

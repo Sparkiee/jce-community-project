@@ -165,7 +165,7 @@ function LoginForm() {
             </a>
           </div>
           <div className="registration-button">
-            <a href="register">הרשמה</a>
+            <a href="#" onClick={() => navigate("register")}>הרשמה</a>
           </div>
         </form>
       </div>

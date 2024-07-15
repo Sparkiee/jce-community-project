@@ -151,7 +151,7 @@ function EditUser(props) {
     setEdittedSuccessfully(false);
   }
   return (
-    <div className="edit-user">
+    <div className="edit-user media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -179,7 +179,7 @@ function EditUser(props) {
           />
         </svg>
       </div>
-      <form className="edit-user-form" onSubmit={handleSubmit}>
+      <form className="edit-user-form media-form" onSubmit={handleSubmit}>
         <h2 className="title extra-registration-form-title">עריכת משתמש</h2>
         <div className="edit-user-input-box">
           <input
@@ -308,7 +308,7 @@ function EditUser(props) {
             עדכן פרטים
           </button>
         </div>
-        <div className="edit-user-feedback">
+        <div className="edit-user-feedback media-alert">
           {isNoSuperAdmin && (
             <Alert severity="warning" className="feedback-alert feedback-edituser">
               חייב להיות לפחות מנהל ראשי אחד במערכת

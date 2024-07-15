@@ -49,8 +49,12 @@ function ChangeLog(props) {
         <div className="changelog-field" key={`${key}-${index}`}>
           <b>השדה שהשתנה:</b> {replaceFieldString(key)}
           <ul>
-            <li><b>ערך ישן:</b> {oldValue}</li>
-            <li><b>ערך חדש:</b> {newValue}</li>
+            <li>
+              <b>ערך ישן:</b> {oldValue}
+            </li>
+            <li>
+              <b>ערך חדש:</b> {newValue}
+            </li>
           </ul>
         </div>
       );
@@ -58,7 +62,7 @@ function ChangeLog(props) {
     return list; // Wrap the list items in a <ul> element
   }
   return (
-    <div className="changelog">
+    <div className="changelog media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -86,8 +90,10 @@ function ChangeLog(props) {
           />
         </svg>
       </div>
-      <h1 className="centered-title-changelog">פירוט שינויים</h1>
-      <div>{generateHtmlListForFieldChanges(props.fields)}</div>
+      <div className="change-log-form media-form">
+        <h1 className="centered-title-changelog">פירוט שינויים</h1>
+        <div>{generateHtmlListForFieldChanges(props.fields)}</div>
+      </div>
     </div>
   );
 }

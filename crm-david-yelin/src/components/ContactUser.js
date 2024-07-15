@@ -58,7 +58,7 @@ function ContactUser(props) {
   }
 
   return (
-    <div className="contact-user">
+    <div className="contact-user media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -86,7 +86,7 @@ function ContactUser(props) {
           />
         </svg>
       </div>
-      <form className="contact-user-form" onSubmit={handleSubmit}>
+      <form className="contact-user-form media-form" onSubmit={handleSubmit}>
         <h2 className="title extra-registration-form-title">תעד פניה חדשה</h2>
         <div className="contact-user-input-box">
           <input
@@ -124,12 +124,12 @@ function ContactUser(props) {
           />
         </div>
         {warning && (
-          <Alert className="feedback-alert feedback-contactuser" severity="warning">
+          <Alert className="feedback-alert feedback-contactuser media-alert" severity="warning">
             נא למלא את כל השדות
           </Alert>
         )}
         {contactSubmitted && (
-          <Alert className="feedback-alert feedback-contactuser" severity="success">
+          <Alert className="feedback-alert feedback-contactuser media-alert" severity="success">
             תיעוד הושלם בהצלחה
           </Alert>
         )}

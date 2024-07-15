@@ -20,6 +20,28 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
 function EditEvent(props) {
+  function stringToColor(string) {
+    let hash = 0;
+    for (let i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = "#";
+    for (let i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    return color;
+  }
+
+  function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    };
+  }
+
   const [search, setSearch] = useState("");
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
@@ -27,20 +49,17 @@ function EditEvent(props) {
   const [eventExists, setEventExists] = useState(false);
   const [editedSuccessfully, setEditedSuccessfully] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
-
+  const [allMembers, setAllMembers] = useState([]);
   const [eventDetails, setEvent] = useState(props.eventDetails || {});
   const [originalEvent, setOriginalEvent] = useState(props.eventDetails || {});
   const [user, setUser] = useState(null);
 
-
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData)
-      setUser(userData);
+    if (userData) setUser(userData);
     else {
       const userData = JSON.parse(localStorage.getItem("user"));
-      if (userData)
-        setUser(userData);
+      if (userData) setUser(userData);
     }
   }, []);
 
@@ -58,6 +77,22 @@ function EditEvent(props) {
         });
       });
     }
+    const fetchAllMembers = async () => {
+      const membersRef = collection(db, "members");
+      const q = query(membersRef, where("privileges", ">=", 1));
+      const querySnapshot = await getDocs(q);
+      const allMembersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const filteredMembers = allMembersData.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setAllMembers(filteredMembers);
+      setMembers(filteredMembers);
+    };
+
+    fetchAllMembers();
   }, []);
 
   function getUpdatedFields(eventDetails, originalEvent) {
@@ -166,27 +201,22 @@ function EditEvent(props) {
   }
 
   async function handleSearchMember(event) {
-    if (event.target.value.length >= 2) {
-      const membersRef = collection(db, "members");
-      const q = query(
-        membersRef,
-        where("fullName", ">=", search),
-        where("fullName", "<=", search + "\uf8ff")
+    const searchTerm = event.target.value;
+    setSearch(searchTerm);
+
+    if (searchTerm.length >= 2) {
+      const filteredMembers = allMembers.filter(
+        (member) =>
+          member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter(
-          (member) =>
-            member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
-        );
-      setMembers(results);
+      setMembers(filteredMembers);
     } else {
-      setMembers([]);
+      // When the search input is empty, show all unassigned members
+      const unassignedMembers = allMembers.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(unassignedMembers);
     }
   }
 
@@ -194,8 +224,8 @@ function EditEvent(props) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearch(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+      setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
+      setSearch("");
     }
   }
 
@@ -205,11 +235,15 @@ function EditEvent(props) {
   }
 
   const handleRemoveMember = (id) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    const memberToRemove = selectedMembers.find((member) => member.id === id);
+    if (memberToRemove) {
+      setMembers((prevMembers) => [...prevMembers, memberToRemove]);
+      setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    }
   };
 
   return (
-    <div className="edit-event-style">
+    <div className="edit-event-style media-style">
       <div className="action-close" onClick={props.onClose}>
         <svg
           width="24px"
@@ -237,7 +271,7 @@ function EditEvent(props) {
           />
         </svg>
       </div>
-      <form className="edit-event-form" onSubmit={handleSubmit}>
+      <form className="edit-event-form media-form" onSubmit={handleSubmit}>
         <h2 className="title extra-edit-event-title">ערוך אירוע: {eventDetails.eventName}</h2>
         <div className="edit-event-input-box">
           <input
@@ -346,7 +380,7 @@ function EditEvent(props) {
             <option value="הסתיים">הסתיים</option>
           </select>
           <Select
-            placeholder="הוסף חבר וועדה"
+            placeholder="חפש או בחר חבר לשיוך לאירוע"
             className="edit-event-input extra-edit-event-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });
@@ -365,7 +399,7 @@ function EditEvent(props) {
               <Stack direction="row" spacing={1} key={index}>
                 <Chip
                   key={member.id}
-                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
+                  avatar={<Avatar {...stringAvatar(member.fullName)} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"
@@ -375,19 +409,19 @@ function EditEvent(props) {
           </div>
         </div>
         <input type="submit" value="שמור שינויים" className="primary-button" />
+        <div className="feedback-edit-event media-alert">
+          {formWarning && (
+            <Alert className="feedback-alert" severity="error">
+              {warningText}
+            </Alert>
+          )}
+          {editedSuccessfully && (
+            <Alert className="feedback-alert" severity="success">
+              השינויים נשמרו בהצלחה
+            </Alert>
+          )}
+        </div>
       </form>
-      <div className="feedback-edit-event">
-        {formWarning && (
-          <Alert className="feedback-alert" severity="error">
-            {warningText}
-          </Alert>
-        )}
-        {editedSuccessfully && (
-          <Alert className="feedback-alert" severity="success">
-            השינויים נשמרו בהצלחה
-          </Alert>
-        )}
-      </div>
     </div>
   );
 }

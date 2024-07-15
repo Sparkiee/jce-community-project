@@ -14,45 +14,6 @@ body {
   color: #212529;
 }
 
-@media (max-width: 1860px) {
-  html {
-    font-size: 8px;
-  }
-  .MuiPaper-root {
-    padding: 5px 11px !important;
-  }
-  .avatar-position {
-    position: relative;
-    top: 10%;
-  }
-}
-
-@media screen and (max-width: 1440px) {
-  html {
-    font-size: 7px;
-  }
-  .MuiPaper-root {
-    padding: 0px 4px !important;
-  }
-  .avatar-position {
-    position: relative;
-    top: 18%;
-  }
-}
-
-.feedback-alert {
-  display: flex;
-  align-items: center;
-  font-size: 1.7rem !important;
-  padding-left: 3rem !important;
-  border-radius: 10px !important;
-  gap: 0.4rem;
-}
-
-.footer {
-  padding-top: 4rem;
-}
-
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -73,6 +34,79 @@ body {
   left: 50%;
   translate: -50% -50%;
   z-index: 1;
+}
+
+@media screen and (max-width: 1860px) {
+  html {
+    font-size: 8px;
+  }
+  .MuiPaper-root {
+    padding: 5px 11px !important;
+  }
+  .avatar-position {
+    position: relative;
+    top: 10%;
+  }
+  .media-style {
+    position: relative;
+    max-height: 70rem;
+    overflow-y: auto;
+  }
+  .media-alert {
+    position: absolute;
+    bottom: -5.5rem !important;
+  }
+  .media-form {
+    position: relative;
+    margin-top: auto;
+  }
+  .media-alert2 {
+    position: absolute;
+    bottom: -5.5rem !important;
+  }
+}
+
+@media screen and (max-width: 1440px) {
+  html {
+    font-size: 7px;
+  }
+  .MuiPaper-root {
+    padding: 0px 4px !important;
+  }
+  .avatar-position {
+    position: relative;
+    top: 18%;
+  }
+  .media-style {
+    position: relative;
+    max-height: 50rem;
+    overflow-y: auto;
+  }
+  .media-alert {
+    position: absolute;
+    bottom: -5rem !important;
+  }
+  .media-form {
+    position: relative;
+    margin-top: auto;
+  }
+  .media-alert2 {
+    position: absolute;
+    bottom: -5rem !important;
+  }
+}
+
+.feedback-alert {
+  display: flex;
+  align-items: center;
+  font-size: 1.7rem !important;
+  padding-left: 3rem !important;
+  border-radius: 10px !important;
+  gap: 0.4rem;
+}
+
+.footer {
+  padding-top: 4rem;
 }
 
 @keyframes fadeIn {
@@ -110,4 +144,8 @@ body {
 
 .MuiDataGrid-root {
   box-shadow: 0 0.1rem 1rem -0.1875rem #000;
+}
+
+.css-uoam7u-MuiButtonBase-root-MuiChip-root .MuiChip-avatar {
+  color: white !important;
 }

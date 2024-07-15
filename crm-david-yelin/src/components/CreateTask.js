@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   updateDoc,
   arrayUnion,
+  getDoc
 } from "firebase/firestore";
 import Select from "react-select";
 import "../styles/CreateTask.css";
@@ -20,7 +21,29 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import { v4 as uuidv4 } from "uuid";
 
-function CreateTask(props) {
+function CreateTask({ onClose, eventId, eventAssignees }) {
+  function stringToColor(string) {
+    let hash = 0;
+    for (let i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = "#";
+    for (let i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    return color;
+  }
+
+  function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name)
+      },
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    };
+  }
+
   const [taskExists, setTaskExists] = useState(false);
   const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
@@ -37,18 +60,41 @@ function CreateTask(props) {
     taskBudget: 0,
     taskStatus: "טרם החלה",
     relatedEvent: selectedEvent,
-    assignees: selectedMembers,
+    assignees: selectedMembers
   });
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
+  const [allMembers, setAllMembers] = useState([]);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData) setUser(userData);
-    else {
+    if (userData) {
+      setUser(userData);
+      setSelectedMembers((prevMembers) => {
+        if (!prevMembers.some((member) => member.email === userData.email)) {
+          return [...prevMembers, { id: userData.email, fullName: userData.fullName, email: userData.email }];
+        }
+        return prevMembers;
+      });
+    } else {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) setUser(userData);
     }
+
+    const fetchAllMembers = async () => {
+      const membersRef = collection(db, "members");
+      const q = query(membersRef, where("privileges", ">=", 1));
+      const querySnapshot = await getDocs(q);
+      const allMembersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      const filteredMembers = allMembersData.filter((member) => member.email !== userData.email);
+      setAllMembers(filteredMembers);
+      setMembers(filteredMembers);
+    };
+
+    fetchAllMembers();
   }, []);
 
   async function handleSubmit(event) {
@@ -56,12 +102,7 @@ function CreateTask(props) {
     setFormWarning(false);
     setTaskExists(false);
     setWarningText("");
-    if (
-      !taskDetails.taskName ||
-      !taskDetails.taskDescription ||
-      !taskDetails.taskEndDate ||
-      !taskDetails.taskTime
-    ) {
+    if (!taskDetails.taskName || !taskDetails.taskDescription || !taskDetails.taskEndDate || !taskDetails.taskTime) {
       setFormWarning(true);
       let warning = "אנא מלא את כל השדות";
       setWarningText(warning);
@@ -101,6 +142,7 @@ function CreateTask(props) {
       taskCreated: serverTimestamp(),
       taskCreator: "members/" + user.email,
       taskStatus: taskDetails.taskStatus,
+      relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : null
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -110,8 +152,7 @@ function CreateTask(props) {
 
     if (await taskExistsAndOpen(updatedTaskDetails.taskName, updatedTaskDetails.relatedEvent)) {
       setFormWarning(true);
-      if (updatedTaskDetails.relatedEvent)
-        setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
+      if (updatedTaskDetails.relatedEvent) setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
       else setWarningText("קיימת משימה כללית פתוחה עם שם זהה (ללא אירוע)");
       return;
     }
@@ -146,13 +187,13 @@ function CreateTask(props) {
               taskID: docRef,
               message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
               link: `/task/${docRef.id}`,
-              id: uuidv4(),
-            }),
+              id: uuidv4()
+            })
           });
         })
       );
       setTimeout(() => {
-        props.onClose();
+        onClose();
       }, 1000);
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -192,51 +233,83 @@ function CreateTask(props) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }));
       setEvents(results);
     } else setEvents([]);
   }
-  async function handleSearchMember(event) {
-    if (event.target.value.length >= 2) {
-      const membersRef = collection(db, "members");
-      const q = query(
-        membersRef,
-        where("fullName", ">=", searchMember),
-        where("fullName", "<=", searchMember + "\uf8ff")
-      );
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter(
-          (member) =>
-            member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
-        );
-      setMembers(results);
-    } else {
-      setMembers([]);
-    }
-  }
-  function handleSelectEvent(value) {
+  async function handleSelectEvent(value) {
     const selectedEvent = events.find((event) => event.eventName === value);
 
     if (selectedEvent) {
       setSelectedEvent(selectedEvent);
-      setEvents([]); // Clear the dropdown options
+      setEvents([]);
+      // Fetch event details to get assignees
+      const eventDoc = await getDoc(doc(db, "events", selectedEvent.id));
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        const eventAssignees = eventData.assignees || [];
+
+        // Fetch details for each assignee
+        const assigneePromises = eventAssignees.map(async (assigneePath) => {
+          const memberId = assigneePath.split("/")[1];
+          const memberDoc = await getDoc(doc(db, "members", memberId));
+          if (memberDoc.exists()) {
+            return { id: memberId, ...memberDoc.data() };
+          }
+          return null;
+        });
+
+        const assigneeDetails = await Promise.all(assigneePromises);
+        const validAssignees = assigneeDetails.filter((assignee) => assignee !== null);
+
+        // Add event assignees to selectedMembers if they're not already there
+        setSelectedMembers((prevMembers) => {
+          const newMembers = validAssignees.filter(
+            (assignee) => !prevMembers.some((member) => member.id === assignee.id)
+          );
+          return [...prevMembers, ...newMembers];
+        });
+      }
     }
   }
+
+  async function handleSearchMember(event) {
+    const searchTerm = event.target.value;
+    setSearchMember(searchTerm);
+
+    if (searchTerm.length >= 2) {
+      const filteredMembers = allMembers.filter(
+        (member) =>
+          member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(filteredMembers);
+    } else {
+      // When the search input is empty, show all unassigned members
+      const unassignedMembers = allMembers.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(unassignedMembers);
+    }
+  }
+
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearchMember(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+      setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
+      setSearchMember("");
     }
   }
+
+  const handleRemoveMember = (id) => {
+    const memberToRemove = selectedMembers.find((member) => member.id === id);
+    if (memberToRemove) {
+      setMembers((prevMembers) => [...prevMembers, memberToRemove]);
+      setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    }
+  };
 
   function resetAlerts() {
     setTaskExists(false);
@@ -244,43 +317,55 @@ function CreateTask(props) {
     setWarningText("");
   }
 
-  const handleRemoveMember = (id) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
-  };
-
   const handleRemoveEvent = () => {
     setSelectedEvent("");
   };
+
+  useEffect(() => {
+    const fetchEventAndAssignees = async () => {
+      if (eventId) {
+        // Fetch and set the event
+        const eventDoc = await getDoc(doc(db, "events", eventId));
+        if (eventDoc.exists()) {
+          const eventData = eventDoc.data();
+          setSelectedEvent({ id: eventId, eventName: eventData.eventName });
+        }
+
+        // Fetch and set the assignees
+        if (eventAssignees && eventAssignees.length > 0) {
+          const assigneePromises = eventAssignees.map(async (assigneePath) => {
+            const email = assigneePath.split("/")[1];
+            const memberDoc = await getDocs(query(collection(db, "members"), where("email", "==", email)));
+            if (!memberDoc.empty) {
+              const memberData = memberDoc.docs[0].data();
+              return {
+                id: memberDoc.docs[0].id,
+                fullName: memberData.fullName,
+                email: memberData.email
+              };
+            }
+            return null;
+          });
+
+          const assigneeDetails = await Promise.all(assigneePromises);
+          const validAssignees = assigneeDetails.filter((assignee) => assignee !== null);
+          setSelectedMembers(validAssignees);
+        }
+      }
+    };
+
+    fetchEventAndAssignees();
+  }, [eventId, eventAssignees]);
+
   return (
-    <div className="create-task">
-      <div className="action-close" onClick={props.onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+    <div className="create-task media-style">
+      <div className="action-close" onClick={onClose}>
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
-      <form className="create-task-form" onSubmit={handleSubmit}>
+      <form className="create-task-form media-form" onSubmit={handleSubmit}>
         <h2 className="title extra-create-task-title">משימה חדשה</h2>
         <div className="create-task-input-box">
           <input
@@ -300,7 +385,7 @@ function CreateTask(props) {
             onChange={(e) => {
               setTaskDetails({
                 ...taskDetails,
-                taskDescription: e.target.value,
+                taskDescription: e.target.value
               });
               resetAlerts();
             }}
@@ -318,7 +403,7 @@ function CreateTask(props) {
                   {
                     setTaskDetails({
                       ...taskDetails,
-                      taskStartDate: e.target.value,
+                      taskStartDate: e.target.value
                     });
                     resetAlerts();
                   }
@@ -336,7 +421,7 @@ function CreateTask(props) {
                   {
                     setTaskDetails({
                       ...taskDetails,
-                      taskEndDate: e.target.value,
+                      taskEndDate: e.target.value
                     });
                     resetAlerts();
                   }
@@ -386,7 +471,7 @@ function CreateTask(props) {
           </select>
           <Select
             name="relatedEvent"
-            placeholder="שייך לאירוע"
+            placeholder="חפש אירוע לשייך למשימה"
             className="create-task-input extra-create-task-input"
             onInputChange={(inputValue) => {
               handleSearchEvent({ target: { value: inputValue } });
@@ -397,22 +482,18 @@ function CreateTask(props) {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName,
+              label: event.eventName
             }))}
           />
           <div className="create-task-selected-task">
             {selectedEvent && (
               <Stack direction="row" spacing={1}>
-                <Chip
-                  label={selectedEvent.eventName}
-                  onDelete={() => handleRemoveEvent()}
-                  variant="outlined"
-                />
+                <Chip label={selectedEvent.eventName} onDelete={() => handleRemoveEvent()} variant="outlined" />
               </Stack>
             )}
           </div>
           <Select
-            placeholder="הוסף חבר ועדה"
+            placeholder="חפש או בחר חבר לשייך למשימה"
             className="create-task-input extra-create-task-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });
@@ -423,7 +504,7 @@ function CreateTask(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="create-task-selected-members">
@@ -431,7 +512,7 @@ function CreateTask(props) {
               <Stack key={index} direction="row" spacing={1}>
                 <Chip
                   key={member.id}
-                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
+                  avatar={<Avatar {...stringAvatar(member.fullName)} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"
@@ -441,7 +522,7 @@ function CreateTask(props) {
           </div>
         </div>
         <input type="submit" value="צור משימה" className="primary-button" />
-        <div className="feedback-create-task">
+        <div className="feedback-create-task media-alert">
           {taskExists && (
             <Alert className="feedback-alert" severity="success">
               משימה חדשה התווספה בהצלחה!

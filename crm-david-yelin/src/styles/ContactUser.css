@@ -29,10 +29,10 @@
 }
 
 .feedback-contactuser {
-    position: absolute;
-    top: 49.25rem;
+  position: absolute;
+  bottom: 1rem;
 }
 
 .text-area {
-    font-family: inherit;
+  font-family: inherit;
 }

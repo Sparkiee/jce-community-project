@@ -143,27 +143,27 @@ function ManageUsers() {
       field: "firstName",
       headerName: "שם פרטי",
       align: "right",
-      flex: 2,
+      flex: 1.5,
       edittable: true,
     },
     {
       field: "lastName",
       headerName: "שם משפחה",
       align: "right",
-      flex: 2,
+      flex: 1.5,
       edittable: true,
     },
     {
       field: "email",
       headerName: "אימייל",
       align: "right",
-      flex: 3,
+      flex: 2.5,
     },
     {
       field: "phone",
       headerName: "טלפון",
       align: "right",
-      flex: 2,
+      flex: 1.8,
       renderCell: (params) => <span dir="ltr">{params.value}</span>,
     },
     {
@@ -182,7 +182,7 @@ function ManageUsers() {
       field: "privileges",
       headerName: "הרשאות",
       align: "right",
-      flex: 2,
+      flex: 1.5,
       renderCell: (params) => {
         const privileges = params.row.privileges;
         const hasAdminAccess =
@@ -219,7 +219,7 @@ function ManageUsers() {
             field: "edit",
             headerName: "עריכה",
             align: "right",
-            flex: 1.5,
+            flex: 2,
             renderCell: (params) => (
               <div>
                 {(user.privileges >= 2 || user.adminAccess.includes("manageUser")) && (

@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import {
-  doc,
-  updateDoc,
-  getDocs,
-  collection,
-  query,
-  where,
-  getDoc,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, updateDoc, getDocs, collection, query, where, getDoc, addDoc, serverTimestamp } from "firebase/firestore";
 import "../styles/Styles.css";
 import "../styles/EditTask.css";
 import { Alert } from "@mui/material";
@@ -20,6 +10,29 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
 function EditTask(props) {
+  function stringToColor(string) {
+    let hash = 0;
+    for (let i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = "#";
+    for (let i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+    return color;
+  }
+
+  function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name)
+      },
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
+    };
+  }
+
+  const [search, setSearch] = useState("");
   const [taskExists, setTaskExists] = useState(false);
   const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
@@ -32,6 +45,7 @@ function EditTask(props) {
   const [taskDetails, setTask] = useState(props.task || {});
   const [originalTask, setOriginalTask] = useState(props.task || {});
   const [user, setUser] = useState(null);
+  const [allMembers, setAllMembers] = useState([]);
 
   function getUpdatedFields(taskDetails, originalTask) {
     const updatedFields = {};
@@ -75,30 +89,42 @@ function EditTask(props) {
         }
       });
     }
+
+    const fetchAllMembers = async () => {
+      const membersRef = collection(db, "members");
+      const q = query(membersRef, where("privileges", ">=", 1));
+      const querySnapshot = await getDocs(q);
+      const allMembersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      const filteredMembers = allMembersData.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setAllMembers(filteredMembers);
+      setMembers(filteredMembers);
+    };
+
+    fetchAllMembers();
   }, []);
 
   async function handleSearchMember(event) {
-    if (event.target.value.length >= 2) {
-      const membersRef = collection(db, "members");
-      const q = query(
-        membersRef,
-        where("fullName", ">=", searchMember),
-        where("fullName", "<=", searchMember + "\uf8ff")
+    const searchTerm = event.target.value;
+    setSearch(searchTerm);
+
+    if (searchTerm.length >= 2) {
+      const filteredMembers = allMembers.filter(
+        (member) =>
+          member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter(
-          (member) =>
-            member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
-        );
-      setMembers(results);
+      setMembers(filteredMembers);
     } else {
-      setMembers([]);
+      // When the search input is empty, show all unassigned members
+      const unassignedMembers = allMembers.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(unassignedMembers);
     }
   }
 
@@ -106,8 +132,8 @@ function EditTask(props) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearchMember(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+      setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
+      setSearchMember("");
     }
   }
 
@@ -123,18 +149,45 @@ function EditTask(props) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }));
       setEvents(results);
     } else setEvents([]);
   }
 
-  function handleSelectEvent(value) {
+  async function handleSelectEvent(value) {
     const selectedEvent = events.find((event) => event.eventName === value);
 
     if (selectedEvent) {
       setSelectedEvent(selectedEvent);
-      setEvents([]); // Clear the dropdown options
+      setEvents([]);
+      // Fetch event details to get assignees
+      const eventDoc = await getDoc(doc(db, "events", selectedEvent.id));
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        const eventAssignees = eventData.assignees || [];
+
+        // Fetch details for each assignee
+        const assigneePromises = eventAssignees.map(async (assigneePath) => {
+          const memberId = assigneePath.split("/")[1];
+          const memberDoc = await getDoc(doc(db, "members", memberId));
+          if (memberDoc.exists()) {
+            return { id: memberId, ...memberDoc.data() };
+          }
+          return null;
+        });
+
+        const assigneeDetails = await Promise.all(assigneePromises);
+        const validAssignees = assigneeDetails.filter((assignee) => assignee !== null);
+
+        // Add event assignees to selectedMembers if they're not already there
+        setSelectedMembers((prevMembers) => {
+          const newMembers = validAssignees.filter(
+            (assignee) => !prevMembers.some((member) => member.id === assignee.id)
+          );
+          return [...prevMembers, ...newMembers];
+        });
+      }
     }
   }
 
@@ -144,12 +197,7 @@ function EditTask(props) {
     setFormWarning(false);
     setTaskExists(false);
     setWarningText("");
-    if (
-      !taskDetails.taskName ||
-      !taskDetails.taskDescription ||
-      !taskDetails.taskEndDate ||
-      !taskDetails.taskTime
-    ) {
+    if (!taskDetails.taskName || !taskDetails.taskDescription || !taskDetails.taskEndDate || !taskDetails.taskTime) {
       setFormWarning(true);
       let warning = "אנא מלא את כל השדות";
       setWarningText(warning);
@@ -194,7 +242,7 @@ function EditTask(props) {
         taskStatus: taskDetails.taskStatus,
         assignees: assigneeRefs,
         relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : "",
-        taskCreator: taskDetails.taskCreator || "",
+        taskCreator: taskDetails.taskCreator || ""
       });
       setEditedSuccessfully(true);
       setTimeout(() => {
@@ -213,7 +261,7 @@ function EditTask(props) {
         task: "tasks/" + taskDetails.taskDoc,
         timestamp: serverTimestamp(),
         member: "members/" + user.email,
-        updatedFields: getUpdatedFields(taskDetails, originalTask),
+        updatedFields: getUpdatedFields(taskDetails, originalTask)
       });
 
       setEditedSuccessfully(true);
@@ -234,7 +282,11 @@ function EditTask(props) {
   }
 
   const handleRemoveMember = (id) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    const memberToRemove = selectedMembers.find((member) => member.id === id);
+    if (memberToRemove) {
+      setMembers((prevMembers) => [...prevMembers, memberToRemove]);
+      setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    }
   };
 
   const handleRemoveEvent = () => {
@@ -242,35 +294,14 @@ function EditTask(props) {
   };
 
   return (
-    <div className="edit-task-style">
+    <div className="edit-task-style media-style">
       <div className="action-close" onClick={props.onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
-      <form className="edit-task-form" onSubmit={handleSubmit}>
+      <form className="edit-task-form media-form" onSubmit={handleSubmit}>
         <h2 className="edit-task-title">עריכת משימה: {taskDetails.taskName}</h2>
         <div className="edit-task-input-box">
           <input
@@ -362,7 +393,7 @@ function EditTask(props) {
           </select>
           <Select
             name="relatedEvent"
-            placeholder="שייך לאירוע"
+            placeholder="חפש אירוע לשייך למשימה"
             className="create-task-input extra-edit-task-input"
             onInputChange={(inputValue) => {
               handleSearchEvent({ target: { value: inputValue } });
@@ -373,22 +404,18 @@ function EditTask(props) {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName,
+              label: event.eventName
             }))}
           />
           <div className="edit-task-selected-task">
             {selectedEvent && (
               <Stack direction="row" spacing={1}>
-                <Chip
-                  label={selectedEvent.eventName}
-                  onDelete={() => handleRemoveEvent()}
-                  variant="outlined"
-                />
+                <Chip label={selectedEvent.eventName} onDelete={() => handleRemoveEvent()} variant="outlined" />
               </Stack>
             )}
           </div>
           <Select
-            placeholder="הוסף חבר וועדה"
+            placeholder="חפש או בחר חבר לשייך למשימה"
             className="create-event-input extra-create-event-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });
@@ -399,14 +426,14 @@ function EditTask(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="edit-task-selected-members">
             {selectedMembers.map((member, index) => (
               <Stack key={index} direction="row" spacing={1} flexWrap="wrap">
                 <Chip
-                  avatar={<Avatar alt={member.fullName} src={require("../assets/profile.jpg")} />}
+                  avatar={<Avatar {...stringAvatar(member.fullName)} />}
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}
                   variant="outlined"
@@ -418,12 +445,12 @@ function EditTask(props) {
             עדכן פרטים
           </button>
           {editedSuccessfully && (
-            <Alert severity="success" className="feedback-alert feedback-edit-task">
+            <Alert severity="success" className="feedback-alert feedback-edit-task media-alert2">
               פרטי המשימה עודכנו בהצלחה
             </Alert>
           )}
           {formWarning && (
-            <Alert severity="error" className="feedback-alert feedback-edit-task">
+            <Alert severity="error" className="feedback-alert feedback-edit-task media-alert2">
               {warningText}
             </Alert>
           )}

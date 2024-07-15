@@ -283,14 +283,14 @@ div .profile-avatar:hover {
 
 .upload-profile-pic {
   color: white !important;
-  border: 1px solid rgba(2, 5, 79, 0.582);
-  background-color: rgb(2, 5, 79);
-  padding: 0.8rem 2rem;
-  border-radius: 2.5rem;
-  font-size: 1.4rem;
-  text-align: center;
-  min-width: 12rem;
-  transition: all 0.2s linear;
+  border: 1px solid rgba(2, 5, 79, 0.582) !important;
+  background-color: rgb(2, 5, 79) !important;
+  padding: 0.8rem 2rem !important;
+  border-radius: 2.5rem !important;
+  font-size: 1.4rem !important;
+  text-align: center !important;
+  min-width: 12rem !important;
+  transition: all 0.2s linear !important;
 }
 
 .upload-profile-pic:hover {
@@ -300,17 +300,17 @@ div .profile-avatar:hover {
 
 .delete-profile-pic {
   color: white !important;
-  border: 1px solid rgba(2, 5, 79, 0.582);
-  background-color: rgb(2, 5, 79);
-  padding: 0.8rem 2rem;
-  border-radius: 2.5rem;
-  font-size: 1.4rem;
-  text-align: center;
-  min-width: 12rem;
-  transition: all 0.2s linear;
+  border: 1px solid rgba(2, 5, 79, 0.582) !important;
+  background-color: rgb(2, 5, 79) !important;
+  padding: 0.8rem 2rem !important;
+  border-radius: 2.5rem !important;
+  font-size: 1.4rem !important;
+  text-align: center !important;
+  min-width: 12rem !important;
+  transition: all 0.2s linear !important;
 }
 
 .delete-profile-pic:hover {
-  background-color: rgb(18, 21, 116);
-  transform: scale(1.03);
+  background-color: rgb(18, 21, 116) !important;
+  transform: scale(1.03) !important;
 }

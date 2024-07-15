@@ -1204,9 +1204,11 @@ function Profile() {
                   horizontal: "left",
                 }}>
                 <Box p={2}>
-                  <Button variant="text" component="button" className="upload-profile-pic">
-                    העלאת תמונה
-                  </Button>
+                  <label htmlFor="profileImageUpload">
+                    <Button variant="text" component="span" className="upload-profile-pic">
+                      העלאת תמונה
+                    </Button>
+                  </label>
                   {profile && profile.profileImage && (
                     <Button
                       variant="text"

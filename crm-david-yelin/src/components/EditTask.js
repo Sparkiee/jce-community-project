@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import {
-  doc,
-  updateDoc,
-  getDocs,
-  collection,
-  query,
-  where,
-  getDoc,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, updateDoc, getDocs, collection, query, where, getDoc, addDoc, serverTimestamp } from "firebase/firestore";
 import "../styles/Styles.css";
 import "../styles/EditTask.css";
 import { Alert } from "@mui/material";
@@ -36,9 +26,9 @@ function EditTask(props) {
   function stringAvatar(name) {
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: stringToColor(name)
       },
-      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
     };
   }
 
@@ -106,7 +96,7 @@ function EditTask(props) {
       const querySnapshot = await getDocs(q);
       const allMembersData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }));
       const filteredMembers = allMembersData.filter(
         (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
@@ -159,7 +149,7 @@ function EditTask(props) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }));
       setEvents(results);
     } else setEvents([]);
@@ -207,12 +197,7 @@ function EditTask(props) {
     setFormWarning(false);
     setTaskExists(false);
     setWarningText("");
-    if (
-      !taskDetails.taskName ||
-      !taskDetails.taskDescription ||
-      !taskDetails.taskEndDate ||
-      !taskDetails.taskTime
-    ) {
+    if (!taskDetails.taskName || !taskDetails.taskDescription || !taskDetails.taskEndDate || !taskDetails.taskTime) {
       setFormWarning(true);
       let warning = "אנא מלא את כל השדות";
       setWarningText(warning);
@@ -257,7 +242,7 @@ function EditTask(props) {
         taskStatus: taskDetails.taskStatus,
         assignees: assigneeRefs,
         relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : "",
-        taskCreator: taskDetails.taskCreator || "",
+        taskCreator: taskDetails.taskCreator || ""
       });
       setEditedSuccessfully(true);
       setTimeout(() => {
@@ -276,7 +261,7 @@ function EditTask(props) {
         task: "tasks/" + taskDetails.taskDoc,
         timestamp: serverTimestamp(),
         member: "members/" + user.email,
-        updatedFields: getUpdatedFields(taskDetails, originalTask),
+        updatedFields: getUpdatedFields(taskDetails, originalTask)
       });
 
       setEditedSuccessfully(true);
@@ -297,7 +282,11 @@ function EditTask(props) {
   }
 
   const handleRemoveMember = (id) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    const memberToRemove = selectedMembers.find((member) => member.id === id);
+    if (memberToRemove) {
+      setMembers((prevMembers) => [...prevMembers, memberToRemove]);
+      setSelectedMembers(selectedMembers.filter((member) => member.id !== id));
+    }
   };
 
   const handleRemoveEvent = () => {
@@ -307,30 +296,9 @@ function EditTask(props) {
   return (
     <div className="edit-task-style media-style">
       <div className="action-close" onClick={props.onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <form className="edit-task-form media-form" onSubmit={handleSubmit}>
@@ -436,17 +404,13 @@ function EditTask(props) {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName,
+              label: event.eventName
             }))}
           />
           <div className="edit-task-selected-task">
             {selectedEvent && (
               <Stack direction="row" spacing={1}>
-                <Chip
-                  label={selectedEvent.eventName}
-                  onDelete={() => handleRemoveEvent()}
-                  variant="outlined"
-                />
+                <Chip label={selectedEvent.eventName} onDelete={() => handleRemoveEvent()} variant="outlined" />
               </Stack>
             )}
           </div>
@@ -462,7 +426,7 @@ function EditTask(props) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="edit-task-selected-members">

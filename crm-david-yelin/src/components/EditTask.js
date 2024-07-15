@@ -130,7 +130,7 @@ function EditTask(props) {
     };
 
     fetchAllMembers();
-  }, []);
+  }, [selectedMembers]);
 
   async function handleSearchMember(event) {
     const searchTerm = event.target.value;

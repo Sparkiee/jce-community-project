@@ -262,12 +262,55 @@ div .profile-avatar:hover {
 
 .editImage {
   position: relative;
-  display: inline-block;
 }
 
 #editAvatar {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: 1.5rem;
+  bottom: 1.5rem;
   background-color: rgba(255, 255, 255, 0.7);
+}
+
+.css-3bmhjh-MuiPaper-root-MuiPopover-paper {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 1rem !important;
+}
+
+.css-19midj6 {
+  display: flex;
+  gap: 1rem;
+}
+
+.upload-profile-pic {
+  color: white !important;
+  border: 1px solid rgba(2, 5, 79, 0.582);
+  background-color: rgb(2, 5, 79);
+  padding: 0.8rem 2rem;
+  border-radius: 2.5rem;
+  font-size: 1.4rem;
+  text-align: center;
+  min-width: 12rem;
+  transition: all 0.2s linear;
+}
+
+.upload-profile-pic:hover {
+  background-color: rgb(18, 21, 116);
+  transform: scale(1.03);
+}
+
+.delete-profile-pic {
+  color: white !important;
+  border: 1px solid rgba(2, 5, 79, 0.582);
+  background-color: rgb(2, 5, 79);
+  padding: 0.8rem 2rem;
+  border-radius: 2.5rem;
+  font-size: 1.4rem;
+  text-align: center;
+  min-width: 12rem;
+  transition: all 0.2s linear;
+}
+
+.delete-profile-pic:hover {
+  background-color: rgb(18, 21, 116);
+  transform: scale(1.03);
 }

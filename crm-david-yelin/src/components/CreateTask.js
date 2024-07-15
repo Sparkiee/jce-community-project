@@ -67,8 +67,18 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData) setUser(userData);
-    else {
+    if (userData) {
+      setUser(userData);
+      setSelectedMembers((prevMembers) => {
+        if (!prevMembers.some((member) => member.email === userData.email)) {
+          return [
+            ...prevMembers,
+            { id: userData.email, fullName: userData.fullName, email: userData.email },
+          ];
+        }
+        return prevMembers;
+      });
+    } else {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) setUser(userData);
     }

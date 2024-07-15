@@ -64,6 +64,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
   });
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
+  const [allMembers, setAllMembers] = useState([]);
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
@@ -82,6 +83,21 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) setUser(userData);
     }
+
+    const fetchAllMembers = async () => {
+      const membersRef = collection(db, "members");
+      const q = query(membersRef, where("privileges", ">=", 1));
+      const querySnapshot = await getDocs(q);
+      const allMembersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const filteredMembers = allMembersData.filter((member) => member.email !== userData.email);
+      setAllMembers(filteredMembers);
+      setMembers(filteredMembers);
+    };
+
+    fetchAllMembers();
   }, []);
 
   async function handleSubmit(event) {
@@ -231,44 +247,68 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
       setEvents(results);
     } else setEvents([]);
   }
-  async function handleSearchMember(event) {
-    if (event.target.value.length >= 2) {
-      const membersRef = collection(db, "members");
-      const q = query(
-        membersRef,
-        where("fullName", ">=", searchMember),
-        where("fullName", "<=", searchMember + "\uf8ff")
-      );
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter(
-          (member) =>
-            member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
-        );
-      setMembers(results);
-    } else {
-      setMembers([]);
-    }
-  }
-  function handleSelectEvent(value) {
+  async function handleSelectEvent(value) {
     const selectedEvent = events.find((event) => event.eventName === value);
 
     if (selectedEvent) {
       setSelectedEvent(selectedEvent);
-      setEvents([]); // Clear the dropdown options
+      setEvents([]);
+      // Fetch event details to get assignees
+      const eventDoc = await getDoc(doc(db, "events", selectedEvent.id));
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        const eventAssignees = eventData.assignees || [];
+
+        // Fetch details for each assignee
+        const assigneePromises = eventAssignees.map(async (assigneePath) => {
+          const memberId = assigneePath.split("/")[1];
+          const memberDoc = await getDoc(doc(db, "members", memberId));
+          if (memberDoc.exists()) {
+            return { id: memberId, ...memberDoc.data() };
+          }
+          return null;
+        });
+
+        const assigneeDetails = await Promise.all(assigneePromises);
+        const validAssignees = assigneeDetails.filter((assignee) => assignee !== null);
+
+        // Add event assignees to selectedMembers if they're not already there
+        setSelectedMembers((prevMembers) => {
+          const newMembers = validAssignees.filter(
+            (assignee) => !prevMembers.some((member) => member.id === assignee.id)
+          );
+          return [...prevMembers, ...newMembers];
+        });
+      }
     }
   }
+
+  async function handleSearchMember(event) {
+    const searchTerm = event.target.value;
+    setSearchMember(searchTerm);
+
+    if (searchTerm.length >= 2) {
+      const filteredMembers = allMembers.filter(
+        (member) =>
+          member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(filteredMembers);
+    } else {
+      // When the search input is empty, show all unassigned members
+      const unassignedMembers = allMembers.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(unassignedMembers);
+    }
+  }
+
   function handleSelectMember(value) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearchMember(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+      setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
+      setSearchMember("");
     }
   }
 
@@ -459,7 +499,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
           </select>
           <Select
             name="relatedEvent"
-            placeholder="שייך לאירוע"
+            placeholder="חפש אירוע לשייך למשימה"
             className="create-task-input extra-create-task-input"
             onInputChange={(inputValue) => {
               handleSearchEvent({ target: { value: inputValue } });
@@ -485,7 +525,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
             )}
           </div>
           <Select
-            placeholder="הוסף חבר ועדה"
+            placeholder="חפש או בחר חבר לשייך למשימה"
             className="create-task-input extra-create-task-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });

@@ -49,7 +49,7 @@ function EditEvent(props) {
   const [eventExists, setEventExists] = useState(false);
   const [editedSuccessfully, setEditedSuccessfully] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
-
+  const [allMembers, setAllMembers] = useState([]);
   const [eventDetails, setEvent] = useState(props.eventDetails || {});
   const [originalEvent, setOriginalEvent] = useState(props.eventDetails || {});
   const [user, setUser] = useState(null);
@@ -77,6 +77,22 @@ function EditEvent(props) {
         });
       });
     }
+    const fetchAllMembers = async () => {
+      const membersRef = collection(db, "members");
+      const q = query(membersRef, where("privileges", ">=", 1));
+      const querySnapshot = await getDocs(q);
+      const allMembersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const filteredMembers = allMembersData.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setAllMembers(filteredMembers);
+      setMembers(filteredMembers);
+    };
+
+    fetchAllMembers();
   }, []);
 
   function getUpdatedFields(eventDetails, originalEvent) {
@@ -185,27 +201,22 @@ function EditEvent(props) {
   }
 
   async function handleSearchMember(event) {
-    if (event.target.value.length >= 2) {
-      const membersRef = collection(db, "members");
-      const q = query(
-        membersRef,
-        where("fullName", ">=", search),
-        where("fullName", "<=", search + "\uf8ff")
+    const searchTerm = event.target.value;
+    setSearch(searchTerm);
+
+    if (searchTerm.length >= 2) {
+      const filteredMembers = allMembers.filter(
+        (member) =>
+          member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter(
-          (member) =>
-            member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
-        );
-      setMembers(results);
+      setMembers(filteredMembers);
     } else {
-      setMembers([]);
+      // When the search input is empty, show all unassigned members
+      const unassignedMembers = allMembers.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(unassignedMembers);
     }
   }
 
@@ -213,8 +224,8 @@ function EditEvent(props) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearch(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+      setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
+      setSearch("");
     }
   }
 
@@ -365,7 +376,7 @@ function EditEvent(props) {
             <option value="הסתיים">הסתיים</option>
           </select>
           <Select
-            placeholder="הוסף חבר וועדה"
+            placeholder="חפש או בחר חבר לשיוך לאירוע"
             className="edit-event-input extra-edit-event-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });

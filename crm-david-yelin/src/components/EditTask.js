@@ -42,6 +42,7 @@ function EditTask(props) {
     };
   }
 
+  const [search, setSearch] = useState("");
   const [taskExists, setTaskExists] = useState(false);
   const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
@@ -54,6 +55,7 @@ function EditTask(props) {
   const [taskDetails, setTask] = useState(props.task || {});
   const [originalTask, setOriginalTask] = useState(props.task || {});
   const [user, setUser] = useState(null);
+  const [allMembers, setAllMembers] = useState([]);
 
   function getUpdatedFields(taskDetails, originalTask) {
     const updatedFields = {};
@@ -97,30 +99,42 @@ function EditTask(props) {
         }
       });
     }
+
+    const fetchAllMembers = async () => {
+      const membersRef = collection(db, "members");
+      const q = query(membersRef, where("privileges", ">=", 1));
+      const querySnapshot = await getDocs(q);
+      const allMembersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      const filteredMembers = allMembersData.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setAllMembers(filteredMembers);
+      setMembers(filteredMembers);
+    };
+
+    fetchAllMembers();
   }, []);
 
   async function handleSearchMember(event) {
-    if (event.target.value.length >= 2) {
-      const membersRef = collection(db, "members");
-      const q = query(
-        membersRef,
-        where("fullName", ">=", searchMember),
-        where("fullName", "<=", searchMember + "\uf8ff")
+    const searchTerm = event.target.value;
+    setSearch(searchTerm);
+
+    if (searchTerm.length >= 2) {
+      const filteredMembers = allMembers.filter(
+        (member) =>
+          member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter(
-          (member) =>
-            member.privileges >= 1 &&
-            !selectedMembers.some((selectedMember) => selectedMember.fullName === member.fullName)
-        );
-      setMembers(results);
+      setMembers(filteredMembers);
     } else {
-      setMembers([]);
+      // When the search input is empty, show all unassigned members
+      const unassignedMembers = allMembers.filter(
+        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+      );
+      setMembers(unassignedMembers);
     }
   }
 
@@ -128,8 +142,8 @@ function EditTask(props) {
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, selectedMember]);
-      setSearchMember(""); // Clear the search input after selection
-      setMembers([]); // Clear the dropdown options
+      setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
+      setSearchMember("");
     }
   }
 
@@ -151,12 +165,39 @@ function EditTask(props) {
     } else setEvents([]);
   }
 
-  function handleSelectEvent(value) {
+  async function handleSelectEvent(value) {
     const selectedEvent = events.find((event) => event.eventName === value);
 
     if (selectedEvent) {
       setSelectedEvent(selectedEvent);
-      setEvents([]); // Clear the dropdown options
+      setEvents([]);
+      // Fetch event details to get assignees
+      const eventDoc = await getDoc(doc(db, "events", selectedEvent.id));
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        const eventAssignees = eventData.assignees || [];
+
+        // Fetch details for each assignee
+        const assigneePromises = eventAssignees.map(async (assigneePath) => {
+          const memberId = assigneePath.split("/")[1];
+          const memberDoc = await getDoc(doc(db, "members", memberId));
+          if (memberDoc.exists()) {
+            return { id: memberId, ...memberDoc.data() };
+          }
+          return null;
+        });
+
+        const assigneeDetails = await Promise.all(assigneePromises);
+        const validAssignees = assigneeDetails.filter((assignee) => assignee !== null);
+
+        // Add event assignees to selectedMembers if they're not already there
+        setSelectedMembers((prevMembers) => {
+          const newMembers = validAssignees.filter(
+            (assignee) => !prevMembers.some((member) => member.id === assignee.id)
+          );
+          return [...prevMembers, ...newMembers];
+        });
+      }
     }
   }
 
@@ -384,7 +425,7 @@ function EditTask(props) {
           </select>
           <Select
             name="relatedEvent"
-            placeholder="שייך לאירוע"
+            placeholder="חפש אירוע לשייך למשימה"
             className="create-task-input extra-edit-task-input"
             onInputChange={(inputValue) => {
               handleSearchEvent({ target: { value: inputValue } });
@@ -410,7 +451,7 @@ function EditTask(props) {
             )}
           </div>
           <Select
-            placeholder="הוסף חבר וועדה"
+            placeholder="חפש או בחר חבר לשייך למשימה"
             className="create-event-input extra-create-event-input"
             onInputChange={(inputValue) => {
               handleSearchMember({ target: { value: inputValue } });

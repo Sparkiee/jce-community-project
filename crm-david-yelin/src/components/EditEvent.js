@@ -64,19 +64,31 @@ function EditEvent(props) {
   }, []);
 
   useEffect(() => {
-    if (selectedMembers.length == 0 && eventDetails.assignees) {
-      const selected = eventDetails.assignees.map((member) => {
-        return member.split("/")[1];
-      });
-      selected.forEach((member) => {
-        const memberRef = doc(db, "members", member);
-        getDoc(memberRef).then((doc) => {
-          if (doc.exists()) {
-            setSelectedMembers((prevMembers) => [...prevMembers, { id: doc.id, ...doc.data() }]);
+    const fetchAssignees = async () => {
+      if (
+        selectedMembers.length === 0 &&
+        eventDetails.assignees &&
+        eventDetails.assignees.length > 0
+      ) {
+        const newSelectedMembers = [];
+        for (const assignee of eventDetails.assignees) {
+          const memberId = assignee.split("/")[1];
+          const memberRef = doc(db, "members", memberId);
+          try {
+            const docSnap = await getDoc(memberRef);
+            if (docSnap.exists()) {
+              newSelectedMembers.push({ id: docSnap.id, ...docSnap.data() });
+            } else {
+              console.log("No such document for member ID:", memberId);
+            }
+          } catch (error) {
+            console.error("Error fetching member:", error);
           }
-        });
-      });
-    }
+        }
+        setSelectedMembers(newSelectedMembers);
+      }
+    };
+
     const fetchAllMembers = async () => {
       const membersRef = collection(db, "members");
       const q = query(membersRef, where("privileges", ">=", 1));
@@ -85,15 +97,23 @@ function EditEvent(props) {
         id: doc.id,
         ...doc.data(),
       }));
-      const filteredMembers = allMembersData.filter(
-        (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
-      );
-      setAllMembers(filteredMembers);
-      setMembers(filteredMembers);
+      setAllMembers(allMembersData);
     };
 
-    fetchAllMembers();
-  }, [selectedMembers]);
+    const initializeData = async () => {
+      await fetchAssignees();
+      await fetchAllMembers();
+    };
+
+    initializeData();
+  }, []);
+
+  useEffect(() => {
+    const filteredMembers = allMembers.filter(
+      (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+    );
+    setMembers(filteredMembers);
+  }, [selectedMembers, allMembers]);
 
   function getUpdatedFields(eventDetails, originalEvent) {
     const updatedFields = {};

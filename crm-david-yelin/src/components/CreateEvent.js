@@ -92,9 +92,8 @@ function CreateEvent(props) {
         id: doc.id,
         ...doc.data(),
       }));
-      const filteredMembers = allMembersData.filter((member) => member.email !== userData.email);
-      setAllMembers(filteredMembers);
-      setMembers(filteredMembers);
+      setAllMembers(allMembersData);
+      setMembers(allMembersData);
     };
 
     fetchAllMembers();

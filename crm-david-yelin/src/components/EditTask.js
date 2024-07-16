@@ -69,6 +69,7 @@ function EditTask(props) {
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
+    console.log("userData", userData);
     if (userData) setUser(userData);
     else {
       const userData = JSON.parse(localStorage.getItem("user"));
@@ -77,60 +78,93 @@ function EditTask(props) {
   }, []);
 
   useEffect(() => {
-    if (selectedMembers.length === 0 && taskDetails.assignees) {
-      console.log("taskDetails.assignees:", taskDetails.assignees);
+    const fetchAssignees = async () => {
+      if (
+        selectedMembers.length === 0 &&
+        taskDetails.assignees &&
+        taskDetails.assignees.length > 0
+      ) {
+        const newSelectedMembers = [];
+        for (const member of taskDetails.assignees) {
+          let memberEmail;
+          if (typeof member === "string") {
+            memberEmail = member.split("/")[1];
+          } else if (member && member.email) {
+            memberEmail = member.email;
+          }
 
-      taskDetails.assignees.forEach((member) => {
-        console.log("Member:", member);
-
-        if (member && member.email) {
-          const memberRef = doc(db, "members", member.email);
-          getDoc(memberRef)
-            .then((doc) => {
-              if (doc.exists()) {
-                setSelectedMembers((prevMembers) => [
-                  ...prevMembers,
-                  { id: doc.id, ...doc.data(), ...member },
-                ]);
+          if (memberEmail) {
+            const memberRef = doc(db, "members", memberEmail);
+            try {
+              const docSnap = await getDoc(memberRef);
+              if (docSnap.exists()) {
+                newSelectedMembers.push({ id: docSnap.id, ...docSnap.data(), ...member });
               } else {
-                console.log("No such document for member email:", member.email);
+                console.log("No such document for member email:", memberEmail);
               }
-            })
-            .catch((error) => {
+            } catch (error) {
               console.error("Error getting document:", error);
-            });
-        } else {
-          console.error("Member object doesn't have an email:", member);
+            }
+          } else {
+            console.error("Member object doesn't have an email:", member);
+          }
         }
-      });
-    }
+        setSelectedMembers(newSelectedMembers);
+      }
+    };
 
-    if (taskDetails.relatedEvent) {
-      const eventRef = doc(db, "events", taskDetails.relatedEvent.split("/")[1]);
-      getDoc(eventRef).then((doc) => {
-        if (doc.exists()) {
-          setSelectedEvent({ id: doc.id, ...doc.data() });
+    const fetchRelatedEvent = async () => {
+      if (taskDetails.relatedEvent) {
+        const eventRef = doc(db, "events", taskDetails.relatedEvent.split("/")[1]);
+        try {
+          const docSnap = await getDoc(eventRef);
+          if (docSnap.exists()) {
+            setSelectedEvent({ id: docSnap.id, ...docSnap.data() });
+          }
+        } catch (error) {
+          console.error("Error fetching related event:", error);
         }
-      });
-    }
+      }
+    };
 
     const fetchAllMembers = async () => {
-      const membersRef = collection(db, "members");
-      const q = query(membersRef, where("privileges", ">=", 1));
-      const querySnapshot = await getDocs(q);
-      const allMembersData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      const filteredMembers = allMembersData.filter(
+      try {
+        const membersRef = collection(db, "members");
+        const q = query(membersRef, where("privileges", ">=", 1));
+        const querySnapshot = await getDocs(q);
+        const allMembersData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        const filteredMembers = allMembersData.filter(
+          (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
+        );
+        setAllMembers(filteredMembers);
+        setMembers(filteredMembers);
+      } catch (error) {
+        console.error("Error fetching all members:", error);
+      }
+    };
+
+    const initializeData = async () => {
+      await fetchAssignees();
+      await fetchRelatedEvent();
+      await fetchAllMembers();
+    };
+
+    initializeData();
+  }, []);
+
+  useEffect(() => {
+    const updateMembers = () => {
+      const filteredMembers = allMembers.filter(
         (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
-      setAllMembers(filteredMembers);
       setMembers(filteredMembers);
     };
 
-    fetchAllMembers();
-  }, [selectedMembers]);
+    updateMembers();
+  }, [selectedMembers, allMembers]);
 
   async function handleSearchMember(event) {
     const searchTerm = event.target.value;
@@ -444,7 +478,7 @@ function EditTask(props) {
           <Select
             name="relatedEvent"
             placeholder="חפש אירוע לשייך למשימה"
-            className="create-task-input extra-edit-task-input"
+            className="edit-task-input extra-edit-task-input"
             onInputChange={(inputValue) => {
               handleSearchEvent({ target: { value: inputValue } });
             }}

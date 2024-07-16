@@ -920,9 +920,9 @@ function Profile() {
         return (
           <div>
             <div className="user-profile-action-div">
-              <button className="create-contact-log-button" onClick={() => setShowContact(true)}>
+              {user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("addContactUser"))) && (<button className="create-contact-log-button" onClick={() => setShowContact(true)}>
                 תיעוד פנייה חדשה
-              </button>
+              </button>)}
               <div className="search-log-table">
                 <svg
                   viewBox="0 0 32 32"

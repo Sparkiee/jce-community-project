@@ -97,9 +97,8 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
         id: doc.id,
         ...doc.data(),
       }));
-      const filteredMembers = allMembersData.filter((member) => member.email !== userData.email);
-      setAllMembers(filteredMembers);
-      setMembers(filteredMembers);
+      setAllMembers(allMembersData);
+      setMembers(allMembersData);
     };
 
     fetchAllMembers();
@@ -358,6 +357,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
                 id: memberDoc.docs[0].id,
                 fullName: memberData.fullName,
                 email: memberData.email,
+                profileImage: memberData.profileImage,
               };
             }
             return null;

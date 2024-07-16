@@ -72,7 +72,7 @@ function CreateEvent(props) {
 
   const fetchMembers = async () => {
     let filteredMembersData = [];
-    if(user) {
+    if (user) {
       if (user) {
         filteredMembersData = [
           ...filteredMembersData,
@@ -81,20 +81,22 @@ function CreateEvent(props) {
             fullName: user.fullName,
             email: user.email,
             profileImage: user.profileImage,
-          }
+          },
         ];
       }
     }
-    setSelectedMembers(filteredMembersData);  
+    setSelectedMembers(filteredMembersData);
 
     const membersRef = collection(db, "members");
     const q = query(membersRef, where("privileges", ">=", 1));
     const querySnapshot = await getDocs(q);
     const allMembersData = querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
-    const allMembersFiltered = allMembersData.filter((member) => !filteredMembersData.some((selectedMember) => selectedMember.id === member.id));
+    const allMembersFiltered = allMembersData.filter(
+      (member) => !filteredMembersData.some((selectedMember) => selectedMember.id === member.id)
+    );
     setMembers(allMembersFiltered);
     setAllMembers(allMembersData);
   };
@@ -384,7 +386,7 @@ function CreateEvent(props) {
               label: member.fullName,
             }))}
           />
-          <div className="create-task-selected-members">
+          <div className="create-task-selected-members assigned-members-overflow">
             {selectedMembers.map((member, index) => (
               <Stack direction="row" spacing={1} key={index}>
                 <Chip

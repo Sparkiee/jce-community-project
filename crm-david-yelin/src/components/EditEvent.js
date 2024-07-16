@@ -413,7 +413,7 @@ function EditEvent(props) {
               label: member.fullName,
             }))}
           />
-          <div className="edit-event-selected-members">
+          <div className="edit-event-selected-members assigned-members-overflow">
             {selectedMembers.map((member, index) => (
               <Stack direction="row" spacing={1} key={index}>
                 <Chip

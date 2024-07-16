@@ -516,7 +516,7 @@ function EditTask(props) {
               label: member.fullName,
             }))}
           />
-          <div className="edit-task-selected-members">
+          <div className="edit-task-selected-members assigned-members-overflow">
             {selectedMembers.map((member, index) => (
               <Stack key={index} direction="row" spacing={1} flexWrap="wrap">
                 <Chip

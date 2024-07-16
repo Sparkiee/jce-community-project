@@ -24,6 +24,7 @@ function EditUser(props) {
   const [department, setDepartment] = useState(props.target.department || "");
   const [privileges, setPrivileges] = useState(props.target.privileges) || "";
   const [adminAccess, setAdminAccess] = useState(props.target.adminAccess || []);
+  const [profileImage, setProfileImage] = useState(props.target.profileImage || "");
   const [formWarning, setFormWarning] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [isOtherSelected, setIsOtherSelected] = useState(false);
@@ -101,6 +102,7 @@ function EditUser(props) {
         privileges: privileges,
         lastUpdate: serverTimestamp(),
         adminAccess: adminAccess,
+        profileImage: profileImage,
       });
       setEdittedSuccessfully(true);
       setTimeout(() => {

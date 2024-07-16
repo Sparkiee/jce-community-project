@@ -17,6 +17,7 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import CreateTask from "./CreateTask";
 import ConfirmAction from "./ConfirmAction";
 import EditTask from "./EditTask";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
 function stringToColor(string) {
   let hash = 0;
@@ -438,7 +439,10 @@ function ManageTasks() {
         </div>
       )}
       <div className="manage-tasks-styles">
-        <h1>משימות</h1>
+        <div className="header-plus-icon">
+          <TaskAltIcon className="header-plus-icon-icon" />
+          <h1>משימות</h1>
+        </div>
         <div ref={createTaskRef} className="display-create">
           {showCreateTask && (
             <div className="popup-overlay">

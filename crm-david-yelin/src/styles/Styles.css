@@ -168,3 +168,16 @@ body {
 .css-1n6sfyn-MenuList {
   max-height: 14rem !important;
 }
+
+.header-plus-icon {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  gap: 0.5rem;
+}
+
+.header-plus-icon-icon {
+  margin: 2rem 0 5rem;
+  width: 5rem !important;
+  height: 5rem !important;
+}

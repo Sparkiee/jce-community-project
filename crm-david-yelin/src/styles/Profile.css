@@ -294,7 +294,7 @@ div .profile-avatar:hover {
 }
 
 .upload-profile-pic:hover {
-  background-color: rgb(18, 21, 116);
+  background-color: rgb(18, 21, 116) !important;
   transform: scale(1.03);
 }
 

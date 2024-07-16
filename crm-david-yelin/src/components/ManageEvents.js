@@ -26,6 +26,7 @@ import CreateEvent from "./CreateEvent";
 import ConfirmAction from "./ConfirmAction";
 import EditEvent from "./EditEvent";
 import { ref, listAll, deleteObject } from "firebase/storage";
+import EventIcon from "@mui/icons-material/Event";
 
 function stringToColor(string) {
   let hash = 0;
@@ -470,7 +471,10 @@ function ManageEvents() {
         </div>
       )}
       <div className="manage-events-styles">
-        <h1>אירועים</h1>
+        <div className="header-plus-icon">
+          <EventIcon className="header-plus-icon-icon" />
+          <h1>אירועים</h1>
+        </div>
         <div ref={createEventRef} className="display-create">
           {showCreateEvent && (
             <div className="popup-overlay">

@@ -15,14 +15,14 @@ function Statistics() {
   const [taskStatusData, setTaskStatusData] = useState({
     complete: 0,
     inProgress: 0,
-    notStarted: 0
+    notStarted: 0,
   });
   const [averages, setAverages] = useState({
     eventsPerYear: 0,
     tasksPerYear: 0,
     tasksPerEventPerYear: 0,
     totalBudgetPerYear: 0,
-    spentBudgetPerYear: 0
+    spentBudgetPerYear: 0,
   });
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear() - 4);
 
@@ -125,7 +125,7 @@ function Statistics() {
           budgetDataPerYear.push({
             year,
             totalEventBudget,
-            totalSpentBudget
+            totalSpentBudget,
           });
         } catch (error) {
           console.error("Error getting documents: ", error);
@@ -137,15 +137,17 @@ function Statistics() {
       const avgEventsPerYear = eventsCountPerYear.reduce((a, b) => a + b, 0) / totalYears;
       const avgTasksPerYear = tasksCountPerYear.reduce((a, b) => a + b, 0) / totalYears;
       const avgTasksPerEventPerYear = avgTasksPerYear / avgEventsPerYear;
-      const avgTotalBudgetPerYear = budgetDataPerYear.reduce((a, b) => a + b.totalEventBudget, 0) / totalYears;
-      const avgSpentBudgetPerYear = budgetDataPerYear.reduce((a, b) => a + b.totalSpentBudget, 0) / totalYears;
+      const avgTotalBudgetPerYear =
+        budgetDataPerYear.reduce((a, b) => a + b.totalEventBudget, 0) / totalYears;
+      const avgSpentBudgetPerYear =
+        budgetDataPerYear.reduce((a, b) => a + b.totalSpentBudget, 0) / totalYears;
 
       setAverages({
         eventsPerYear: avgEventsPerYear,
         tasksPerYear: avgTasksPerYear,
         tasksPerEventPerYear: avgTasksPerEventPerYear,
         totalBudgetPerYear: avgTotalBudgetPerYear,
-        spentBudgetPerYear: avgSpentBudgetPerYear
+        spentBudgetPerYear: avgSpentBudgetPerYear,
       });
 
       setEventsCount(eventsCountPerYear);
@@ -157,7 +159,7 @@ function Statistics() {
         const departmentDataArray = Object.entries(departmentStats).map(([name, data]) => ({
           name,
           events: data.events,
-          tasks: data.tasks
+          tasks: data.tasks,
         }));
 
         setDepartmentData(departmentDataArray);
@@ -171,9 +173,25 @@ function Statistics() {
     const colors = [
       "rgba(255, 99, 132, 0.4)",
       "rgba(255, 159, 64, 0.4)",
+      "rgba(255, 205, 86, 0.4)",
       "rgba(75, 192, 192, 0.4)",
       "rgba(54, 162, 235, 0.4)",
       "rgba(153, 102, 255, 0.4)",
+      "rgba(26, 54, 54, 0.4)",
+      "rgba(255, 178, 0, 0.4)",
+      "rgba(200, 0, 54, 0.4)",
+      "rgba(155, 236, 0, 0.4)",
+      "rgba(232, 141, 103, 0.4)",
+      "rgba(0, 33, 94, 0.4)",
+      "rgba(216, 149, 218, 0.4)",
+      "rgba(255, 152, 0, 0.4)",
+      "rgba(98, 114, 84, 0.4)",
+      "rgba(0, 141, 218, 0.4)",
+      "rgba(255, 32, 78, 0.4)",
+      "rgba(67, 10, 93, 0.4)",
+      "rgba(0, 127, 115, 0.4)",
+      "rgba(86, 28, 36, 0.4)",
+      "rgba(153, 188, 133, 0.4)",
     ];
     return colors[index % colors.length];
   };
@@ -183,9 +201,9 @@ function Statistics() {
     datasets: [
       {
         data: eventsCount,
-        backgroundColor: eventsCount.map((_, index) => getColor(index))
-      }
-    ]
+        backgroundColor: eventsCount.map((_, index) => getColor(index)),
+      },
+    ],
   };
 
   const taskData = {
@@ -193,9 +211,9 @@ function Statistics() {
     datasets: [
       {
         data: tasksCount,
-        backgroundColor: tasksCount.map((_, index) => getColor(index))
-      }
-    ]
+        backgroundColor: tasksCount.map((_, index) => getColor(index)),
+      },
+    ],
   };
 
   const budgetChartData = {
@@ -204,14 +222,14 @@ function Statistics() {
       {
         label: "תקציב אירועים בשנה",
         data: budgetData.map((data) => data.totalEventBudget),
-        backgroundColor: "rgba(54, 162, 235, 0.4)"
+        backgroundColor: "rgba(54, 162, 235, 0.4)",
       },
       {
         label: "תקציב משימות בשנה",
         data: budgetData.map((data) => data.totalSpentBudget),
-        backgroundColor: "rgba(255, 99, 132, 0.4)"
-      }
-    ]
+        backgroundColor: "rgba(255, 99, 132, 0.4)",
+      },
+    ],
   };
 
   const taskStatusChartData = {
@@ -219,9 +237,13 @@ function Statistics() {
     datasets: [
       {
         data: [taskStatusData.complete, taskStatusData.inProgress, taskStatusData.notStarted],
-        backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 206, 86, 0.6)", "rgba(255, 99, 132, 0.6)"]
-      }
-    ]
+        backgroundColor: [
+          "rgba(75, 192, 192, 0.6)",
+          "rgba(255, 206, 86, 0.6)",
+          "rgba(255, 99, 132, 0.6)",
+        ],
+      },
+    ],
   };
 
   const departmentChartData = {
@@ -230,50 +252,50 @@ function Statistics() {
       {
         label: "אירועים",
         data: departmentData.map((dept) => dept.events),
-        backgroundColor: "rgba(54, 162, 235, 0.4)"
+        backgroundColor: "rgba(54, 162, 235, 0.4)",
       },
       {
         label: "משימות",
         data: departmentData.map((dept) => dept.tasks),
-        backgroundColor: "rgba(255, 99, 132, 0.4)"
-      }
-    ]
+        backgroundColor: "rgba(255, 99, 132, 0.4)",
+      },
+    ],
   };
 
   const yearEventsTasksOptions = {
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
       tooltip: {
         titleFont: {
-          size: 18
+          size: 18,
         },
         bodyFont: {
-          size: 18
+          size: 18,
         },
         footerFont: {
-          size: 18
-        }
-      }
+          size: 18,
+        },
+      },
     },
     scales: {
       x: {
         ticks: {
           font: {
-            size: 20
-          }
-        }
+            size: 20,
+          },
+        },
       },
       y: {
         beginAtZero: true,
         ticks: {
           font: {
-            size: 20
-          }
-        }
-      }
-    }
+            size: 20,
+          },
+        },
+      },
+    },
   };
 
   const options = {
@@ -281,39 +303,39 @@ function Statistics() {
       legend: {
         labels: {
           font: {
-            size: 18
-          }
-        }
+            size: 18,
+          },
+        },
       },
       tooltip: {
         titleFont: {
-          size: 18
+          size: 18,
         },
         bodyFont: {
-          size: 18
+          size: 18,
         },
         footerFont: {
-          size: 18
-        }
-      }
+          size: 18,
+        },
+      },
     },
     scales: {
       x: {
         ticks: {
           font: {
-            size: 20
-          }
-        }
+            size: 20,
+          },
+        },
       },
       y: {
         beginAtZero: true,
         ticks: {
           font: {
-            size: 20
-          }
-        }
-      }
-    }
+            size: 20,
+          },
+        },
+      },
+    },
   };
 
   const pieChartOptions = {
@@ -321,22 +343,22 @@ function Statistics() {
       legend: {
         labels: {
           font: {
-            size: 23
-          }
-        }
+            size: 23,
+          },
+        },
       },
       tooltip: {
         titleFont: {
-          size: 18
+          size: 18,
         },
         bodyFont: {
-          size: 18
+          size: 18,
         },
         footerFont: {
-          size: 18
-        }
-      }
-    }
+          size: 18,
+        },
+      },
+    },
   };
 
   const exportToExcel = () => {
@@ -346,7 +368,7 @@ function Statistics() {
     const eventsSheet = XLSX.utils.json_to_sheet(
       years.map((year, index) => ({
         Year: year,
-        "מספר אירועים": eventsCount[index]
+        "מספר אירועים": eventsCount[index],
       }))
     );
     XLSX.utils.book_append_sheet(wb, eventsSheet, "מספר אירועים בשנה");
@@ -355,7 +377,7 @@ function Statistics() {
     const tasksSheet = XLSX.utils.json_to_sheet(
       years.map((year, index) => ({
         Year: year,
-        "מספר מסימות": tasksCount[index]
+        "מספר מסימות": tasksCount[index],
       }))
     );
     XLSX.utils.book_append_sheet(wb, tasksSheet, "מספר משימות בשנה");
@@ -365,7 +387,7 @@ function Statistics() {
       budgetData.map((data) => ({
         Year: data.year,
         "תקיצוב אירועים בשנה": data.totalEventBudget,
-        "תקציב משימות בשנה": data.totalSpentBudget
+        "תקציב משימות בשנה": data.totalSpentBudget,
       }))
     );
     XLSX.utils.book_append_sheet(wb, budgetSheet, "נתוני תקציב");
@@ -374,7 +396,7 @@ function Statistics() {
     const taskStatusSheet = XLSX.utils.json_to_sheet([
       { Status: "הושלמו", Count: taskStatusData.complete },
       { Status: "בתהליך", Count: taskStatusData.inProgress },
-      { Status: "טרם החלו", Count: taskStatusData.notStarted }
+      { Status: "טרם החלו", Count: taskStatusData.notStarted },
     ]);
     XLSX.utils.book_append_sheet(wb, taskStatusSheet, "סטטוס משימות");
 
@@ -388,14 +410,14 @@ function Statistics() {
       { Metric: "ממצוע משימות לשנה", Value: averages.tasksPerYear },
       { Metric: "ממצוע משימות לאירוע לשנה", Value: averages.tasksPerEventPerYear },
       { Metric: "ממוצע תקציב אירועים בשנה", Value: averages.totalBudgetPerYear },
-      { Metric: "ממוצע תקציב משימות בשנה", Value: averages.spentBudgetPerYear }
+      { Metric: "ממוצע תקציב משימות בשנה", Value: averages.spentBudgetPerYear },
     ]);
     XLSX.utils.book_append_sheet(wb, averagesSheet, "ממוצעים");
 
     // Generate Excel file
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
     });
 
     // Save the file
@@ -417,13 +439,21 @@ function Statistics() {
   return (
     <div>
       <div className="statistics-container">
-        <select className="years-select" onChange={(e) => setSelectedYear(Number(e.target.value))} value={selectedYear}>
-          {generateYearJumps().map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+        <div className="year-select-container">
+          <label className="years-select-label" htmlFor="years-select">
+            בחר שנת התחלה:
+          </label>
+          <select
+            className="years-select"
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            value={selectedYear}>
+            {generateYearJumps().map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="excel-icon" onClick={exportToExcel}>
           <p className="excel-p">ייצוא לאקסל</p>
           <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#000000">
@@ -434,11 +464,36 @@ function Statistics() {
               <path
                 d="M28.781,4.405H18.651V2.018L2,4.588V27.115l16.651,2.868V26.445H28.781A1.162,1.162,0,0,0,30,25.349V5.5A1.162,1.162,0,0,0,28.781,4.405Zm.16,21.126H18.617L18.6,23.642h2.487v-2.2H18.581l-.012-1.3h2.518v-2.2H18.55l-.012-1.3h2.549v-2.2H18.53v-1.3h2.557v-2.2H18.53v-1.3h2.557v-2.2H18.53v-2H28.941Z"
                 style={{ fill: "#20744a", fillRule: "evenodd" }}></path>
-              <rect x="22.487" y="7.439" width="4.323" height="2.2" style={{ fill: "#20744a" }}></rect>
-              <rect x="22.487" y="10.94" width="4.323" height="2.2" style={{ fill: "#20744a" }}></rect>
-              <rect x="22.487" y="14.441" width="4.323" height="2.2" style={{ fill: "#20744a" }}></rect>
-              <rect x="22.487" y="17.942" width="4.323" height="2.2" style={{ fill: "#20744a" }}></rect>
-              <rect x="22.487" y="21.443" width="4.323" height="2.2" style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="7.439"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="10.94"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="14.441"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="17.942"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
+              <rect
+                x="22.487"
+                y="21.443"
+                width="4.323"
+                height="2.2"
+                style={{ fill: "#20744a" }}></rect>
               <polygon
                 points="6.347 10.673 8.493 10.55 9.842 14.259 11.436 10.397 13.582 10.274 10.976 15.54 13.582 20.819 11.313 20.666 9.781 16.642 8.248 20.513 6.163 20.329 8.585 15.666 6.347 10.673"
                 style={{ fill: "#ffffff", fillRule: "evenodd" }}></polygon>

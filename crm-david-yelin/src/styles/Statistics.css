@@ -115,13 +115,23 @@
   box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }
 
-.years-select {
+.year-select-container {
   position: absolute;
-  font-size: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
   top: 12rem;
-  right: 1rem;
+  right: 2.5rem;
+}
+
+.years-select {
+  font-size: 1.8rem;
   padding: 1.5rem;
   border: 2px solid rgb(2, 4, 79);
-  border-radius: 1.7rem;
+  border-radius: 2rem;
+}
 
+.years-select-label {
+  font-size: 2rem;
 }

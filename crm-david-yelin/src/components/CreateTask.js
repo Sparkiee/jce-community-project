@@ -65,30 +65,6 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
   const [warningText, setWarningText] = useState("");
   const [allMembers, setAllMembers] = useState([]);
 
-  // useEffect(() => {
-  //   const userData = JSON.parse(sessionStorage.getItem("user"));
-  //   if (userData) {
-  //     setUser(userData);
-  //     setSelectedMembers((prevMembers) => {
-  //       if (!prevMembers.some((member) => member.email === userData.email)) {
-  //         return [
-  //           ...prevMembers,
-  //           {
-  //             id: userData.email,
-  //             fullName: userData.fullName,
-  //             email: userData.email,
-  //             profileImage: userData.profileImage
-  //           }
-  //         ];
-  //       }
-  //       return prevMembers;
-  //     });
-  //   } else {
-  //     const userData = JSON.parse(localStorage.getItem("user"));
-  //     if (userData) setUser(userData);
-  //   }
-  // }, []);
-
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
     if (userData) setUser(userData);
@@ -113,7 +89,6 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
         ];
       }
     }
-    console.log(filteredMembersData);
     setSelectedMembers(filteredMembersData);  
 
     const membersRef = collection(db, "members");
@@ -310,30 +285,24 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
 
   async function handleSearchMember(event) {
     const searchTerm = event.target.value;
-    console.log("im in search");
 
     if (searchTerm.length >= 2) {
-      console.log("actual searching")
       const filteredMembers = allMembers.filter(
         (member) =>
           member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
           !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
-      console.log(filteredMembers);
       setMembers(filteredMembers);
     } else {
-      console.log("default");
       // When the search input is empty, show all unassigned members
       const unassignedMembers = allMembers.filter(
         (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
-      console.log(unassignedMembers);
       setMembers(unassignedMembers);
     }
   }
 
   function handleSelectMember(value) {
-    console.log("im in select");
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, { ...selectedMember }]);

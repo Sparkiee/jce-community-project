@@ -85,7 +85,6 @@ function CreateEvent(props) {
         ];
       }
     }
-    console.log(filteredMembersData);
     setSelectedMembers(filteredMembersData);  
 
     const membersRef = collection(db, "members");

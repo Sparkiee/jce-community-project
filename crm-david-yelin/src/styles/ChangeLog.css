@@ -12,13 +12,13 @@
   font-size: 2rem;
 }
 
-@media screen and (max-width: 1860px) {
+@media screen and (max-width: 1500px) {
   .change-log-form {
     margin-top: 14rem;
   }
 }
 
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1200px) {
   .change-log-form {
     margin-top: 32rem;
   }

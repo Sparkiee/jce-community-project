@@ -17,7 +17,7 @@
   right: 5%;
 }
 
-@media (max-width: 1860px) {
+@media screen and (max-width: 1500px) {
   .add-tasks-manage-tasks {
     position: absolute;
     top: 5.5rem;
@@ -25,7 +25,7 @@
   }
 }
 
-@media screen and (max-width: 1333px) {
+@media screen and (max-width: 1200px) {
   .add-tasks-manage-tasks {
     position: absolute;
     top: 5.5rem;
@@ -33,7 +33,7 @@
   }
 }
 
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1300px) {
   .add-tasks-manage-tasks {
     position: absolute;
     top: 6rem;

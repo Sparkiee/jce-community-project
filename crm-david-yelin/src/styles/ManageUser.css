@@ -1,5 +1,3 @@
-
-
 .manage-users-container {
   position: relative;
   display: flex;
@@ -109,7 +107,7 @@
   top: 10.5rem;
 }
 
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1200px) {
   .add-user-button {
     top: 9.5rem;
   }

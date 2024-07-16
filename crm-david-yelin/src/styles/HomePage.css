@@ -37,14 +37,14 @@
   transition: all 0.2s linear;
 }
 
-@media screen and (max-width: 1860px) {
+@media screen and (max-width: 1500px) {
   .action-button {
     padding: 0.4rem 0rem 0.4rem 2rem;
     min-width: 10rem;
   }
 }
 
-@media screen and (max-width: 1333px) {
+@media screen and (max-width: 1200px) {
   .pending-actions {
     top: 16rem;
   }
@@ -54,7 +54,7 @@
   }
 }
 
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1300px) {
   .pending-actions {
     top: 15.5rem;
   }
@@ -62,7 +62,6 @@
     padding: 0.4rem 0rem 0.4rem 2rem;
     min-width: 10rem;
   }
-  
 }
 
 .action-button:hover {

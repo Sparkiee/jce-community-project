@@ -114,3 +114,14 @@
   padding: 1rem 2rem;
   box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }
+
+.years-select {
+  position: absolute;
+  font-size: 1.8rem;
+  top: 12rem;
+  right: 1rem;
+  padding: 1.5rem;
+  border: 2px solid rgb(2, 4, 79);
+  border-radius: 1.7rem;
+
+}

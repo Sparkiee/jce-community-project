@@ -169,12 +169,15 @@ const Navigation = () => {
           (user !== null || session !== null) &&
           ((user && user.privileges > 0) || (session && session.privileges > 0))
         ) {
-          if (!shouldDisplayNavbar) navigate("/home");
+          if (!shouldDisplayNavbar) {
+            navigate("/home");}
         } else {
-          navigate("/");
+          if(shouldDisplayNavbar)
+            navigate("/");
         }
       } else {
-        navigate("/");
+        if(shouldDisplayNavbar)
+          navigate("/");
       }
     });
 

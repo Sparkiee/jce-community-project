@@ -93,7 +93,7 @@ function EditEvent(props) {
     };
 
     fetchAllMembers();
-  }, []);
+  }, [selectedMembers]);
 
   function getUpdatedFields(eventDetails, originalEvent) {
     const updatedFields = {};
@@ -212,7 +212,6 @@ function EditEvent(props) {
       );
       setMembers(filteredMembers);
     } else {
-      // When the search input is empty, show all unassigned members
       const unassignedMembers = allMembers.filter(
         (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );

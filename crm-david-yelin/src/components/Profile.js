@@ -1194,11 +1194,11 @@ function Profile() {
                   onClick={handleAvatarClick}
                   style={{ cursor: "pointer" }}
                 />
-                <IconButton id="editAvatar" onClick={handleAvatarClick}>
+                {user.email === profile.email && (<IconButton id="editAvatar" onClick={handleAvatarClick}>
                   <EditIcon />
-                </IconButton>
+                </IconButton>)}
               </div>
-              <Popover
+              {user.email === profile.email && <Popover
                 id={id}
                 open={open}
                 anchorEl={anchorEl}
@@ -1226,7 +1226,7 @@ function Profile() {
                     </Button>
                   )}
                 </Box>
-              </Popover>
+              </Popover>}
             </div>
             <div className="profile-stats-personal">
               <h2 className="title-info">פרטים אישיים</h2>

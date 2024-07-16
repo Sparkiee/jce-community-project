@@ -10,7 +10,7 @@ import {
   serverTimestamp,
   updateDoc,
   arrayUnion,
-  getDoc,
+  getDoc
 } from "firebase/firestore";
 import Select from "react-select";
 import "../styles/CreateTask.css";
@@ -38,14 +38,13 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
   function stringAvatar(name) {
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: stringToColor(name)
       },
-      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`
     };
   }
 
   const [taskExists, setTaskExists] = useState(false);
-  const [searchMember, setSearchMember] = useState("");
   const [members, setMembers] = useState([]);
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState();
@@ -60,61 +59,84 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
     taskBudget: 0,
     taskStatus: "טרם החלה",
     relatedEvent: selectedEvent,
-    assignees: selectedMembers,
+    assignees: selectedMembers
   });
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
   const [allMembers, setAllMembers] = useState([]);
 
+  // useEffect(() => {
+  //   const userData = JSON.parse(sessionStorage.getItem("user"));
+  //   if (userData) {
+  //     setUser(userData);
+  //     setSelectedMembers((prevMembers) => {
+  //       if (!prevMembers.some((member) => member.email === userData.email)) {
+  //         return [
+  //           ...prevMembers,
+  //           {
+  //             id: userData.email,
+  //             fullName: userData.fullName,
+  //             email: userData.email,
+  //             profileImage: userData.profileImage
+  //           }
+  //         ];
+  //       }
+  //       return prevMembers;
+  //     });
+  //   } else {
+  //     const userData = JSON.parse(localStorage.getItem("user"));
+  //     if (userData) setUser(userData);
+  //   }
+  // }, []);
+
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData) {
-      setUser(userData);
-      setSelectedMembers((prevMembers) => {
-        if (!prevMembers.some((member) => member.email === userData.email)) {
-          return [
-            ...prevMembers,
-            {
-              id: userData.email,
-              fullName: userData.fullName,
-              email: userData.email,
-              profileImage: userData.profileImage,
-            },
-          ];
-        }
-        return prevMembers;
-      });
-    } else {
+    if (userData) setUser(userData);
+    else {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) setUser(userData);
     }
-
-    const fetchAllMembers = async () => {
-      const membersRef = collection(db, "members");
-      const q = query(membersRef, where("privileges", ">=", 1));
-      const querySnapshot = await getDocs(q);
-      const allMembersData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setAllMembers(allMembersData);
-      setMembers(allMembersData);
-    };
-
-    fetchAllMembers();
   }, []);
+
+  const fetchMembers = async () => {
+    let filteredMembersData = [];
+    if(user) {
+      if (user) {
+        filteredMembersData = [
+          ...filteredMembersData,
+          {
+            id: user.email,
+            fullName: user.fullName,
+            email: user.email,
+            profileImage: user.profileImage,
+          }
+        ];
+      }
+    }
+    console.log(filteredMembersData);
+    setSelectedMembers(filteredMembersData);  
+
+    const membersRef = collection(db, "members");
+    const q = query(membersRef, where("privileges", ">=", 1));
+    const querySnapshot = await getDocs(q);
+    const allMembersData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    const allMembersFiltered = allMembersData.filter((member) => !filteredMembersData.some((selectedMember) => selectedMember.id === member.id));
+    setMembers(allMembersFiltered);
+    setAllMembers(allMembersData);
+  };
+  useEffect(() => {
+    fetchMembers();
+  }, [user]);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setFormWarning(false);
     setTaskExists(false);
     setWarningText("");
-    if (
-      !taskDetails.taskName ||
-      !taskDetails.taskDescription ||
-      !taskDetails.taskEndDate ||
-      !taskDetails.taskTime
-    ) {
+    if (!taskDetails.taskName || !taskDetails.taskDescription || !taskDetails.taskEndDate || !taskDetails.taskTime) {
       setFormWarning(true);
       let warning = "אנא מלא את כל השדות";
       setWarningText(warning);
@@ -154,7 +176,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
       taskCreated: serverTimestamp(),
       taskCreator: "members/" + user.email,
       taskStatus: taskDetails.taskStatus,
-      relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : null,
+      relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : null
     };
 
     // Conditionally add targetEvent if it exists and is not null
@@ -164,8 +186,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
 
     if (await taskExistsAndOpen(updatedTaskDetails.taskName, updatedTaskDetails.relatedEvent)) {
       setFormWarning(true);
-      if (updatedTaskDetails.relatedEvent)
-        setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
+      if (updatedTaskDetails.relatedEvent) setWarningText("משימה פתוחה עם שם זהה תחת אירוע זה כבר קיימת");
       else setWarningText("קיימת משימה כללית פתוחה עם שם זהה (ללא אירוע)");
       return;
     }
@@ -200,8 +221,8 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
               taskID: docRef,
               message: `נוספה לך משימה חדשה: ${taskDetails.taskName}`,
               link: `/task/${docRef.id}`,
-              id: uuidv4(),
-            }),
+              id: uuidv4()
+            })
           });
         })
       );
@@ -246,7 +267,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
       const querySnapshot = await getDocs(q);
       const results = querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }));
       setEvents(results);
     } else setEvents([]);
@@ -289,30 +310,34 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
 
   async function handleSearchMember(event) {
     const searchTerm = event.target.value;
-    setSearchMember(searchTerm);
+    console.log("im in search");
 
     if (searchTerm.length >= 2) {
+      console.log("actual searching")
       const filteredMembers = allMembers.filter(
         (member) =>
           member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) &&
           !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
+      console.log(filteredMembers);
       setMembers(filteredMembers);
     } else {
+      console.log("default");
       // When the search input is empty, show all unassigned members
       const unassignedMembers = allMembers.filter(
         (member) => !selectedMembers.some((selectedMember) => selectedMember.id === member.id)
       );
+      console.log(unassignedMembers);
       setMembers(unassignedMembers);
     }
   }
 
   function handleSelectMember(value) {
+    console.log("im in select");
     const selectedMember = members.find((member) => member.fullName === value);
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, { ...selectedMember }]);
       setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
-      setSearchMember("");
     }
   }
 
@@ -348,16 +373,14 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
         if (eventAssignees && eventAssignees.length > 0) {
           const assigneePromises = eventAssignees.map(async (assigneePath) => {
             const email = assigneePath.split("/")[1];
-            const memberDoc = await getDocs(
-              query(collection(db, "members"), where("email", "==", email))
-            );
+            const memberDoc = await getDocs(query(collection(db, "members"), where("email", "==", email)));
             if (!memberDoc.empty) {
               const memberData = memberDoc.docs[0].data();
               return {
                 id: memberDoc.docs[0].id,
                 fullName: memberData.fullName,
                 email: memberData.email,
-                profileImage: memberData.profileImage,
+                profileImage: memberData.profileImage
               };
             }
             return null;
@@ -376,30 +399,9 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
   return (
     <div className="create-task media-style">
       <div className="action-close" onClick={onClose}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <form className="create-task-form media-form" onSubmit={handleSubmit}>
@@ -422,7 +424,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
             onChange={(e) => {
               setTaskDetails({
                 ...taskDetails,
-                taskDescription: e.target.value,
+                taskDescription: e.target.value
               });
               resetAlerts();
             }}
@@ -440,7 +442,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
                   {
                     setTaskDetails({
                       ...taskDetails,
-                      taskStartDate: e.target.value,
+                      taskStartDate: e.target.value
                     });
                     resetAlerts();
                   }
@@ -458,7 +460,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
                   {
                     setTaskDetails({
                       ...taskDetails,
-                      taskEndDate: e.target.value,
+                      taskEndDate: e.target.value
                     });
                     resetAlerts();
                   }
@@ -519,17 +521,13 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
             }}
             options={events.map((event) => ({
               value: event.eventName,
-              label: event.eventName,
+              label: event.eventName
             }))}
           />
           <div className="create-task-selected-task">
             {selectedEvent && (
               <Stack direction="row" spacing={1}>
-                <Chip
-                  label={selectedEvent.eventName}
-                  onDelete={() => handleRemoveEvent()}
-                  variant="outlined"
-                />
+                <Chip label={selectedEvent.eventName} onDelete={() => handleRemoveEvent()} variant="outlined" />
               </Stack>
             )}
           </div>
@@ -545,7 +543,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
             }}
             options={members.map((member) => ({
               value: member.fullName,
-              label: member.fullName,
+              label: member.fullName
             }))}
           />
           <div className="create-task-selected-members">
@@ -554,11 +552,7 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
                 <Chip
                   key={member.id}
                   avatar={
-                    <Avatar
-                      {...(member.profileImage
-                        ? { src: member.profileImage }
-                        : stringAvatar(member.fullName))}
-                    />
+                    <Avatar {...(member.profileImage ? { src: member.profileImage } : stringAvatar(member.fullName))} />
                   }
                   label={member.fullName}
                   onDelete={() => handleRemoveMember(member.id)}

@@ -43,7 +43,6 @@ function CreateEvent(props) {
     };
   }
 
-  const [search, setSearch] = useState("");
   const [eventExists, setEventExists] = useState(false);
   const [formWarning, setFormWarning] = useState(false);
   const [warningText, setWarningText] = useState("");
@@ -64,40 +63,45 @@ function CreateEvent(props) {
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    if (userData) {
-      setUser(userData);
-      setSelectedMembers((prevMembers) => {
-        if (!prevMembers.some((member) => member.email === userData.email)) {
-          return [
-            ...prevMembers,
-            {
-              id: userData.email,
-              fullName: userData.fullName,
-              email: userData.email,
-              profileImage: userData.profileImage,
-            },
-          ];
-        }
-        return prevMembers;
-      });
-    } else {
+    if (userData) setUser(userData);
+    else {
       const userData = JSON.parse(localStorage.getItem("user"));
       if (userData) setUser(userData);
     }
-    const fetchAllMembers = async () => {
-      const membersRef = collection(db, "members");
-      const q = query(membersRef, where("privileges", ">=", 1));
-      const querySnapshot = await getDocs(q);
-      const allMembersData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setAllMembers(allMembersData);
-      setMembers(allMembersData);
-    };
-
-    fetchAllMembers();
   }, []);
+
+  const fetchMembers = async () => {
+    let filteredMembersData = [];
+    if(user) {
+      if (user) {
+        filteredMembersData = [
+          ...filteredMembersData,
+          {
+            id: user.email,
+            fullName: user.fullName,
+            email: user.email,
+            profileImage: user.profileImage,
+          }
+        ];
+      }
+    }
+    console.log(filteredMembersData);
+    setSelectedMembers(filteredMembersData);  
+
+    const membersRef = collection(db, "members");
+    const q = query(membersRef, where("privileges", ">=", 1));
+    const querySnapshot = await getDocs(q);
+    const allMembersData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    const allMembersFiltered = allMembersData.filter((member) => !filteredMembersData.some((selectedMember) => selectedMember.id === member.id));
+    setMembers(allMembersFiltered);
+    setAllMembers(allMembersData);
+  };
+  useEffect(() => {
+    fetchMembers();
+  }, [user]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -197,7 +201,6 @@ function CreateEvent(props) {
 
   async function handleSearchMember(event) {
     const searchTerm = event.target.value;
-    setSearch(searchTerm);
 
     if (searchTerm.length >= 2) {
       const filteredMembers = allMembers.filter(
@@ -226,7 +229,6 @@ function CreateEvent(props) {
     if (selectedMember && !selectedMembers.some((member) => member.id === selectedMember.id)) {
       setSelectedMembers((prevMembers) => [...prevMembers, { ...selectedMember }]);
       setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedMember.id));
-      setSearch("");
     }
   }
 

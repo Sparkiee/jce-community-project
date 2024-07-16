@@ -517,9 +517,15 @@ function Profile() {
       flex: 2,
       align: "right",
       renderCell: (params) => (
-        <div className="avatar-position-center" style={{ cursor: "pointer" }}>
-          <Avatar {...stringAvatar(`${params.value}`)} />
-          {params.value}
+        <div
+          className="avatar-position-center"
+          style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {params.row.sourceProfileImage ? (
+            <Avatar src={params.row.sourceProfileImage} alt={params.value} />
+          ) : (
+            <Avatar {...stringAvatar(params.value)} />
+          )}
+          <span>{params.value}</span>
         </div>
       ),
     },
@@ -726,6 +732,7 @@ function Profile() {
           return {
             ...log,
             srcFullName: srcMemberData ? srcMemberData.fullName : "Unknown",
+            srcProfileImage: srcMemberData ? srcMemberData.profileImage : null,
           };
         })
       );
@@ -741,7 +748,8 @@ function Profile() {
         time: log.timestamp.toDate().toLocaleTimeString("de-DE"),
         srcMember: log.srcMember,
         destMember: log.destMember,
-        sourceFullName: log.srcFullName, // Use the full name instead of the reference
+        sourceFullName: log.srcFullName,
+        sourceProfileImage: log.srcProfileImage,
       }));
       setRowContact(logArray);
       setFilteredContactRows(logArray); // Set filteredContactRows to logArray initially

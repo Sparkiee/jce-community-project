@@ -225,7 +225,6 @@ function TaskPage() {
 
         // Fetch task creator's data
         const taskCreatorData = await getMemberData(taskData.taskCreator.split("/")[1]);
-        console.log(taskCreatorData.fullName);
 
         // Fetch assignee data
         const assigneeEmails = taskData.assignees.map((email) => email.split("/")[1]);

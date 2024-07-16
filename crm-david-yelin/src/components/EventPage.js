@@ -562,18 +562,12 @@ function EventPage() {
       renderCell: (params) => {
         return (
           <AvatarGroup className="manage-task-avatar-group avatar-position" max={3}>
-            {params.value.map(
-              (user, index) => (
-                (
-                  <Avatar
-                    key={index}
-                    {...(user.profileImage
-                      ? { src: user.profileImage }
-                      : stringAvatar(user.fullName))}
-                  />
-                )
-              )
-            )}
+            {params.value.map((user, index) => (
+              <Avatar
+                key={index}
+                {...(user.profileImage ? { src: user.profileImage } : stringAvatar(user.fullName))}
+              />
+            ))}
           </AvatarGroup>
         );
       },
@@ -683,7 +677,6 @@ function EventPage() {
       renderCell: (params) => {
         return (
           <div className="avatar-position-center" style={{ cursor: "pointer" }}>
-            {console.log("params", params.row)}
             <Avatar
               {...(params.row.profileImage
                 ? { src: params.row.profileImage }

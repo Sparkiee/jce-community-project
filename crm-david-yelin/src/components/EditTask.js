@@ -69,7 +69,6 @@ function EditTask(props) {
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
-    console.log("userData", userData);
     if (userData) setUser(userData);
     else {
       const userData = JSON.parse(localStorage.getItem("user"));

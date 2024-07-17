@@ -2,3 +2,5 @@
 crm-david-yelin/.env
 
 crm-david-yelin/env
+
+*.cache

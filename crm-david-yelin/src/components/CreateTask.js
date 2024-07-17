@@ -239,22 +239,29 @@ function CreateTask({ onClose, eventId, eventAssignees }) {
   }
 
   async function handleSearchEvent(event) {
-    if (event.target.value.length >= 2) {
+    const searchTerm = event.target.value;
+
+    if (searchTerm.length >= 2) {
       const eventRef = collection(db, "events");
-      const q = query(
-        eventRef,
-        where("eventStatus", "!=", "הסתיים"),
-        where("eventName", ">=", event.target.value),
-        where("eventName", "<=", event.target.value + "\uf8ff")
-      );
-      const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const querySnapshot = await getDocs(eventRef);
+
+      const results = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter(
+          (event) =>
+            event.eventStatus !== "הסתיים" &&
+            event.eventName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
       setEvents(results);
-    } else setEvents([]);
+    } else {
+      setEvents([]);
+    }
   }
+
   async function handleSelectEvent(value) {
     const selectedEvent = events.find((event) => event.eventName === value);
 

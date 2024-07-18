@@ -476,12 +476,12 @@ function Profile() {
   ];
 
   const columnsContact = [
-    {
-      field: "id",
-      headerName: "אינדקס",
-      align: "right",
-      flex: 0.8,
-    },
+    // {
+    //   field: "id",
+    //   headerName: "אינדקס",
+    //   align: "right",
+    //   flex: 0.8,
+    // },
     {
       field: "subject",
       headerName: "נושא",
@@ -497,13 +497,13 @@ function Profile() {
     {
       field: "notes",
       headerName: "הערות",
-      flex: 3,
+      flex: 2,
       align: "right",
     },
     {
       field: "timestamp",
       headerName: "תאריך וזמן",
-      flex: 2,
+      flex: 2.5,
       align: "right",
       renderCell: (params) => (
         <div style={{ direction: "ltr" }}>
@@ -514,7 +514,7 @@ function Profile() {
     {
       field: "sourceFullName",
       headerName: "פותח פניה",
-      flex: 2,
+      flex: 2.5,
       align: "right",
       renderCell: (params) => (
         <div
@@ -920,9 +920,16 @@ function Profile() {
         return (
           <div>
             <div className="user-profile-action-div">
-              {user && (user.privileges >= 2 || (Array.isArray(user.adminAccess) && user.adminAccess.includes("addContactUser"))) && (<button className="create-contact-log-button" onClick={() => setShowContact(true)}>
-                תיעוד פנייה חדשה
-              </button>)}
+              {user &&
+                (user.privileges >= 2 ||
+                  (Array.isArray(user.adminAccess) &&
+                    user.adminAccess.includes("addContactUser"))) && (
+                  <button
+                    className="create-contact-log-button"
+                    onClick={() => setShowContact(true)}>
+                    תיעוד פנייה חדשה
+                  </button>
+                )}
               <div className="search-log-table">
                 <svg
                   viewBox="0 0 32 32"
@@ -1194,39 +1201,43 @@ function Profile() {
                   onClick={handleAvatarClick}
                   style={{ cursor: "pointer" }}
                 />
-                {user.email === profile.email && (<IconButton id="editAvatar" onClick={handleAvatarClick}>
-                  <EditIcon />
-                </IconButton>)}
+                {user.email === profile.email && (
+                  <IconButton id="editAvatar" onClick={handleAvatarClick}>
+                    <EditIcon />
+                  </IconButton>
+                )}
               </div>
-              {user.email === profile.email && <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={() => setAnchorEl(null)}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}>
-                <Box p={2}>
-                  <label htmlFor="profileImageUpload">
-                    <Button variant="text" component="span" className="upload-profile-pic">
-                      העלאת תמונה
-                    </Button>
-                  </label>
-                  {profile && profile.profileImage && (
-                    <Button
-                      variant="text"
-                      onClick={handleDeleteProfileImage}
-                      className="delete-profile-pic">
-                      מחק תמונה
-                    </Button>
-                  )}
-                </Box>
-              </Popover>}
+              {user.email === profile.email && (
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={() => setAnchorEl(null)}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}>
+                  <Box p={2}>
+                    <label htmlFor="profileImageUpload">
+                      <Button variant="text" component="span" className="upload-profile-pic">
+                        העלאת תמונה
+                      </Button>
+                    </label>
+                    {profile && profile.profileImage && (
+                      <Button
+                        variant="text"
+                        onClick={handleDeleteProfileImage}
+                        className="delete-profile-pic">
+                        מחק תמונה
+                      </Button>
+                    )}
+                  </Box>
+                </Popover>
+              )}
             </div>
             <div className="profile-stats-personal">
               <h2 className="title-info">פרטים אישיים</h2>

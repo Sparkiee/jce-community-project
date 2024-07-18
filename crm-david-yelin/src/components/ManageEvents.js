@@ -195,13 +195,13 @@ function ManageEvents() {
       field: "completedPercentage",
       headerName: "אחוז השלמה",
       align: "right",
-      flex: 1,
+      flex: 1.1,
     },
     {
       field: "assignTo",
       headerName: "משוייכים",
       align: "right",
-      flex: 2,
+      flex: 1.9,
       renderCell: (params) => {
         const assignees = Array.isArray(params.value) ? params.value : [];
         return (

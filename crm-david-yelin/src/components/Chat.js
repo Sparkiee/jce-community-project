@@ -105,11 +105,11 @@ function Chat() {
     }
   }, []);
 
-  async function getMemberFullName(email) {
+  async function getUserProfile(email) {
     try {
       const memberDoc = await getDoc(doc(collection(db, "members"), email));
       if (memberDoc.exists()) {
-        return memberDoc.data().fullName;
+        return memberDoc.data();
       }
     } catch (e) {
       console.error("Error getting member document: ", e);
@@ -127,8 +127,11 @@ function Chat() {
       let newProfileImages = {};
       for (const doc of querySnapshot.docs) {
         let otherUserEmail = doc.data().members.find((email) => email !== user.email);
-        const fullName = await getMemberFullName(otherUserEmail); // Now it's valid to use await here
-        const profileImage = await fetchUserProfileImage(otherUserEmail);
+        console.log(doc.data());
+        const profile = await getUserProfile(otherUserEmail); // Now it's valid to use await here
+        console.log(profile);
+        const fullName = profile.fullName;
+        const profileImage = profile.profileImage;
         newProfileImages[otherUserEmail] = profileImage;
         const chat = doc.data();
         const unseenCount = chat.messages.filter(

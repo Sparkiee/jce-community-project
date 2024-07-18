@@ -127,9 +127,7 @@ function Chat() {
       let newProfileImages = {};
       for (const doc of querySnapshot.docs) {
         let otherUserEmail = doc.data().members.find((email) => email !== user.email);
-        console.log(doc.data());
         const profile = await getUserProfile(otherUserEmail); // Now it's valid to use await here
-        console.log(profile);
         const fullName = profile.fullName;
         const profileImage = profile.profileImage;
         newProfileImages[otherUserEmail] = profileImage;
@@ -288,7 +286,6 @@ function Chat() {
         message.sender !== user.email && !message.seen ? { ...message, seen: true } : message
       );
       await updateDoc(chatRef, { messages: updatedMessages });
-      fetchUserChats();
     }
   };
 
@@ -464,19 +461,6 @@ function Chat() {
       messages: arrayUnion(message),
     });
     fetchMessagesforChat(selectedChat);
-  };
-
-  const fetchUserProfileImage = async (email) => {
-    try {
-      const userDoc = await getDoc(doc(db, "members", email));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        return userData.profileImage || null;
-      }
-    } catch (error) {
-      console.error("Error fetching user profile image:", error);
-    }
-    return null;
   };
 
   return (

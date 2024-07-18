@@ -511,18 +511,18 @@ function EventPage() {
   };
 
   const baseTaskColumns = [
-    { field: "index", headerName: "אינדקס", width: "3%", align: "right", flex: 1 },
+    { field: "id", headerName: "אינדקס", align: "right", flex: 1 },
     {
       field: "taskName",
       headerName: "שם המשימה",
       align: "right",
-      flex: 3,
+      flex: 2,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       align: "right",
-      flex: 4,
+      flex: 3,
     },
     ...(user && (user.privileges === 2 || isUserAnAssignee)
       ? [

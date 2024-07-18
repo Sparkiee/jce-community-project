@@ -472,7 +472,7 @@ function TaskPage() {
       field: "preview",
       headerName: "תצוגה מקדימה",
       align: "right",
-      flex: 0.6,
+      flex: 1,
       renderCell: (params) => (
         <div>
           {params.row.type.includes("image") ? (
@@ -511,7 +511,7 @@ function TaskPage() {
       field: "edit",
       headerName: "עריכה",
       align: "right",
-      flex: 0.8,
+      flex: 1,
       renderCell: (params) => (
         <>
           <IconButton aria-label="download" onClick={() => downloadFile(params.row.itemUrl)}>

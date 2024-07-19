@@ -21,7 +21,6 @@
   height: 80%;
   background-color: rgba(2, 4, 79, 0.7);
   border-radius: 1.2rem;
-  border: 1px solid rgba(255, 255, 255, 0.125);
   top: 53%;
   left: 50%;
   translate: -50% -50%;
@@ -35,6 +34,8 @@
 
 .chat-list {
   flex: 1;
+  background-color: rgb(30, 39, 51, 0.5);
+  border-bottom-right-radius: 1rem;
   overflow-y: auto;
 }
 
@@ -42,6 +43,8 @@
   display: flex;
   align-items: center;
   padding: 2rem;
+  background-color: rgb(36, 45, 60, 0.8);
+  border-top-right-radius: 1rem;
   justify-content: space-between;
 }
 
@@ -178,6 +181,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 2rem;
+  background-color: rgb(36, 45, 60, 0.8);
+  border-top-left-radius: 1rem;
   border-bottom: 1px solid #dddddd35;
 }
 
@@ -228,6 +233,7 @@
   flex-direction: column;
   justify-content: flex-start;
   padding: 2rem;
+  background-color: rgb(22, 34, 48, 0.5);
   overflow-y: auto;
 }
 
@@ -287,7 +293,7 @@
 .chat-messages-center-message-other .chat-messages-center-message-box {
   font-family: inherit;
   margin: 0;
-  background-color: rgba(2, 4, 79, 0.3);
+  background-color: #222e3a;
   padding: 2rem;
   border-radius: 1rem;
   white-space: pre-wrap;
@@ -298,9 +304,13 @@
 }
 
 .chat-messages-center-message-box a {
-  color: #a0deff;
-  text-decoration: none;
+  color: white;
   word-break: break-all;
+  transition: all 0.2s linear;
+}
+
+.chat-messages-center-message-box a:hover {
+  color: #a0deff;
 }
 
 .chat-messages-center-message-seen-icon {
@@ -333,7 +343,7 @@
 .chat-messages-center-message-own .chat-messages-center-message-texts pre {
   font-family: inherit;
   margin: 0;
-  background-color: #5183fe;
+  background-color: #6d5fdb;
   padding: 2rem;
   border-radius: 1rem;
   white-space: pre-wrap;
@@ -345,6 +355,8 @@
   justify-content: space-between;
   gap: 2rem;
   padding: 2rem;
+  background-color: rgb(30, 46, 62, 0.8);
+  border-bottom-left-radius: 1rem;
   border-top: 1px solid #dddddd35;
   margin-top: auto;
 }
@@ -417,7 +429,7 @@
 }
 
 .chat-messages-send-button {
-  background-color: #5183fe;
+  background-color: #6d5fdb;
   color: white;
   padding: 1.5rem 2rem;
   border: none;
@@ -518,7 +530,7 @@
   width: max-content;
   height: max-content;
   padding: 3rem;
-  background-color: rgba(2, 4, 79, 0.9);
+  background-color: rgb(36, 45, 60);
   border-radius: 1.2rem;
   top: 0;
   right: 0;
@@ -542,7 +554,7 @@
 
 .chat-add-user form button {
   font-size: 1.8rem;
-  background-color: #1a73e8;
+  background-color: #6d5fdb;
   color: white;
   padding: 1.5rem;
   border: none;
@@ -571,7 +583,7 @@
 
 .chat-user-list button {
   font-size: 1.6rem;
-  background-color: #1a73e8;
+  background-color: #6d5fdb;
   color: white;
   padding: 1.5rem;
   border: none;

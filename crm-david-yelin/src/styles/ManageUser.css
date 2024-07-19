@@ -7,9 +7,34 @@
   margin-top: 3rem;
 }
 
+.page-title-manage-user-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-title-icon {
+  width: 3.5rem !important;
+  height: 3.5rem !important;
+}
+
 .page-title-manage-users {
   font-size: 3.5rem;
   font-weight: bold;
+}
+
+.table-title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.manage-users-icon {
+  width: 3rem !important;
+  height: 3rem !important;
+  margin: 2rem 0 5rem;
 }
 
 .table-title {

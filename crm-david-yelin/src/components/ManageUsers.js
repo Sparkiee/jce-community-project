@@ -19,6 +19,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import KeyIcon from "@mui/icons-material/Key";
 import EditAccess from "./EditAccess";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonIcon from "@mui/icons-material/Person";
 
 function ManageUsers() {
   const [fullActiveMembers, setFullActiveMembers] = useState([]);
@@ -503,7 +506,10 @@ function ManageUsers() {
         </div>
       )}
       <div className="manage-users-container">
-        <div className="page-title-manage-users">ניהול משתמשים</div>
+        <div className="page-title-manage-user-header">
+          <PeopleAltIcon className="page-title-icon" />
+          <div className="page-title-manage-users">ניהול משתמשים</div>
+        </div>
         {user && (user.privileges >= 2 || user.adminAccess.includes("createUser")) && (
           <div className="action-button add-user-button" onClick={() => setShowCreateUser(true)}>
             <svg
@@ -526,7 +532,10 @@ function ManageUsers() {
             הוסף משתמש
           </div>
         )}
-        <div className="table-title">משתמשים פעילים</div>
+        <div className="table-title-container">
+          <PersonIcon className="manage-users-icon" />
+          <div className="table-title">משתמשים פעילים</div>
+        </div>
         <div className="search-active-users-table">
           <svg viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
@@ -588,7 +597,10 @@ function ManageUsers() {
         </div>
         <div className="unactive-users">
           <hr className="divider-manage-users" />
-          <div className="table-title">משתמשים לא פעילים</div>
+          <div className="table-title-container">
+            <PersonOffIcon className="manage-users-icon" />
+            <div className="table-title">משתמשים לא פעילים</div>
+          </div>
           <div className="search-unactive-users-table">
             <svg
               viewBox="0 0 32 32"
@@ -650,7 +662,10 @@ function ManageUsers() {
         </div>
         <div className="waiting-users">
           <hr className="divider-manage-users" />
-          <div className="table-title">משתמשים שמחכים להרשמה</div>
+          <div className="table-title-container">
+            <PersonAddIcon className="manage-users-icon" />
+            <div className="table-title">משתמשים שמחכים להרשמה</div>
+          </div>
           <div className="search-waiting-users-table">
             <svg
               viewBox="0 0 32 32"

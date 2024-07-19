@@ -20,6 +20,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ConfirmAction from "./ConfirmAction";
 import EditDepartment from "./EditDepartment";
 import CreateDepartment from "./CreateDepartment";
+import BadgeIcon from "@mui/icons-material/Badge";
 
 function ManageDepartments() {
   const [departments, setDepartments] = useState([]);
@@ -208,7 +209,10 @@ function ManageDepartments() {
         </div>
       )}
       <div className="manage-departments">
-        <h1>ניהול מחלקות</h1>
+        <div className="manage-departments-header">
+          <BadgeIcon className="manage-departments-icon" />
+          <h1>ניהול מחלקות</h1>
+        </div>
         {user &&
           ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createDepartment")) ||
             user.privileges >= 2) && (

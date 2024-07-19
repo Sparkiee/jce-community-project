@@ -5,7 +5,20 @@
   align-items: center;
 }
 
-.manage-departments h1 {
+.manage-departments-header {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  gap: 1rem;
+}
+
+.manage-departments-icon {
+  width: 4.7rem !important;
+  height: 4.7rem !important;
+  margin: 2rem 0 5rem;
+}
+
+.manage-departments-header h1 {
   margin: 2rem 0 5rem;
   font-size: 3.5rem;
 }

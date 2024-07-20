@@ -24,6 +24,7 @@ import {
   arrayUnion,
   updateDoc,
   addDoc,
+  orderBy,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -121,7 +122,7 @@ function Chat() {
 
     try {
       const chatRef = collection(db, "chats");
-      const q = query(chatRef, where("members", "array-contains", user.email));
+      const q = query(chatRef, where("members", "array-contains", user.email), orderBy("updatedAt", "desc"));
       const querySnapshot = await getDocs(q);
       let chatArray = [];
       let newProfileImages = {};

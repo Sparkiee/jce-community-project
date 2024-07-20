@@ -253,6 +253,7 @@ function EditTask(props) {
         });
       }
     }
+    console.log(selectedEvent);
   }
 
   const handleSubmit = async (event) => {
@@ -310,7 +311,7 @@ function EditTask(props) {
         taskBudget: Number(taskDetails.taskBudget) || 0,
         taskStatus: taskDetails.taskStatus,
         assignees: assigneeRefs,
-        relatedEvent: selectedEvent ? `events/${selectedEvent.id}` : "",
+        relatedEvent: selectedEvent != null ? `events/${selectedEvent.id}` : "",
         taskCreator: taskDetails.taskCreator || "",
       });
       setEditedSuccessfully(true);
@@ -322,10 +323,7 @@ function EditTask(props) {
     } catch (error) {
       console.error("Error updating task: ", error);
     }
-    const taskRef = doc(db, "tasks", taskDetails.taskDoc);
     try {
-      await updateDoc(taskRef, taskDetails);
-
       const docRef = await addDoc(collection(db, "log_tasks"), {
         task: "tasks/" + taskDetails.taskDoc,
         timestamp: serverTimestamp(),

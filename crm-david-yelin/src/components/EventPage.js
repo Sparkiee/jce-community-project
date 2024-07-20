@@ -235,7 +235,7 @@ function EventPage() {
 
   async function fetchTasks() {
     try {
-      const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`));
+      const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`), orderBy("taskEndDate", "desc"));
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
@@ -511,7 +511,7 @@ function EventPage() {
   };
 
   const baseTaskColumns = [
-    { field: "id", headerName: "אינדקס", align: "right", flex: 1 },
+    // { field: "id", headerName: "אינדקס", align: "right", flex: 1 },
     {
       field: "taskName",
       headerName: "שם המשימה",
@@ -540,6 +540,17 @@ function EventPage() {
         ]
       : []),
     {
+      field: "taskEndDate",
+      headerName: "תאריך סיום",
+      align: "right",
+      flex: 1,
+      renderCell: (params) => {
+        const date = new Date(params.row.taskEndDate);
+        const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
+        return <div>{formattedDate}</div>;
+      }
+    },
+      {
       field: "taskStatus",
       headerName: "סטטוס",
       align: "right",
@@ -797,7 +808,7 @@ function EventPage() {
 
   const fetchFiles = async () => {
     try {
-      const eventDoc = await getDoc(doc(db, "events", id));
+      const eventDoc = await getDoc(doc(db, "events", id), orderBy("uploadedAt", "desc"));
       if (eventDoc.exists()) {
         const eventData = eventDoc.data();
         const fileData = eventData.eventFiles || [];

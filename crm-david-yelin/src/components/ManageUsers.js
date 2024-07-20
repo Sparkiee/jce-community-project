@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { DataGrid } from "@mui/x-data-grid";
 import { db } from "../firebase";
-import { updateDoc, doc, query, collection, getDocs, where, deleteDoc } from "firebase/firestore";
+import { updateDoc, doc, query, collection, getDocs, where, deleteDoc, orderBy } from "firebase/firestore";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
@@ -359,7 +359,7 @@ function ManageUsers() {
   }
   async function fetchUsers() {
     try {
-      const membersRef = collection(db, "members");
+      const membersRef = query(collection(db, "members"), orderBy("fullName", "asc"));
       const membersSnapshot = await getDocs(membersRef);
       const membersList = membersSnapshot.docs.map((doc) => doc.data());
       const disabledMembers = membersList.filter((member) => member.privileges === 0);

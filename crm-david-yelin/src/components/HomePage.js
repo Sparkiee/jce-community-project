@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { db } from "../firebase";
-import { collection, query, where, getDocs, onSnapshot, getDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot, getDoc, doc, orderBy } from "firebase/firestore";
 import "../styles/HomePage.css";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
@@ -243,7 +243,7 @@ function HomePage() {
         return 100;
       }
 
-      const tasksQuery = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${eventId}`));
+      const tasksQuery = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${eventId}`), orderBy("taskEndDate", "desc"));
       const tasksSnapshot = await getDocs(tasksQuery);
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
 
@@ -263,7 +263,7 @@ function HomePage() {
   async function grabMyEvents() {
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("assignees", "array-contains", "members/" + user?.email));
+      const q = query(eventsRef, where("assignees", "array-contains", "members/" + user?.email), orderBy("eventEndDate", "desc"));
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs
         .map((doc, index) => ({

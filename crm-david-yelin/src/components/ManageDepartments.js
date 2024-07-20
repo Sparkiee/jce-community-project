@@ -10,6 +10,7 @@ import {
   deleteDoc,
   updateDoc,
   setDoc,
+  orderBy,
 } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -41,7 +42,7 @@ function ManageDepartments() {
   }, []);
 
   async function getDepartments() {
-    const collectionRef = collection(db, "departments");
+    const collectionRef = query(collection(db, "departments"), orderBy("name", "asc"));
     try {
       const snapshot = await getDocs(collectionRef);
       const departmentsPromises = snapshot.docs.map(async (doc, index) => {

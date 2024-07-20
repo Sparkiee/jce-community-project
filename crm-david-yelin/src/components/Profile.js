@@ -11,7 +11,7 @@ import {
   orderBy,
   updateDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject, listAll } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "../firebase";
 import { useParams } from "react-router-dom";
 import "../styles/Styles.css";
@@ -571,7 +571,7 @@ function Profile() {
     if (!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(tasksRef, where("taskCreator", "==", "members/" + profile?.email));
+      const q = query(tasksRef, where("taskCreator", "==", "members/" + profile?.email), orderBy("taskEndDate", "desc"));
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs
         .map((doc, index) => ({
@@ -603,7 +603,7 @@ function Profile() {
     if (!profile) return;
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("eventCreator", "==", "members/" + profile?.email));
+      const q = query(eventsRef, where("eventCreator", "==", "members/" + profile?.email), orderBy("eventEndDate", "desc"));
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs
         .map((doc, index) => ({
@@ -638,7 +638,7 @@ function Profile() {
     if (!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(tasksRef, where("assignees", "array-contains", "members/" + profile.email));
+      const q = query(tasksRef, where("assignees", "array-contains", "members/" + profile.email), orderBy("taskEndDate", "desc"));
       const querySnapshot = await getDocs(q);
       const taskAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
@@ -675,7 +675,7 @@ function Profile() {
     if (!profile) return;
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("assignees", "array-contains", "members/" + profile.email));
+      const q = query(eventsRef, where("assignees", "array-contains", "members/" + profile.email), orderBy("eventEndDate", "desc"));
       const querySnapshot = await getDocs(q);
       const eventAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),

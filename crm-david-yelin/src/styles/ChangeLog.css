@@ -2,25 +2,24 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   border-radius: 1rem;
   box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
   background-color: rgb(255, 255, 255);
   padding: 4rem 4rem 6rem;
   width: 50rem;
-
   font-size: 2rem;
 }
 
 @media screen and (max-width: 1500px) {
   .change-log-form {
-    margin-top: 14rem;
+    margin-top: auto;
   }
 }
 
 @media screen and (max-width: 1200px) {
   .change-log-form {
-    margin-top: 32rem;
+    margin-top: auto;
   }
 }
 .centered-title-changelog {

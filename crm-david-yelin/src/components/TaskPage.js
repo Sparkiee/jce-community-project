@@ -562,8 +562,7 @@ function TaskPage() {
                   <FilePond
                     files={uploadedFiles}
                     allowMultiple
-                    maxFiles={5}
-                    maxFileSize="1000MB"
+                    maxFileSize="1024MB"
                     labelMaxFileSize="1GB גודל הקובץ המרבי הוא"
                     credits={false}
                     labelMaxFileSizeExceeded="הקובץ גדול מדי"

@@ -398,14 +398,6 @@ function Navbar() {
                       onClick={() => setNotificationsVisible(false)}>
                       סגור
                     </a>
-                    <a
-                      href="#"
-                      className="notification-button"
-                      onClick={() => {
-                        handleNotifications();
-                      }}>
-                      הצג עוד
-                    </a>
                   </div>
                 </div>
               )}

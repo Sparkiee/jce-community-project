@@ -635,7 +635,7 @@ function Chat() {
                 onDrop={handleDrop}>
                 {hasMoreMessages && (
                   <button onClick={handleLoadMore} className="load-more-button">
-                    Load More
+                    טען הודעות קודמות
                   </button>
                 )}
                 {messages &&

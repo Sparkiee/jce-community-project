@@ -173,12 +173,12 @@ function Profile() {
   );
 
   const columnsTasks = [
-    {
-      field: "id",
-      headerName: "אינדקס",
-      align: "right",
-      flex: 0.8,
-    },
+    // {
+    //   field: "id",
+    //   headerName: "אינדקס",
+    //   align: "right",
+    //   flex: 0.8,
+    // },
     {
       field: "taskName",
       headerName: "משימה",
@@ -376,12 +376,12 @@ function Profile() {
   }, [numTasks, numCompletedTasks]);
 
   const columnsEvents = [
-    {
-      field: "id",
-      headerName: "אינדקס",
-      align: "right",
-      flex: 0.8,
-    },
+    // {
+    //   field: "id",
+    //   headerName: "אינדקס",
+    //   align: "right",
+    //   flex: 0.8,
+    // },
     {
       field: "eventName",
       headerName: "שם האירוע",
@@ -571,7 +571,11 @@ function Profile() {
     if (!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(tasksRef, where("taskCreator", "==", "members/" + profile?.email), orderBy("taskEndDate", "desc"));
+      const q = query(
+        tasksRef,
+        where("taskCreator", "==", "members/" + profile?.email),
+        orderBy("taskEndDate", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs
         .map((doc, index) => ({
@@ -603,7 +607,11 @@ function Profile() {
     if (!profile) return;
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("eventCreator", "==", "members/" + profile?.email), orderBy("eventEndDate", "desc"));
+      const q = query(
+        eventsRef,
+        where("eventCreator", "==", "members/" + profile?.email),
+        orderBy("eventEndDate", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs
         .map((doc, index) => ({
@@ -638,7 +646,11 @@ function Profile() {
     if (!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(tasksRef, where("assignees", "array-contains", "members/" + profile.email), orderBy("taskEndDate", "desc"));
+      const q = query(
+        tasksRef,
+        where("assignees", "array-contains", "members/" + profile.email),
+        orderBy("taskEndDate", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const taskAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
@@ -675,7 +687,11 @@ function Profile() {
     if (!profile) return;
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("assignees", "array-contains", "members/" + profile.email), orderBy("eventEndDate", "desc"));
+      const q = query(
+        eventsRef,
+        where("assignees", "array-contains", "members/" + profile.email),
+        orderBy("eventEndDate", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const eventAll = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),

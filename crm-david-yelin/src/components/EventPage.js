@@ -235,7 +235,11 @@ function EventPage() {
 
   async function fetchTasks() {
     try {
-      const q = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${id}`), orderBy("taskEndDate", "desc"));
+      const q = query(
+        collection(db, "tasks"),
+        where("relatedEvent", "==", `events/${id}`),
+        orderBy("taskEndDate", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const taskArray = querySnapshot.docs.map((doc, index) => ({
         ...doc.data(),
@@ -548,9 +552,9 @@ function EventPage() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
-      {
+    {
       field: "taskStatus",
       headerName: "סטטוס",
       align: "right",
@@ -661,7 +665,7 @@ function EventPage() {
   }
 
   const HistoryColumns = [
-    { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
+    // { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
     {
       field: "changeDate",
       headerName: "תאריך",
@@ -734,7 +738,7 @@ function EventPage() {
       field: "preview",
       headerName: "תצוגה מקדימה",
       align: "right",
-      flex: 0.6,
+      flex: 1,
       renderCell: (params) => (
         <div>
           {params.row.type.includes("image") ? (
@@ -745,7 +749,7 @@ function EventPage() {
         </div>
       ),
     },
-    { field: "name", headerName: "שם הקובץ", align: "right", flex: 3 },
+    { field: "name", headerName: "שם הקובץ", align: "right", flex: 2 },
     {
       field: "size",
       headerName: "גודל הקובץ",

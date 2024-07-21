@@ -407,7 +407,7 @@ function TaskPage() {
   }
 
   const HistoryColumns = [
-    { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
+    // { field: "id", headerName: "אינדקס", align: "right", flex: 0.8 },
     {
       field: "changeDate",
       headerName: "תאריך",

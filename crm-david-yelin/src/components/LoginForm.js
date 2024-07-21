@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { signInWithEmailAndPassword, sendEmailVerification, setPersistence, browserLocalPersistence } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  setPersistence,
+  browserLocalPersistence
+} from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
@@ -29,6 +34,11 @@ function LoginForm() {
     try {
       if (rememberMe) {
         await setPersistence(auth, browserLocalPersistence);
+      }
+
+      if (!email || !password) {
+        setWrongCredentials(true);
+        return;
       }
 
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -165,7 +175,9 @@ function LoginForm() {
             </a>
           </div>
           <div className="registration-button">
-            <a href="#" onClick={() => navigate("register")}>הרשמה</a>
+            <a href="#" onClick={() => navigate("register")}>
+              הרשמה
+            </a>
           </div>
         </form>
       </div>

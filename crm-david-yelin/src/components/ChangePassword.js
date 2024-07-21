@@ -49,19 +49,17 @@ function ChangePassword(props) {
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    return (
-      password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar
-    );
+    return password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
   }
 
   const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setFormWarning(true);
+      setWarningMessage("אנא מלא את כל השדות");
+      return;
+    }
     try {
       const userCredential = await signInWithEmailAndPassword(auth, user.email, currentPassword);
-      if (!currentPassword || !newPassword || !confirmNewPassword) {
-        setFormWarning(true);
-        setWarningMessage("אנא מלא את כל השדות");
-        return;
-      }
       if (currentPassword === newPassword) {
         setFormWarning(true);
         setWarningMessage("הסיסמה החדשה צריכה להיות שונה מהסיסמה הנוכחית");
@@ -74,9 +72,7 @@ function ChangePassword(props) {
       }
       if (!isValidPassword(newPassword)) {
         setFormWarning(true);
-        setWarningMessage(
-          "הסיסמה החדשה חייבת לכלול לפחות 8 תווים, אותיות גדולות וקטנות, מספרים ותווים מיוחדים."
-        );
+        setWarningMessage("הסיסמה החדשה חייבת לכלול לפחות 8 תווים, אותיות גדולות וקטנות, מספרים ותווים מיוחדים.");
         return;
       }
       await updatePassword(userCredential.user, newPassword);
@@ -104,30 +100,9 @@ function ChangePassword(props) {
         onClick={() => {
           props.onClose();
         }}>
-        <svg
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor">
-          <line
-            x1="17"
-            y1="7"
-            x2="7"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <line
-            x1="7"
-            y1="7"
-            x2="17"
-            y2="17"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+        <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <h1 className="change-password-title">שינוי סיסמה</h1>

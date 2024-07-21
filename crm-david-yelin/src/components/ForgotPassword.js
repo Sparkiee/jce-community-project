@@ -10,11 +10,17 @@ import { useNavigate } from "react-router-dom";
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [noEmail, setNoEmail] = useState(false);
 
   const navigate = useNavigate();
 
   function handleSubmit(event) {
+    setNoEmail(false);
     event.preventDefault();
+    if (!email) {
+      setNoEmail(true);
+      return;
+    }
     sendPasswordResetEmail(auth, email)
       .then(() => {
         setEmailSent(true);
@@ -58,6 +64,11 @@ function ForgotPassword() {
           {emailSent && (
             <Alert className="feedback-alert forgot-password-feedback" severity="info">
               אימייל לאיפוס סיסמה נשלח לכתובת במידה וקיים במערכת
+            </Alert>
+          )}
+          {noEmail && (
+            <Alert className="feedback-alert forgot-password-feedback-email" severity="info">
+              אנא הכנס אימייל
             </Alert>
           )}
         </form>

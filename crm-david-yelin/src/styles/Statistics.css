@@ -107,12 +107,12 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }
 
 .current-year-department-based-events-tasks-statistics {
   width: 100%;
   padding: 1rem 2rem;
-  box-shadow: 0rem 0rem 3rem -2.1875rem #000;
 }
 
 .year-select-container {

@@ -502,20 +502,26 @@ function Statistics() {
         </div>
         <div className="statistics-top">
           <div className="year-events-statistics">
-            <h2>מספר אירועים בשנה</h2>
+            <h2>
+              מספר אירועים בשנת {years[0]} - {years[years.length - 1]}
+            </h2>
             <Bar data={eventData} options={yearEventsTasksOptions} />
             <p>ממוצע אירועים בשנה: {averages.eventsPerYear.toFixed(2)}</p>
             <p>ממוצע משימות לאירוע בשנה: {averages.tasksPerEventPerYear.toFixed(2)}</p>
           </div>
           <div className="year-tasks-statistics">
-            <h2>מספר משימות בשנה</h2>
+            <h2>
+              מספר משימות בשנת {years[0]} - {years[years.length - 1]}
+            </h2>
             <Bar data={taskData} options={yearEventsTasksOptions} />
             <p>ממוצע משימות בשנה: {averages.tasksPerYear.toFixed(2)}</p>
           </div>
         </div>
         <div className="statistics-middle">
           <div className="year-budget-statistics">
-            <h2>תקציב אירועים ומשימות שנוצלו בשנה</h2>
+            <h2>
+              תקציב אירועים ומשימות שנוצלו במהלך {years[0]} - {years[years.length - 1]}
+            </h2>
             <Bar data={budgetChartData} options={options} />
             <p>ממוצע תקציב אירועים בשנה: {averages.totalBudgetPerYear.toFixed(2)}</p>
             <p>ממוצע תקציב משימות בשנה: {averages.spentBudgetPerYear.toFixed(2)}</p>

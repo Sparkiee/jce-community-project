@@ -70,3 +70,7 @@
   width: 10%;
   right: 4%;
 }
+
+.over-budget {
+  color: red;
+}

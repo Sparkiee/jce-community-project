@@ -1200,7 +1200,7 @@ function EventPage() {
                       user.adminAccess.includes("viewBudget"))) && (
                     <div>
                       <p>
-                        <strong>תקציב: </strong>₪{event.eventBudget.toLocaleString()}/
+                        <strong>תקציב/תקציב שנותר: </strong>₪{event.eventBudget.toLocaleString()}/
                         {remainingBudget < 0 ? (
                           <b className="overdraft">
                             ₪{Math.abs(remainingBudget).toLocaleString()}-

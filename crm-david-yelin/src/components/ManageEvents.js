@@ -132,16 +132,21 @@ function ManageEvents() {
       ? [
           {
             field: "eventBudget",
-            headerName: "תקציב",
+            headerName: "תקציב/תקציב נותר",
             align: "right",
-            flex: 1,
+            flex: 1.5,
             renderCell: (params) => {
+              if (params.row.eventBudget === undefined || params.row.eventBudget === null) {
+                return <div>לא הוגדר תקציב</div>;
+              }
+              const usedBudget = Math.abs(params.row.totalTaskBudget - params.row.eventBudget) || 0;
+              const isOverBudget = params.row.isOverBudget;
+
               return (
-                <div
-                  title={
-                    params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"
-                  }>
-                  {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
+                <div className={`budget-status ${isOverBudget ? "over-budget" : ""}`}>
+                  <span>{`${params.row.eventBudget.toLocaleString()} / ${
+                    isOverBudget ? `${usedBudget.toLocaleString()}-` : usedBudget.toLocaleString()
+                  } ₪`}</span>
                 </div>
               );
             },
@@ -278,11 +283,11 @@ function ManageEvents() {
     }
   }
 
-  async function calculateCompletionPercentage(eventId) {
+  async function calculateEventStats(eventId, eventBudget) {
     try {
       const eventDoc = await getDoc(doc(db, "events", eventId));
       if (eventDoc.exists() && eventDoc.data().eventStatus === "הסתיים") {
-        return 100;
+        return { completionPercentage: 100, totalTaskBudget: 0, isOverBudget: false };
       }
 
       const tasksQuery = query(
@@ -293,14 +298,19 @@ function ManageEvents() {
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
 
       if (tasks.length === 0) {
-        return 0;
+        return { completionPercentage: 0, totalTaskBudget: 0, isOverBudget: false };
       }
 
       const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
+      const completionPercentage = (completedTasks / tasks.length) * 100;
 
-      return (completedTasks / tasks.length) * 100;
+      const totalTaskBudget = tasks.reduce((sum, task) => sum + (task.taskBudget || 0), 0);
+      const isOverBudget = totalTaskBudget > eventBudget;
+
+      return { completionPercentage, totalTaskBudget, isOverBudget };
     } catch (error) {
-      return 0;
+      console.error("Error calculating event stats:", error);
+      return { completionPercentage: 0, totalTaskBudget: 0, isOverBudget: false };
     }
   }
 
@@ -333,7 +343,10 @@ function ManageEvents() {
               };
             })
           );
-          const completedPercentage = await calculateCompletionPercentage(event.eventDoc);
+          const { completionPercentage, totalTaskBudget, isOverBudget } = await calculateEventStats(
+            event.eventDoc,
+            event.eventBudget
+          );
           return {
             id: index + 1,
             eventDoc: event.eventDoc,
@@ -347,7 +360,9 @@ function ManageEvents() {
             assignees: event.assignees,
             eventCreator: event.eventCreator,
             assignTo: assigneeData || [],
-            completedPercentage: `${Math.round(completedPercentage)}%`,
+            completedPercentage: `${Math.round(completionPercentage)}%`,
+            totalTaskBudget: totalTaskBudget,
+            isOverBudget: isOverBudget,
           };
         })
       );

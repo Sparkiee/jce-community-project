@@ -287,9 +287,8 @@ function Navbar() {
                 ((user.privileges > 0 && user.privileges >= 2) ||
                   (Array.isArray(user.adminAccess) &&
                     (user.adminAccess.includes("editDepartment") ||
-                      user.adminAccess.includes(
-                        "deleteDepartment" || user.adminAccess.includes("createDepartment")
-                      )))) && (
+                      user.adminAccess.includes("deleteDepartment") ||
+                      user.adminAccess.includes("createDepartment")))) && (
                   <li className={isActive("/departments") ? "active" : ""}>
                     <a to="#" onClick={() => navigate("/departments")}>
                       ניהול מחלקות

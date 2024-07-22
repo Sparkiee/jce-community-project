@@ -58,25 +58,27 @@ function Statistics() {
           const querySnapshot = await getDocs(eventQuery);
           const eventCount = querySnapshot.docs.filter((document) => {
             const docData = document.data();
-            const eventEndDate = docData.eventEndDate.toDate
-              ? docData.eventEndDate.toDate()
-              : new Date(docData.eventEndDate);
-            if (eventEndDate >= startOfYear && eventEndDate <= endOfYear) {
-              totalEventBudget += Number(docData.eventBudget);
-              if (year === currentYear && docData.assignees) {
-                // Check if assignees is defined
-                docData.assignees.forEach(async (assignee) => {
-                  const memberRef = doc(db, assignee);
-                  const memberSnapshot = await getDoc(memberRef);
-                  if (memberSnapshot.exists()) {
-                    const department = memberSnapshot.data().department;
-                    if (departmentStats[department]) {
-                      departmentStats[department].events++;
+            if (docData.eventStatus === "הסתיים") {
+              const eventEndDate = docData.eventEndDate.toDate
+                ? docData.eventEndDate.toDate()
+                : new Date(docData.eventEndDate);
+              if (eventEndDate >= startOfYear && eventEndDate <= endOfYear) {
+                totalEventBudget += Number(docData.eventBudget);
+                if (year === currentYear && docData.assignees) {
+                  // Check if assignees is defined
+                  docData.assignees.forEach(async (assignee) => {
+                    const memberRef = doc(db, assignee);
+                    const memberSnapshot = await getDoc(memberRef);
+                    if (memberSnapshot.exists()) {
+                      const department = memberSnapshot.data().department;
+                      if (departmentStats[department]) {
+                        departmentStats[department].events++;
+                      }
                     }
-                  }
-                });
+                  });
+                }
+                return true;
               }
-              return true;
             }
             return false;
           }).length;
@@ -84,15 +86,20 @@ function Statistics() {
           eventsCountPerYear.push(eventCount);
 
           // Fetch tasks count per year
+          let taskCount = 0;
           const taskRef = collection(db, "tasks");
           const taskQuery = query(taskRef, orderBy("taskEndDate", "desc"));
           const taskSnapshot = await getDocs(taskQuery);
-          const taskCount = taskSnapshot.docs.filter((document) => {
+          const tasks = taskSnapshot.docs.filter((document) => {
             const docData = document.data();
             const taskEndDate = docData.taskEndDate.toDate
               ? docData.taskEndDate.toDate()
               : new Date(docData.taskEndDate);
             if (taskEndDate >= startOfYear && taskEndDate <= endOfYear) {
+              if (docData.taskStatus === "הושלמה") {
+                taskCount += 1;
+                totalSpentBudget += Number(docData.taskBudget);
+              }
               if (year === currentYear) {
                 if (docData.taskStatus === "הושלמה") {
                   newTaskStatusData.complete += 1;
@@ -115,11 +122,10 @@ function Statistics() {
                   });
                 }
               }
-              totalSpentBudget += Number(docData.taskBudget);
               return true;
             }
             return false;
-          }).length;
+          });
 
           tasksCountPerYear.push(taskCount);
           budgetDataPerYear.push({
@@ -503,7 +509,7 @@ function Statistics() {
         <div className="statistics-top">
           <div className="year-events-statistics">
             <h2>
-              מספר אירועים בשנת {years[0]} - {years[years.length - 1]}
+              מספר אירועים שהסתיימו בשנת {years[0]} - {years[years.length - 1]}
             </h2>
             <Bar data={eventData} options={yearEventsTasksOptions} />
             <p>ממוצע אירועים בשנה: {averages.eventsPerYear.toFixed(2)}</p>
@@ -511,7 +517,7 @@ function Statistics() {
           </div>
           <div className="year-tasks-statistics">
             <h2>
-              מספר משימות בשנת {years[0]} - {years[years.length - 1]}
+              מספר משימות שהושלמו בשנת {years[0]} - {years[years.length - 1]}
             </h2>
             <Bar data={taskData} options={yearEventsTasksOptions} />
             <p>ממוצע משימות בשנה: {averages.tasksPerYear.toFixed(2)}</p>
@@ -520,7 +526,7 @@ function Statistics() {
         <div className="statistics-middle">
           <div className="year-budget-statistics">
             <h2>
-              תקציב אירועים ומשימות שנוצלו במהלך {years[0]} - {years[years.length - 1]}
+              תקציב אירועים ומשימות שהושלמו במהלך {years[0]} - {years[years.length - 1]}
             </h2>
             <Bar data={budgetChartData} options={options} />
             <p>ממוצע תקציב אירועים בשנה: {averages.totalBudgetPerYear.toFixed(2)}</p>
@@ -536,7 +542,7 @@ function Statistics() {
           </div>
         </div>
         <div className="statistics-bottom">
-          <h2>אירועים ומשימות לפי מחלקה בשנה הנוכחית</h2>
+          <h2>אירועים ומשימות שנפתחו לפי מחלקה בשנה הנוכחית</h2>
           <Bar
             className="current-year-department-based-events-tasks-statistics"
             data={departmentChartData}

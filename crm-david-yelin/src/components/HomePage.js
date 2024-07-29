@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { db } from "../firebase";
-import { collection, query, where, getDocs, onSnapshot, getDoc, doc, orderBy } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+  getDoc,
+  doc,
+  orderBy,
+} from "firebase/firestore";
 import "../styles/HomePage.css";
 import CreateTask from "./CreateTask";
 import CreateEvent from "./CreateEvent";
@@ -25,8 +34,8 @@ function HomePage() {
     {
       direction: "rtl",
       typography: {
-        fontSize: 24
-      }
+        fontSize: 24,
+      },
     },
     heIL
   );
@@ -53,19 +62,19 @@ function HomePage() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "taskName",
       headerName: "משימה",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskDescription",
       headerName: "תיאור",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "taskBudget",
@@ -73,8 +82,10 @@ function HomePage() {
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>;
-      }
+        return (
+          <div>{params.row.taskBudget ? `₪${params.row.taskBudget.toLocaleString()}` : "אין"}</div>
+        );
+      },
     },
     {
       field: "taskStartDate",
@@ -85,7 +96,7 @@ function HomePage() {
         const date = new Date(params.row.taskStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskEndDate",
@@ -96,13 +107,13 @@ function HomePage() {
         const date = new Date(params.row.taskEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "taskTime",
       headerName: "שעת סיום",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "taskStatus",
@@ -117,8 +128,8 @@ function HomePage() {
             {params.row.taskStatus}
           </div>
         );
-      }
-    }
+      },
+    },
   ];
 
   const columnsEvents = [
@@ -126,28 +137,40 @@ function HomePage() {
       field: "id",
       headerName: "אינדקס",
       align: "right",
-      flex: 1
+      flex: 1,
     },
     {
       field: "eventName",
       headerName: "שם האירוע",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       align: "right",
-      flex: 3
+      flex: 3,
     },
     {
       field: "eventBudget",
-      headerName: "תקציב",
+      headerName: "תקציב/תקציב נותר",
       align: "right",
       flex: 1,
       renderCell: (params) => {
-        return <div>{params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}</div>;
-      }
+        if (params.row.eventBudget === undefined || params.row.eventBudget === null) {
+          return <div>לא הוגדר תקציב</div>;
+        }
+        const usedBudget = Math.abs(params.row.totalTaskBudget - params.row.eventBudget) || 0;
+        const isOverBudget = params.row.isOverBudget;
+
+        return (
+          <div className={`budget-status ${isOverBudget ? "over-budget" : ""}`}>
+            <span>{`${params.row.eventBudget.toLocaleString()} / ${
+              isOverBudget ? `${usedBudget.toLocaleString()}-` : usedBudget.toLocaleString()
+            } ₪`}</span>
+          </div>
+        );
+      },
     },
     {
       field: "eventStartDate",
@@ -158,7 +181,7 @@ function HomePage() {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventEndDate",
@@ -169,13 +192,13 @@ function HomePage() {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
         return <div>{formattedDate}</div>;
-      }
+      },
     },
     {
       field: "eventTime",
       headerName: "שעה",
       align: "right",
-      flex: 2
+      flex: 2,
     },
     {
       field: "eventStatus",
@@ -190,14 +213,14 @@ function HomePage() {
             {params.row.eventStatus}
           </div>
         );
-      }
+      },
     },
     {
       field: "completionPercentage",
       headerName: "אחוז השלמה",
       align: "right",
-      flex: 1
-    }
+      flex: 1,
+    },
   ];
 
   const createTaskRef = useRef(null);
@@ -212,7 +235,7 @@ function HomePage() {
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id
+          docRef: doc.id,
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
 
@@ -228,7 +251,7 @@ function HomePage() {
         taskEndDate: task.taskEndDate,
         taskTime: task.taskTime,
         taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus
+        taskStatus: task.taskStatus,
       }));
       setRowsTasks(rowsTasksData); // Update rows state
     } catch (error) {
@@ -236,47 +259,66 @@ function HomePage() {
     }
   }
 
-  async function calculateCompletionPercentage(eventId) {
+  async function calculateEventStats(eventId, eventBudget) {
     try {
       const eventDoc = await getDoc(doc(db, "events", eventId));
       if (eventDoc.exists() && eventDoc.data().eventStatus === "הסתיים") {
-        return 100;
+        return { completionPercentage: 100, totalTaskBudget: 0, isOverBudget: false };
       }
 
-      const tasksQuery = query(collection(db, "tasks"), where("relatedEvent", "==", `events/${eventId}`), orderBy("taskEndDate", "desc"));
+      const tasksQuery = query(
+        collection(db, "tasks"),
+        where("relatedEvent", "==", `events/${eventId}`),
+        orderBy("taskEndDate", "desc")
+      );
       const tasksSnapshot = await getDocs(tasksQuery);
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
 
       if (tasks.length === 0) {
-        return 0;
+        return { completionPercentage: 0, totalTaskBudget: 0, isOverBudget: false };
       }
 
       const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
+      const completionPercentage = Math.round((completedTasks / tasks.length) * 100);
 
-      return Math.round((completedTasks / tasks.length) * 100);
+      const totalTaskBudget = tasks.reduce((sum, task) => sum + (task.taskBudget || 0), 0);
+      const isOverBudget = totalTaskBudget > eventBudget;
+
+      return {
+        completionPercentage,
+        totalTaskBudget,
+        isOverBudget,
+      };
     } catch (error) {
-      console.error("Error calculating completion percentage:", error);
-      return 0;
+      console.error("Error calculating event stats:", error);
+      return { completionPercentage: 0, totalTaskBudget: 0, isOverBudget: false };
     }
   }
 
   async function grabMyEvents() {
     try {
       const eventsRef = collection(db, "events");
-      const q = query(eventsRef, where("assignees", "array-contains", "members/" + user?.email), orderBy("eventEndDate", "desc"));
+      const q = query(
+        eventsRef,
+        where("assignees", "array-contains", "members/" + user?.email),
+        orderBy("eventEndDate", "desc")
+      );
       const querySnapshot = await getDocs(q);
       const eventsArray = querySnapshot.docs
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
-          docRef: doc.id
+          docRef: doc.id,
         }))
         .filter((event) => event.eventStatus !== "הסתיים");
-      setNumEvents(eventsArray.length); // Update event count
+      setNumEvents(eventsArray.length);
 
       const rowsEventsData = await Promise.all(
         eventsArray.map(async (event, index) => {
-          const completionPercentage = await calculateCompletionPercentage(event.docRef);
+          const { completionPercentage, totalTaskBudget, isOverBudget } = await calculateEventStats(
+            event.docRef,
+            event.eventBudget
+          );
           return {
             id: index + 1,
             eventDoc: event.docRef,
@@ -287,11 +329,13 @@ function HomePage() {
             eventTime: event.eventTime,
             eventBudget: event.eventBudget,
             eventStatus: event.eventStatus,
-            completionPercentage: `${completionPercentage}%`
+            completionPercentage: `${completionPercentage}%`,
+            totalTaskBudget: totalTaskBudget,
+            isOverBudget: isOverBudget,
           };
         })
       );
-      setRowsEvents(rowsEventsData); // Update event rows state
+      setRowsEvents(rowsEventsData);
     } catch (error) {
       console.error("Failed to fetch events:", error);
     }
@@ -299,7 +343,10 @@ function HomePage() {
 
   useEffect(() => {
     const eventsRef = collection(db, "events");
-    const eventsQuery = query(eventsRef, where("assignees", "array-contains", "members/" + user?.email));
+    const eventsQuery = query(
+      eventsRef,
+      where("assignees", "array-contains", "members/" + user?.email)
+    );
 
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
@@ -310,7 +357,10 @@ function HomePage() {
     });
 
     const tasksRef = collection(db, "tasks");
-    const tasksQuery = query(tasksRef, where("assignees", "array-contains", "members/" + user?.email));
+    const tasksQuery = query(
+      tasksRef,
+      where("assignees", "array-contains", "members/" + user?.email)
+    );
     const unsubscribeTasks = onSnapshot(tasksQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added" || change.type === "modified") {
@@ -379,7 +429,8 @@ function HomePage() {
     <div className="home-content">
       <div className="display-create">
         {user &&
-          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges >= 2) &&
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges >= 2) &&
           showCreateTask && (
             <div className="popup-overlay">
               <div ref={createTaskRef} className="popup-content">
@@ -388,7 +439,8 @@ function HomePage() {
             </div>
           )}
         {user &&
-          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges >= 2) &&
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges >= 2) &&
           showCreateEvent && (
             <div className="popup-overlay">
               <div ref={createEventRef} className="popup-content">
@@ -405,7 +457,12 @@ function HomePage() {
           ((user && Array.isArray(user.adminAccess) && user.adminAccess.includes("createTask")) ||
             user.privileges >= 2) && (
             <div className="action-button add-task-button" onClick={handleShowCreateTask}>
-              <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -422,9 +479,15 @@ function HomePage() {
           )}
         {user &&
           user &&
-          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) || user.privileges >= 2) && (
+          ((Array.isArray(user.adminAccess) && user.adminAccess.includes("createEvent")) ||
+            user.privileges >= 2) && (
             <div className="action-button add-event-button" onClick={handleShowCreateEvent}>
-              <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -456,8 +519,8 @@ function HomePage() {
             columns={columnsTasks}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
+                paginationModel: { page: 0, pageSize: 5 },
+              },
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
@@ -465,8 +528,8 @@ function HomePage() {
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ-${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:" // Optional: customize other texts
-              }
+                labelRowsPerPage: "שורות בכל עמוד:", // Optional: customize other texts
+              },
             }}
             onRowDoubleClick={(params) => {
               navigate(`/task/${params.row.taskDoc}`);
@@ -490,16 +553,16 @@ function HomePage() {
             columns={columnsEvents}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 5 }
-              }
+                paginationModel: { page: 0, pageSize: 5 },
+              },
             }}
             pageSizeOptions={[5, 10, 20]}
             localeText={{
               MuiTablePagination: {
                 labelDisplayedRows: ({ from, to, count }) =>
                   `${from}-${to} מתוך ${count !== -1 ? count : `יותר מ ${to}`}`,
-                labelRowsPerPage: "שורות בכל עמוד:"
-              }
+                labelRowsPerPage: "שורות בכל עמוד:",
+              },
             }}
             onRowDoubleClick={(params) => {
               navigate(`/event/${params.row.eventDoc}`);

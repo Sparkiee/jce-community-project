@@ -99,8 +99,8 @@ div .profile-avatar:hover {
 }
 
 #taskCompletionChart {
-  width: 19rem !important;
-  height: 19rem !important;
+  width: 19.5rem !important;
+  height: 19.5rem !important;
 }
 
 .profile-events-progress {
@@ -111,8 +111,8 @@ div .profile-avatar:hover {
 }
 
 #eventCompletionChart {
-  width: 19rem !important;
-  height: 19rem !important;
+  width: 19.5rem !important;
+  height: 19.5rem !important;
 }
 
 .profile-stats-row {

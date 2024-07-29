@@ -401,13 +401,21 @@ function Profile() {
       ? [
           {
             field: "eventBudget",
-            headerName: "תקציב",
+            headerName: "תקציב/תקציב שנותר",
             align: "right",
-            flex: 1,
+            flex: 1.5,
             renderCell: (params) => {
+              if (params.row.eventBudget === undefined || params.row.eventBudget === null) {
+                return <div>לא הוגדר תקציב</div>;
+              }
+              const usedBudget = Math.abs(params.row.totalTaskBudget - params.row.eventBudget) || 0;
+              const isOverBudget = params.row.isOverBudget;
+
               return (
-                <div>
-                  {params.row.eventBudget ? `₪${params.row.eventBudget.toLocaleString()}` : "אין"}
+                <div className={`budget-status ${isOverBudget ? "over-budget" : ""}`}>
+                  <span>{`${params.row.eventBudget.toLocaleString()} / ${
+                    isOverBudget ? `${usedBudget.toLocaleString()}-` : usedBudget.toLocaleString()
+                  } ₪`}</span>
                 </div>
               );
             },
@@ -567,157 +575,183 @@ function Profile() {
     }
   }
 
-  async function grabCreatedTasks() {
+  async function grabAllTasks() {
     if (!profile) return;
     try {
       const tasksRef = collection(db, "tasks");
-      const q = query(
+      const myTasksQuery = query(
+        tasksRef,
+        where("assignees", "array-contains", "members/" + profile.email),
+        orderBy("taskEndDate", "desc")
+      );
+      const createdTasksQuery = query(
         tasksRef,
         where("taskCreator", "==", "members/" + profile?.email),
         orderBy("taskEndDate", "desc")
       );
-      const querySnapshot = await getDocs(q);
-      const taskArray = querySnapshot.docs
+
+      const [myTasksSnapshot, createdTasksSnapshot] = await Promise.all([
+        getDocs(myTasksQuery),
+        getDocs(createdTasksQuery),
+      ]);
+
+      // Process myTasks
+      const myTasksAll = myTasksSnapshot.docs.map((doc, index) => ({
+        ...doc.data(),
+        id: index + 1,
+        docRef: doc.id,
+      }));
+
+      let completeNum = myTasksAll.filter((task) => task.taskStatus === "הושלמה").length;
+      setNumCompletedTasks(completeNum);
+      setTaskPercentage(Math.round((completeNum / myTasksAll.length) * 100));
+      const myTasksArray = myTasksAll.filter((task) => task.taskStatus !== "הושלמה");
+      setNumTasks(myTasksArray.length);
+      setRowsTasks(
+        myTasksArray.map((task, index) => ({
+          id: index + 1,
+          taskDoc: task.docRef,
+          taskName: task.taskName,
+          taskDescription: task.taskDescription,
+          taskStartDate: task.taskStartDate,
+          taskEndDate: task.taskEndDate,
+          taskTime: task.taskTime,
+          taskBudget: task.taskBudget,
+          taskStatus: task.taskStatus,
+        }))
+      );
+
+      // Process createdTasks
+      const createdTasksArray = createdTasksSnapshot.docs
         .map((doc, index) => ({
           ...doc.data(),
           id: index + 1,
           docRef: doc.id,
         }))
         .filter((task) => task.taskStatus !== "הושלמה");
-
-      // Map the tasks to the format expected by DataGrid
-      const rowsTasksData = taskArray.map((task, index) => ({
-        id: index + 1,
-        taskDoc: task.docRef,
-        taskName: task.taskName,
-        taskDescription: task.taskDescription,
-        taskStartDate: task.taskStartDate,
-        taskEndDate: task.taskEndDate,
-        taskTime: task.taskTime,
-        taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus,
-      }));
-      setRowsCreatedTasks(rowsTasksData); // Update rows state
+      setRowsCreatedTasks(
+        createdTasksArray.map((task, index) => ({
+          id: index + 1,
+          taskDoc: task.docRef,
+          taskName: task.taskName,
+          taskDescription: task.taskDescription,
+          taskStartDate: task.taskStartDate,
+          taskEndDate: task.taskEndDate,
+          taskTime: task.taskTime,
+          taskBudget: task.taskBudget,
+          taskStatus: task.taskStatus,
+        }))
+      );
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
     }
   }
 
-  async function grabCreatedEvents() {
+  async function grabAllEvents() {
     if (!profile) return;
     try {
       const eventsRef = collection(db, "events");
-      const q = query(
+      const myEventsQuery = query(
+        eventsRef,
+        where("assignees", "array-contains", "members/" + profile.email),
+        orderBy("eventEndDate", "desc")
+      );
+      const createdEventsQuery = query(
         eventsRef,
         where("eventCreator", "==", "members/" + profile?.email),
         orderBy("eventEndDate", "desc")
       );
-      const querySnapshot = await getDocs(q);
-      const eventsArray = querySnapshot.docs
-        .map((doc, index) => ({
-          ...doc.data(),
+      const tasksRef = collection(db, "tasks");
+      const allTasksQuery = query(tasksRef);
+
+      const [myEventsSnapshot, createdEventsSnapshot, allTasksSnapshot] = await Promise.all([
+        getDocs(myEventsQuery),
+        getDocs(createdEventsQuery),
+        getDocs(allTasksQuery),
+      ]);
+
+      // Process all tasks to create a map of event budgets
+      const eventBudgets = {};
+      allTasksSnapshot.docs.forEach((doc) => {
+        const task = doc.data();
+        if (task.relatedEvent) {
+          const eventId = task.relatedEvent.split("/")[1];
+          eventBudgets[eventId] = (eventBudgets[eventId] || 0) + (task.taskBudget || 0);
+        }
+      });
+
+      // Process myEvents
+      const myEventsAll = myEventsSnapshot.docs.map((doc, index) => {
+        const event = doc.data();
+        const totalTaskBudget = eventBudgets[doc.id] || 0;
+        const isOverBudget =
+          event.eventBudget !== undefined &&
+          event.eventBudget !== null &&
+          totalTaskBudget > event.eventBudget;
+        return {
+          ...event,
           id: index + 1,
           docRef: doc.id,
-        }))
-        .filter((event) => event.eventStatus !== "הסתיים");
+          totalTaskBudget,
+          isOverBudget,
+        };
+      });
 
-      const rowsEventsData = await Promise.all(
-        eventsArray.map(async (event, index) => {
+      let completeNum = myEventsAll.filter((event) => event.eventStatus === "הסתיים").length;
+      setNumCompletedEvents(completeNum);
+      setEventPercentage(Math.round((completeNum / myEventsAll.length) * 100));
+      const myEventsArray = myEventsAll.filter((event) => event.eventStatus !== "הסתיים");
+      setNumEvents(myEventsArray.length);
+      setRowsEvents(
+        myEventsArray.map((event, index) => ({
+          id: index + 1,
+          eventDoc: event.docRef,
+          eventName: event.eventName,
+          eventLocation: event.eventLocation,
+          eventStartDate: event.eventStartDate,
+          eventEndDate: event.eventEndDate,
+          eventTime: event.eventTime,
+          eventBudget: event.eventBudget,
+          eventStatus: event.eventStatus,
+          totalTaskBudget: event.totalTaskBudget,
+          isOverBudget: event.isOverBudget,
+        }))
+      );
+
+      // Process createdEvents
+      const createdEventsArray = createdEventsSnapshot.docs
+        .map((doc, index) => {
+          const event = doc.data();
+          const totalTaskBudget = eventBudgets[doc.id] || 0;
+          const isOverBudget =
+            event.eventBudget !== undefined &&
+            event.eventBudget !== null &&
+            totalTaskBudget > event.eventBudget;
           return {
+            ...event,
             id: index + 1,
-            eventDoc: event.docRef,
-            eventName: event.eventName,
-            eventLocation: event.eventLocation,
-            eventStartDate: event.eventStartDate,
-            eventEndDate: event.eventEndDate,
-            eventTime: event.eventTime,
-            eventBudget: event.eventBudget,
-            eventStatus: event.eventStatus,
+            docRef: doc.id,
+            totalTaskBudget,
+            isOverBudget,
           };
         })
+        .filter((event) => event.eventStatus !== "הסתיים");
+
+      setRowsCreatedEvents(
+        createdEventsArray.map((event, index) => ({
+          id: index + 1,
+          eventDoc: event.docRef,
+          eventName: event.eventName,
+          eventLocation: event.eventLocation,
+          eventStartDate: event.eventStartDate,
+          eventEndDate: event.eventEndDate,
+          eventTime: event.eventTime,
+          eventBudget: event.eventBudget,
+          eventStatus: event.eventStatus,
+          totalTaskBudget: event.totalTaskBudget,
+          isOverBudget: event.isOverBudget,
+        }))
       );
-      setRowsCreatedEvents(rowsEventsData); // Update event rows state
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-    }
-  }
-
-  async function grabMyTasks() {
-    if (!profile) return;
-    try {
-      const tasksRef = collection(db, "tasks");
-      const q = query(
-        tasksRef,
-        where("assignees", "array-contains", "members/" + profile.email),
-        orderBy("taskEndDate", "desc")
-      );
-      const querySnapshot = await getDocs(q);
-      const taskAll = querySnapshot.docs.map((doc, index) => ({
-        ...doc.data(),
-        id: index + 1,
-        docRef: doc.id,
-      }));
-
-      let completeNum = taskAll.filter((task) => task.taskStatus === "הושלמה").length;
-      setNumCompletedTasks(completeNum); // Update completed task count
-      setTaskPercentage(Math.round((completeNum / taskAll.length) * 100)); // Update task percentage
-      const taskArray = taskAll.filter((task) => task.taskStatus !== "הושלמה");
-
-      setNumTasks(taskArray.length); // Update task count
-
-      // Map the tasks to the format expected by DataGrid
-      const rowsTasksData = taskArray.map((task, index) => ({
-        id: index + 1,
-        taskDoc: task.docRef,
-        taskName: task.taskName,
-        taskDescription: task.taskDescription,
-        taskStartDate: task.taskStartDate,
-        taskEndDate: task.taskEndDate,
-        taskTime: task.taskTime,
-        taskBudget: task.taskBudget,
-        taskStatus: task.taskStatus,
-      }));
-      setRowsTasks(rowsTasksData); // Update rows state
-    } catch (error) {
-      console.error("Failed to fetch tasks:", error);
-    }
-  }
-
-  async function grabMyEvents() {
-    if (!profile) return;
-    try {
-      const eventsRef = collection(db, "events");
-      const q = query(
-        eventsRef,
-        where("assignees", "array-contains", "members/" + profile.email),
-        orderBy("eventEndDate", "desc")
-      );
-      const querySnapshot = await getDocs(q);
-      const eventAll = querySnapshot.docs.map((doc, index) => ({
-        ...doc.data(),
-        id: index + 1,
-        docRef: doc.id,
-      }));
-      // .filter((event) => event.eventStatus !== "הסתיים");
-      let completeNum = eventAll.filter((event) => event.eventStatus === "הסתיים").length;
-      setNumCompletedEvents(completeNum); // Update completed event count
-      setEventPercentage(Math.round((completeNum / eventAll.length) * 100)); // Update event percentage
-      const eventsArray = eventAll.filter((event) => event.eventStatus !== "הסתיים");
-      setNumEvents(eventsArray.length); // Update event count
-
-      // Map the events to the format expected by DataGrid
-      const rowsEventsData = eventsArray.map((event, index) => ({
-        id: index + 1,
-        eventDoc: event.docRef,
-        eventName: event.eventName,
-        eventLocation: event.eventLocation,
-        eventStartDate: event.eventStartDate,
-        eventEndDate: event.eventEndDate,
-        eventTime: event.eventTime,
-        eventBudget: event.eventBudget,
-        eventStatus: event.eventStatus,
-      }));
-      setRowsEvents(rowsEventsData); // Update event rows state
     } catch (error) {
       console.error("Failed to fetch events:", error);
     }
@@ -785,7 +819,7 @@ function Profile() {
     const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added" || change.type === "modified") {
-          grabMyEvents();
+          grabAllEvents();
         }
       });
     });
@@ -798,7 +832,7 @@ function Profile() {
     const unsubscribeTasks = onSnapshot(tasksQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added" || change.type === "modified") {
-          grabMyTasks();
+          grabAllTasks();
         }
       });
     });
@@ -811,7 +845,7 @@ function Profile() {
     const unsubscribeCreatedTasks = onSnapshot(createdTasksQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
-          grabCreatedTasks();
+          grabAllTasks();
         }
       });
     });
@@ -824,7 +858,7 @@ function Profile() {
     const unsubscribeCreatedEvents = onSnapshot(createdEventsQuery, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added" || change.type === "modified") {
-          grabCreatedEvents();
+          grabAllEvents();
         }
       });
     });
@@ -839,11 +873,9 @@ function Profile() {
   }, []);
 
   useEffect(() => {
-    grabMyTasks();
-    grabMyEvents();
+    grabAllTasks();
+    grabAllEvents();
     fetchContact();
-    grabCreatedTasks();
-    grabCreatedEvents();
   }, [profile]);
 
   useEffect(() => {

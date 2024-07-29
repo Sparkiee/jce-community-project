@@ -149,13 +149,13 @@ function HomePage() {
       field: "eventLocation",
       headerName: "מיקום האירוע",
       align: "right",
-      flex: 3,
+      flex: 2,
     },
     {
       field: "eventBudget",
       headerName: "תקציב/תקציב נותר",
       align: "right",
-      flex: 1,
+      flex: 1.5,
       renderCell: (params) => {
         if (params.row.eventBudget === undefined || params.row.eventBudget === null) {
           return <div>לא הוגדר תקציב</div>;
@@ -176,7 +176,7 @@ function HomePage() {
       field: "eventStartDate",
       headerName: "תאריך התחלה",
       align: "right",
-      flex: 2,
+      flex: 1.5,
       renderCell: (params) => {
         const date = new Date(params.row.eventStartDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
@@ -187,7 +187,7 @@ function HomePage() {
       field: "eventEndDate",
       headerName: "תאריך יעד",
       align: "right",
-      flex: 2,
+      flex: 1.5,
       renderCell: (params) => {
         const date = new Date(params.row.eventEndDate);
         const formattedDate = date.toLocaleDateString("he-IL").replaceAll("/", "-");
@@ -198,13 +198,13 @@ function HomePage() {
       field: "eventTime",
       headerName: "שעה",
       align: "right",
-      flex: 2,
+      flex: 1.5,
     },
     {
       field: "eventStatus",
       headerName: "סטטוס",
       align: "right",
-      flex: 2,
+      flex: 1.5,
       renderCell: (params) => {
         const colorClass = getStatusColorClass(params.row.eventStatus);
         return (

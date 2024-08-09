@@ -260,10 +260,11 @@ function HomePage() {
   }
 
   async function calculateEventStats(eventId, eventBudget) {
+    let completionPercentage;
     try {
       const eventDoc = await getDoc(doc(db, "events", eventId));
       if (eventDoc.exists() && eventDoc.data().eventStatus === "הסתיים") {
-        return { completionPercentage: 100, totalTaskBudget: 0, isOverBudget: false };
+        completionPercentage = 100;
       }
 
       const tasksQuery = query(
@@ -275,11 +276,13 @@ function HomePage() {
       const tasks = tasksSnapshot.docs.map((doc) => doc.data());
 
       if (tasks.length === 0) {
-        return { completionPercentage: 0, totalTaskBudget: 0, isOverBudget: false };
+        tasks.length = 1;
       }
 
       const completedTasks = tasks.filter((task) => task.taskStatus === "הושלמה").length;
-      const completionPercentage = Math.round((completedTasks / tasks.length) * 100);
+      if (eventDoc.data().eventStatus !== "הסתיים") {
+        completionPercentage = (completedTasks / tasks.length) * 100;
+      }
 
       const totalTaskBudget = tasks.reduce((sum, task) => sum + (task.taskBudget || 0), 0);
       const isOverBudget = totalTaskBudget > eventBudget;

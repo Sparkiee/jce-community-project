@@ -210,6 +210,17 @@ function EditEvent(props) {
         updatedFields: getUpdatedFields(eventDetails, originalEvent),
       });
 
+      if(eventDetails.eventStatus === "הסתיים") {
+        console.log("Event has ended, updating tasks");
+        const tasksQuery = query(collection(db, "tasks"), where("relatedEvent", "==", "events/" + eventDetails.id));
+        const tasksSnapshot = await getDocs(tasksQuery);
+        tasksSnapshot.forEach(async (doc) => {
+          await updateDoc(doc.ref, {
+            taskStatus: "הושלמה",
+          });
+        });
+      }
+
       setEditedSuccessfully(true);
       setTimeout(() => {
         setEditedSuccessfully(false);

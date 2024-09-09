@@ -11,9 +11,9 @@ The project is being developed for David Yelin Student Council, an organization 
 ## Project Members
 
 ### Development Team:
-- Adam Shay
 - Maxim Shteingard
-- Evyevy12
+- Adam Shay
+- Evyatar Ben Chayun
 - Yosef Matatov
 
 ### Advisor/Supervisor:
